@@ -2,6 +2,7 @@
 
 **Aktuelle Phase:** Konzept ✅ → Setup ✅ → Phase 1: Daten-Herz ⏳
 **Letztes Update:** 15.11.2026
+**Zeiterfassung:** [ZEITPROTOKOLL.md](ZEITPROTOKOLL.md)
 
 ---
 
@@ -23,7 +24,7 @@
 - [x] "Hello World" läuft auf Android
 
 ## Phase 1: Daten-Herz (Engine)
-- [ ] Room-Schema laut TRD 1.x
+- [x] Room-Schema laut TRD 1.x (Room 3.0.3, 18 Tabellen, Schema-Export v1, i18n-Keys)
 - [ ] Seed-Daten: Kategorien, Trigger, Fenster, Zutaten, Symptome
 - [ ] Analyse-Engine: Episoden → Fenster → Lift → Evidenzstufe
 - [ ] Unit-Tests mit synthetischen Daten
@@ -54,3 +55,5 @@
 | 14.11.2026 | Konzeptphase abgeschlossen: Doku sortiert, Review, Überarbeitung, Architektur- und IDE-Entscheidung |
 | 14.11.2026 | Setup abgeschlossen: Android Studio, KMP-Projekt angelegt, Hello World läuft auf Android |
 | 15.11.2026 | Git-Repo auf GitHub gepusht (privat). Launch-Checkliste in OFFENE_PUNKTE.md ergänzt |
+| 15.11.2026 | Room-Schema v1 angelegt, Build grün, gepusht |
+| 15.11.2026 | Zeitprotokoll angelegt (Timeline und Dauer je Arbeitsblock) |

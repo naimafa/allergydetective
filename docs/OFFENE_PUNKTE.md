@@ -16,6 +16,7 @@
 - [x] **Intensität 1–5** (bestätigt)
 - [x] **Stress 1–5** (Slider rastet ein)
 - [x] **Plattform:** Ziel ist Android + iOS aus einer Codebasis (Kotlin Multiplatform). Jetzt wird nur unter Windows entwickelt und für Android getestet ([ARCHITEKTUR.md](ARCHITEKTUR.md)).
+- [x] **minSdk 26 (Android 8.0), targetSdk 37 (Android 17):** große Reichweite, auch ältere Geräte (wichtig für FR/AR-Zielgruppe). Eigenes Testgerät: Android 13.
 
 ## ⏳ Später entscheiden
 - [ ] **Verschlüsselung** (SQLCipher), verschlüsselter Export/Import, App-Sperre: beim Thema Datenschutz besprechen. Bis dahin das Wort "verschlüsselt" **nicht** im Store-Text verwenden.
