@@ -21,7 +21,7 @@
 - [x] Kotlin-Multiplatform-Plugin installiert
 - [x] Testgerät eingerichtet (Emulator oder Handy)
 - [x] KMP-Projekt angelegt (Ziele Android + iOS) in `D:\workspace\allergydetective` (Package `com.nfar.allergydetective`), `docs/` erhalten
-- [x] "Hello World" läuft auf Android
+- [x] "Hello World" läuft auf Android (Emulator und eigenes Handy, Android 13)
 
 ## Phase 1: Daten-Herz (Engine)
 - [x] Room-Schema laut TRD 1.x (Room 3.0.3, 18 Tabellen, Schema-Export v1, i18n-Keys)
@@ -57,3 +57,4 @@
 | 15.11.2026 | Git-Repo auf GitHub gepusht (privat). Launch-Checkliste in OFFENE_PUNKTE.md ergänzt |
 | 15.11.2026 | Room-Schema v1 angelegt, Build grün, gepusht |
 | 15.11.2026 | Zeitprotokoll angelegt (Timeline und Dauer je Arbeitsblock) |
+| 15.11.2026 | minSdk auf 26 gesenkt, App läuft auf eigenem Handy |
