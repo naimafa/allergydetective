@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room3)
 }
 
 kotlin {
@@ -50,6 +52,8 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.room3.runtime)
+            implementation(libs.sqlite.bundled)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -60,6 +64,19 @@ kotlin {
     }
 }
 
+room3 {
+    // Exported schema JSON files are committed to Git (needed for migrations)
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+    add("kspAndroid", libs.room3.compiler)
+    add("kspIosArm64", libs.room3.compiler)
+    add("kspIosSimulatorArm64", libs.room3.compiler)
+}
+// Workaround: AGP lint tasks read KSP-generated sources without declaring a task dependency.
+// Remove once AGP/KSP wire this up themselves.
+tasks.matching { it.name.startsWith("lintAnalyze") || it.name.endsWith("LintModel") }.configureEach {
+    dependsOn(tasks.matching { it.name.startsWith("kspAndroid") })
 }

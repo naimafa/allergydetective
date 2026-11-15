@@ -1,7 +1,7 @@
 # Fortschritt: Allergie-Detektiv
 
-**Aktuelle Phase:** Konzept ✅ → Setup ✅ (Git offen) → Phase 1: Daten-Herz ⏳
-**Letztes Update:** 14.11.2026
+**Aktuelle Phase:** Konzept ✅ → Setup ✅ → Phase 1: Daten-Herz ⏳
+**Letztes Update:** 15.11.2026
 
 ---
 
@@ -14,8 +14,8 @@
 - [x] IDE festgelegt: Android Studio Rabbit 2
 - [x] Entscheidungen dokumentiert ([ENTSCHEIDUNGEN.md](ENTSCHEIDUNGEN.md))
 
-## Phase 0.5: Setup ✅ (Git offen)
-- [ ] Git-Repo initialisieren, ersten Commit machen und auf GitHub pushen (privat)
+## Phase 0.5: Setup ✅
+- [x] Git-Repo initialisiert, Commit gemacht und auf GitHub gepusht (privat, `naimafa/allergydetective`, Branch `main`)
 - [x] Android Studio Rabbit 2 installiert
 - [x] Kotlin-Multiplatform-Plugin installiert
 - [x] Testgerät eingerichtet (Emulator oder Handy)
@@ -53,3 +53,4 @@
 | :--- | :--- |
 | 14.11.2026 | Konzeptphase abgeschlossen: Doku sortiert, Review, Überarbeitung, Architektur- und IDE-Entscheidung |
 | 14.11.2026 | Setup abgeschlossen: Android Studio, KMP-Projekt angelegt, Hello World läuft auf Android |
+| 15.11.2026 | Git-Repo auf GitHub gepusht (privat). Launch-Checkliste in OFFENE_PUNKTE.md ergänzt |
