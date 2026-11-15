@@ -48,6 +48,20 @@ Die Projektansicht links oben von **"Android"** auf **"Project"** umstellen – 
 
 ---
 
+## 5. Token sparen (gilt für Claude und Gemini)
+1. **Ein Chat pro Aufgabe.** Bei jeder Nachricht wird der ganze bisherige Verlauf neu verarbeitet. Lange Chats werden also mit jeder Nachricht teurer. Nach einem Meilenstein `PROGRESS.md` aktualisieren lassen und einen neuen Chat starten.
+2. **Kontext aus Dateien statt Copy-Paste.** Bei Claude liegen die Docs im Projekt. Bei Gemini eine Datei per Kontext-Funktion anhängen statt den Text einzufügen. Nur das nötige Dokument bzw. Kapitel.
+3. **Präzise Prompts.** Datei und Kapitel nennen ("TRD 2.4, Lift"), Ziel und Grenzen in einem Satz.
+4. **Nur Änderungen anfordern.** "Zeig nur die geänderte Funktion" bzw. "nur den Diff" statt der ganzen Datei.
+5. **Fragen bündeln.** Eine Nachricht mit drei Fragen ist günstiger als drei Nachrichten.
+6. **Kurze Antworten verlangen.** "Kurz, ohne Erklärung", wenn nur Code gebraucht wird.
+7. **Passendes Modell.** Einfache Aufgaben (Boilerplate, Umbenennen) mit einem kleineren Modell, schwierige (Engine, Architektur) mit dem stärksten.
+8. **Kleine Dateien im Code** (siehe [CODING_RICHTLINIEN.md](../CODING_RICHTLINIEN.md)). Die KI muss dann weniger lesen.
+9. **Keine großen Logs** einfügen. Nur die relevante Fehlermeldung plus Stacktrace-Anfang.
+10. **Projekt-Docs nicht ständig ändern.** Jede Änderung invalidiert den Cache für alle Chats im Projekt. Besser gesammelt am Ende eines Arbeitsschritts aktualisieren.
+
+---
+
 ## Werkzeugkiste
 * **Links:** `docs/`-Ordner (Logik & IP)
 * **Mitte:** Kotlin-Code (das Produkt)

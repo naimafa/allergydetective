@@ -1,33 +1,34 @@
 # Symptom-Katalog & Eingabe-Logik: Allergie-Detektiv
 
-**Version:** 1.0
-**Ziel:** Standardisierte Datenerfassung für präzise mathematische Korrelation (T1, T2, T3).
+**Version:** 1.1 (nach Review: ergänzte Symptome, Intensität 1–5, Notfall-Symptome)
+**Ziel:** Standardisierte Datenerfassung für die Analyse (siehe [TRD](TRD_Technik.md)).
 
 ---
 
 ## 1. Die Symptom-Kategorien (Grid-Auswahl)
 
-Um die Auswahl zu beschleunigen, werden die Symptome in vier visuelle Gruppen unterteilt. Jedes Symptom hat eine feste interne ID für den Algorithmus.
+Vier visuelle Gruppen. Jedes Symptom hat eine feste interne ID. Die Gruppe (A–D) bestimmt, welche Trigger als plausibel gelten (siehe [CONTENT_Zutaten.md](CONTENT_Zutaten.md), Kapitel 2).
 
-### Gruppe A: Magen & Darm (Fokus T2/T3)
+### Gruppe A: Magen & Darm
 | ID | Icon | Symptom |
 | :--- | :--- | :--- |
 | 1001 | 🤢 | Übelkeit |
 | 1002 | 🎈 | Blähbauch |
 | 1003 | 🔥 | Sodbrennen |
 | 1004 | 📉 | Bauchkrämpfe |
-| 1005 | 🚽 | Stuhlveränderung |
+| 1005 | 💩 | Durchfall |
+| 1006 | 🧱 | Verstopfung |
 
-### Gruppe B: Haut & Äußeres (Fokus T1/T3)
+### Gruppe B: Haut
 | ID | Icon | Symptom |
 | :--- | :--- | :--- |
 | 2001 | 🔴 | Flush (Rötung) |
 | 2002 | 🐜 | Juckreiz |
 | 2003 | 🖐️ | Quaddeln |
-| 2004 | 💧 | Schwellungen |
-| 2005 | 🌵 | Trockene Stellen |
+| 2004 | 💧 | Schwellungen ⚠️ |
+| 2005 | 🌵 | Trockene Stellen / Ekzem |
 
-### Gruppe C: Kopf & Energie (Fokus Histamin/Stress)
+### Gruppe C: Kopf, Energie & Kreislauf
 | ID | Icon | Symptom |
 | :--- | :--- | :--- |
 | 3001 | 🤯 | Kopfschmerzen |
@@ -35,20 +36,30 @@ Um die Auswahl zu beschleunigen, werden die Symptome in vier visuelle Gruppen un
 | 3003 | ⚡ | Migräne |
 | 3004 | 💤 | Müdigkeit |
 | 3005 | 🧠 | Brain Fog |
+| 3006 | 💓 | Herzrasen |
 
-### Gruppe D: Atemwege (Fokus T1 Sofortreaktion)
+### Gruppe D: Atemwege, Augen & Mund
 | ID | Icon | Symptom |
 | :--- | :--- | :--- |
 | 4001 | 🤧 | Schnupfen |
 | 4002 | 👃 | Verstopfte Nase |
 | 4003 | 😤 | Reizhusten |
-| 4004 | 🌬️ | Atemnot |
+| 4004 | 🌬️ | Atemnot ⚠️ |
+| 4005 | 👄 | Kribbeln Mund / Lippen |
+| 4006 | 👁️ | Augen jucken / tränen |
+
+### Sonstiges
+| ID | Icon | Symptom |
+| :--- | :--- | :--- |
+| 9001 | ❓ | Sonstiges (mit optionaler Notiz) |
+
+⚠️ = **Notfall-Symptom** (`is_red_flag`), siehe Kapitel 3.
+
+> "Sonstiges" fließt nicht in die Analyse ein, erscheint aber im PDF für den Arzt.
 
 ---
 
 ## 2. Der Symptom-Detail-Flow (Overlay)
-
-Sobald eine Kachel ausgewählt wurde, öffnet sich dieses Overlay zur Präzisierung. Ohne diese Daten kann die Analyse-Engine ([TRD](TRD_Technik.md)) nicht rechnen.
 
 ### Wireframe: Symptom-Präzisierung
 ```text
@@ -56,12 +67,15 @@ Sobald eine Kachel ausgewählt wurde, öffnet sich dieses Overlay zur Präzisier
 | [Icon] SYMPTOM-NAME       |
 +---------------------------+
 |                           |
-| WIE STARK WAR ES?         |
-| [ 1 - 2 - 3 - 4 - 5 ]     |  <-- Schnellauswahl (Punkte)
+| WIE STARK?                |
+|  (1) (2) (3) (4) (5)      |  <-- 5 große Tap-Punkte, Default 3
+|  leicht         stark     |
 |                           |
 | WANN GING ES LOS?         |
 | Uhrzeit: [ 16:45 ]        |
 | [--|---------------]      |  <-- Zeit-Slider (Default: Jetzt)
+|                           |
+| + Notiz (optional)        |
 |                           |
 |      [ SPEICHERN ]        |
 +---------------------------+
@@ -69,21 +83,42 @@ Sobald eine Kachel ausgewählt wurde, öffnet sich dieses Overlay zur Präzisier
 
 ---
 
-## 3. Technische Verknüpfung (TRD-Schnittstelle)
+## 3. Notfall-Symptome
 
-Jeder Symptom-Eintrag wird in der lokalen SQLite-Tabelle `symptoms_log` mit folgendem Mapping gespeichert:
+Bei **Schwellungen (2004)** und **Atemnot (4004)** erscheint **vor** dem Overlay ein Hinweis:
 
-| Feld | Logik |
-| :--- | :--- |
-| **Symptom_ID** | Referenz aus obiger Liste. |
-| **Intensity** | Wert 1–5 (wird für Score-Gewichtung genutzt). |
-| **Timestamp** | Exakter Zeitpunkt (wichtig für Fenster-Analyse). |
-| **Context** | Automatischer Check: War `Stress_Level` zum Zeitpunkt > 3? |
+```text
++---------------------------+
+| ⚠️  WICHTIG               |
+|                           |
+| Atemnot oder Schwellung   |
+| an Mund, Zunge oder Hals  |
+| können ein Notfall sein.  |
+|                           |
+|  [ 📞 Notruf 112 ]        |
+|  [ Weiter eintragen ]     |
++---------------------------+
+```
 
 ---
 
-## 4. UX-Prinzipien für Symptome
+## 4. Technische Verknüpfung
 
-1. **Kein Freitext:** Um "Daten-Müll" zu vermeiden, gibt es kein Freitextfeld. Nutzer müssen aus der Liste wählen.
-2. **Favoriten-Symptome:** Die drei am häufigsten genutzten Symptome rutschen im Auswahl-Grid nach ganz oben.
-3. **One-Tap-Logging:** Wenn die Intensität egal ist, reicht ein Doppelklick auf die Kachel, um es mit Standardwerten (Intensität 3, Zeit: Jetzt) sofort zu loggen.
+Gespeichert in `symptom_entries` (siehe [TRD](TRD_Technik.md), Kapitel 1.3):
+
+| Feld | Logik |
+| :--- | :--- |
+| **symptom_id** | Referenz aus obiger Liste |
+| **intensity** | 1–5, gewichtet Treffer mit `intensity / 5` |
+| **started_at** | Zeitpunkt des Beginns (UTC + Zeitzone) |
+| **note** | Optional, nicht in der Analyse |
+
+Gleiche Symptome bzw. dieselbe Gruppe innerhalb von 3h werden zu **einer Episode** zusammengefasst (TRD 2.2).
+
+---
+
+## 5. UX-Prinzipien für Symptome
+
+1. **Feste Auswahl statt Freitext:** "Sonstiges" + Notiz als Ventil.
+2. **Favoriten-Symptome:** Die drei am häufigsten genutzten Symptome stehen im Grid ganz oben.
+3. **Schnell-Log per Long-Press:** Long-Press auf eine Kachel speichert sofort (Intensität 3, Zeit: Jetzt). Danach erscheint eine Snackbar *"Gespeichert · Rückgängig"*. Notfall-Symptome zeigen trotzdem den Hinweis.

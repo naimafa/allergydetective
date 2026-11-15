@@ -8,19 +8,21 @@ Vorgehen nach dem **Sandwich-Prinzip**: Zuerst das Herzstück, dann die Hülle.
 
 ## Phase 1: Das Daten-Herz (Die Engine)
 Bevor ein einziges Icon designt wird, muss die Logik stehen.
-- [ ] **Datenbank:** Lokale SQLite-Tabellen anlegen (siehe [TRD](TRD_Technik.md), Kapitel 1).
-- [ ] **Der Algorithmus:** Funktion schreiben, die prüft: *„Wenn Symptom X um 16:00 Uhr auftrat, welche Mahlzeiten liegen im T1-, T2- und T3-Zeitfenster davor?“*
-- [ ] **Test:** Engine mit eigenen alten Notizen als Testdaten füttern. Stimmen die Ergebnisse, ist das Fundament sicher.
+- [ ] **Datenbank:** Room-Schema anlegen (siehe [TRD](TRD_Technik.md), Kapitel 1).
+- [ ] **Startdaten:** Zutatenliste, Trigger, Zeitfenster und Symptome als Seed-Daten importieren ([CONTENT_Zutaten.md](CONTENT_Zutaten.md)).
+- [ ] **Der Algorithmus:** Episoden → passende Fenster je Auslöser → Lift "mit vs. ohne" → Evidenzstufe (TRD Kapitel 2).
+- [ ] **Test:** Unit-Tests mit synthetischen Daten (Laktose-Muster muss erkannt werden, tägliches Brot ohne Beschwerden darf nicht verdächtig sein), danach mit eigenen alten Notizen.
 
 ## Phase 2: Das Skelett (Funktionales UI)
 Screens aus dem [UX-Prototyp](UX_UI_Prototyp.md) nachbauen – ohne "Schönheit".
 - [ ] **Eingabemaske:** Funktioniert der Zeit-Slider?
 - [ ] **Voice-Matching:** Erkennt die App das Wort "Pizza" und verknüpft es mit der Favoriten-ID?
-- [ ] **Stress-Slider:** Werden die Werte korrekt gespeichert?
+- [ ] **Tages-Abschluss:** Werden Wohlbefinden, Schlaf, Stress und Status korrekt gespeichert?
+- [ ] **Notfall-Hinweis:** Erscheint er bei Atemnot und Schwellung?
 
 ## Phase 3: Das Fleisch (Design & Content)
 Jetzt wird es hübsch und benutzerfreundlich.
-- [ ] **Symptom-Kacheln:** Icons und die 19 vordefinierten Symptome einfügen (siehe [CONTENT_Symptome.md](CONTENT_Symptome.md)).
+- [ ] **Symptom-Kacheln:** Icons und die vordefinierten Symptome einfügen (siehe [CONTENT_Symptome.md](CONTENT_Symptome.md)).
 - [ ] **Motivations-Sprüche:** Liste mit 30–50 Sätzen in den App-Code laden.
 - [ ] **Farben:** Petrol/Salbeigrün/Koralle-Schema anwenden.
 

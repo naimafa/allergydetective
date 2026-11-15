@@ -1,0 +1,7 @@
+TEAM_ID=
+
+PRODUCT_NAME=AllergyDetective
+PRODUCT_BUNDLE_IDENTIFIER=com.nfar.allergydetective.AllergyDetective$(TEAM_ID)
+
+CURRENT_PROJECT_VERSION=1
+MARKETING_VERSION=1.0

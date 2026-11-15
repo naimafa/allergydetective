@@ -1,33 +1,31 @@
-# 🕵️‍♂️ Allergie-Detektiv
+This is a Kotlin Multiplatform project targeting Android, iOS.
 
-Eine diskrete, **Local-First** Tagebuch-App, die versteckte Auslöser für Allergien und Unverträglichkeiten findet – durch mathematische Korrelation von Ernährung, Symptomen und Lifestyle-Faktoren (Schlaf, Stress). Keine Cloud, kein Account, keine KI-Kosten.
+* [/iosApp](./iosApp/iosApp) contains an iOS application. Even if you’re sharing your UI with Compose Multiplatform,
+  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
 
-## Kernideen
-- **5-Sekunden-Regel:** Jede Eingabe blitzschnell (Favoriten, Voice-In, One-Tap-Symptome).
-- **Zeitfenster-Analyse:** T1 Sofort (0–2h), T2 Intermediär (2–6h), T3 Spät (6–48h).
-- **Störfaktor-Bereinigung:** Schlechter Schlaf / hoher Stress senkt die "Schuld" von Lebensmitteln.
-- **Aha-Moment nach 7 Tagen:** Erste Analyse gratis, danach Premium-Abo (Detektiv-Pro).
-- **100 % lokal:** SQLite auf dem Gerät, keine Datenweitergabe.
+* [/shared](./shared/src) is for code that will be shared across your Compose Multiplatform applications.
+  It contains several subfolders:
+  - [commonMain](./shared/src/commonMain/kotlin) is for code that’s common for all targets.
+  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
+    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
+    the [iosMain](./shared/src/iosMain/kotlin) folder would be the right place for such calls.
+    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./shared/src/jvmMain/kotlin)
+    folder is the appropriate location.
 
-## Dokumentation
-| Dokument | Inhalt |
-| :--- | :--- |
-| [docs/PRD_Vision.md](docs/PRD_Vision.md) | Produkt-Vision, Features, Monetarisierung, Roadmap |
-| [docs/TRD_Technik.md](docs/TRD_Technik.md) | Datenbank-Architektur & Analyse-Algorithmus |
-| [docs/UX_UI_Prototyp.md](docs/UX_UI_Prototyp.md) | Design-Sprache, Screens, User Flows |
-| [docs/CONTENT_Symptome.md](docs/CONTENT_Symptome.md) | Symptom-Katalog mit IDs & Eingabe-Overlay |
-| [docs/ROADMAP_Entwicklung.md](docs/ROADMAP_Entwicklung.md) | Bau-Fahrplan in 4 Phasen (Checklisten) |
-| [docs/OFFENE_PUNKTE.md](docs/OFFENE_PUNKTE.md) | Widersprüche & Lücken, vor dem Coden klären |
-| [docs/marketing/STORE_Beschreibung.md](docs/marketing/STORE_Beschreibung.md) | Entwurf App-Store-Text |
-| [docs/workflow/KI_Coding_Workflow.md](docs/workflow/KI_Coding_Workflow.md) | Prompt-Strategie für Gemini in Android Studio |
+### Running the apps
 
-## Tech-Stack (geplant)
-- Android, Kotlin, Jetpack Compose
-- Room (SQLite) für lokale Daten
-- System-APIs für Speech-to-Text und In-App-Käufe
+Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these commands and options:
 
-## Status
-📝 Konzeptphase abgeschlossen – als Nächstes: Phase 1 „Daten-Herz“ (siehe Roadmap).
+- Android app: `./gradlew :androidApp:assembleDebug`
+- iOS app: open the [/iosApp](./iosApp) directory in Xcode and run it from there.
 
-## Hinweis
-Der Allergie-Detektiv ist ein Assistenz-System zur Selbstbeobachtung und kein Ersatz für eine medizinische Diagnose.
+### Running tests
+
+Use the run button in your IDE's editor gutter, or run tests using Gradle tasks:
+
+- Android tests: `./gradlew :shared:testAndroidHostTest`
+- iOS tests: `./gradlew :shared:iosSimulatorArm64Test`
+
+---
+
+Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
