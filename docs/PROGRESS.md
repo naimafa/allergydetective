@@ -1,6 +1,6 @@
 # Fortschritt: Allergie-Detektiv
 
-**Aktuelle Phase:** Konzept ✅ → Setup ✅ → Phase 1: Daten-Herz ⏳
+**Aktuelle Phase:** Konzept ✅ → Setup ✅ → Phase 1: Daten-Herz ✅ → Phase 2: Skelett ⏳
 **Letztes Update:** 16.11.2026
 **Zeiterfassung:** [ZEITPROTOKOLL.md](ZEITPROTOKOLL.md)
 
@@ -23,14 +23,14 @@
 - [x] KMP-Projekt angelegt (Ziele Android + iOS) in `D:\workspace\allergydetective` (Package `com.nfar.allergydetective`), `docs/` erhalten
 - [x] "Hello World" läuft auf Android (Emulator und eigenes Handy, Android 13)
 
-## Phase 1: Daten-Herz (Engine)
+## Phase 1: Daten-Herz (Engine) ✅
 - [x] Room-Schema laut TRD 1.x (Room 3.0.3, 18 Tabellen, Schema-Export v1, i18n-Keys)
 - [x] Seed-Daten: 12 Kategorien, 26 Trigger mit Fenstern, 112 Zutaten, 24 Symptome, 3 Lifestyle-Faktoren (JSON in `composeResources/files/seed`, Anzeigenamen EN/DE, `DatabaseSeeder`)
 - [x] Seeder beim App-Start aufrufen (Koin 4.2.2, `di/AppModule.kt`, `AppStartup`; im Emulator geprüft)
 - [x] Analyse-Engine als reine Funktionen in `domain/analysis`: gültige Tage → Episoden → Treffer pro Fenster → Lift → Evidenzstufe → Sicher-Liste, Schwellenwerte in `AnalysisConfig`
 - [x] Unit-Tests mit synthetischen Daten (35 Tests in `commonTest`, test-first)
 - [x] Gruppierung nicht unterscheidbarer Kandidaten (TRD 2.7): `AnalysisResult.groups`, Schwellenwerte in `GroupingThresholds`
-- [ ] Repository: Room-Daten → `AnalysisInput` (mit DI/Koin)
+- [x] Repository: Room-Daten → `AnalysisInput` (`AnalysisDao`, `AnalysisRepository`, `RoomAnalysisRepository`, in Koin registriert; im Emulator mit Test-Tagebuch geprüft)
 
 ## Phase 2: Skelett (funktionales UI)
 - [ ] Essen loggen, Symptom melden, Tages-Abschluss
@@ -65,3 +65,4 @@
 | 16.11.2026 | Analyse-Engine test-first (Branch `feature/analysis-engine`), Annahmen in OFFENE_PUNKTE.md |
 | 16.11.2026 | Engine nach `main` gemergt (PR #1). Gruppierung TRD 2.7 test-first (Branch `feature/candidate-grouping`), Gradle-Tests lokal grün |
 | 16.11.2026 | Gruppierung nach `main` gemergt (PR #2). Koin eingebunden, Seeder läuft beim App-Start (Branch `feature/koin-seeder`). Im Emulator geprüft: 12 Kategorien, 26 Trigger, 112 Zutaten, 24 Symptome, 3 Lifestyle-Faktoren; zweiter Start fügt nichts doppelt ein. iOS-Teil ungebaut (kein Mac) |
+| 16.11.2026 | Koin/Seeder nach `main` gemergt (PR #3). Repository Room → `AnalysisInput` (Branch `feature/analysis-repository`), 56 Unit-Tests grün. Im Emulator geprüft: 21-Tage-Test-Tagebuch in der echten Datenbank → Engine meldet Milcheiweiß, Laktose und Kuhmilch als Gruppe. **Phase 1 abgeschlossen** |
