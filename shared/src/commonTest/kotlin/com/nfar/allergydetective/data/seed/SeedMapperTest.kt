@@ -45,7 +45,9 @@ class SeedMapperTest {
         val entities = SeedParser.parse(raw).toEntities()
 
         val window = entities.propertyWindows.single()
-        assertEquals(listOf(101L, 0, 240), listOf(window.propertyId, window.startMin, window.endMin))
+        assertEquals(101L, window.propertyId)
+        assertEquals(0, window.startMin)
+        assertEquals(240, window.endMin)
         assertEquals("skin", entities.propertySymptomGroups.single().symptomGroupKey)
         assertEquals(setOf("swelling"), entities.symptoms.filter { it.isRedFlag }.map { it.key }.toSet())
     }
