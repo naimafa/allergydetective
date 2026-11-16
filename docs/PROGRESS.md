@@ -26,7 +26,7 @@
 ## Phase 1: Daten-Herz (Engine)
 - [x] Room-Schema laut TRD 1.x (Room 3.0.3, 18 Tabellen, Schema-Export v1, i18n-Keys)
 - [x] Seed-Daten: 12 Kategorien, 26 Trigger mit Fenstern, 112 Zutaten, 24 Symptome, 3 Lifestyle-Faktoren (JSON in `composeResources/files/seed`, Anzeigenamen EN/DE, `DatabaseSeeder`)
-- [ ] Seeder beim App-Start aufrufen (mit DI/Koin)
+- [x] Seeder beim App-Start aufrufen (Koin 4.2.2, `di/AppModule.kt`, `AppStartup`; im Emulator geprüft)
 - [x] Analyse-Engine als reine Funktionen in `domain/analysis`: gültige Tage → Episoden → Treffer pro Fenster → Lift → Evidenzstufe → Sicher-Liste, Schwellenwerte in `AnalysisConfig`
 - [x] Unit-Tests mit synthetischen Daten (35 Tests in `commonTest`, test-first)
 - [x] Gruppierung nicht unterscheidbarer Kandidaten (TRD 2.7): `AnalysisResult.groups`, Schwellenwerte in `GroupingThresholds`
@@ -64,3 +64,4 @@
 | 16.11.2026 | Seed-Daten als JSON + EN/DE-Strings, Parser/Mapper/SeedDao/DatabaseSeeder, Unit-Tests |
 | 16.11.2026 | Analyse-Engine test-first (Branch `feature/analysis-engine`), Annahmen in OFFENE_PUNKTE.md |
 | 16.11.2026 | Engine nach `main` gemergt (PR #1). Gruppierung TRD 2.7 test-first (Branch `feature/candidate-grouping`), Gradle-Tests lokal grün |
+| 16.11.2026 | Gruppierung nach `main` gemergt (PR #2). Koin eingebunden, Seeder läuft beim App-Start (Branch `feature/koin-seeder`). Im Emulator geprüft: 12 Kategorien, 26 Trigger, 112 Zutaten, 24 Symptome, 3 Lifestyle-Faktoren; zweiter Start fügt nichts doppelt ein. iOS-Teil ungebaut (kein Mac) |
