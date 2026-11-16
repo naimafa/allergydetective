@@ -36,7 +36,14 @@
 ## 🧪 Analyse-Engine: Annahmen bestätigen (Stand 16.11.2026)
 In der Engine umgesetzt, aber vom TRD nicht eindeutig vorgegeben. Alle Werte stehen in `AnalysisConfig`.
 - [ ] **Zutaten ohne Trigger** (z.B. Reis, eigene Zutaten ohne Tags) haben kein Zeitfenster. Sie werden nicht analysiert und kommen nicht auf die Sicher-Liste. Alternative: Standardfenster (z.B. 0–24h, alle Symptomgruppen).
-- [ ] **Gruppierung (TRD 2.7) fehlt noch.** Im Test erscheinen Laktose **und** Milcheiweiß als Verdacht; Milcheiweiß hat sogar den höheren Lift, weil sein Fenster (0–2h) enger ist. Erst die Gruppierung zeigt "nicht unterscheidbar". Offen: 80 % bezogen auf wessen Expositionen? Zutat und ihre einzige Eigenschaft nicht gruppieren?
+- [ ] **Gruppierung (TRD 2.7)**, umgesetzt mit diesen Annahmen:
+  - **80 % in beide Richtungen:** Beide Kandidaten müssen ≥ 80 % ihrer Expositionen miteinander teilen. Milch immer zum Brot, aber Brot oft allein → unterscheidbar.
+  - **Exposition** = Mahlzeit an einem gültigen Tag (Lifestyle: gültiger Tag vor heute). Die Reaktionsfenster spielen hier keine Rolle, sonst wären Gluten (48h) und Fruktane (12h) am Tagebuch-Ende scheinbar unterscheidbar.
+  - **Zutat und Eigenschaft werden gemeinsam gruppiert** ("Milch + Laktose + Milcheiweiß"), solange es keine zweite Quelle gibt. Verträglicher Hartkäse löst Milcheiweiß aus der Gruppe.
+  - **Nur Gruppen mit mindestens einer Spur** werden gemeldet. Der Partner darf unauffällig sein.
+  - **Ketten** bilden eine Gruppe (A~B und B~C, auch wenn A und C nur 70 % teilen).
+  - **Lebensmittel und Lifestyle** werden nicht miteinander verglichen (Mahlzeiten vs. Tage). Schlechter Schlaf + hoher Stress an denselben Tagen bilden eine Gruppe.
+  - Das Ranking bleibt unverändert, die Gruppen stehen zusätzlich in `AnalysisResult.groups`. Die Darstellung entscheidet das UI.
 - [ ] **Bekannte Allergie:** Nicht nur die Eigenschaft, sondern auch alle Zutaten mit dieser Eigenschaft fehlen im Ranking (Milch bei bekannter Laktose-Unverträglichkeit). Hinweis pro Mahlzeit über `knownAllergyExposures`.
 - [ ] **Evidenzstufen** nutzen das portionsgewichtete n₁ (3 × S = 1,5 → noch "zu wenig Daten"). Die Sicher-Liste zählt ungewichtet.
 - [ ] **"14 Tage stabil"** = der Verdacht bestand auch bei einer Analyse mit Stichtag vor 14 Tagen. Ob er zwischendurch weg war, wird nicht geprüft.
