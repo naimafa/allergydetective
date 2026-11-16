@@ -40,9 +40,17 @@ data class KnownAllergyExposure(
     val propertyId: Long,
 )
 
+/**
+ * Candidates that occurred together so often that the diary cannot tell them apart yet (TRD 2.7).
+ * [members] are ordered like the ranking, so the first one is the strongest.
+ */
+data class CandidateGroup(val members: List<Candidate>)
+
 data class AnalysisResult(
     /** All candidates with at least one logged exposure, strongest first. */
     val ranking: List<CandidateResult>,
+    /** Indistinguishable candidates. Every member is also part of [ranking]. */
+    val groups: List<CandidateGroup>,
     /** Ingredients that were tolerated well (TRD 2.9). */
     val safeIngredientIds: List<Long>,
     val knownAllergyExposures: List<KnownAllergyExposure>,

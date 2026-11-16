@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.domain.analysis
 
+import com.nfar.allergydetective.domain.analysis.model.EvidenceLevel
 import com.nfar.allergydetective.domain.analysis.model.Portion
 
 /**
@@ -23,6 +24,7 @@ data class AnalysisConfig(
     val evidence: EvidenceThresholds = EvidenceThresholds(),
     val safeList: SafeListThresholds = SafeListThresholds(),
     val lifestyle: LifestyleThresholds = LifestyleThresholds(),
+    val grouping: GroupingThresholds = GroupingThresholds(),
 ) {
     fun portionFactor(portion: Portion): Double = portionFactors.getValue(portion)
 }
@@ -43,6 +45,14 @@ data class EvidenceThresholds(
 /** Safe list (TRD 2.9): unweighted exposures and no plausible hit. */
 data class SafeListThresholds(
     val minExposures: Int = 3,
+)
+
+/** Indistinguishable candidates (TRD 2.7). */
+data class GroupingThresholds(
+    /** Both candidates must share at least this part of their exposures with each other. */
+    val minSharedRatio: Double = 0.8,
+    /** A group is only reported when at least one member reaches this level. */
+    val minLevel: EvidenceLevel = EvidenceLevel.TRACE,
 )
 
 /** Lifestyle candidates (TRD 2.5). */

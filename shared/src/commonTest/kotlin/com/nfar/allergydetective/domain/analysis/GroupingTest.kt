@@ -12,9 +12,9 @@ import kotlin.test.assertTrue
 class GroupingTest {
 
     private val thresholds = GroupingThresholds()
-    private val a = Candidate.Ingredient(1)
-    private val b = Candidate.Ingredient(2)
-    private val c = Candidate.Ingredient(3)
+    private val a: Candidate = Candidate.Ingredient(1)
+    private val b: Candidate = Candidate.Ingredient(2)
+    private val c: Candidate = Candidate.Ingredient(3)
 
     private fun result(candidate: Candidate, level: EvidenceLevel = EvidenceLevel.SUSPICION) =
         CandidateResult(candidate, ExposureStats(0.0, 0.0, 0.0, 0.0, 0, 0), lift = 1.0, level = level)

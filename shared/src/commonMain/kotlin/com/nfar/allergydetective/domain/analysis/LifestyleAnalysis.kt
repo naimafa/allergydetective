@@ -20,24 +20,34 @@ internal fun lifestyleStats(
     val weightByDay = episodes
         .groupBy { it.epochDay }
         .mapValues { (_, dayEpisodes) -> dayEpisodes.maxOf { it.maxIntensity }.toDouble() / config.maxIntensity }
-    val checksByDay = diary.dayChecks.associateBy { it.epochDay }
-    val factorsByDay = diary.dayFactors.groupBy({ it.epochDay }, { it.factorId })
 
-    val exposures = mutableMapOf<Candidate, (Long) -> Boolean>()
-    if (diary.dayChecks.any { isBadSleep(it, config) }) {
-        exposures[Candidate.BadSleep] = { day -> checksByDay[day]?.let { isBadSleep(it, config) } == true }
-    }
-    if (diary.dayChecks.any { isHighStress(it, config) }) {
-        exposures[Candidate.HighStress] = { day -> checksByDay[day]?.let { isHighStress(it, config) } == true }
-    }
-    diary.dayFactors.map { it.factorId }.distinct().forEach { factorId ->
-        exposures[Candidate.DayFactor(factorId)] = { day -> factorId in factorsByDay[day].orEmpty() }
-    }
-
-    return exposures.mapValues { (_, isExposed) -> dayStats(days, weightByDay, isExposed) }
+    return lifestyleExposureDays(diary, validDays, today, config)
+        .mapValues { (_, exposedDays) -> dayStats(days, weightByDay, exposedDays) }
 }
 
-private fun dayStats(days: List<Long>, weightByDay: Map<Long, Double>, isExposed: (Long) -> Boolean): ExposureStats {
+/**
+ * Valid days before today per lifestyle candidate. A candidate that was only logged
+ * on days that do not count yet is included with an empty set.
+ */
+internal fun lifestyleExposureDays(
+    diary: DiaryData,
+    validDays: Set<Long>,
+    today: Long,
+    config: AnalysisConfig,
+): Map<Candidate, Set<Long>> {
+    val daysByCandidate = mutableMapOf<Candidate, List<Long>>()
+    val badSleepDays = diary.dayChecks.filter { isBadSleep(it, config) }.map { it.epochDay }
+    if (badSleepDays.isNotEmpty()) daysByCandidate[Candidate.BadSleep] = badSleepDays
+    val highStressDays = diary.dayChecks.filter { isHighStress(it, config) }.map { it.epochDay }
+    if (highStressDays.isNotEmpty()) daysByCandidate[Candidate.HighStress] = highStressDays
+    diary.dayFactors
+        .groupBy({ it.factorId }, { it.epochDay })
+        .forEach { (factorId, factorDays) -> daysByCandidate[Candidate.DayFactor(factorId)] = factorDays }
+
+    return daysByCandidate.mapValues { (_, days) -> days.filter { it in validDays && it < today }.toSet() }
+}
+
+private fun dayStats(days: List<Long>, weightByDay: Map<Long, Double>, exposedDays: Set<Long>): ExposureStats {
     var n1 = 0.0
     var k1 = 0.0
     var n0 = 0.0
@@ -45,7 +55,7 @@ private fun dayStats(days: List<Long>, weightByDay: Map<Long, Double>, isExposed
     var hitCount = 0
     for (day in days) {
         val weight = weightByDay[day] ?: 0.0
-        if (isExposed(day)) {
+        if (day in exposedDays) {
             n1 += 1.0
             k1 += weight
             if (weight > 0.0) hitCount++

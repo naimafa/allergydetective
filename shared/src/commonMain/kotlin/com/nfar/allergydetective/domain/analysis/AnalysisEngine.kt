@@ -27,6 +27,7 @@ class AnalysisEngine(private val config: AnalysisConfig = AnalysisConfig()) {
         val ranking = evaluate(input, earlierSuspicions, foodStats)
         return AnalysisResult(
             ranking = ranking,
+            groups = indistinguishableGroups(ranking, exposures(input), config.grouping),
             safeIngredientIds = safeIngredients(foodStats),
             knownAllergyExposures = knownAllergyExposures(input),
         )
@@ -63,6 +64,14 @@ class AnalysisEngine(private val config: AnalysisConfig = AnalysisConfig()) {
             .associate { profile ->
                 profile.candidate to foodStats(profile, meals, episodes, validDays, input.now, catalog, config)
             }
+    }
+
+    /** Exposures of all candidates for the grouping (TRD 2.7): meal ids for food, days for lifestyle. */
+    private fun exposures(input: AnalysisInput): Map<Candidate, Set<Long>> {
+        val validDays = validDays(input)
+        val today = localEpochDay(input.now, input.nowTzOffsetMin)
+        return foodExposureMeals(input.diary.meals, validDays, input.now, FoodCatalog(input.reference)) +
+            lifestyleExposureDays(input.diary, validDays, today, config)
     }
 
     /** Only days confirmed as NO_SYMPTOMS or COMPLETE (TRD 2.2). */
