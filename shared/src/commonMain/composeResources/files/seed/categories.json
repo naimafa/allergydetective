@@ -1,0 +1,14 @@
+[
+  {"id": 1, "key": "grains_bakery"},
+  {"id": 2, "key": "dairy"},
+  {"id": 3, "key": "cheese"},
+  {"id": 4, "key": "meat_sausage"},
+  {"id": 5, "key": "fish_seafood"},
+  {"id": 6, "key": "eggs"},
+  {"id": 7, "key": "vegetables_potatoes"},
+  {"id": 8, "key": "fruit"},
+  {"id": 9, "key": "nuts_seeds"},
+  {"id": 10, "key": "legumes_soy"},
+  {"id": 11, "key": "beverages"},
+  {"id": 12, "key": "condiments_sweets"}
+]

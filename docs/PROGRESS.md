@@ -1,7 +1,7 @@
 # Fortschritt: Allergie-Detektiv
 
 **Aktuelle Phase:** Konzept ✅ → Setup ✅ → Phase 1: Daten-Herz ⏳
-**Letztes Update:** 15.11.2026
+**Letztes Update:** 16.11.2026
 **Zeiterfassung:** [ZEITPROTOKOLL.md](ZEITPROTOKOLL.md)
 
 ---
@@ -25,7 +25,8 @@
 
 ## Phase 1: Daten-Herz (Engine)
 - [x] Room-Schema laut TRD 1.x (Room 3.0.3, 18 Tabellen, Schema-Export v1, i18n-Keys)
-- [ ] Seed-Daten: Kategorien, Trigger, Fenster, Zutaten, Symptome
+- [x] Seed-Daten: 12 Kategorien, 26 Trigger mit Fenstern, 112 Zutaten, 24 Symptome, 4 Lifestyle-Faktoren (JSON in `composeResources/files/seed`, Anzeigenamen EN/DE, `DatabaseSeeder`)
+- [ ] Seeder beim App-Start aufrufen (mit DI/Koin)
 - [ ] Analyse-Engine: Episoden → Fenster → Lift → Evidenzstufe
 - [ ] Unit-Tests mit synthetischen Daten
 
@@ -58,3 +59,4 @@
 | 15.11.2026 | Room-Schema v1 angelegt, Build grün, gepusht |
 | 15.11.2026 | Zeitprotokoll angelegt (Timeline und Dauer je Arbeitsblock) |
 | 15.11.2026 | minSdk auf 26 gesenkt, App läuft auf eigenem Handy |
+| 16.11.2026 | Seed-Daten als JSON + EN/DE-Strings, Parser/Mapper/SeedDao/DatabaseSeeder, Unit-Tests |

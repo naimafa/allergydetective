@@ -30,6 +30,8 @@
 - [ ] **MDR-Einordnung** fachlich prüfen lassen: Formulierungen wie "Tagebuch / Muster erkennen" statt "Diagnose", Hinweis "kein Ersatz für ärztliche Diagnose"
 - [ ] **DSGVO:** Gesundheitsdaten sind besondere Kategorie (Art. 9). Local-First hilft, trotzdem Datenschutzerklärung und Einwilligung prüfen
 - [ ] **Lizenz**, falls externe Lebensmitteldaten genutzt werden
+- [ ] **ID-Bereich für eigene Zutaten:** Seed-Zutaten haben feste IDs (Kategorie × 100 + n). Eigene Zutaten bekommen per AUTOINCREMENT die nächste freie ID und könnten mit später nachgelieferten Seed-Zutaten kollidieren. Vor dem ersten Release lösen (z.B. eigene Zutaten ab 100000).
+- [ ] **Alkohol doppelt:** Alkohol ist Trigger (Getränke) **und** Lifestyle-Faktor (TRD 1.1). Bei der Analyse-Engine entscheiden, ob der Faktor bleibt.
 
 ## 🚀 Launch: Rechtliches & Organisation (Go-live Deutschland)
 - [ ] **Rechtsform klären:** Eigene Apps verkaufen gilt meist als Gewerbe (nicht freiberuflich). Start als Einzelunternehmen ohne GmbH möglich
@@ -49,6 +51,6 @@
 - [ ] **PRD:** Zielgruppe/Persona, Erfolgskennzahlen (z.B. % Nutzer, die 7 Tage durchhalten), Nicht-Ziele des MVP
 - [ ] **Store-Text** an Zweckbestimmung und Datenschutz-Entscheidung angleichen
 - [ ] **i18n (EN/DE/FR/AR):** TRD in Phase 1 anpassen (stabile `key`-Spalten in den Stammtabellen, `locale` bei `ingredient_synonyms`, Anzeigenamen aus den Ressourcen)
-- [ ] **Übersetzungen** aller App-Texte, Symptome, Trigger und Zutaten. Notfall-Hinweis und Disclaimer von Muttersprachlern prüfen lassen.
+- [ ] **Übersetzungen** aller App-Texte, Symptome, Trigger und Zutaten. Stand 16.11.: Anzeigenamen der Seed-Daten in EN und DE (`seed_strings.xml`), FR und AR fehlen. Notfall-Hinweis und Disclaimer von Muttersprachlern prüfen lassen.
 - [ ] **Zutatenliste regional erweitern:** Die Startliste ist deutsch geprägt (z.B. Sauerkraut). Für FR/AR-Nutzer typische Zutaten der französischen und nordafrikanischen Küche ergänzen.
 - [ ] **Store-Auftritt und ASO-Keywords** pro Sprache

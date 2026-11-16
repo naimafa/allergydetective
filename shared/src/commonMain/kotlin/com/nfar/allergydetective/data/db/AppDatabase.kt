@@ -4,6 +4,7 @@ import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
+import com.nfar.allergydetective.data.db.dao.SeedDao
 import com.nfar.allergydetective.data.db.entity.CategoryEntity
 import com.nfar.allergydetective.data.db.entity.DayCheckEntity
 import com.nfar.allergydetective.data.db.entity.DayFactorEntity
@@ -53,7 +54,9 @@ const val DATABASE_NAME = "allergy_detective.db"
     exportSchema = true,
 )
 @ConstructedBy(AppDatabaseConstructor::class)
-abstract class AppDatabase : RoomDatabase()
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun seedDao(): SeedDao
+}
 
 // Room's KSP processor generates the actual implementations for each platform.
 @Suppress("KotlinNoActualForExpect")
