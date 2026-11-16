@@ -28,8 +28,8 @@
 - [x] Seed-Daten: 12 Kategorien, 26 Trigger mit Fenstern, 112 Zutaten, 24 Symptome, 3 Lifestyle-Faktoren (JSON in `composeResources/files/seed`, Anzeigenamen EN/DE, `DatabaseSeeder`)
 - [ ] Seeder beim App-Start aufrufen (mit DI/Koin)
 - [x] Analyse-Engine als reine Funktionen in `domain/analysis`: gültige Tage → Episoden → Treffer pro Fenster → Lift → Evidenzstufe → Sicher-Liste, Schwellenwerte in `AnalysisConfig`
-- [x] Unit-Tests mit synthetischen Daten (24 Tests in `commonTest`, test-first)
-- [ ] Gruppierung nicht unterscheidbarer Kandidaten (TRD 2.7)
+- [x] Unit-Tests mit synthetischen Daten (35 Tests in `commonTest`, test-first)
+- [x] Gruppierung nicht unterscheidbarer Kandidaten (TRD 2.7): `AnalysisResult.groups`, Schwellenwerte in `GroupingThresholds`
 - [ ] Repository: Room-Daten → `AnalysisInput` (mit DI/Koin)
 
 ## Phase 2: Skelett (funktionales UI)
@@ -63,3 +63,4 @@
 | 15.11.2026 | minSdk auf 26 gesenkt, App läuft auf eigenem Handy |
 | 16.11.2026 | Seed-Daten als JSON + EN/DE-Strings, Parser/Mapper/SeedDao/DatabaseSeeder, Unit-Tests |
 | 16.11.2026 | Analyse-Engine test-first (Branch `feature/analysis-engine`), Annahmen in OFFENE_PUNKTE.md |
+| 16.11.2026 | Engine nach `main` gemergt (PR #1). Gruppierung TRD 2.7 test-first (Branch `feature/candidate-grouping`), Gradle-Tests lokal grün |
