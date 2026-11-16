@@ -27,8 +27,10 @@
 - [x] Room-Schema laut TRD 1.x (Room 3.0.3, 18 Tabellen, Schema-Export v1, i18n-Keys)
 - [x] Seed-Daten: 12 Kategorien, 26 Trigger mit Fenstern, 112 Zutaten, 24 Symptome, 3 Lifestyle-Faktoren (JSON in `composeResources/files/seed`, Anzeigenamen EN/DE, `DatabaseSeeder`)
 - [ ] Seeder beim App-Start aufrufen (mit DI/Koin)
-- [ ] Analyse-Engine: Episoden → Fenster → Lift → Evidenzstufe
-- [ ] Unit-Tests mit synthetischen Daten
+- [x] Analyse-Engine als reine Funktionen in `domain/analysis`: gültige Tage → Episoden → Treffer pro Fenster → Lift → Evidenzstufe → Sicher-Liste, Schwellenwerte in `AnalysisConfig`
+- [x] Unit-Tests mit synthetischen Daten (24 Tests in `commonTest`, test-first)
+- [ ] Gruppierung nicht unterscheidbarer Kandidaten (TRD 2.7)
+- [ ] Repository: Room-Daten → `AnalysisInput` (mit DI/Koin)
 
 ## Phase 2: Skelett (funktionales UI)
 - [ ] Essen loggen, Symptom melden, Tages-Abschluss
@@ -60,3 +62,4 @@
 | 15.11.2026 | Zeitprotokoll angelegt (Timeline und Dauer je Arbeitsblock) |
 | 15.11.2026 | minSdk auf 26 gesenkt, App läuft auf eigenem Handy |
 | 16.11.2026 | Seed-Daten als JSON + EN/DE-Strings, Parser/Mapper/SeedDao/DatabaseSeeder, Unit-Tests |
+| 16.11.2026 | Analyse-Engine test-first (Branch `feature/analysis-engine`), Annahmen in OFFENE_PUNKTE.md |

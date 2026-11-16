@@ -13,9 +13,9 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | :--- | ---: | :--- |
 | 0 Konzept & Doku | ? | Vor dem 14.11., 18:30 (Smartphone-Chats). Bitte grob nachtragen. |
 | 0.5 Setup | ca. 3:42 h | davon ca. 2:15 h Android Studio / KMP-Einrichtung, 30 min Git-Push mit Auth-Problem, 24 min App aufs Handy |
-| 1 Daten-Herz | ca. 0:37 h | Room-Schema v1, Seed-Daten |
+| 1 Daten-Herz | ca. 0:49 h | Room-Schema v1, Seed-Daten, Analyse-Engine |
 | Doku / Organisation | ca. 0:07 h | OFFENE_PUNKTE, PROGRESS, Zeitprotokoll |
-| **Gesamt (erfasst)** | **ca. 4:26 h** | ohne Konzeptphase |
+| **Gesamt (erfasst)** | **ca. 4:38 h** | ohne Konzeptphase |
 
 ---
 
@@ -37,9 +37,11 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 15.11.2026 | 20:06–20:30 | 0:24 | 0.5 | App erstmals auf eigenem Handy (Android 13) installiert und gestartet | USB-Debugging einrichten; `INSTALL_FAILED_USER_RESTRICTED` (Schalter „Über USB installieren“) |
 | 16.11.2026 | 20:56–21:08 | 0:12 | 1 | Seed-Daten (JSON, EN/DE-Strings), Seeder-Code, Tests; Übergabe per Git-Bundle | Claude kam nicht direkt an die tief verschachtelten Code-Dateien → Repo aus `.git` gespiegelt |
 | 16.11.2026 | 21:20–21:24 | 0:04 | 1 | Testfehler behoben (Long vs. Int im Test), alle Tests und Build grün | – |
+| 16.11.2026 | 21:37–21:49 | 0:12 | 1 | Analyse-Engine test-first: 24 Tests mit synthetischen Daten, dann Engine (Episoden, Fenster, Lift, Evidenz, Sicher-Liste), `AnalysisConfig`; Übergabe per Git-Bundle | Kein Gradle-Build in Claudes Umgebung (kein Netz) → Tests mit Kotlin 2.0 und eigenem Mini-Runner geprüft, Gradle-Lauf lokal ausstehend; Rundungsfehler an Schwellen (5,999… < 6) gefunden und behoben |
 
 ---
 
 ## Erkenntnisse
 - **Größter Zeitfresser bisher:** Werkzeug-Setup (Android Studio, Git-Auth, Gerät/USB), nicht der Code.
 - **Room-Schema** ging schnell (ca. 21 min inkl. Fehlerbehebung), weil TRD und Coding-Richtlinien klar waren.
+- **Analyse-Engine** in ca. 12 min, weil TRD Kap. 2 die Regeln fast vollständig vorgibt. Offene Fachfragen sind als Annahmen dokumentiert statt geblockt.
