@@ -33,6 +33,18 @@
 - [ ] **Lizenz**, falls externe Lebensmitteldaten genutzt werden
 - [ ] **ID-Bereich für eigene Zutaten:** Seed-Zutaten haben feste IDs (Kategorie × 100 + n). Eigene Zutaten bekommen per AUTOINCREMENT die nächste freie ID und könnten mit später nachgelieferten Seed-Zutaten kollidieren. Vor dem ersten Release lösen (z.B. eigene Zutaten ab 100000).
 
+## 🧪 Analyse-Engine: Annahmen bestätigen (Stand 16.11.2026)
+In der Engine umgesetzt, aber vom TRD nicht eindeutig vorgegeben. Alle Werte stehen in `AnalysisConfig`.
+- [ ] **Zutaten ohne Trigger** (z.B. Reis, eigene Zutaten ohne Tags) haben kein Zeitfenster. Sie werden nicht analysiert und kommen nicht auf die Sicher-Liste. Alternative: Standardfenster (z.B. 0–24h, alle Symptomgruppen).
+- [ ] **Gruppierung (TRD 2.7) fehlt noch.** Im Test erscheinen Laktose **und** Milcheiweiß als Verdacht; Milcheiweiß hat sogar den höheren Lift, weil sein Fenster (0–2h) enger ist. Erst die Gruppierung zeigt "nicht unterscheidbar". Offen: 80 % bezogen auf wessen Expositionen? Zutat und ihre einzige Eigenschaft nicht gruppieren?
+- [ ] **Bekannte Allergie:** Nicht nur die Eigenschaft, sondern auch alle Zutaten mit dieser Eigenschaft fehlen im Ranking (Milch bei bekannter Laktose-Unverträglichkeit). Hinweis pro Mahlzeit über `knownAllergyExposures`.
+- [ ] **Evidenzstufen** nutzen das portionsgewichtete n₁ (3 × S = 1,5 → noch "zu wenig Daten"). Die Sicher-Liste zählt ungewichtet.
+- [ ] **"14 Tage stabil"** = der Verdacht bestand auch bei einer Analyse mit Stichtag vor 14 Tagen. Ob er zwischendurch weg war, wird nicht geprüft.
+- [ ] **Episoden:** zusammengefasst wird relativ zum **Episodenstart** (keine endlosen Ketten bei Einträgen alle 2h).
+- [ ] **Eigenschaft in einer Mahlzeit:** Enthalten mehrere Zutaten dieselbe Eigenschaft, zählt die größte Portion (keine Summe). Mahlzeiten ohne Kandidat zählen mit Faktor 1.
+- [ ] **Treffer-Gewicht:** höchste Intensität aller passenden Episoden im Fenster.
+- [ ] **Zeit:** Die Engine rechnet mit UTC-Millis + Offset; `kotlinx-datetime` ist noch nicht eingebunden (erst nötig, wenn das Repository Daten umrechnet).
+
 ## 🚀 Launch: Rechtliches & Organisation (Go-live Deutschland)
 - [ ] **Rechtsform klären:** Eigene Apps verkaufen gilt meist als Gewerbe (nicht freiberuflich). Start als Einzelunternehmen ohne GmbH möglich
 - [ ] **Kleinunternehmerregelung** prüfen (Gründungsjahr max. 25.000 € Umsatz)
