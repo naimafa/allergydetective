@@ -3,8 +3,12 @@ package com.nfar.allergydetective.di
 import com.nfar.allergydetective.AppStartup
 import com.nfar.allergydetective.data.db.AppDatabase
 import com.nfar.allergydetective.data.db.createAppDatabase
+import com.nfar.allergydetective.data.analysis.RoomAnalysisRepository
+import com.nfar.allergydetective.data.db.dao.AnalysisDao
 import com.nfar.allergydetective.data.db.dao.SeedDao
 import com.nfar.allergydetective.data.seed.DatabaseSeeder
+import com.nfar.allergydetective.domain.analysis.AnalysisEngine
+import com.nfar.allergydetective.domain.analysis.AnalysisRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -29,6 +33,9 @@ val appModule = module {
 
     single<AppDatabase> { createAppDatabase(builder = get(), ioContext = get(IoContext)) }
     single<SeedDao> { get<AppDatabase>().seedDao() }
+    single<AnalysisDao> { get<AppDatabase>().analysisDao() }
     single { DatabaseSeeder(dao = get()) }
+    single<AnalysisRepository> { RoomAnalysisRepository(dao = get()) }
+    single { AnalysisEngine() }
     single { AppStartup(seeder = get(), scope = get(AppScope)) }
 }
