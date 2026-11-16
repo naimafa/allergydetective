@@ -22,7 +22,7 @@
 | `ingredient_properties` | ingredient_id, property_id | **Zutat → Trigger** (z.B. Spinat → Histamin) |
 | `ingredient_synonyms` | ingredient_id, synonym | Für Voice- und Suchtreffer ("Semmel" = "Brötchen") |
 | `symptoms` | id, name, group, is_red_flag | Symptom-Katalog (siehe [CONTENT_Symptome.md](CONTENT_Symptome.md)) |
-| `lifestyle_factors` | id, name | Kandidaten außerhalb der Ernährung (schlechter Schlaf, Stress, Alkohol, Sport, Zyklus, Medikament) |
+| `lifestyle_factors` | id, name | Kandidaten außerhalb der Ernährung (Sport, Zyklus, Medikament). Schlechter Schlaf und Stress kommen aus `day_check`. Alkohol ist **kein** Faktor, sondern Trigger-Eigenschaft der Getränke. |
 
 Die Anzeige-Labels T1/T2/T3 bleiben für die UI erhalten:
 * **T1 Sofort:** Fenster endet ≤ 2h

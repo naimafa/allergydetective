@@ -16,6 +16,7 @@
 - [x] **Intensität 1–5** (bestätigt)
 - [x] **Stress 1–5** (Slider rastet ein)
 - [x] **Plattform:** Ziel ist Android + iOS aus einer Codebasis (Kotlin Multiplatform). Jetzt wird nur unter Windows entwickelt und für Android getestet ([ARCHITEKTUR.md](ARCHITEKTUR.md)).
+- [x] **Alkohol nur als Trigger** (Getränke), nicht als Lifestyle-Faktor (16.11.2026)
 - [x] **minSdk 26 (Android 8.0), targetSdk 37 (Android 17):** große Reichweite, auch ältere Geräte (wichtig für FR/AR-Zielgruppe). Eigenes Testgerät: Android 13.
 
 ## ⏳ Später entscheiden
@@ -31,7 +32,6 @@
 - [ ] **DSGVO:** Gesundheitsdaten sind besondere Kategorie (Art. 9). Local-First hilft, trotzdem Datenschutzerklärung und Einwilligung prüfen
 - [ ] **Lizenz**, falls externe Lebensmitteldaten genutzt werden
 - [ ] **ID-Bereich für eigene Zutaten:** Seed-Zutaten haben feste IDs (Kategorie × 100 + n). Eigene Zutaten bekommen per AUTOINCREMENT die nächste freie ID und könnten mit später nachgelieferten Seed-Zutaten kollidieren. Vor dem ersten Release lösen (z.B. eigene Zutaten ab 100000).
-- [ ] **Alkohol doppelt:** Alkohol ist Trigger (Getränke) **und** Lifestyle-Faktor (TRD 1.1). Bei der Analyse-Engine entscheiden, ob der Faktor bleibt.
 
 ## 🚀 Launch: Rechtliches & Organisation (Go-live Deutschland)
 - [ ] **Rechtsform klären:** Eigene Apps verkaufen gilt meist als Gewerbe (nicht freiberuflich). Start als Einzelunternehmen ohne GmbH möglich

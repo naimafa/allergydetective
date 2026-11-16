@@ -13,9 +13,9 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | :--- | ---: | :--- |
 | 0 Konzept & Doku | ? | Vor dem 14.11., 18:30 (Smartphone-Chats). Bitte grob nachtragen. |
 | 0.5 Setup | ca. 3:42 h | davon ca. 2:15 h Android Studio / KMP-Einrichtung, 30 min Git-Push mit Auth-Problem, 24 min App aufs Handy |
-| 1 Daten-Herz | ca. 0:33 h | Room-Schema v1, Seed-Daten |
+| 1 Daten-Herz | ca. 0:37 h | Room-Schema v1, Seed-Daten |
 | Doku / Organisation | ca. 0:07 h | OFFENE_PUNKTE, PROGRESS, Zeitprotokoll |
-| **Gesamt (erfasst)** | **ca. 4:22 h** | ohne Konzeptphase |
+| **Gesamt (erfasst)** | **ca. 4:26 h** | ohne Konzeptphase |
 
 ---
 
@@ -36,6 +36,7 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 15.11.2026 | 20:03–20:06 | 0:03 | 0.5 | Entscheidung minSdk 26 / targetSdk 37, umgestellt | Projekt-Assistent hatte minSdk 37 gesetzt (Testgerät Android 13 wäre ausgeschlossen) |
 | 15.11.2026 | 20:06–20:30 | 0:24 | 0.5 | App erstmals auf eigenem Handy (Android 13) installiert und gestartet | USB-Debugging einrichten; `INSTALL_FAILED_USER_RESTRICTED` (Schalter „Über USB installieren“) |
 | 16.11.2026 | 20:56–21:08 | 0:12 | 1 | Seed-Daten (JSON, EN/DE-Strings), Seeder-Code, Tests; Übergabe per Git-Bundle | Claude kam nicht direkt an die tief verschachtelten Code-Dateien → Repo aus `.git` gespiegelt |
+| 16.11.2026 | 21:20–21:24 | 0:04 | 1 | Testfehler behoben (Long vs. Int im Test), alle Tests und Build grün | – |
 
 ---
 

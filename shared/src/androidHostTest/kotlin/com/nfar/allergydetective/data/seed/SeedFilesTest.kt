@@ -33,7 +33,7 @@ class SeedFilesTest {
         assertEquals(26, entities.properties.size)
         assertEquals(112, entities.ingredients.size)
         assertEquals(24, entities.symptoms.size)
-        assertEquals(4, entities.lifestyleFactors.size)
+        assertEquals(3, entities.lifestyleFactors.size)
     }
 
     @Test

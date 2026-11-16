@@ -25,7 +25,7 @@
 
 ## Phase 1: Daten-Herz (Engine)
 - [x] Room-Schema laut TRD 1.x (Room 3.0.3, 18 Tabellen, Schema-Export v1, i18n-Keys)
-- [x] Seed-Daten: 12 Kategorien, 26 Trigger mit Fenstern, 112 Zutaten, 24 Symptome, 4 Lifestyle-Faktoren (JSON in `composeResources/files/seed`, Anzeigenamen EN/DE, `DatabaseSeeder`)
+- [x] Seed-Daten: 12 Kategorien, 26 Trigger mit Fenstern, 112 Zutaten, 24 Symptome, 3 Lifestyle-Faktoren (JSON in `composeResources/files/seed`, Anzeigenamen EN/DE, `DatabaseSeeder`)
 - [ ] Seeder beim App-Start aufrufen (mit DI/Koin)
 - [ ] Analyse-Engine: Episoden → Fenster → Lift → Evidenzstufe
 - [ ] Unit-Tests mit synthetischen Daten
