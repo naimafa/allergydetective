@@ -5,6 +5,7 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import com.nfar.allergydetective.data.db.dao.AnalysisDao
+import com.nfar.allergydetective.data.db.dao.MealDao
 import com.nfar.allergydetective.data.db.dao.SeedDao
 import com.nfar.allergydetective.data.db.entity.CategoryEntity
 import com.nfar.allergydetective.data.db.entity.DayCheckEntity
@@ -58,6 +59,7 @@ const val DATABASE_NAME = "allergy_detective.db"
 abstract class AppDatabase : RoomDatabase() {
     abstract fun seedDao(): SeedDao
     abstract fun analysisDao(): AnalysisDao
+    abstract fun mealDao(): MealDao
 }
 
 // Room's KSP processor generates the actual implementations for each platform.
