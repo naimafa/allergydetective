@@ -40,7 +40,7 @@
 - [x] Tages-Abschluss: Wohlbefinden, Schlaf, Stress, Tages-Faktoren, Status; bis 2 Tage nachtragen; "Keine Beschwerden" gesperrt, wenn Symptome eingetragen sind
 - [x] Home: Fortschritt "Tag X von 7" aus bestätigten Tagen
 - [x] Ergebnis-Screen (einfach): Spur/Verdacht/Starker Verdacht mit Begründung, nicht unterscheidbare Gruppen, gut vertragen, Allergie-Hinweis, Disclaimer
-- [ ] Favoriten, Spracheingabe, eigene Zutaten, Tab-Bar, Abend-Reminder, Onboarding (bekannte Allergien) → offen, siehe OFFENE_PUNKTE.md
+- [x] Offene Punkte: Auto-Backup aus, freie Zeitwahl, Favoriten, eigene Zutaten, Onboarding, Tab-Bar mit Historie/Favoriten/Profil, Abend-Reminder, Vergleich im Ergebnis, Notruf je Region, Zahlenformat, Spracheingabe (Rest siehe OFFENE_PUNKTE.md)
 
 ## Phase 3: Design & Content
 - [ ] Farben, Icons, Dark Mode
@@ -72,3 +72,4 @@
 | 16.11.2026 | Gruppierung nach `main` gemergt (PR #2). Koin eingebunden, Seeder läuft beim App-Start (Branch `feature/koin-seeder`). Im Emulator geprüft: 12 Kategorien, 26 Trigger, 112 Zutaten, 24 Symptome, 3 Lifestyle-Faktoren; zweiter Start fügt nichts doppelt ein. iOS-Teil ungebaut (kein Mac) |
 | 16.11.2026 | Koin/Seeder nach `main` gemergt (PR #3). Repository Room → `AnalysisInput` (Branch `feature/analysis-repository`), 56 Unit-Tests grün. Im Emulator geprüft: 21-Tage-Test-Tagebuch in der echten Datenbank → Engine meldet Milcheiweiß, Laktose und Kuhmilch als Gruppe. **Phase 1 abgeschlossen** |
 | 17.11.2026 | Phase 2 auf `develop`: je Schritt ein Branch (`feature/app-shell`, `log-meal`, `log-symptom`, `day-check`, `results-screen`), lokal per `--no-ff` gemergt (keine GitHub-PRs, siehe OFFENE_PUNKTE.md). 91 Unit-Tests grün, jeder Screen im Emulator geprüft. **Phase 2 abgeschlossen** |
+| 17.11.2026 | Offene Phase-2-Punkte auf `develop` (10 Branches, je lokal gemergt). 128 Unit-Tests grün, jeder Schritt im Emulator geprüft; Spracheingabe nur bis zum System-Dialog (Emulator ohne Erkennung) |
