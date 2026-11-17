@@ -44,6 +44,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -112,21 +116,30 @@ private fun TileRow(symptoms: List<SymptomInfo>, viewModel: LogSymptomViewModel)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SymptomTile(symptom: SymptomInfo, viewModel: LogSymptomViewModel) {
+    val haptics = LocalHapticFeedback.current
     Surface(
-        color = if (symptom.isRedFlag) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer,
+        color = symptomGroupColor(symptom.groupKey, symptom.isRedFlag),
+        contentColor = MaterialTheme.colorScheme.onSurface,
         shape = MaterialTheme.shapes.medium,
         modifier = Modifier
-            .heightIn(min = 48.dp)
+            .heightIn(min = 56.dp)
             .combinedClickable(
                 onClick = { viewModel.onSymptomClick(symptom) },
-                onLongClick = { viewModel.onSymptomLongClick(symptom) },
+                onLongClick = {
+                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                    viewModel.onSymptomLongClick(symptom)
+                },
             ),
     ) {
-        Text(
-            displayName(NamePrefix.SYMPTOM, symptom.key),
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-            style = MaterialTheme.typography.bodyLarge,
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(symptomEmoji(symptom.id), style = MaterialTheme.typography.titleMedium)
+            Text(displayName(NamePrefix.SYMPTOM, symptom.key), style = MaterialTheme.typography.bodyLarge)
+            if (symptom.isRedFlag) Text("⚠️", style = MaterialTheme.typography.bodyLarge)
+        }
     }
 }
 
@@ -155,7 +168,7 @@ private fun EmergencyNotice(onContinue: () -> Unit, onDismiss: () -> Unit) {
 private fun SymptomOverlay(draft: SymptomDraft, viewModel: LogSymptomViewModel) {
     AlertDialog(
         onDismissRequest = viewModel::onDraftDismiss,
-        title = { Text(displayName(NamePrefix.SYMPTOM, draft.symptom.key)) },
+        title = { Text(symptomEmoji(draft.symptom.id) + " " + displayName(NamePrefix.SYMPTOM, draft.symptom.key)) },
         text = {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
