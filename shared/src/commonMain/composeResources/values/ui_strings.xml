@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- UI texts. German in values-de. Keep both files in sync. -->
+<resources>
+    <string name="home_title">Allergy Detective</string>
+    <string name="home_log_meal">Log food</string>
+    <string name="home_log_symptom">Report symptom</string>
+    <string name="home_day_check">Day check</string>
+    <string name="home_results">Your clues</string>
+    <string name="common_save">Save</string>
+    <string name="common_back">Back</string>
+    <string name="common_undo">Undo</string>
+    <string name="common_saved">Saved</string>
+</resources>

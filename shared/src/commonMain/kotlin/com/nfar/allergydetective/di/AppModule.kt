@@ -9,6 +9,9 @@ import com.nfar.allergydetective.data.db.dao.SeedDao
 import com.nfar.allergydetective.data.seed.DatabaseSeeder
 import com.nfar.allergydetective.domain.analysis.AnalysisEngine
 import com.nfar.allergydetective.domain.analysis.AnalysisRepository
+import com.nfar.allergydetective.domain.time.AppClock
+import com.nfar.allergydetective.ui.common.DisplayNameResolver
+import com.nfar.allergydetective.ui.common.ResourceDisplayNameResolver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -36,6 +39,8 @@ val appModule = module {
     single<AnalysisDao> { get<AppDatabase>().analysisDao() }
     single { DatabaseSeeder(dao = get()) }
     single<AnalysisRepository> { RoomAnalysisRepository(dao = get()) }
+    single { AppClock() }
+    single<DisplayNameResolver> { ResourceDisplayNameResolver() }
     single { AnalysisEngine() }
     single { AppStartup(seeder = get(), scope = get(AppScope)) }
 }
