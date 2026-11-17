@@ -87,7 +87,7 @@ In der Engine umgesetzt, aber vom TRD nicht eindeutig vorgegeben. Alle Werte ste
 - [ ] **Impressum + Datenschutzerklärung** (in App und Store-Eintrag)
 
 ## ✍️ Noch zu liefern
-- [ ] **Pool mit 30–50 Motivations-Sprüchen**
+- [x] **Pool mit 30–50 Motivations-Sprüchen** (40 Sprüche EN/DE, 17.11.2026; FR/AR fehlen noch)
 - [ ] **Abgeschnittene Texte ergänzen:** PRD Phase 2 ("Review-Mining: Automatisi…"), UX Kap. 6 (Erfolgsanimation)
 - [ ] **PRD:** Zielgruppe/Persona, Erfolgskennzahlen (z.B. % Nutzer, die 7 Tage durchhalten), Nicht-Ziele des MVP
 - [ ] **Store-Text** an Zweckbestimmung und Datenschutz-Entscheidung angleichen
