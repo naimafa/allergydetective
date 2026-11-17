@@ -16,6 +16,10 @@ import com.nfar.allergydetective.domain.diary.LanguageProvider
 import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.time.AppClock
 import com.nfar.allergydetective.ui.meal.LogMealViewModel
+import com.nfar.allergydetective.data.db.dao.IngredientDao
+import com.nfar.allergydetective.data.diary.RoomCustomIngredientRepository
+import com.nfar.allergydetective.domain.diary.CustomIngredientRepository
+import com.nfar.allergydetective.ui.meal.CustomIngredientViewModel
 import com.nfar.allergydetective.data.db.dao.SymptomDao
 import com.nfar.allergydetective.data.diary.RoomSymptomRepository
 import com.nfar.allergydetective.domain.diary.SymptomRepository
@@ -68,6 +72,10 @@ val appModule = module {
     single<MealDao> { get<AppDatabase>().mealDao() }
     single<MealRepository> { RoomMealRepository(dao = get()) }
     viewModelOf(::LogMealViewModel)
+
+    single<IngredientDao> { get<AppDatabase>().ingredientDao() }
+    single<CustomIngredientRepository> { RoomCustomIngredientRepository(dao = get()) }
+    viewModelOf(::CustomIngredientViewModel)
 
     single<SymptomDao> { get<AppDatabase>().symptomDao() }
     single<SymptomRepository> { RoomSymptomRepository(dao = get()) }

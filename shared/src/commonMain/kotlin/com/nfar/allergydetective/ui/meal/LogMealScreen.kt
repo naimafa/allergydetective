@@ -2,6 +2,7 @@ package com.nfar.allergydetective.ui.meal
 
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_save
+import allergydetective.shared.generated.resources.custom_create_named
 import allergydetective.shared.generated.resources.home_log_meal
 import allergydetective.shared.generated.resources.meal_allergy_hint
 import allergydetective.shared.generated.resources.meal_favorite_name
@@ -41,6 +42,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,10 +62,29 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun LogMealScreen(onBack: () -> Unit, viewModel: LogMealViewModel = koinViewModel()) {
+fun LogMealScreen(
+    onBack: () -> Unit,
+    viewModel: LogMealViewModel = koinViewModel(),
+    customViewModel: CustomIngredientViewModel = koinViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    var showCustomDialog by remember { mutableStateOf(false) }
     SavedSnackbarEffect(state.savedMealId, snackbarHostState, viewModel::onUndo, viewModel::onSavedShown)
+    if (showCustomDialog) {
+        CustomIngredientDialog(
+            viewModel = customViewModel,
+            onCreated = {
+                showCustomDialog = false
+                viewModel.onCustomIngredientCreated(it)
+            },
+            onDismiss = { showCustomDialog = false },
+        )
+    }
+    val openCustomDialog: () -> Unit = {
+        customViewModel.start(state.query)
+        showCustomDialog = true
+    }
 
     ScreenScaffold(
         title = stringResource(Res.string.home_log_meal),
@@ -76,13 +98,18 @@ fun LogMealScreen(onBack: () -> Unit, viewModel: LogMealViewModel = koinViewMode
             ) { Text(stringResource(Res.string.common_save)) }
         },
     ) { padding ->
-        LogMealContent(state, viewModel, Modifier.padding(padding))
+        LogMealContent(state, viewModel, openCustomDialog, Modifier.padding(padding))
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun LogMealContent(state: LogMealState, viewModel: LogMealViewModel, modifier: Modifier) {
+private fun LogMealContent(
+    state: LogMealState,
+    viewModel: LogMealViewModel,
+    onCreateIngredient: () -> Unit,
+    modifier: Modifier,
+) {
     val selectedIds = state.selected.map { it.ingredient.id }.toSet()
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -152,6 +179,13 @@ private fun LogMealContent(state: LogMealState, viewModel: LogMealViewModel, mod
         }
         if (state.query.isNotBlank() && state.results.isEmpty()) {
             item { Text(stringResource(Res.string.meal_no_results), style = MaterialTheme.typography.bodyMedium) }
+        }
+        if (state.query.isNotBlank()) {
+            item {
+                TextButton(onClick = onCreateIngredient) {
+                    Text(stringResource(Res.string.custom_create_named, state.query.trim()))
+                }
+            }
         }
         if (state.selected.isNotEmpty()) {
             item { SectionTitle(stringResource(Res.string.meal_selected)) }
