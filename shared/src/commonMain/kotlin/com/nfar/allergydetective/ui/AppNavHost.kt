@@ -12,6 +12,8 @@ import androidx.navigation.compose.rememberNavController
 import com.nfar.allergydetective.ui.home.HomeAction
 import com.nfar.allergydetective.ui.meal.LogMealScreen
 import com.nfar.allergydetective.ui.profile.OnboardingScreen
+import com.nfar.allergydetective.ui.profile.ReminderSection
+import androidx.compose.runtime.LaunchedEffect
 import com.nfar.allergydetective.ui.symptom.LogSymptomScreen
 import kotlinx.serialization.Serializable
 
@@ -35,12 +37,23 @@ data object ResultsRoute
 data object OnboardingRoute
 
 @Composable
-fun AppNavHost(startViewModel: StartViewModel = koinViewModel()) {
+fun AppNavHost(
+    openDayCheck: Boolean = false,
+    onDayCheckOpened: () -> Unit = {},
+    startViewModel: StartViewModel = koinViewModel(),
+) {
     val onboardingCompleted by startViewModel.onboardingCompleted.collectAsStateWithLifecycle()
     // Nothing to show until we know whether this is the first start.
     val completed = onboardingCompleted ?: return
     val navController = rememberNavController()
     val back: () -> Unit = { navController.popBackStack() }
+    // Tapping the evening reminder opens the day check directly (UX 4).
+    LaunchedEffect(openDayCheck) {
+        if (openDayCheck && completed) {
+            navController.navigate(DayCheckRoute) { launchSingleTop = true }
+            onDayCheckOpened()
+        }
+    }
     NavHost(navController = navController, startDestination = if (completed) HomeRoute else OnboardingRoute) {
         composable<OnboardingRoute> {
             OnboardingScreen(
@@ -59,6 +72,7 @@ fun AppNavHost(startViewModel: StartViewModel = koinViewModel()) {
                         HomeAction.RESULTS -> navController.navigate(ResultsRoute)
                     }
                 },
+                profileExtra = { ReminderSection() },
             )
         }
         composable<LogMealRoute> { LogMealScreen(onBack = back) }
