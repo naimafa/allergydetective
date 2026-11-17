@@ -20,6 +20,7 @@ koin = "4.2.2"
 kotlinx-datetime = "0.8.0"
 kotlinx-coroutines = "1.10.2"
 navigation = "2.10.0"
+work = "2.11.2"
 room3 = "3.0.3"
 sqlite = "2.7.1"
 
@@ -52,6 +53,7 @@ koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", ver
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation" }
+androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

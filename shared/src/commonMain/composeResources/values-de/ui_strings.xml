@@ -48,6 +48,12 @@
     <string name="common_undo">Rückgängig</string>
     <string name="common_saved">Gespeichert</string>
     <string name="common_cancel">Abbrechen</string>
+    <string name="reminder_setting">Abend-Erinnerung</string>
+    <string name="reminder_setting_hint">Ein täglicher Hinweis zum Tages-Abschluss. Entfällt, wenn der Tag schon bestätigt ist.</string>
+    <string name="reminder_denied">Benachrichtigungen sind für die App ausgeschaltet. Du kannst sie in den Systemeinstellungen erlauben.</string>
+    <string name="reminder_channel">Abend-Erinnerung</string>
+    <string name="reminder_title">Detektiv-Stunde 🕵️</string>
+    <string name="reminder_text">Wie war dein Tag? In wenigen Sekunden bestätigt.</string>
     <string name="tab_home">Start</string>
     <string name="tab_history">Historie</string>
     <string name="tab_favorites">Favoriten</string>

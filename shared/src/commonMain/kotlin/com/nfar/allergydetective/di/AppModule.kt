@@ -1,6 +1,7 @@
 package com.nfar.allergydetective.di
 
 import com.nfar.allergydetective.AppStartup
+import com.nfar.allergydetective.ui.profile.ReminderViewModel
 import com.nfar.allergydetective.data.db.AppDatabase
 import com.nfar.allergydetective.data.db.createAppDatabase
 import com.nfar.allergydetective.data.analysis.RoomAnalysisRepository
@@ -119,5 +120,6 @@ val appModule = module {
     }
     single<DisplayNameResolver> { ResourceDisplayNameResolver() }
     single { AnalysisEngine() }
-    single { AppStartup(seeder = get(), scope = get(AppScope)) }
+    single { AppStartup(seeder = get(), scope = get(AppScope), settings = get(), reminders = get()) }
+    viewModelOf(::ReminderViewModel)
 }
