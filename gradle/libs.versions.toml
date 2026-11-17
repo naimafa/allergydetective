@@ -21,6 +21,7 @@ kotlinx-datetime = "0.8.0"
 kotlinx-coroutines = "1.10.2"
 navigation = "2.10.0"
 work = "2.11.2"
+material-icons = "1.7.3"
 room3 = "3.0.3"
 sqlite = "2.7.1"
 
@@ -54,6 +55,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation" }
 androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
+compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "material-icons" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
