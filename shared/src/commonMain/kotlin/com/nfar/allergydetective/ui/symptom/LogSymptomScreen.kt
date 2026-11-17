@@ -54,12 +54,12 @@ import com.nfar.allergydetective.ui.common.ScreenScaffold
 import com.nfar.allergydetective.ui.common.SectionTitle
 import com.nfar.allergydetective.ui.common.TimeChoiceRow
 import com.nfar.allergydetective.ui.common.displayName
+import com.nfar.allergydetective.ui.common.emergencyNumberFor
+import androidx.compose.ui.text.intl.Locale
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-/** Phone number of the emergency call button. 112 works across the EU. */
-private const val EMERGENCY_NUMBER = "112"
 
 @Composable
 fun LogSymptomScreen(onBack: () -> Unit, viewModel: LogSymptomViewModel = koinViewModel()) {
@@ -134,13 +134,14 @@ private fun SymptomTile(symptom: SymptomInfo, viewModel: LogSymptomViewModel) {
 @Composable
 private fun EmergencyNotice(onContinue: () -> Unit, onDismiss: () -> Unit) {
     val uriHandler = LocalUriHandler.current
+    val emergencyNumber = emergencyNumberFor(Locale.current.region)
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.emergency_title)) },
         text = { Text(stringResource(Res.string.emergency_text)) },
         confirmButton = {
-            Button(onClick = { uriHandler.openUri("tel:$EMERGENCY_NUMBER") }) {
-                Text(stringResource(Res.string.emergency_call, EMERGENCY_NUMBER))
+            Button(onClick = { uriHandler.openUri("tel:$emergencyNumber") }) {
+                Text(stringResource(Res.string.emergency_call, emergencyNumber))
             }
         },
         dismissButton = {

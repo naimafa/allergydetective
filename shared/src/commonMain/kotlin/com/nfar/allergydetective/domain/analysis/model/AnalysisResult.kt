@@ -15,7 +15,8 @@ enum class EvidenceLevel { INSUFFICIENT_DATA, NONE, TRACE, SUSPICION, STRONG_SUS
 /**
  * Counts for one candidate (TRD 2.4). Names follow the formula:
  * [n1]/[k1] exposures and hit weight with the candidate (weighted by portion),
- * [n0]/[k0] the same without it. [exposureCount] and [hitCount] are unweighted.
+ * [n0]/[k0] the same without it. The counts are unweighted, for the reason shown to the
+ * user (UX 5: "4 of 5 times, otherwise 1 of 9").
  */
 data class ExposureStats(
     val n1: Double,
@@ -24,6 +25,8 @@ data class ExposureStats(
     val k0: Double,
     val exposureCount: Int,
     val hitCount: Int,
+    val unexposedCount: Int = 0,
+    val unexposedHitCount: Int = 0,
 )
 
 data class CandidateResult(

@@ -33,6 +33,9 @@ data class ResultItem(
     /** Unweighted counts for the one-sentence reason (UX 5). */
     val exposures: Int,
     val withComplaints: Int,
+    /** The same for meals or days without the candidate. */
+    val otherExposures: Int,
+    val otherWithComplaints: Int,
 )
 
 data class ResultsState(
@@ -73,7 +76,7 @@ class ResultsViewModel(
             confirmedDays = input.diary.dayChecks.count { it.confirmed },
             items = result.ranking
                 .filter { it.level >= EvidenceLevel.TRACE }
-                .mapNotNull { r -> label(r.candidate)?.let { ResultItem(it, r.level, r.stats.exposureCount, r.stats.hitCount) } },
+                .mapNotNull { r -> label(r.candidate)?.let { ResultItem(it, r.level, r.stats.exposureCount, r.stats.hitCount, r.stats.unexposedCount, r.stats.unexposedHitCount) } },
             groups = result.groups.map { group -> group.members.mapNotNull(::label) },
             safeIngredients = result.safeIngredientIds.mapNotNull { label(Candidate.Ingredient(it)) },
             knownAllergyIngredients = result.knownAllergyExposures

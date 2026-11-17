@@ -119,7 +119,7 @@ private fun ResultCard(item: ResultItem) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(levelText(item.level), style = MaterialTheme.typography.labelLarge)
             Text(labelText(item.label), style = MaterialTheme.typography.titleMedium)
-            Text(stringResource(Res.string.results_reason, item.withComplaints, item.exposures), style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(Res.string.results_reason, item.withComplaints, item.exposures, item.otherWithComplaints, item.otherExposures), style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

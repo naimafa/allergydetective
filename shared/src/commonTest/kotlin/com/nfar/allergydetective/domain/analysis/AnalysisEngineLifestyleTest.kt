@@ -29,6 +29,8 @@ class AnalysisEngineLifestyleTest {
 
         assertTrue(result.resultFor(Candidate.HighStress)!!.level >= EvidenceLevel.SUSPICION)
         assertEquals(7, result.resultFor(Candidate.HighStress)!!.stats.exposureCount)
+        assertEquals(14, result.resultFor(Candidate.HighStress)!!.stats.unexposedCount)
+        assertEquals(0, result.resultFor(Candidate.HighStress)!!.stats.unexposedHitCount)
     }
 
     @Test

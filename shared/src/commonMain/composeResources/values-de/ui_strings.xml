@@ -17,7 +17,7 @@
     <string name="results_level_trace">🔍 Spur</string>
     <string name="results_level_suspicion">🔎 Verdacht</string>
     <string name="results_level_strong">🕵️ Starker Verdacht</string>
-    <string name="results_reason">Danach Beschwerden: %1$d von %2$d Mal</string>
+    <string name="results_reason">Danach Beschwerden: %1$d von %2$d Mal, sonst %3$d von %4$d</string>
     <string name="results_groups_title">Bisher nicht unterscheidbar</string>
     <string name="results_group">%1$s kamen immer zusammen vor.</string>
     <string name="results_safe_title">🟢 Gut vertragen (%1$d)</string>

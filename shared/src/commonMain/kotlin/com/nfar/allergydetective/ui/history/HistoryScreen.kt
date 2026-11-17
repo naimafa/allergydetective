@@ -39,6 +39,8 @@ import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.SectionTitle
 import com.nfar.allergydetective.ui.common.displayName
 import com.nfar.allergydetective.ui.common.formatClock
+import com.nfar.allergydetective.ui.common.formatDate
+import androidx.compose.ui.text.intl.Locale
 import com.nfar.allergydetective.ui.meal.ingredientName
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -65,7 +67,7 @@ fun HistoryScreen(modifier: Modifier = Modifier, viewModel: HistoryViewModel = k
                     DayCheckStatus.NO_SYMPTOMS, DayCheckStatus.COMPLETE -> stringResource(Res.string.history_day_confirmed)
                     else -> stringResource(Res.string.history_day_open)
                 }
-                SectionTitle("${date.day.toString().padStart(2, '0')}.${date.month.ordinal + 1}.${date.year} · $status")
+                SectionTitle("${formatDate(date, Locale.current.language)} · $status")
             }
             day.entries.forEach { entry ->
                 item(key = "${entry::class.simpleName}-${entry.id}") {

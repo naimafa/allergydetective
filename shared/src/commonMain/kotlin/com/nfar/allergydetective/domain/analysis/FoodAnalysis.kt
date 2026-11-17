@@ -74,6 +74,7 @@ internal fun foodStats(
     var k0 = 0.0
     var exposureCount = 0
     var hitCount = 0
+    var unexposedHits = 0
     for (meal in meals) {
         if (!isWindowClosed(meal, profile, validDays, now)) continue
         val weight = hitWeight(meal, profile, episodes, config)
@@ -86,9 +87,10 @@ internal fun foodStats(
         } else {
             n0 += 1.0
             k0 += weight
+            if (weight > 0.0) unexposedHits++
         }
     }
-    return ExposureStats(n1, k1, n0, k0, exposureCount, hitCount)
+    return ExposureStats(n1, k1, n0, k0, exposureCount, hitCount, n0.toInt(), unexposedHits)
 }
 
 private fun isWindowClosed(meal: Meal, profile: FoodProfile, validDays: Set<Long>, now: Long): Boolean {
