@@ -35,7 +35,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nfar.allergydetective.ui.favorites.FavoritesScreen
 import com.nfar.allergydetective.ui.history.HistoryScreen
 import com.nfar.allergydetective.ui.home.HomeAction
-import com.nfar.allergydetective.ui.home.HomeProgress
 import com.nfar.allergydetective.ui.home.HomeScreen
 import com.nfar.allergydetective.ui.home.HomeViewModel
 import com.nfar.allergydetective.ui.profile.ProfileScreen
@@ -79,13 +78,9 @@ fun MainScreen(onHomeAction: (HomeAction) -> Unit, profileExtra: @Composable () 
         when (tab) {
             MainTab.HOME -> {
                 val homeViewModel: HomeViewModel = koinViewModel()
-                val confirmedDays by homeViewModel.confirmedDays.collectAsStateWithLifecycle()
+                val homeState by homeViewModel.state.collectAsStateWithLifecycle()
                 LaunchedEffect(Unit) { homeViewModel.refresh() }
-                HomeScreen(
-                    modifier = modifier,
-                    header = { confirmedDays?.let { HomeProgress(it) } },
-                    onAction = onHomeAction,
-                )
+                HomeScreen(modifier = modifier, state = homeState, onAction = onHomeAction)
             }
             MainTab.HISTORY -> HistoryScreen(modifier = modifier)
             MainTab.FAVORITES -> FavoritesScreen(modifier = modifier)
