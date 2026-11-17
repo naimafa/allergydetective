@@ -10,6 +10,7 @@ import com.nfar.allergydetective.domain.diary.IngredientSearch
 import com.nfar.allergydetective.domain.diary.LanguageProvider
 import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.diary.SearchEntry
+import com.nfar.allergydetective.domain.diary.VoiceMatcher
 import com.nfar.allergydetective.domain.time.AppClock
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
 import com.nfar.allergydetective.ui.common.ExactTime
@@ -122,6 +123,22 @@ class LogMealViewModel(
                 favoriteId = state.favoriteId.takeIf { selected.isNotEmpty() },
             )
         }
+    }
+
+    /**
+     * Spoken text (UX 3.2): matches go to the selection, unknown words into the search field,
+     * where "create new ingredient" is offered.
+     */
+    fun onVoiceResult(text: String) {
+        val current = _state.value
+        val match = VoiceMatcher(search, current.favorites).match(text)
+        match.favoriteIds.mapNotNull { id -> current.favorites.firstOrNull { it.id == id } }.forEach(::onFavoriteClick)
+        val selectedIds = _state.value.selected.map { it.ingredient.id }.toSet()
+        match.ingredientIds
+            .filter { it !in selectedIds }
+            .mapNotNull(ingredientsById::get)
+            .forEach(::onToggleIngredient)
+        if (match.unmatched.isNotEmpty()) onQueryChange(match.unmatched.joinToString(" "))
     }
 
     /** Adds the ingredients of a favorite with their default portions (UX 3.1). */

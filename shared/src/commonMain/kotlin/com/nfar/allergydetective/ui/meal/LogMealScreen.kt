@@ -20,6 +20,7 @@ import allergydetective.shared.generated.resources.meal_remove
 import allergydetective.shared.generated.resources.meal_search
 import allergydetective.shared.generated.resources.meal_selected
 import allergydetective.shared.generated.resources.meal_when
+import allergydetective.shared.generated.resources.meal_voice
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -56,6 +57,10 @@ import com.nfar.allergydetective.ui.common.SavedSnackbarEffect
 import com.nfar.allergydetective.ui.common.ScreenScaffold
 import com.nfar.allergydetective.ui.common.SectionTitle
 import com.nfar.allergydetective.ui.common.TimeChoiceRow
+import com.nfar.allergydetective.platform.rememberSpeechInput
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.intl.Locale
 import com.nfar.allergydetective.ui.common.displayName
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -111,6 +116,7 @@ private fun LogMealContent(
     modifier: Modifier,
 ) {
     val selectedIds = state.selected.map { it.ingredient.id }.toSet()
+    val voiceLabel = stringResource(Res.string.meal_voice)
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -159,11 +165,19 @@ private fun LogMealContent(
             }
         }
         item {
+            val speech = rememberSpeechInput(Locale.current.toLanguageTag()) { text -> text?.let(viewModel::onVoiceResult) }
             OutlinedTextField(
                 value = state.query,
                 onValueChange = viewModel::onQueryChange,
                 label = { Text(stringResource(Res.string.meal_search)) },
                 singleLine = true,
+                trailingIcon = speech?.let { start ->
+                    {
+                        TextButton(onClick = start) {
+                            Text("🎤", modifier = Modifier.semantics { contentDescription = voiceLabel })
+                        }
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
             )
         }

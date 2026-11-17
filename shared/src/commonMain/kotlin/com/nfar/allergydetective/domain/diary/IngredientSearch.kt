@@ -30,6 +30,16 @@ class IngredientSearch(entries: List<SearchEntry>) {
             .map { it.first.id }
     }
 
+    /** Best ingredient for [query] and its score (0 = exact … 4 = small typo), or null. */
+    fun bestMatch(query: String): Pair<Long, Int>? {
+        val q = normalizeForSearch(query)
+        if (q.isEmpty()) return null
+        return index
+            .mapNotNull { entry -> entry.terms.mapNotNull { score(q, it) }.minOrNull()?.let { entry to it } }
+            .minWithOrNull(compareBy<Pair<Indexed, Int>> { it.second }.thenBy { it.first.name.length })
+            ?.let { it.first.id to it.second }
+    }
+
     /** Lower is better, null means no match. */
     private fun score(query: String, term: String): Int? {
         val words = term.split(' ')
