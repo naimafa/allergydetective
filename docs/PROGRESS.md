@@ -1,6 +1,6 @@
 # Fortschritt: Allergie-Detektiv
 
-**Aktuelle Phase:** Konzept ✅ → Setup ✅ → Phase 1: Daten-Herz ✅ → Phase 2: Skelett ✅ (auf `develop`) → Phase 3 ⏳
+**Aktuelle Phase:** Konzept ✅ → Setup ✅ → Phase 1: Daten-Herz ✅ → Phase 2: Skelett ✅ → Phase 3: Design ✅ (auf `develop`) → Phase 4: Self-Test ⏳
 **Letztes Update:** 17.11.2026
 **Zeiterfassung:** [ZEITPROTOKOLL.md](ZEITPROTOKOLL.md)
 
@@ -42,9 +42,11 @@
 - [x] Ergebnis-Screen (einfach): Spur/Verdacht/Starker Verdacht mit Begründung, nicht unterscheidbare Gruppen, gut vertragen, Allergie-Hinweis, Disclaimer
 - [x] Offene Punkte: Auto-Backup aus, freie Zeitwahl, Favoriten, eigene Zutaten, Onboarding, Tab-Bar mit Historie/Favoriten/Profil, Abend-Reminder, Vergleich im Ergebnis, Notruf je Region, Zahlenformat, Spracheingabe (Rest siehe OFFENE_PUNKTE.md)
 
-## Phase 3: Design & Content
-- [ ] Farben, Icons, Dark Mode
-- [ ] Pool mit 30–50 Motivations-Sprüchen
+## Phase 3: Design & Content ✅
+- [x] Farben (Petrol/Salbei/Koralle), Dark Mode, Typografie, Formen, Material-Icons
+- [x] Home: Tagesspruch, Fortschrittsring, farbige Kacheln; Symptom-Kacheln mit Symbolen und Gruppenfarben; Ergebnis-Karten nach Stufe; Gesichter/Sterne im Tages-Abschluss; Haptik beim Speichern
+- [ ] Schrift Inter (braucht eine Font-Datei im Projekt; aktuell System-Schrift)
+- [x] Pool mit 40 Tagessprüchen (EN/DE), wechselt täglich
 
 ## Phase 4: Self-Test
 - [ ] 7+ Tage selbst nutzen, Schwellenwerte kalibrieren
@@ -73,3 +75,4 @@
 | 16.11.2026 | Koin/Seeder nach `main` gemergt (PR #3). Repository Room → `AnalysisInput` (Branch `feature/analysis-repository`), 56 Unit-Tests grün. Im Emulator geprüft: 21-Tage-Test-Tagebuch in der echten Datenbank → Engine meldet Milcheiweiß, Laktose und Kuhmilch als Gruppe. **Phase 1 abgeschlossen** |
 | 17.11.2026 | Phase 2 auf `develop`: je Schritt ein Branch (`feature/app-shell`, `log-meal`, `log-symptom`, `day-check`, `results-screen`), lokal per `--no-ff` gemergt (keine GitHub-PRs, siehe OFFENE_PUNKTE.md). 91 Unit-Tests grün, jeder Screen im Emulator geprüft. **Phase 2 abgeschlossen** |
 | 17.11.2026 | Offene Phase-2-Punkte auf `develop` (10 Branches, je lokal gemergt). 128 Unit-Tests grün, jeder Schritt im Emulator geprüft; Spracheingabe nur bis zum System-Dialog (Emulator ohne Erkennung) |
+| 17.11.2026 | Phase 3 auf `develop` (Branches `design-theme`, `home-dashboard`, `symptom-tiles`, `design-polish`): neues Farbschema hell/dunkel, Icons, Dashboard mit Tagesspruch, Symptom-Symbole, Ergebnis-Karten. 130 Unit-Tests grün, im Emulator hell und dunkel geprüft. **Phase 3 abgeschlossen** |
