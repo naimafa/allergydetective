@@ -82,5 +82,8 @@
     <string name="meal_portion_medium">M</string>
     <string name="meal_portion_large">L</string>
     <string name="meal_remove">Entfernen</string>
+    <string name="meal_favorites">Favoriten</string>
+    <string name="meal_save_as_favorite">Als Favorit speichern</string>
+    <string name="meal_favorite_name">Name, z.B. Müsli mit Milch</string>
     <string name="meal_allergy_hint">Diese Mahlzeit enthält etwas, das du als bekannte Allergie hinterlegt hast.</string>
 </resources>

@@ -4,6 +4,9 @@ import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_save
 import allergydetective.shared.generated.resources.home_log_meal
 import allergydetective.shared.generated.resources.meal_allergy_hint
+import allergydetective.shared.generated.resources.meal_favorite_name
+import allergydetective.shared.generated.resources.meal_favorites
+import allergydetective.shared.generated.resources.meal_save_as_favorite
 import allergydetective.shared.generated.resources.meal_hours_ago
 import allergydetective.shared.generated.resources.meal_no_results
 import allergydetective.shared.generated.resources.meal_now
@@ -29,6 +32,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -99,6 +103,20 @@ private fun LogMealContent(state: LogMealState, viewModel: LogMealViewModel, mod
                 onExactSelected = viewModel::onExactTimeChange,
             )
         }
+        if (state.favorites.isNotEmpty()) {
+            item { SectionTitle(stringResource(Res.string.meal_favorites)) }
+            item {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    state.favorites.forEach { favorite ->
+                        FilterChip(
+                            selected = state.favoriteId == favorite.id,
+                            onClick = { viewModel.onFavoriteClick(favorite) },
+                            label = { Text(favorite.name) },
+                        )
+                    }
+                }
+            }
+        }
         if (state.recent.isNotEmpty()) {
             item { SectionTitle(stringResource(Res.string.meal_recent)) }
             item {
@@ -140,6 +158,23 @@ private fun LogMealContent(state: LogMealState, viewModel: LogMealViewModel, mod
             item { Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall) }
             items(state.selected, key = { "selected-${it.ingredient.id}" }) { item ->
                 SelectedRow(item, viewModel)
+            }
+            item {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = state.saveAsFavorite, onCheckedChange = viewModel::onSaveAsFavoriteChange)
+                    Text(stringResource(Res.string.meal_save_as_favorite))
+                }
+            }
+            if (state.saveAsFavorite) {
+                item {
+                    OutlinedTextField(
+                        value = state.favoriteName,
+                        onValueChange = viewModel::onFavoriteNameChange,
+                        label = { Text(stringResource(Res.string.meal_favorite_name)) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         }
         if (state.containsKnownAllergy) {

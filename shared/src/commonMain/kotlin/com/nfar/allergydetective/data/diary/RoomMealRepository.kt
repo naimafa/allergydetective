@@ -1,7 +1,10 @@
 package com.nfar.allergydetective.data.diary
 
 import com.nfar.allergydetective.data.db.dao.MealDao
+import com.nfar.allergydetective.data.db.entity.FavoriteEntity
+import com.nfar.allergydetective.data.db.entity.FavoriteIngredientEntity
 import com.nfar.allergydetective.data.db.entity.MealEntity
+import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.data.db.entity.MealIngredientEntity
 import com.nfar.allergydetective.data.db.model.PortionSize
 import com.nfar.allergydetective.domain.analysis.model.MealItem
@@ -21,13 +24,33 @@ class RoomMealRepository(private val dao: MealDao) : MealRepository {
 
     override suspend fun ingredientIdsWithKnownAllergy(): Set<Long> = dao.ingredientIdsWithKnownAllergy().toSet()
 
-    override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>): Long =
+    override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?): Long =
         dao.insertMealWithItems(
-            meal = MealEntity(eatenAt = eatenAt, tzOffsetMin = tzOffsetMin, favoriteId = null),
+            meal = MealEntity(eatenAt = eatenAt, tzOffsetMin = tzOffsetMin, favoriteId = favoriteId),
             items = items.map { MealIngredientEntity(mealId = 0, ingredientId = it.ingredientId, portion = it.portion.toEntity()) },
         )
 
+    override suspend fun favorites(): List<FavoriteInfo> {
+        val itemsByFavorite = dao.favoriteIngredients()
+            .groupBy({ it.favoriteId }, { MealItem(it.ingredientId, it.defaultPortion.toDomain()) })
+        return dao.favorites().map { FavoriteInfo(it.id, it.name, itemsByFavorite[it.id].orEmpty()) }
+    }
+
+    override suspend fun saveFavorite(name: String, items: List<MealItem>): Long =
+        dao.insertFavoriteWithItems(
+            favorite = FavoriteEntity(name = name),
+            items = items.map { FavoriteIngredientEntity(favoriteId = 0, ingredientId = it.ingredientId, defaultPortion = it.portion.toEntity()) },
+        )
+
+    override suspend fun deleteFavorite(favoriteId: Long) = dao.deleteFavorite(favoriteId)
+
     override suspend fun deleteMeal(mealId: Long) = dao.deleteMeal(mealId)
+}
+
+internal fun PortionSize.toDomain(): Portion = when (this) {
+    PortionSize.SMALL -> Portion.SMALL
+    PortionSize.MEDIUM -> Portion.MEDIUM
+    PortionSize.LARGE -> Portion.LARGE
 }
 
 internal fun Portion.toEntity(): PortionSize = when (this) {

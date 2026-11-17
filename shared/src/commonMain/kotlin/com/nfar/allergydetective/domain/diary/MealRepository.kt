@@ -9,6 +9,13 @@ data class IngredientInfo(
     val customName: String?,
 )
 
+/** A saved meal template, e.g. "Müsli" (UX 3.1). */
+data class FavoriteInfo(
+    val id: Long,
+    val name: String,
+    val items: List<MealItem>,
+)
+
 /** Write and read access for logging meals (UX 3.1). */
 interface MealRepository {
     suspend fun ingredients(): List<IngredientInfo>
@@ -22,8 +29,18 @@ interface MealRepository {
     /** Ingredients that contain a property stored as known allergy (TRD 2.6). */
     suspend fun ingredientIdsWithKnownAllergy(): Set<Long>
 
-    /** Saves the meal with its items in one transaction and returns its id. */
-    suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>): Long
+    /**
+     * Saves the meal with its items in one transaction and returns its id.
+     * [favoriteId] only records the origin, the items are always a snapshot (TRD 3.2).
+     */
+    suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long? = null): Long
+
+    /** Favorites with their default portions, sorted by name. */
+    suspend fun favorites(): List<FavoriteInfo>
+
+    suspend fun saveFavorite(name: String, items: List<MealItem>): Long
+
+    suspend fun deleteFavorite(favoriteId: Long)
 
     /** Undo of [saveMeal], removes the meal and its items. */
     suspend fun deleteMeal(mealId: Long)

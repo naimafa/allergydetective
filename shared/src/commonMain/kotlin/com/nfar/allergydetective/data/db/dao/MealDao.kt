@@ -4,6 +4,8 @@ import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.Query
 import androidx.room3.Transaction
+import com.nfar.allergydetective.data.db.entity.FavoriteEntity
+import com.nfar.allergydetective.data.db.entity.FavoriteIngredientEntity
 import com.nfar.allergydetective.data.db.entity.IngredientEntity
 import com.nfar.allergydetective.data.db.entity.IngredientSynonymEntity
 import com.nfar.allergydetective.data.db.entity.MealEntity
@@ -48,6 +50,42 @@ interface MealDao {
         val mealId = insertMeal(meal)
         insertMealIngredients(items.map { it.copy(mealId = mealId) })
         return mealId
+    }
+
+    @Query("SELECT * FROM favorites ORDER BY name COLLATE NOCASE")
+    suspend fun favorites(): List<FavoriteEntity>
+
+    @Query("SELECT * FROM favorite_ingredients ORDER BY favoriteId, ingredientId")
+    suspend fun favoriteIngredients(): List<FavoriteIngredientEntity>
+
+    @Insert
+    suspend fun insertFavorite(favorite: FavoriteEntity): Long
+
+    @Insert
+    suspend fun insertFavoriteIngredients(items: List<FavoriteIngredientEntity>)
+
+    @Transaction
+    suspend fun insertFavoriteWithItems(favorite: FavoriteEntity, items: List<FavoriteIngredientEntity>): Long {
+        val favoriteId = insertFavorite(favorite)
+        insertFavoriteIngredients(items.map { it.copy(favoriteId = favoriteId) })
+        return favoriteId
+    }
+
+    @Query("DELETE FROM favorite_ingredients WHERE favoriteId = :favoriteId")
+    suspend fun deleteFavoriteIngredients(favoriteId: Long)
+
+    @Query("UPDATE meals SET favoriteId = NULL WHERE favoriteId = :favoriteId")
+    suspend fun detachMealsFromFavorite(favoriteId: Long)
+
+    @Query("DELETE FROM favorites WHERE id = :favoriteId")
+    suspend fun deleteFavoriteRow(favoriteId: Long)
+
+    /** Meals keep their items (snapshot), only the reference to the favorite is removed. */
+    @Transaction
+    suspend fun deleteFavorite(favoriteId: Long) {
+        deleteFavoriteIngredients(favoriteId)
+        detachMealsFromFavorite(favoriteId)
+        deleteFavoriteRow(favoriteId)
     }
 
     @Query("DELETE FROM meal_ingredients WHERE mealId = :mealId")

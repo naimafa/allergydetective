@@ -2,6 +2,7 @@ package com.nfar.allergydetective.ui.meal
 
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Portion
+import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.time.AppClock
@@ -39,13 +40,66 @@ class LogMealViewModelTest {
         override suspend fun synonyms(language: String) = mapOf(101L to listOf("Semmel"))
         override suspend fun recentIngredientIds(limit: Int) = saved.flatMap { it.third }.map { it.ingredientId }.distinct().reversed()
         override suspend fun ingredientIdsWithKnownAllergy() = allergyIds
-        override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>): Long {
+        val mealFavoriteIds = mutableListOf<Long?>()
+        val favorites = mutableListOf<FavoriteInfo>()
+
+        override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?): Long {
             saved += Triple(eatenAt, tzOffsetMin, items)
+            mealFavoriteIds += favoriteId
             return saved.size.toLong()
         }
         override suspend fun deleteMeal(mealId: Long) {
             deleted += mealId
         }
+        override suspend fun favorites() = favorites.sortedBy { it.name }
+        override suspend fun saveFavorite(name: String, items: List<MealItem>): Long {
+            val id = 50L + favorites.size
+            favorites += FavoriteInfo(id, name, items)
+            return id
+        }
+        override suspend fun deleteFavorite(favoriteId: Long) {
+            favorites.removeAll { it.id == favoriteId }
+        }
+    }
+
+    @Test
+    fun favoriteAddsItsIngredientsWithTheirPortions() {
+        repository.favorites += FavoriteInfo(7, "Breakfast", listOf(MealItem(bread.id, Portion.SMALL), MealItem(milk.id, Portion.LARGE)))
+        val vm = viewModel()
+        vm.onToggleIngredient(bread)
+
+        vm.onFavoriteClick(vm.state.value.favorites.single())
+
+        assertEquals(listOf(SelectedIngredient(bread), SelectedIngredient(milk, Portion.LARGE)), vm.state.value.selected)
+        vm.onSave()
+        assertEquals(7L, repository.mealFavoriteIds.single())
+    }
+
+    @Test
+    fun mealCanBeSavedAsNewFavorite() {
+        val vm = viewModel()
+        vm.onToggleIngredient(milk)
+        vm.onSaveAsFavoriteChange(true)
+
+        assertFalse(vm.state.value.canSave)
+        vm.onFavoriteNameChange(" Latte ")
+        vm.onSave()
+
+        assertEquals(FavoriteInfo(50, "Latte", listOf(MealItem(milk.id, Portion.MEDIUM))), repository.favorites.single())
+        assertEquals(50L, repository.mealFavoriteIds.single())
+        assertEquals(listOf("Latte"), vm.state.value.favorites.map { it.name })
+        assertFalse(vm.state.value.saveAsFavorite)
+    }
+
+    @Test
+    fun clearingTheSelectionForgetsTheFavorite() {
+        repository.favorites += FavoriteInfo(7, "Milk", listOf(MealItem(milk.id, Portion.MEDIUM)))
+        val vm = viewModel()
+        vm.onFavoriteClick(vm.state.value.favorites.single())
+
+        vm.onToggleIngredient(milk)
+
+        assertNull(vm.state.value.favoriteId)
     }
 
     private val repository = FakeRepository(listOf(bread, milk))

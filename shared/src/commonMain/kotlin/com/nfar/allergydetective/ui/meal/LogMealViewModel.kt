@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Portion
+import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.IngredientSearch
 import com.nfar.allergydetective.domain.diary.LanguageProvider
@@ -12,8 +13,8 @@ import com.nfar.allergydetective.domain.diary.SearchEntry
 import com.nfar.allergydetective.domain.time.AppClock
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
 import com.nfar.allergydetective.ui.common.ExactTime
-import com.nfar.allergydetective.ui.common.timeOf
 import com.nfar.allergydetective.ui.common.NamePrefix
+import com.nfar.allergydetective.ui.common.timeOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,16 +28,21 @@ data class LogMealState(
     val query: String = "",
     val results: List<IngredientInfo> = emptyList(),
     val recent: List<IngredientInfo> = emptyList(),
+    val favorites: List<FavoriteInfo> = emptyList(),
     val selected: List<SelectedIngredient> = emptyList(),
     val hoursAgo: Int = 0,
     /** Picked in the time dialog, overrides [hoursAgo]. */
     val exactTime: ExactTime? = null,
+    /** Favorite the selection came from, stored as origin of the meal (TRD 3.2). */
+    val favoriteId: Long? = null,
+    val saveAsFavorite: Boolean = false,
+    val favoriteName: String = "",
     val saving: Boolean = false,
     /** Set after saving, so the screen can offer undo. Cleared with [LogMealViewModel.onSavedShown]. */
     val savedMealId: Long? = null,
     private val allergyIngredientIds: Set<Long> = emptySet(),
 ) {
-    val canSave: Boolean get() = selected.isNotEmpty() && !saving
+    val canSave: Boolean get() = selected.isNotEmpty() && !saving && (!saveAsFavorite || favoriteName.isNotBlank())
 
     /** UX 3.1: a gentle hint, saving stays possible. */
     val containsKnownAllergy: Boolean get() = selected.any { it.ingredient.id in allergyIngredientIds }
@@ -44,7 +50,7 @@ data class LogMealState(
     internal fun withAllergies(ids: Set<Long>) = copy(allergyIngredientIds = ids)
 }
 
-/** Food log (UX 3.1): time, recent ingredients, search, portions, save with undo. */
+/** Food log (UX 3.1): time, favorites, recent ingredients, search, portions, save with undo. */
 class LogMealViewModel(
     private val repository: MealRepository,
     private val clock: AppClock,
@@ -70,12 +76,21 @@ class LogMealViewModel(
             ingredients.map { SearchEntry(it.id, displayName(it), synonyms[it.id].orEmpty()) },
         )
         val allergies = repository.ingredientIdsWithKnownAllergy()
-        val recent = repository.recentIngredientIds(RECENT_LIMIT).mapNotNull { ingredientsById[it] }
-        _state.update { it.copy(loading = false, recent = recent).withAllergies(allergies) }
+        val recent = recentIngredients()
+        val favorites = repository.favorites()
+        _state.update { it.copy(loading = false, recent = recent, favorites = favorites).withAllergies(allergies) }
+    }
+
+    /** Re-reads the ingredients, e.g. after a custom ingredient was added. */
+    fun reloadIngredients() {
+        viewModelScope.launch { load() }
     }
 
     private suspend fun displayName(ingredient: IngredientInfo): String =
         ingredient.key?.let { names.name(NamePrefix.INGREDIENT, it) } ?: ingredient.customName.orEmpty()
+
+    private suspend fun recentIngredients(): List<IngredientInfo> =
+        repository.recentIngredientIds(RECENT_LIMIT).mapNotNull { ingredientsById[it] }
 
     fun onQueryChange(query: String) {
         _state.update { it.copy(query = query, results = search.search(query).mapNotNull(ingredientsById::get)) }
@@ -97,7 +112,23 @@ class LogMealViewModel(
             } else {
                 state.selected + SelectedIngredient(ingredient)
             }
-            state.copy(selected = selected, query = "", results = emptyList())
+            state.copy(
+                selected = selected,
+                query = "",
+                results = emptyList(),
+                favoriteId = state.favoriteId.takeIf { selected.isNotEmpty() },
+            )
+        }
+    }
+
+    /** Adds the ingredients of a favorite with their default portions (UX 3.1). */
+    fun onFavoriteClick(favorite: FavoriteInfo) {
+        _state.update { state ->
+            val known = state.selected.map { it.ingredient.id }.toSet()
+            val added = favorite.items
+                .filter { it.ingredientId !in known }
+                .mapNotNull { item -> ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion) } }
+            state.copy(selected = state.selected + added, favoriteId = favorite.id)
         }
     }
 
@@ -107,20 +138,50 @@ class LogMealViewModel(
         }
     }
 
+    fun onSaveAsFavoriteChange(enabled: Boolean) {
+        _state.update { it.copy(saveAsFavorite = enabled) }
+    }
+
+    fun onFavoriteNameChange(name: String) {
+        _state.update { it.copy(favoriteName = name) }
+    }
+
     fun onSave() {
         val current = _state.value
         if (!current.canSave) return
         _state.update { it.copy(saving = true) }
         viewModelScope.launch {
+            val items = current.selected.map { MealItem(it.ingredient.id, it.portion) }
+            val favoriteId = if (current.saveAsFavorite) {
+                repository.saveFavorite(current.favoriteName.trim(), items)
+            } else {
+                current.favoriteId
+            }
             val eatenAt = clock.timeOf(current.exactTime, current.hoursAgo * MINUTES_PER_HOUR)
             val mealId = repository.saveMeal(
                 eatenAt = eatenAt,
                 tzOffsetMin = clock.offsetMinAt(eatenAt),
-                items = current.selected.map { MealItem(it.ingredient.id, it.portion) },
+                items = items,
+                favoriteId = favoriteId,
             )
-            val recent = repository.recentIngredientIds(RECENT_LIMIT).mapNotNull { ingredientsById[it] }
+            val recent = recentIngredients()
+            val favorites = repository.favorites()
+            // Back to a fresh form; allergies and catalog stay as loaded.
             _state.update {
-                it.copy(saving = false, selected = emptyList(), hoursAgo = 0, exactTime = null, savedMealId = mealId, recent = recent)
+                it.copy(
+                    query = "",
+                    results = emptyList(),
+                    selected = emptyList(),
+                    hoursAgo = 0,
+                    exactTime = null,
+                    favoriteId = null,
+                    saveAsFavorite = false,
+                    favoriteName = "",
+                    saving = false,
+                    savedMealId = mealId,
+                    recent = recent,
+                    favorites = favorites,
+                )
             }
         }
     }
@@ -128,7 +189,7 @@ class LogMealViewModel(
     fun onUndo(mealId: Long) {
         viewModelScope.launch {
             repository.deleteMeal(mealId)
-            val recent = repository.recentIngredientIds(RECENT_LIMIT).mapNotNull { ingredientsById[it] }
+            val recent = recentIngredients()
             _state.update { it.copy(recent = recent) }
         }
     }
