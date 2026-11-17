@@ -1,7 +1,7 @@
 # Fortschritt: Allergie-Detektiv
 
-**Aktuelle Phase:** Konzept ✅ → Setup ✅ → Phase 1: Daten-Herz ✅ → Phase 2: Skelett ⏳
-**Letztes Update:** 16.11.2026
+**Aktuelle Phase:** Konzept ✅ → Setup ✅ → Phase 1: Daten-Herz ✅ → Phase 2: Skelett ✅ (auf `develop`) → Phase 3 ⏳
+**Letztes Update:** 17.11.2026
 **Zeiterfassung:** [ZEITPROTOKOLL.md](ZEITPROTOKOLL.md)
 
 ---
@@ -32,10 +32,15 @@
 - [x] Gruppierung nicht unterscheidbarer Kandidaten (TRD 2.7): `AnalysisResult.groups`, Schwellenwerte in `GroupingThresholds`
 - [x] Repository: Room-Daten → `AnalysisInput` (`AnalysisDao`, `AnalysisRepository`, `RoomAnalysisRepository`, in Koin registriert; im Emulator mit Test-Tagebuch geprüft)
 
-## Phase 2: Skelett (funktionales UI)
-- [ ] Essen loggen, Symptom melden, Tages-Abschluss
-- [ ] Notfall-Hinweis
-- [ ] Ergebnis-Screen (einfach)
+## Phase 2: Skelett (funktionales UI) ✅
+- [x] Grundgerüst: Navigation (Navigation Compose), Theme mit Petrol/Salbei/Koralle, `AppClock`, Texte EN/DE
+- [x] Essen loggen: Zeit-Chips, zuletzt gegessen, lokale Suche (Synonyme, Umlaute, Tippfehler), Portion S/M/L, Hinweis bei bekannter Allergie, Speichern mit Rückgängig
+- [x] Symptom melden: Grid nach Gruppen, häufigste oben, Overlay (Stärke 1–5, Zeit, Notiz), Schnell-Log per langem Drücken, Rückgängig
+- [x] Notfall-Hinweis vor Schwellung und Atemnot, mit Notruf-Button (112)
+- [x] Tages-Abschluss: Wohlbefinden, Schlaf, Stress, Tages-Faktoren, Status; bis 2 Tage nachtragen; "Keine Beschwerden" gesperrt, wenn Symptome eingetragen sind
+- [x] Home: Fortschritt "Tag X von 7" aus bestätigten Tagen
+- [x] Ergebnis-Screen (einfach): Spur/Verdacht/Starker Verdacht mit Begründung, nicht unterscheidbare Gruppen, gut vertragen, Allergie-Hinweis, Disclaimer
+- [ ] Favoriten, Spracheingabe, eigene Zutaten, Tab-Bar, Abend-Reminder, Onboarding (bekannte Allergien) → offen, siehe OFFENE_PUNKTE.md
 
 ## Phase 3: Design & Content
 - [ ] Farben, Icons, Dark Mode
@@ -66,3 +71,4 @@
 | 16.11.2026 | Engine nach `main` gemergt (PR #1). Gruppierung TRD 2.7 test-first (Branch `feature/candidate-grouping`), Gradle-Tests lokal grün |
 | 16.11.2026 | Gruppierung nach `main` gemergt (PR #2). Koin eingebunden, Seeder läuft beim App-Start (Branch `feature/koin-seeder`). Im Emulator geprüft: 12 Kategorien, 26 Trigger, 112 Zutaten, 24 Symptome, 3 Lifestyle-Faktoren; zweiter Start fügt nichts doppelt ein. iOS-Teil ungebaut (kein Mac) |
 | 16.11.2026 | Koin/Seeder nach `main` gemergt (PR #3). Repository Room → `AnalysisInput` (Branch `feature/analysis-repository`), 56 Unit-Tests grün. Im Emulator geprüft: 21-Tage-Test-Tagebuch in der echten Datenbank → Engine meldet Milcheiweiß, Laktose und Kuhmilch als Gruppe. **Phase 1 abgeschlossen** |
+| 17.11.2026 | Phase 2 auf `develop`: je Schritt ein Branch (`feature/app-shell`, `log-meal`, `log-symptom`, `day-check`, `results-screen`), lokal per `--no-ff` gemergt (keine GitHub-PRs, siehe OFFENE_PUNKTE.md). 91 Unit-Tests grün, jeder Screen im Emulator geprüft. **Phase 2 abgeschlossen** |
