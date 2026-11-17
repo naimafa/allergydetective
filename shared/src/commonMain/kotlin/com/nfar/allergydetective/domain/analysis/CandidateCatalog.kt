@@ -7,6 +7,7 @@ data class CandidateKeys(
     val ingredients: Map<Long, IngredientInfo>,
     val properties: Map<Long, String>,
     val factors: Map<Long, String>,
+    val symptoms: Map<Long, String> = emptyMap(),
 )
 
 fun interface CandidateCatalog {

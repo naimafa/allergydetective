@@ -16,5 +16,6 @@ class RoomCandidateCatalog(
         ingredients = mealDao.ingredients().associate { it.id to IngredientInfo(it.id, it.key, it.customName) },
         properties = analysisDao.properties().associate { it.id to it.key },
         factors = dayCheckDao.lifestyleFactors().associate { it.id to it.key },
+        symptoms = analysisDao.symptoms().associate { it.id to it.key },
     )
 }

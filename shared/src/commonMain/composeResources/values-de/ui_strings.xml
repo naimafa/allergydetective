@@ -48,6 +48,9 @@
     <string name="common_undo">Rückgängig</string>
     <string name="common_saved">Gespeichert</string>
     <string name="common_cancel">Abbrechen</string>
+    <string name="export_title">Daten exportieren (Self-Test)</string>
+    <string name="export_hint">Deine Einträge und die Kennzahlen der Analyse als JSON-Datei, ohne Notizen. Wohin sie geht, entscheidest du. Hilfreich, um nach der ersten Woche die Schwellenwerte zu prüfen.</string>
+    <string name="export_button">Als JSON exportieren</string>
     <string name="reminder_setting">Abend-Erinnerung</string>
     <string name="reminder_setting_hint">Ein täglicher Hinweis zum Tages-Abschluss. Entfällt, wenn der Tag schon bestätigt ist.</string>
     <string name="reminder_denied">Benachrichtigungen sind für die App ausgeschaltet. Du kannst sie in den Systemeinstellungen erlauben.</string>

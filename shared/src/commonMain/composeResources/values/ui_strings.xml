@@ -48,6 +48,9 @@
     <string name="common_undo">Undo</string>
     <string name="common_saved">Saved</string>
     <string name="common_cancel">Cancel</string>
+    <string name="export_title">Export data (self-test)</string>
+    <string name="export_hint">Your entries and the analysis numbers as a JSON file, without notes. You choose where to send it. Useful for checking the thresholds after the first week.</string>
+    <string name="export_button">Export as JSON</string>
     <string name="reminder_setting">Evening reminder</string>
     <string name="reminder_setting_hint">A daily notice for the day check. Skipped when the day is already confirmed.</string>
     <string name="reminder_denied">Notifications are turned off for this app. You can allow them in the system settings.</string>
