@@ -10,4 +10,21 @@
     <string name="common_back">Zurück</string>
     <string name="common_undo">Rückgängig</string>
     <string name="common_saved">Gespeichert</string>
+
+    <string name="meal_when">Wann?</string>
+    <string name="meal_now">Jetzt</string>
+    <plurals name="meal_hours_ago">
+        <item quantity="one">vor %1$d Stunde</item>
+        <item quantity="other">vor %1$d Stunden</item>
+    </plurals>
+    <string name="meal_recent">Zuletzt gegessen</string>
+    <string name="meal_search">Zutat suchen …</string>
+    <string name="meal_no_results">Nichts gefunden.</string>
+    <string name="meal_selected">Ausgewählt</string>
+    <string name="meal_portion_help">S = ein paar Bissen oder ½ Glas · M = eine Faust oder 1 Glas · L = zwei Fäuste oder 2 Gläser</string>
+    <string name="meal_portion_small">S</string>
+    <string name="meal_portion_medium">M</string>
+    <string name="meal_portion_large">L</string>
+    <string name="meal_remove">Entfernen</string>
+    <string name="meal_allergy_hint">Diese Mahlzeit enthält etwas, das du als bekannte Allergie hinterlegt hast.</string>
 </resources>

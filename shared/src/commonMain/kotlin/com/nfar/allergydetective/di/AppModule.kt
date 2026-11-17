@@ -9,7 +9,14 @@ import com.nfar.allergydetective.data.db.dao.SeedDao
 import com.nfar.allergydetective.data.seed.DatabaseSeeder
 import com.nfar.allergydetective.domain.analysis.AnalysisEngine
 import com.nfar.allergydetective.domain.analysis.AnalysisRepository
+import androidx.compose.ui.text.intl.Locale
+import com.nfar.allergydetective.data.db.dao.MealDao
+import com.nfar.allergydetective.data.diary.RoomMealRepository
+import com.nfar.allergydetective.domain.diary.LanguageProvider
+import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.time.AppClock
+import com.nfar.allergydetective.ui.meal.LogMealViewModel
+import org.koin.core.module.dsl.viewModelOf
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
 import com.nfar.allergydetective.ui.common.ResourceDisplayNameResolver
 import kotlinx.coroutines.CoroutineScope
@@ -40,6 +47,11 @@ val appModule = module {
     single { DatabaseSeeder(dao = get()) }
     single<AnalysisRepository> { RoomAnalysisRepository(dao = get()) }
     single { AppClock() }
+    single<LanguageProvider> { LanguageProvider { Locale.current.language } }
+
+    single<MealDao> { get<AppDatabase>().mealDao() }
+    single<MealRepository> { RoomMealRepository(dao = get()) }
+    viewModelOf(::LogMealViewModel)
     single<DisplayNameResolver> { ResourceDisplayNameResolver() }
     single { AnalysisEngine() }
     single { AppStartup(seeder = get(), scope = get(AppScope)) }
