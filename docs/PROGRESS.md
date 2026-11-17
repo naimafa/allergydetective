@@ -50,7 +50,7 @@
 
 ## Phase 4: Self-Test
 - [x] Vorbereitung: JSON-Export im Profil, Anleitung [SELFTEST.md](SELFTEST.md), Exporte per `.gitignore` geschützt
-- [ ] App auf dem eigenen Handy installieren (`develop`)
+- [x] App auf dem eigenen Handy installiert (`develop`, 17.11.2026)
 - [ ] 7+ Tage selbst nutzen, Notizen führen (SELFTEST.md, Kapitel 3)
 - [ ] Export + Notizen auswerten, Schwellenwerte in `AnalysisConfig` kalibrieren
 
