@@ -10,6 +10,22 @@
     <string name="common_back">Zurück</string>
     <string name="common_undo">Rückgängig</string>
     <string name="common_saved">Gespeichert</string>
+    <string name="common_cancel">Abbrechen</string>
+
+    <string name="symptom_long_press_hint">Tippen für Details. Lange drücken speichert sofort (mittel, jetzt).</string>
+    <string name="symptom_favorites">Am häufigsten</string>
+    <string name="symptom_how_strong">Wie stark?</string>
+    <string name="symptom_intensity_range">1 = leicht · 5 = stark</string>
+    <string name="symptom_when">Wann ging es los?</string>
+    <plurals name="symptom_minutes_ago">
+        <item quantity="one">vor %1$d Minute</item>
+        <item quantity="other">vor %1$d Minuten</item>
+    </plurals>
+    <string name="symptom_note">Notiz (optional)</string>
+    <string name="emergency_title">Wichtig</string>
+    <string name="emergency_text">Atemnot oder eine Schwellung an Mund, Zunge oder Hals können ein Notfall sein. Im Zweifel Hilfe rufen.</string>
+    <string name="emergency_call">Notruf %1$s</string>
+    <string name="emergency_continue">Weiter eintragen</string>
 
     <string name="meal_when">Wann?</string>
     <string name="meal_now">Jetzt</string>

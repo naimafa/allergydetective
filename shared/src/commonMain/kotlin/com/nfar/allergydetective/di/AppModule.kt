@@ -16,6 +16,10 @@ import com.nfar.allergydetective.domain.diary.LanguageProvider
 import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.time.AppClock
 import com.nfar.allergydetective.ui.meal.LogMealViewModel
+import com.nfar.allergydetective.data.db.dao.SymptomDao
+import com.nfar.allergydetective.data.diary.RoomSymptomRepository
+import com.nfar.allergydetective.domain.diary.SymptomRepository
+import com.nfar.allergydetective.ui.symptom.LogSymptomViewModel
 import org.koin.core.module.dsl.viewModelOf
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
 import com.nfar.allergydetective.ui.common.ResourceDisplayNameResolver
@@ -52,6 +56,10 @@ val appModule = module {
     single<MealDao> { get<AppDatabase>().mealDao() }
     single<MealRepository> { RoomMealRepository(dao = get()) }
     viewModelOf(::LogMealViewModel)
+
+    single<SymptomDao> { get<AppDatabase>().symptomDao() }
+    single<SymptomRepository> { RoomSymptomRepository(dao = get()) }
+    viewModelOf(::LogSymptomViewModel)
     single<DisplayNameResolver> { ResourceDisplayNameResolver() }
     single { AnalysisEngine() }
     single { AppStartup(seeder = get(), scope = get(AppScope)) }
