@@ -5,6 +5,7 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import com.nfar.allergydetective.data.db.dao.AnalysisDao
+import com.nfar.allergydetective.data.db.dao.DayCheckDao
 import com.nfar.allergydetective.data.db.dao.MealDao
 import com.nfar.allergydetective.data.db.dao.SymptomDao
 import com.nfar.allergydetective.data.db.dao.SeedDao
@@ -62,6 +63,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun analysisDao(): AnalysisDao
     abstract fun mealDao(): MealDao
     abstract fun symptomDao(): SymptomDao
+    abstract fun dayCheckDao(): DayCheckDao
 }
 
 // Room's KSP processor generates the actual implementations for each platform.

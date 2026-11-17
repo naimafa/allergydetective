@@ -20,6 +20,11 @@ import com.nfar.allergydetective.data.db.dao.SymptomDao
 import com.nfar.allergydetective.data.diary.RoomSymptomRepository
 import com.nfar.allergydetective.domain.diary.SymptomRepository
 import com.nfar.allergydetective.ui.symptom.LogSymptomViewModel
+import com.nfar.allergydetective.data.db.dao.DayCheckDao
+import com.nfar.allergydetective.data.diary.RoomDayCheckRepository
+import com.nfar.allergydetective.domain.diary.DayCheckRepository
+import com.nfar.allergydetective.ui.daycheck.DayCheckViewModel
+import com.nfar.allergydetective.ui.home.HomeViewModel
 import org.koin.core.module.dsl.viewModelOf
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
 import com.nfar.allergydetective.ui.common.ResourceDisplayNameResolver
@@ -60,6 +65,11 @@ val appModule = module {
     single<SymptomDao> { get<AppDatabase>().symptomDao() }
     single<SymptomRepository> { RoomSymptomRepository(dao = get()) }
     viewModelOf(::LogSymptomViewModel)
+
+    single<DayCheckDao> { get<AppDatabase>().dayCheckDao() }
+    single<DayCheckRepository> { RoomDayCheckRepository(dao = get()) }
+    viewModelOf(::DayCheckViewModel)
+    viewModelOf(::HomeViewModel)
     single<DisplayNameResolver> { ResourceDisplayNameResolver() }
     single { AnalysisEngine() }
     single { AppStartup(seeder = get(), scope = get(AppScope)) }

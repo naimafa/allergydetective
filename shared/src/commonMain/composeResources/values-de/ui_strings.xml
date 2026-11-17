@@ -6,6 +6,28 @@
     <string name="home_log_symptom">Symptom melden</string>
     <string name="home_day_check">Tages-Abschluss</string>
     <string name="home_results">Deine Spuren</string>
+    <string name="home_progress_collecting">Tag %1$d von %2$d – wir sammeln Spuren</string>
+    <plurals name="home_progress_ready">
+        <item quantity="one">%1$d bestätigter Tag – deine erste Auswertung ist bereit</item>
+        <item quantity="other">%1$d bestätigte Tage – deine Auswertung ist bereit</item>
+    </plurals>
+
+    <string name="day_today">Heute</string>
+    <string name="day_yesterday">Gestern</string>
+    <string name="day_two_days_ago">Vorgestern</string>
+    <string name="day_confirmed_mark">%1$s ✓</string>
+    <string name="day_wellbeing">Wie ging es dir an dem Tag?</string>
+    <string name="day_sleep">Schlaf in der Nacht davor</string>
+    <string name="day_hours">%1$s h</string>
+    <string name="day_sleep_quality">Schlafqualität</string>
+    <string name="day_stress">Stress an dem Tag</string>
+    <string name="day_scale_hint">1 = wenig · 5 = viel</string>
+    <string name="day_factors">Besonderes? (optional)</string>
+    <string name="day_complaints">Beschwerden an dem Tag?</string>
+    <string name="day_no_complaints">Keine Beschwerden</string>
+    <string name="day_no_complaints_disabled">Für diesen Tag sind Symptome eingetragen. Bitte „Alles eingetragen“ wählen.</string>
+    <string name="day_all_logged">Alles eingetragen</string>
+    <string name="day_later">Noch nachtragen</string>
     <string name="common_save">Speichern</string>
     <string name="common_back">Zurück</string>
     <string name="common_undo">Rückgängig</string>

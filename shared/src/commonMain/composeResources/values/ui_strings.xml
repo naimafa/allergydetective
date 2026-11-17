@@ -6,6 +6,28 @@
     <string name="home_log_symptom">Report symptom</string>
     <string name="home_day_check">Day check</string>
     <string name="home_results">Your clues</string>
+    <string name="home_progress_collecting">Day %1$d of %2$d – collecting clues</string>
+    <plurals name="home_progress_ready">
+        <item quantity="one">%1$d confirmed day – your first evaluation is ready</item>
+        <item quantity="other">%1$d confirmed days – your evaluation is ready</item>
+    </plurals>
+
+    <string name="day_today">Today</string>
+    <string name="day_yesterday">Yesterday</string>
+    <string name="day_two_days_ago">2 days ago</string>
+    <string name="day_confirmed_mark">%1$s ✓</string>
+    <string name="day_wellbeing">How did you feel that day?</string>
+    <string name="day_sleep">Sleep the night before</string>
+    <string name="day_hours">%1$s h</string>
+    <string name="day_sleep_quality">Sleep quality</string>
+    <string name="day_stress">Stress that day</string>
+    <string name="day_scale_hint">1 = low · 5 = high</string>
+    <string name="day_factors">Anything special? (optional)</string>
+    <string name="day_complaints">Complaints that day?</string>
+    <string name="day_no_complaints">No complaints</string>
+    <string name="day_no_complaints_disabled">You logged symptoms on this day, so please choose “Everything logged”.</string>
+    <string name="day_all_logged">Everything logged</string>
+    <string name="day_later">I will add more later</string>
     <string name="common_save">Save</string>
     <string name="common_back">Back</string>
     <string name="common_undo">Undo</string>
