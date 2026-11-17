@@ -48,6 +48,17 @@
     <string name="common_undo">Undo</string>
     <string name="common_saved">Saved</string>
     <string name="common_cancel">Cancel</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_history">History</string>
+    <string name="tab_favorites">Favourites</string>
+    <string name="tab_profile">Profile</string>
+    <string name="history_empty">No entries in the last 14 days.</string>
+    <string name="history_day_confirmed">day confirmed</string>
+    <string name="history_day_open">not confirmed</string>
+    <string name="history_intensity">strength %1$d</string>
+    <string name="history_delete">Delete</string>
+    <string name="history_delete_question">Delete this entry? This cannot be undone.</string>
+    <string name="favorites_empty">No favourites yet. You can save a meal as favourite when logging food.</string>
     <string name="onboarding_welcome">Welcome! You log what you eat, how you feel and how your day was. The app looks for patterns in your entries.</string>
     <string name="onboarding_purpose_title">What this app is and is not</string>
     <string name="onboarding_purpose">It is a diary for self-observation. It does not make diagnoses and does not replace a doctor. Everything stays on your phone.</string>

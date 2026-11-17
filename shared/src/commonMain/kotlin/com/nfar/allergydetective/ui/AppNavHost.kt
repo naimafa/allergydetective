@@ -1,19 +1,15 @@
 package com.nfar.allergydetective.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nfar.allergydetective.ui.daycheck.DayCheckScreen
 import com.nfar.allergydetective.ui.results.ResultsScreen
-import com.nfar.allergydetective.ui.home.HomeProgress
-import com.nfar.allergydetective.ui.home.HomeViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.nfar.allergydetective.ui.home.HomeAction
-import com.nfar.allergydetective.ui.home.HomeScreen
 import com.nfar.allergydetective.ui.meal.LogMealScreen
 import com.nfar.allergydetective.ui.profile.OnboardingScreen
 import com.nfar.allergydetective.ui.symptom.LogSymptomScreen
@@ -54,12 +50,8 @@ fun AppNavHost(startViewModel: StartViewModel = koinViewModel()) {
             )
         }
         composable<HomeRoute> {
-            val homeViewModel: HomeViewModel = koinViewModel()
-            val confirmedDays by homeViewModel.confirmedDays.collectAsStateWithLifecycle()
-            LaunchedEffect(Unit) { homeViewModel.refresh() }
-            HomeScreen(
-                header = { confirmedDays?.let { HomeProgress(it) } },
-                onAction = { action ->
+            MainScreen(
+                onHomeAction = { action ->
                     when (action) {
                         HomeAction.LOG_MEAL -> navController.navigate(LogMealRoute)
                         HomeAction.LOG_SYMPTOM -> navController.navigate(LogSymptomRoute)

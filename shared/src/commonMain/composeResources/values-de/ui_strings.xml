@@ -48,6 +48,17 @@
     <string name="common_undo">Rückgängig</string>
     <string name="common_saved">Gespeichert</string>
     <string name="common_cancel">Abbrechen</string>
+    <string name="tab_home">Start</string>
+    <string name="tab_history">Historie</string>
+    <string name="tab_favorites">Favoriten</string>
+    <string name="tab_profile">Profil</string>
+    <string name="history_empty">Keine Einträge in den letzten 14 Tagen.</string>
+    <string name="history_day_confirmed">Tag bestätigt</string>
+    <string name="history_day_open">nicht bestätigt</string>
+    <string name="history_intensity">Stärke %1$d</string>
+    <string name="history_delete">Löschen</string>
+    <string name="history_delete_question">Diesen Eintrag löschen? Das lässt sich nicht rückgängig machen.</string>
+    <string name="favorites_empty">Noch keine Favoriten. Beim Essen loggen kannst du eine Mahlzeit als Favorit speichern.</string>
     <string name="onboarding_welcome">Willkommen! Du trägst ein, was du isst, wie es dir geht und wie dein Tag war. Die App sucht Muster in deinen Einträgen.</string>
     <string name="onboarding_purpose_title">Was die App ist und was nicht</string>
     <string name="onboarding_purpose">Sie ist ein Tagebuch zur Selbstbeobachtung. Sie stellt keine Diagnosen und ersetzt keinen Arztbesuch. Alles bleibt auf deinem Handy.</string>
