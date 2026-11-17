@@ -7,7 +7,14 @@ import allergydetective.shared.generated.resources.tab_history
 import allergydetective.shared.generated.resources.tab_home
 import allergydetective.shared.generated.resources.tab_profile
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -38,12 +45,12 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-/** Bottom tabs (UX 6). Emojis stand in for icons until the design phase. */
-enum class MainTab(val icon: String, val label: StringResource) {
-    HOME("🏠", Res.string.tab_home),
-    HISTORY("📖", Res.string.tab_history),
-    FAVORITES("⭐", Res.string.tab_favorites),
-    PROFILE("👤", Res.string.tab_profile),
+/** Bottom tabs (UX 6). */
+enum class MainTab(val icon: ImageVector, val label: StringResource) {
+    HOME(Icons.Outlined.Home, Res.string.tab_home),
+    HISTORY(Icons.Outlined.History, Res.string.tab_history),
+    FAVORITES(Icons.Outlined.StarOutline, Res.string.tab_favorites),
+    PROFILE(Icons.Outlined.Person, Res.string.tab_profile),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,7 +68,7 @@ fun MainScreen(onHomeAction: (HomeAction) -> Unit, profileExtra: @Composable () 
                     NavigationBarItem(
                         selected = tab == entry,
                         onClick = { tab = entry },
-                        icon = { Text(entry.icon) },
+                        icon = { Icon(entry.icon, contentDescription = null) },
                         label = { Text(stringResource(entry.label)) },
                     )
                 }
