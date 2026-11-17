@@ -49,7 +49,10 @@
 - [x] Pool mit 40 Tagessprüchen (EN/DE), wechselt täglich
 
 ## Phase 4: Self-Test
-- [ ] 7+ Tage selbst nutzen, Schwellenwerte kalibrieren
+- [x] Vorbereitung: JSON-Export im Profil, Anleitung [SELFTEST.md](SELFTEST.md), Exporte per `.gitignore` geschützt
+- [ ] App auf dem eigenen Handy installieren (`develop`)
+- [ ] 7+ Tage selbst nutzen, Notizen führen (SELFTEST.md, Kapitel 3)
+- [ ] Export + Notizen auswerten, Schwellenwerte in `AnalysisConfig` kalibrieren
 
 ## Später
 - [ ] Zeitfenster und Trigger fachlich prüfen
@@ -76,3 +79,4 @@
 | 17.11.2026 | Phase 2 auf `develop`: je Schritt ein Branch (`feature/app-shell`, `log-meal`, `log-symptom`, `day-check`, `results-screen`), lokal per `--no-ff` gemergt (keine GitHub-PRs, siehe OFFENE_PUNKTE.md). 91 Unit-Tests grün, jeder Screen im Emulator geprüft. **Phase 2 abgeschlossen** |
 | 17.11.2026 | Offene Phase-2-Punkte auf `develop` (10 Branches, je lokal gemergt). 128 Unit-Tests grün, jeder Schritt im Emulator geprüft; Spracheingabe nur bis zum System-Dialog (Emulator ohne Erkennung) |
 | 17.11.2026 | Phase 3 auf `develop` (Branches `design-theme`, `home-dashboard`, `symptom-tiles`, `design-polish`): neues Farbschema hell/dunkel, Icons, Dashboard mit Tagesspruch, Symptom-Symbole, Ergebnis-Karten. 130 Unit-Tests grün, im Emulator hell und dunkel geprüft. **Phase 3 abgeschlossen** |
+| 17.11.2026 | Phase 4 vorbereitet: JSON-Export für die Kalibrierung (`feature/data-export`), Anleitung SELFTEST.md. Installation aufs Handy steht aus (Handy nicht verbunden) |
