@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,10 +32,11 @@ enum class HomeAction(val label: StringResource) {
 @Composable
 fun HomeScreen(
     onAction: (HomeAction) -> Unit,
+    modifier: Modifier = Modifier,
     header: @Composable () -> Unit = {},
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(16.dp),
+        modifier = modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(stringResource(Res.string.home_title), style = MaterialTheme.typography.headlineMedium)
