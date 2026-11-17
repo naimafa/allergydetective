@@ -25,6 +25,10 @@ import com.nfar.allergydetective.data.diary.RoomDayCheckRepository
 import com.nfar.allergydetective.domain.diary.DayCheckRepository
 import com.nfar.allergydetective.ui.daycheck.DayCheckViewModel
 import com.nfar.allergydetective.ui.home.HomeViewModel
+import com.nfar.allergydetective.data.analysis.RoomCandidateCatalog
+import com.nfar.allergydetective.domain.analysis.CandidateCatalog
+import com.nfar.allergydetective.ui.results.ResultsViewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
 import com.nfar.allergydetective.ui.common.ResourceDisplayNameResolver
@@ -38,6 +42,9 @@ import kotlin.coroutines.CoroutineContext
 
 /** Context for blocking work such as database queries. Injected so tests can replace it. */
 val IoContext = named("ioContext")
+
+/** Context for CPU-heavy work such as the analysis. */
+val ComputeContext = named("computeContext")
 
 /** Scope that lives as long as the process, for work that must not be tied to a screen. */
 val AppScope = named("appScope")
@@ -70,6 +77,18 @@ val appModule = module {
     single<DayCheckRepository> { RoomDayCheckRepository(dao = get()) }
     viewModelOf(::DayCheckViewModel)
     viewModelOf(::HomeViewModel)
+
+    single<CoroutineContext>(ComputeContext) { Dispatchers.Default }
+    single<CandidateCatalog> { RoomCandidateCatalog(analysisDao = get(), mealDao = get(), dayCheckDao = get()) }
+    viewModel {
+        ResultsViewModel(
+            repository = get(),
+            engine = get(),
+            catalog = get(),
+            clock = get(),
+            computeContext = get(ComputeContext),
+        )
+    }
     single<DisplayNameResolver> { ResourceDisplayNameResolver() }
     single { AnalysisEngine() }
     single { AppStartup(seeder = get(), scope = get(AppScope)) }
