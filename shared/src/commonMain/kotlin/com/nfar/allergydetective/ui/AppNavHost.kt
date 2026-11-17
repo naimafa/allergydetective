@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nfar.allergydetective.ui.home.HomeAction
 import com.nfar.allergydetective.ui.home.HomeScreen
 import com.nfar.allergydetective.ui.meal.LogMealScreen
+import com.nfar.allergydetective.ui.profile.OnboardingScreen
 import com.nfar.allergydetective.ui.symptom.LogSymptomScreen
 import kotlinx.serialization.Serializable
 
@@ -34,11 +35,24 @@ data object DayCheckRoute
 @Serializable
 data object ResultsRoute
 
+@Serializable
+data object OnboardingRoute
+
 @Composable
-fun AppNavHost() {
+fun AppNavHost(startViewModel: StartViewModel = koinViewModel()) {
+    val onboardingCompleted by startViewModel.onboardingCompleted.collectAsStateWithLifecycle()
+    // Nothing to show until we know whether this is the first start.
+    val completed = onboardingCompleted ?: return
     val navController = rememberNavController()
     val back: () -> Unit = { navController.popBackStack() }
-    NavHost(navController = navController, startDestination = HomeRoute) {
+    NavHost(navController = navController, startDestination = if (completed) HomeRoute else OnboardingRoute) {
+        composable<OnboardingRoute> {
+            OnboardingScreen(
+                onFinished = {
+                    navController.navigate(HomeRoute) { popUpTo<OnboardingRoute> { inclusive = true } }
+                },
+            )
+        }
         composable<HomeRoute> {
             val homeViewModel: HomeViewModel = koinViewModel()
             val confirmedDays by homeViewModel.confirmedDays.collectAsStateWithLifecycle()

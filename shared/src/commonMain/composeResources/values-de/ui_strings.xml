@@ -48,6 +48,13 @@
     <string name="common_undo">Rückgängig</string>
     <string name="common_saved">Gespeichert</string>
     <string name="common_cancel">Abbrechen</string>
+    <string name="onboarding_welcome">Willkommen! Du trägst ein, was du isst, wie es dir geht und wie dein Tag war. Die App sucht Muster in deinen Einträgen.</string>
+    <string name="onboarding_purpose_title">Was die App ist und was nicht</string>
+    <string name="onboarding_purpose">Sie ist ein Tagebuch zur Selbstbeobachtung. Sie stellt keine Diagnosen und ersetzt keinen Arztbesuch. Alles bleibt auf deinem Handy.</string>
+    <string name="onboarding_next">Weiter</string>
+    <string name="onboarding_done">Fertig</string>
+    <string name="allergies_question">Kennst du schon Allergien oder Unverträglichkeiten?</string>
+    <string name="allergies_hint">Bekannte kommen nicht ins Ranking. Du bekommst nur einen Hinweis, wenn du sie isst. Du kannst das später ändern.</string>
     <string name="time_other">Andere Zeit …</string>
     <string name="time_pick">Wann genau?</string>
     <string name="time_selected">%1$s, %2$s</string>

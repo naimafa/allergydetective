@@ -48,6 +48,13 @@
     <string name="common_undo">Undo</string>
     <string name="common_saved">Saved</string>
     <string name="common_cancel">Cancel</string>
+    <string name="onboarding_welcome">Welcome! You log what you eat, how you feel and how your day was. The app looks for patterns in your entries.</string>
+    <string name="onboarding_purpose_title">What this app is and is not</string>
+    <string name="onboarding_purpose">It is a diary for self-observation. It does not make diagnoses and does not replace a doctor. Everything stays on your phone.</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_done">Done</string>
+    <string name="allergies_question">Do you already know about allergies or intolerances?</string>
+    <string name="allergies_hint">Known ones are not ranked. You only get a notice when you eat them. You can change this later.</string>
     <string name="time_other">Other time …</string>
     <string name="time_pick">When exactly?</string>
     <string name="time_selected">%1$s, %2$s</string>
