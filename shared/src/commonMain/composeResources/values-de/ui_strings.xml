@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- UI-Texte. Englisch in values. Beide Dateien synchron halten. -->
+<resources>
+    <string name="home_title">Allergie-Detektiv</string>
+    <string name="home_log_meal">Essen loggen</string>
+    <string name="home_log_symptom">Symptom melden</string>
+    <string name="home_day_check">Tages-Abschluss</string>
+    <string name="home_results">Deine Spuren</string>
+    <string name="common_save">Speichern</string>
+    <string name="common_back">Zurück</string>
+    <string name="common_undo">Rückgängig</string>
+    <string name="common_saved">Gespeichert</string>
+</resources>
