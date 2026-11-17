@@ -106,6 +106,7 @@
     <string name="meal_portion_medium">M</string>
     <string name="meal_portion_large">L</string>
     <string name="meal_remove">Remove</string>
+    <string name="meal_voice">Speak your meal</string>
     <string name="custom_create_named">Create “%1$s” as new ingredient</string>
     <string name="custom_title">New ingredient</string>
     <string name="custom_name">Name</string>

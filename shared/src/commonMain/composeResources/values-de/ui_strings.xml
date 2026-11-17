@@ -106,6 +106,7 @@
     <string name="meal_portion_medium">M</string>
     <string name="meal_portion_large">L</string>
     <string name="meal_remove">Entfernen</string>
+    <string name="meal_voice">Mahlzeit einsprechen</string>
     <string name="custom_create_named">„%1$s“ als neue Zutat anlegen</string>
     <string name="custom_title">Neue Zutat</string>
     <string name="custom_name">Name</string>

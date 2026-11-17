@@ -76,6 +76,16 @@ class LogMealViewModelTest {
     }
 
     @Test
+    fun voiceResultSelectsMatchesAndSearchesTheRest() {
+        val vm = viewModel()
+
+        vm.onVoiceResult("Semmel und Kuhmilch und Xylophon")
+
+        assertEquals(listOf(bread, milk), vm.state.value.selected.map { it.ingredient })
+        assertEquals("xylophon", vm.state.value.query)
+    }
+
+    @Test
     fun mealCanBeSavedAsNewFavorite() {
         val vm = viewModel()
         vm.onToggleIngredient(milk)
