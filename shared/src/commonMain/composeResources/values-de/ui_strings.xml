@@ -82,6 +82,14 @@
     <string name="meal_portion_medium">M</string>
     <string name="meal_portion_large">L</string>
     <string name="meal_remove">Entfernen</string>
+    <string name="custom_create_named">„%1$s“ als neue Zutat anlegen</string>
+    <string name="custom_title">Neue Zutat</string>
+    <string name="custom_name">Name</string>
+    <string name="custom_similar">Ähnlich wie … (optional)</string>
+    <string name="custom_similar_chosen">Trigger von %1$s übernommen, du kannst sie ändern.</string>
+    <string name="custom_category">Kategorie</string>
+    <string name="custom_triggers">Enthält</string>
+    <string name="custom_create">Anlegen</string>
     <string name="meal_favorites">Favoriten</string>
     <string name="meal_save_as_favorite">Als Favorit speichern</string>
     <string name="meal_favorite_name">Name, z.B. Müsli mit Milch</string>

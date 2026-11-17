@@ -81,9 +81,12 @@ class LogMealViewModel(
         _state.update { it.copy(loading = false, recent = recent, favorites = favorites).withAllergies(allergies) }
     }
 
-    /** Re-reads the ingredients, e.g. after a custom ingredient was added. */
-    fun reloadIngredients() {
-        viewModelScope.launch { load() }
+    /** A custom ingredient was created: make it searchable and select it. */
+    fun onCustomIngredientCreated(ingredient: IngredientInfo) {
+        viewModelScope.launch {
+            load()
+            onToggleIngredient(ingredientsById[ingredient.id] ?: ingredient)
+        }
     }
 
     private suspend fun displayName(ingredient: IngredientInfo): String =
