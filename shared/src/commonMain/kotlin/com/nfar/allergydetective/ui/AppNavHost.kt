@@ -13,6 +13,7 @@ import com.nfar.allergydetective.ui.home.HomeAction
 import com.nfar.allergydetective.ui.meal.LogMealScreen
 import com.nfar.allergydetective.ui.profile.OnboardingScreen
 import com.nfar.allergydetective.ui.profile.ReminderSection
+import com.nfar.allergydetective.ui.profile.ExportSection
 import androidx.compose.runtime.LaunchedEffect
 import com.nfar.allergydetective.ui.symptom.LogSymptomScreen
 import kotlinx.serialization.Serializable
@@ -72,7 +73,10 @@ fun AppNavHost(
                         HomeAction.RESULTS -> navController.navigate(ResultsRoute)
                     }
                 },
-                profileExtra = { ReminderSection() },
+                profileExtra = {
+                    ReminderSection()
+                    ExportSection()
+                },
             )
         }
         composable<LogMealRoute> { LogMealScreen(onBack = back) }

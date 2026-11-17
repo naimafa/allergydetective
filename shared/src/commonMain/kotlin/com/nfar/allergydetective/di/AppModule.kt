@@ -43,6 +43,7 @@ import com.nfar.allergydetective.ui.home.HomeViewModel
 import com.nfar.allergydetective.data.analysis.RoomCandidateCatalog
 import com.nfar.allergydetective.domain.analysis.CandidateCatalog
 import com.nfar.allergydetective.ui.results.ResultsViewModel
+import com.nfar.allergydetective.ui.profile.ExportViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
@@ -111,6 +112,15 @@ val appModule = module {
     single<CandidateCatalog> { RoomCandidateCatalog(analysisDao = get(), mealDao = get(), dayCheckDao = get()) }
     viewModel {
         ResultsViewModel(
+            repository = get(),
+            engine = get(),
+            catalog = get(),
+            clock = get(),
+            computeContext = get(ComputeContext),
+        )
+    }
+    viewModel {
+        ExportViewModel(
             repository = get(),
             engine = get(),
             catalog = get(),
