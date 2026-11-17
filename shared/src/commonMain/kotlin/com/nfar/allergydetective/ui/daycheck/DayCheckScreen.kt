@@ -49,6 +49,8 @@ import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.ScreenScaffold
 import com.nfar.allergydetective.ui.common.SectionTitle
 import com.nfar.allergydetective.ui.common.displayName
+import com.nfar.allergydetective.ui.common.formatDecimal
+import androidx.compose.ui.text.intl.Locale
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -91,7 +93,7 @@ private fun DayCheckContent(state: DayCheckState, viewModel: DayCheckViewModel, 
         SectionTitle(stringResource(Res.string.day_sleep))
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = { viewModel.onSleepHoursChange(-DayCheckViewModel.SLEEP_STEP_HOURS) }) { Text("−") }
-            Text(stringResource(Res.string.day_hours, formatHours(check.sleepHours)), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(Res.string.day_hours, formatDecimal(check.sleepHours ?: DayCheckViewModel.DEFAULT_SLEEP_HOURS, Locale.current.language)), style = MaterialTheme.typography.titleMedium)
             OutlinedButton(onClick = { viewModel.onSleepHoursChange(DayCheckViewModel.SLEEP_STEP_HOURS) }) { Text("+") }
         }
         Text(stringResource(Res.string.day_sleep_quality), style = MaterialTheme.typography.bodyMedium)
@@ -152,8 +154,3 @@ private fun dayLabel(daysAgo: Long): String = stringResource(
     },
 )
 
-/** 7.0 → "7", 6.5 → "6.5". Locale-specific decimal separators follow with the design phase. */
-private fun formatHours(hours: Float?): String {
-    val value = hours ?: DayCheckViewModel.DEFAULT_SLEEP_HOURS
-    return if (value % 1f == 0f) value.toInt().toString() else value.toString()
-}

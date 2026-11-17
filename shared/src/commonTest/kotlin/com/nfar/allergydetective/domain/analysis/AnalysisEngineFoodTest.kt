@@ -150,6 +150,15 @@ class AnalysisEngineFoodTest {
     }
 
     @Test
+    fun unexposedMealsAreCountedForTheComparison() {
+        val stats = engine.analyze(lactoseDiary(days = 21).build()).resultFor(Candidate.Property(LACTOSE))!!.stats
+
+        // 21 × bread + 21 × rice without lactose; the bloating at 16:30 falls into the window of the 12:00 rice 7 times
+        assertEquals(42, stats.unexposedCount)
+        assertEquals(7, stats.unexposedHitCount)
+    }
+
+    @Test
     fun rankingIsSortedByLevelThenLift() {
         val ranking = engine.analyze(lactoseDiary(days = 21).build()).ranking
 

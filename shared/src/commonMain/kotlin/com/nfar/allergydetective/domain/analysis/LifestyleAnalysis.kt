@@ -53,6 +53,7 @@ private fun dayStats(days: List<Long>, weightByDay: Map<Long, Double>, exposedDa
     var n0 = 0.0
     var k0 = 0.0
     var hitCount = 0
+    var unexposedHits = 0
     for (day in days) {
         val weight = weightByDay[day] ?: 0.0
         if (day in exposedDays) {
@@ -62,9 +63,10 @@ private fun dayStats(days: List<Long>, weightByDay: Map<Long, Double>, exposedDa
         } else {
             n0 += 1.0
             k0 += weight
+            if (weight > 0.0) unexposedHits++
         }
     }
-    return ExposureStats(n1, k1, n0, k0, exposureCount = n1.toInt(), hitCount = hitCount)
+    return ExposureStats(n1, k1, n0, k0, n1.toInt(), hitCount, n0.toInt(), unexposedHits)
 }
 
 private fun isBadSleep(check: DayCheck, config: AnalysisConfig): Boolean {

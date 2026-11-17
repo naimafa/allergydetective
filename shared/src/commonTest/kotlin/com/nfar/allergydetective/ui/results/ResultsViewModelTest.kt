@@ -72,6 +72,9 @@ class ResultsViewModelTest {
         assertTrue(lactose.level >= EvidenceLevel.SUSPICION)
         assertEquals(7, lactose.exposures)
         assertEquals(7, lactose.withComplaints)
+        // 21 bread meals without lactose; bloating is outside their window
+        assertEquals(21, lactose.otherExposures)
+        assertEquals(0, lactose.otherWithComplaints)
         assertEquals(21, state.confirmedDays)
     }
 

@@ -17,7 +17,7 @@
     <string name="results_level_trace">🔍 Trace</string>
     <string name="results_level_suspicion">🔎 Suspicion</string>
     <string name="results_level_strong">🕵️ Strong suspicion</string>
-    <string name="results_reason">Complaints afterwards %1$d of %2$d times</string>
+    <string name="results_reason">Complaints afterwards %1$d of %2$d times, otherwise %3$d of %4$d</string>
     <string name="results_groups_title">Not distinguishable yet</string>
     <string name="results_group">%1$s always occurred together.</string>
     <string name="results_safe_title">🟢 Tolerated well (%1$d)</string>
