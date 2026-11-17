@@ -25,6 +25,19 @@
 - [ ] **Package / App-ID** (aktuell `com.nfar.allergydetective`): spätestens vor dem ersten Upload in die Play Console entscheiden. Die `applicationId` lässt sich unabhängig von den Kotlin-Packages ändern.
 - [ ] **Premium-Idee "Detektiv-Experimente"** (Weglassen und Wiedereinführen begleiten)
 
+## 🧩 Phase 2: bewusst noch nicht gebaut (Stand 17.11.2026)
+- [ ] **Favoriten** (Mahlzeit als Vorlage speichern, Snapshot in `meal_ingredients`) und **"Neue Mahlzeit" mit Namen**
+- [ ] **Eigene Zutaten** anlegen ("ähnlich wie …", Trigger übernehmen)
+- [ ] **Spracheingabe** (SpeechRecognizer offline, Matching wie die Suche)
+- [ ] **Tab-Bar** (Home, Historie, Favoriten, Profil) und **Historie** zum Bearbeiten/Löschen alter Einträge
+- [ ] **Abend-Reminder** 20:00 (WorkManager / Notification) und **Onboarding** mit bekannten Allergien
+- [ ] **Zeit frei wählen:** Mahlzeiten und Symptome haben nur Chips (jetzt, vor 30 min … 5 h). Ein echter Zeit-Slider fehlt noch.
+- [ ] **Notrufnummer** ist fest 112 (EU). Für andere Länder (z.B. Marokko 15/150) je Region festlegen.
+- [ ] **Zahlenformat:** Schlafstunden zeigen "6.5" statt "6,5"; Formatierung über die Locale folgt mit dem Design.
+- [ ] **Android Auto-Backup** ist noch an (`allowBackup="true"`), TRD 3.5 verlangt aus. Vor dem ersten Test mit echten Daten umstellen.
+- [ ] **Begründung im Ergebnis** zeigt nur "X von Y Mal". Der Vergleich "sonst 1 von 9" (UX 5) braucht ungewichtete n₀/k₀ aus der Engine.
+- [ ] **GitHub-PRs:** Die Phase-2-Branches wurden lokal nach `develop` gemergt, weil auf dem Rechner kein `gh` installiert ist. Für echte PRs: GitHub CLI installieren und einmal `gh auth login` ausführen.
+
 ## 🔍 Vor Release prüfen
 - [ ] **Zeitfenster und Trigger-Zuordnungen** fachlich verifizieren (Literatur / Fachperson)
 - [ ] **Schwellenwerte kalibrieren** (Episoden 3h, Gruppierung 80 %, Lift-Grenzen) mit Testdaten und Self-Test
