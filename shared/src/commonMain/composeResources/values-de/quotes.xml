@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tagessprüche auf dem Startbildschirm (UX 2). Ermutigend, ohne Heilsversprechen (REVIEW 6.4). -->
+<resources>
+    <string-array name="daily_quotes">
+        <item>Jeder Eintrag ist ein Puzzleteil.</item>
+        <item>Kleine Notizen heute, klarere Muster morgen.</item>
+        <item>Du musst nicht perfekt sein. Einfach dranbleiben.</item>
+        <item>Ein verpasster Tag ist okay. Der nächste Eintrag zählt genauso.</item>
+        <item>Auf den Körper zu hören ist eine Fähigkeit. Du übst sie gerade.</item>
+        <item>Muster brauchen Zeit. Du gibst ihnen diese Zeit.</item>
+        <item>Zehn Sekunden heute sparen später viel Rätselraten.</item>
+        <item>Neugier ist eine gute Begleiterin auf diesem Weg.</item>
+        <item>Auch gute Tage sind Spuren.</item>
+        <item>Aufschreiben, dann loslassen.</item>
+        <item>Du kennst deinen Körper besser als jede App. Diese hier schreibt nur mit.</item>
+        <item>Jeder bestätigte Tag macht das Bild schärfer.</item>
+        <item>Kein Druck, keine Serien. Nur Spuren.</item>
+        <item>Was dir heute auffällt, kann nächste Woche wichtig sein.</item>
+        <item>Regelmäßig ist wichtiger als vollständig.</item>
+        <item>Ein ruhiger Blick auf die Fakten hilft mehr als Grübeln.</item>
+        <item>Du sammelst Hinweise, du bewertest dich nicht.</item>
+        <item>Eine Mahlzeit nach der anderen.</item>
+        <item>Schlaf und Stress gehören auch zur Geschichte.</item>
+        <item>Deine Notizen bleiben bei dir. Nur auf diesem Handy.</item>
+        <item>Detektivarbeit ist leise, aber sie summiert sich.</item>
+        <item>Auch „nichts passiert“ ist eine nützliche Information.</item>
+        <item>Ein paar Tipps jetzt, ein besseres Arztgespräch später.</item>
+        <item>Du machst das für dich. Das zählt.</item>
+        <item>Spuren müssen nicht groß sein, um zu helfen.</item>
+        <item>Heute ist ein guter Tag für einen kurzen Eintrag.</item>
+        <item>Bemerken, notieren, weitermachen.</item>
+        <item>Dein zukünftiges Ich wird dir für diese Notizen danken.</item>
+        <item>Geduld macht aus vielen kleinen Notizen ein klares Muster.</item>
+        <item>Wenn es dir gut geht, ist das auch einen Eintrag wert.</item>
+        <item>Jeder eingetragene Tag bringt etwas mehr Gewissheit.</item>
+        <item>Es gibt keinen falschen Eintrag. Nur mehr Information.</item>
+        <item>Einmal durchatmen. Dann kurz notieren.</item>
+        <item>Schritt für Schritt wird das Bild klarer.</item>
+        <item>Deine Beobachtungen sind wertvoll.</item>
+        <item>Neu anfangen geht an jedem Tag.</item>
+        <item>Eine gute Detektivin schreibt mit.</item>
+        <item>Langsam und stetig findet die Spuren.</item>
+        <item>Freundlich zu sich selbst sein gehört dazu.</item>
+        <item>Heute zählt, was immer heute bringt.</item>
+    </string-array>
+</resources>

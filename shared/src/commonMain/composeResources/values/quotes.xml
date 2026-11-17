@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Daily quotes on the home screen (UX 2). Encouraging, no healing promises (REVIEW 6.4). German in values-de. -->
+<resources>
+    <string-array name="daily_quotes">
+        <item>Every entry is a piece of the puzzle.</item>
+        <item>Small notes today, clearer patterns tomorrow.</item>
+        <item>You do not have to be perfect. Just keep going.</item>
+        <item>A missed day is fine. The next entry counts just as much.</item>
+        <item>Listening to your body is a skill. You are practising it.</item>
+        <item>Patterns need time. You are giving them that time.</item>
+        <item>Ten seconds today can save you guesswork later.</item>
+        <item>Curiosity is a good companion on this journey.</item>
+        <item>Good days are clues too.</item>
+        <item>Write it down, then let it go.</item>
+        <item>You know your body better than any app. This one just takes notes.</item>
+        <item>Every confirmed day makes the picture sharper.</item>
+        <item>No pressure, no streaks. Just clues.</item>
+        <item>What you notice today may matter next week.</item>
+        <item>Being consistent beats being complete.</item>
+        <item>A calm look at the facts helps more than worrying.</item>
+        <item>You are collecting evidence, not judging yourself.</item>
+        <item>One meal at a time.</item>
+        <item>Sleep and stress belong in the story as well.</item>
+        <item>Your notes stay with you. Only on this phone.</item>
+        <item>The detective work is quiet, but it adds up.</item>
+        <item>Even "nothing happened" is useful information.</item>
+        <item>A few taps now, a better conversation with your doctor later.</item>
+        <item>You are doing this for yourself. That counts.</item>
+        <item>Clues do not need to be big to be helpful.</item>
+        <item>Today is a good day for a short entry.</item>
+        <item>Notice, note, move on.</item>
+        <item>Your future self will thank you for these notes.</item>
+        <item>Patience turns many small notes into a clear pattern.</item>
+        <item>Feeling fine is worth noting, too.</item>
+        <item>Every day you log is a day with more certainty.</item>
+        <item>There is no wrong entry. Only more information.</item>
+        <item>Take a breath. Then take a note.</item>
+        <item>Step by step, the picture becomes clearer.</item>
+        <item>Your observations are valuable.</item>
+        <item>It is okay to start again any day.</item>
+        <item>A good detective writes things down.</item>
+        <item>Slow and steady finds the clues.</item>
+        <item>Kindness to yourself is part of the process.</item>
+        <item>Today counts, whatever today brings.</item>
+    </string-array>
+</resources>
