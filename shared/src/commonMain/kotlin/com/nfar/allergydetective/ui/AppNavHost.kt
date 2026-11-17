@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nfar.allergydetective.ui.daycheck.DayCheckScreen
+import com.nfar.allergydetective.ui.results.ResultsScreen
 import com.nfar.allergydetective.ui.home.HomeProgress
 import com.nfar.allergydetective.ui.home.HomeViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -30,6 +31,9 @@ data object LogSymptomRoute
 @Serializable
 data object DayCheckRoute
 
+@Serializable
+data object ResultsRoute
+
 @Composable
 fun AppNavHost() {
     val navController = rememberNavController()
@@ -46,7 +50,7 @@ fun AppNavHost() {
                         HomeAction.LOG_MEAL -> navController.navigate(LogMealRoute)
                         HomeAction.LOG_SYMPTOM -> navController.navigate(LogSymptomRoute)
                         HomeAction.DAY_CHECK -> navController.navigate(DayCheckRoute)
-                        else -> Unit
+                        HomeAction.RESULTS -> navController.navigate(ResultsRoute)
                     }
                 },
             )
@@ -54,5 +58,6 @@ fun AppNavHost() {
         composable<LogMealRoute> { LogMealScreen(onBack = back) }
         composable<LogSymptomRoute> { LogSymptomScreen(onBack = back) }
         composable<DayCheckRoute> { DayCheckScreen(onDone = back) }
+        composable<ResultsRoute> { ResultsScreen(onBack = back) }
     }
 }

@@ -12,6 +12,21 @@
         <item quantity="other">%1$d confirmed days – your evaluation is ready</item>
     </plurals>
 
+    <string name="results_too_early">%1$d of %2$d confirmed days. The first evaluation is meaningful after %2$d days, until then everything here is preliminary.</string>
+    <string name="results_nothing_yet">No clues yet. Keep logging, every entry is a piece of the puzzle.</string>
+    <string name="results_level_trace">🔍 Trace</string>
+    <string name="results_level_suspicion">🔎 Suspicion</string>
+    <string name="results_level_strong">🕵️ Strong suspicion</string>
+    <string name="results_reason">Complaints afterwards %1$d of %2$d times</string>
+    <string name="results_groups_title">Not distinguishable yet</string>
+    <string name="results_group">%1$s always occurred together.</string>
+    <string name="results_safe_title">🟢 Tolerated well (%1$d)</string>
+    <string name="results_allergy_notice">You ate %1$s, which is stored as a known allergy.</string>
+    <string name="results_bad_sleep">Poor sleep</string>
+    <string name="results_high_stress">High stress</string>
+    <string name="results_disclaimer">These are patterns in your entries, not a diagnosis. Please discuss suspicions with a doctor.</string>
+    <string name="results_local">🔒 Calculated 100 % locally on your phone</string>
+
     <string name="day_today">Today</string>
     <string name="day_yesterday">Yesterday</string>
     <string name="day_two_days_ago">2 days ago</string>
