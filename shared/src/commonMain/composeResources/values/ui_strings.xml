@@ -48,6 +48,9 @@
     <string name="common_undo">Undo</string>
     <string name="common_saved">Saved</string>
     <string name="common_cancel">Cancel</string>
+    <string name="time_other">Other time …</string>
+    <string name="time_pick">When exactly?</string>
+    <string name="time_selected">%1$s, %2$s</string>
 
     <string name="symptom_long_press_hint">Tap to add details. Long press saves right away (medium, now).</string>
     <string name="symptom_favorites">Used most often</string>

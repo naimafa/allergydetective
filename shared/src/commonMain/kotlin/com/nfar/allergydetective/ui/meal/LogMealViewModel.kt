@@ -11,6 +11,8 @@ import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.diary.SearchEntry
 import com.nfar.allergydetective.domain.time.AppClock
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
+import com.nfar.allergydetective.ui.common.ExactTime
+import com.nfar.allergydetective.ui.common.timeOf
 import com.nfar.allergydetective.ui.common.NamePrefix
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +29,8 @@ data class LogMealState(
     val recent: List<IngredientInfo> = emptyList(),
     val selected: List<SelectedIngredient> = emptyList(),
     val hoursAgo: Int = 0,
+    /** Picked in the time dialog, overrides [hoursAgo]. */
+    val exactTime: ExactTime? = null,
     val saving: Boolean = false,
     /** Set after saving, so the screen can offer undo. Cleared with [LogMealViewModel.onSavedShown]. */
     val savedMealId: Long? = null,
@@ -78,7 +82,11 @@ class LogMealViewModel(
     }
 
     fun onHoursAgoChange(hours: Int) {
-        _state.update { it.copy(hoursAgo = hours) }
+        _state.update { it.copy(hoursAgo = hours, exactTime = null) }
+    }
+
+    fun onExactTimeChange(time: ExactTime) {
+        _state.update { it.copy(exactTime = time) }
     }
 
     /** Adds the ingredient, or removes it when it is already selected. Clears the search. */
@@ -104,7 +112,7 @@ class LogMealViewModel(
         if (!current.canSave) return
         _state.update { it.copy(saving = true) }
         viewModelScope.launch {
-            val eatenAt = clock.nowMillis() - current.hoursAgo * MILLIS_PER_HOUR
+            val eatenAt = clock.timeOf(current.exactTime, current.hoursAgo * MINUTES_PER_HOUR)
             val mealId = repository.saveMeal(
                 eatenAt = eatenAt,
                 tzOffsetMin = clock.offsetMinAt(eatenAt),
@@ -112,7 +120,7 @@ class LogMealViewModel(
             )
             val recent = repository.recentIngredientIds(RECENT_LIMIT).mapNotNull { ingredientsById[it] }
             _state.update {
-                it.copy(saving = false, selected = emptyList(), hoursAgo = 0, savedMealId = mealId, recent = recent)
+                it.copy(saving = false, selected = emptyList(), hoursAgo = 0, exactTime = null, savedMealId = mealId, recent = recent)
             }
         }
     }
@@ -133,6 +141,6 @@ class LogMealViewModel(
         /** Time chips: now, 1, 2, 3 and 5 hours ago (UX 3.1). */
         val HOURS_AGO_OPTIONS = listOf(0, 1, 2, 3, 5)
         private const val RECENT_LIMIT = 12
-        private const val MILLIS_PER_HOUR = 3_600_000L
+        private const val MINUTES_PER_HOUR = 60
     }
 }

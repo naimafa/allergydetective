@@ -48,6 +48,7 @@ import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.SavedSnackbarEffect
 import com.nfar.allergydetective.ui.common.ScreenScaffold
 import com.nfar.allergydetective.ui.common.SectionTitle
+import com.nfar.allergydetective.ui.common.TimeChoiceRow
 import com.nfar.allergydetective.ui.common.displayName
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -86,20 +87,17 @@ private fun LogMealContent(state: LogMealState, viewModel: LogMealViewModel, mod
     ) {
         item { SectionTitle(stringResource(Res.string.meal_when)) }
         item {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                LogMealViewModel.HOURS_AGO_OPTIONS.forEach { hours ->
-                    FilterChip(
-                        selected = state.hoursAgo == hours,
-                        onClick = { viewModel.onHoursAgoChange(hours) },
-                        label = {
-                            Text(
-                                if (hours == 0) stringResource(Res.string.meal_now)
-                                else pluralStringResource(Res.plurals.meal_hours_ago, hours, hours),
-                            )
-                        },
-                    )
-                }
-            }
+            TimeChoiceRow(
+                options = LogMealViewModel.HOURS_AGO_OPTIONS,
+                selected = state.hoursAgo,
+                quickLabel = { hours ->
+                    if (hours == 0) stringResource(Res.string.meal_now)
+                    else pluralStringResource(Res.plurals.meal_hours_ago, hours, hours)
+                },
+                exact = state.exactTime,
+                onQuickSelected = viewModel::onHoursAgoChange,
+                onExactSelected = viewModel::onExactTimeChange,
+            )
         }
         if (state.recent.isNotEmpty()) {
             item { SectionTitle(stringResource(Res.string.meal_recent)) }

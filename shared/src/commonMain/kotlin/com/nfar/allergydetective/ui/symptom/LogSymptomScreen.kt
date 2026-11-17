@@ -52,6 +52,7 @@ import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.SavedSnackbarEffect
 import com.nfar.allergydetective.ui.common.ScreenScaffold
 import com.nfar.allergydetective.ui.common.SectionTitle
+import com.nfar.allergydetective.ui.common.TimeChoiceRow
 import com.nfar.allergydetective.ui.common.displayName
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -171,15 +172,14 @@ private fun SymptomOverlay(draft: SymptomDraft, viewModel: LogSymptomViewModel) 
                 }
                 Text(stringResource(Res.string.symptom_intensity_range), style = MaterialTheme.typography.bodySmall)
                 Text(stringResource(Res.string.symptom_when), style = MaterialTheme.typography.titleSmall)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    LogSymptomViewModel.MINUTES_AGO_OPTIONS.forEach { minutes ->
-                        FilterChip(
-                            selected = draft.minutesAgo == minutes,
-                            onClick = { viewModel.onMinutesAgoChange(minutes) },
-                            label = { Text(minutesAgoLabel(minutes)) },
-                        )
-                    }
-                }
+                TimeChoiceRow(
+                    options = LogSymptomViewModel.MINUTES_AGO_OPTIONS,
+                    selected = draft.minutesAgo,
+                    quickLabel = { minutesAgoLabel(it) },
+                    exact = draft.exactTime,
+                    onQuickSelected = viewModel::onMinutesAgoChange,
+                    onExactSelected = viewModel::onExactTimeChange,
+                )
                 OutlinedTextField(
                     value = draft.note,
                     onValueChange = viewModel::onNoteChange,

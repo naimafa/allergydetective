@@ -5,6 +5,7 @@ import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.time.AppClock
+import com.nfar.allergydetective.ui.common.ExactTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -102,6 +103,33 @@ class LogMealViewModelTest {
         assertEquals(1L, vm.state.value.savedMealId)
         assertTrue(vm.state.value.selected.isEmpty())
         assertEquals(0, vm.state.value.hoursAgo)
+    }
+
+    @Test
+    fun pickedTimeIsUsedAndNeverInTheFuture() {
+        val vm = viewModel()
+        vm.onToggleIngredient(bread)
+        vm.onExactTimeChange(ExactTime(daysAgo = 1, hour = 19, minute = 30))
+        vm.onSave()
+
+        // Yesterday 19:30 in Berlin = 18:30 UTC
+        assertEquals(Instant.parse("2026-11-16T18:30:00Z").toEpochMilliseconds(), repository.saved.last().first)
+        assertNull(vm.state.value.exactTime)
+
+        vm.onToggleIngredient(bread)
+        vm.onExactTimeChange(ExactTime(daysAgo = 0, hour = 23, minute = 0))
+        vm.onSave()
+        assertEquals(now.toEpochMilliseconds(), repository.saved.last().first)
+    }
+
+    @Test
+    fun quickChipReplacesThePickedTime() {
+        val vm = viewModel()
+        vm.onExactTimeChange(ExactTime(1, 8, 0))
+
+        vm.onHoursAgoChange(1)
+
+        assertNull(vm.state.value.exactTime)
     }
 
     @Test

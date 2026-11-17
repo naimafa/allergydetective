@@ -1,9 +1,12 @@
 package com.nfar.allergydetective.domain.time
 
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.offsetAt
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -32,6 +35,10 @@ class AppClock(
         LocalDate.fromEpochDays(epochDay).atStartOfDayIn(zone()).toEpochMilliseconds()
 
     fun localDate(epochDay: Long): LocalDate = LocalDate.fromEpochDays(epochDay)
+
+    /** UTC millis of a local wall-clock time on [epochDay]. */
+    fun millisAt(epochDay: Long, hour: Int, minute: Int): Long =
+        LocalDateTime(LocalDate.fromEpochDays(epochDay), LocalTime(hour, minute)).toInstant(zone()).toEpochMilliseconds()
 
     /** Local hour and minute of [millis], for display. */
     fun localTime(millis: Long): Pair<Int, Int> {
