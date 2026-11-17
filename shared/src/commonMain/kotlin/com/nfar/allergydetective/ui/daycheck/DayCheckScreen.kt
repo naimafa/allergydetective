@@ -88,7 +88,7 @@ private fun DayCheckContent(state: DayCheckState, viewModel: DayCheckViewModel, 
         }
 
         SectionTitle(stringResource(Res.string.day_wellbeing))
-        ScaleRow(check.wellbeing, viewModel::onWellbeingChange)
+        ScaleRow(check.wellbeing, viewModel::onWellbeingChange, labels = WELLBEING_FACES)
 
         SectionTitle(stringResource(Res.string.day_sleep))
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -97,7 +97,7 @@ private fun DayCheckContent(state: DayCheckState, viewModel: DayCheckViewModel, 
             OutlinedButton(onClick = { viewModel.onSleepHoursChange(DayCheckViewModel.SLEEP_STEP_HOURS) }) { Text("+") }
         }
         Text(stringResource(Res.string.day_sleep_quality), style = MaterialTheme.typography.bodyMedium)
-        ScaleRow(check.sleepQuality, viewModel::onSleepQualityChange)
+        ScaleRow(check.sleepQuality, viewModel::onSleepQualityChange, labels = (1..5).map { "★".repeat(it) })
 
         SectionTitle(stringResource(Res.string.day_stress))
         ScaleRow(check.stress, viewModel::onStressChange)
@@ -134,13 +134,16 @@ private fun DayCheckContent(state: DayCheckState, viewModel: DayCheckViewModel, 
     }
 }
 
+/** Faces for wellbeing 1–5 (UX 3.4). */
+private val WELLBEING_FACES = listOf("😣", "🙁", "😐", "🙂", "😊")
+
 /** Five tap points, 1 = low, 5 = high (UX 6). */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ScaleRow(value: Int?, onChange: (Int) -> Unit) {
+private fun ScaleRow(value: Int?, onChange: (Int) -> Unit, labels: List<String> = (1..5).map { it.toString() }) {
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         (1..5).forEach { option ->
-            FilterChip(selected = value == option, onClick = { onChange(option) }, label = { Text(option.toString()) })
+            FilterChip(selected = value == option, onClick = { onChange(option) }, label = { Text(labels[option - 1]) })
         }
     }
 }

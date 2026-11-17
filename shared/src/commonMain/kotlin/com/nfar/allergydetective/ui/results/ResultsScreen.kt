@@ -34,6 +34,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.nfar.allergydetective.ui.theme.AppColors
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nfar.allergydetective.domain.analysis.model.EvidenceLevel
@@ -70,17 +72,17 @@ private fun ResultsContent(state: ResultsState, modifier: Modifier) {
     ) {
         if (state.confirmedDays < ResultsViewModel.FIRST_EVALUATION_DAYS) {
             item {
-                Text(
-                    stringResource(Res.string.results_too_early, state.confirmedDays, ResultsViewModel.FIRST_EVALUATION_DAYS),
-                    style = MaterialTheme.typography.bodyLarge,
+                InfoCard(
+                    text = stringResource(Res.string.results_too_early, state.confirmedDays, ResultsViewModel.FIRST_EVALUATION_DAYS),
+                    container = MaterialTheme.colorScheme.surfaceContainerHigh,
                 )
             }
         }
         if (state.knownAllergyIngredients.isNotEmpty()) {
             item {
-                Text(
-                    stringResource(Res.string.results_allergy_notice, state.knownAllergyIngredients.map { labelText(it) }.joinToString(", ")),
-                    color = MaterialTheme.colorScheme.tertiary,
+                InfoCard(
+                    text = stringResource(Res.string.results_allergy_notice, state.knownAllergyIngredients.map { labelText(it) }.joinToString(", ")),
+                    container = AppColors.extra.redFlag,
                 )
             }
         }
@@ -91,29 +93,55 @@ private fun ResultsContent(state: ResultsState, modifier: Modifier) {
         if (state.groups.isNotEmpty()) {
             item { SectionTitle(stringResource(Res.string.results_groups_title)) }
             items(state.groups) { group ->
-                Text(stringResource(Res.string.results_group, group.map { labelText(it) }.joinToString(" + ")))
+                InfoCard(
+                    text = stringResource(Res.string.results_group, group.map { labelText(it) }.joinToString(" + ")),
+                    container = MaterialTheme.colorScheme.surfaceContainerHigh,
+                )
             }
         }
         if (state.safeIngredients.isNotEmpty()) {
-            item { SectionTitle(stringResource(Res.string.results_safe_title, state.safeIngredients.size)) }
-            item { Text(state.safeIngredients.map { labelText(it) }.joinToString(", ")) }
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(stringResource(Res.string.results_safe_title, state.safeIngredients.size), style = MaterialTheme.typography.titleMedium)
+                        Text(state.safeIngredients.map { labelText(it) }.joinToString(", "))
+                    }
+                }
+            }
         }
         item {
-            Column(modifier = Modifier.padding(top = 16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(modifier = Modifier.padding(top = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(stringResource(Res.string.results_disclaimer), style = MaterialTheme.typography.bodySmall)
-                Text(stringResource(Res.string.results_local), style = MaterialTheme.typography.bodySmall)
+                Text(
+                    stringResource(Res.string.results_local),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
     }
 }
 
 @Composable
+private fun InfoCard(text: String, container: Color) {
+    Card(colors = CardDefaults.cardColors(containerColor = container), modifier = Modifier.fillMaxWidth()) {
+        Text(text, modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+/** Stronger evidence = warmer colour: strong = coral, suspicion = amber, trace = neutral. */
+@Composable
 private fun ResultCard(item: ResultItem) {
+    val container = when (item.level) {
+        EvidenceLevel.STRONG_SUSPICION -> MaterialTheme.colorScheme.tertiaryContainer
+        EvidenceLevel.SUSPICION -> AppColors.extra.digestive
+        else -> MaterialTheme.colorScheme.surfaceContainerHigh
+    }
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = if (item.level >= EvidenceLevel.SUSPICION) MaterialTheme.colorScheme.tertiaryContainer
-            else MaterialTheme.colorScheme.secondaryContainer,
-        ),
+        colors = CardDefaults.cardColors(containerColor = container, contentColor = MaterialTheme.colorScheme.onSurface),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {

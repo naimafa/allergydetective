@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -70,8 +72,11 @@ fun SavedSnackbarEffect(
     onUndo: (Long) -> Unit,
     onShown: () -> Unit,
 ) {
+    val haptics = LocalHapticFeedback.current
     LaunchedEffect(entryId) {
         val id = entryId ?: return@LaunchedEffect
+        // UX 6: short vibration when something was saved.
+        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
         val result = snackbarHostState.showSnackbar(
             message = getString(Res.string.common_saved),
             actionLabel = getString(Res.string.common_undo),
