@@ -25,18 +25,27 @@
 - [ ] **Package / App-ID** (aktuell `com.nfar.allergydetective`): spätestens vor dem ersten Upload in die Play Console entscheiden. Die `applicationId` lässt sich unabhängig von den Kotlin-Packages ändern.
 - [ ] **Premium-Idee "Detektiv-Experimente"** (Weglassen und Wiedereinführen begleiten)
 
-## 🧩 Phase 2: bewusst noch nicht gebaut (Stand 17.11.2026)
-- [ ] **Favoriten** (Mahlzeit als Vorlage speichern, Snapshot in `meal_ingredients`) und **"Neue Mahlzeit" mit Namen**
-- [ ] **Eigene Zutaten** anlegen ("ähnlich wie …", Trigger übernehmen)
-- [ ] **Spracheingabe** (SpeechRecognizer offline, Matching wie die Suche)
-- [ ] **Tab-Bar** (Home, Historie, Favoriten, Profil) und **Historie** zum Bearbeiten/Löschen alter Einträge
-- [ ] **Abend-Reminder** 20:00 (WorkManager / Notification) und **Onboarding** mit bekannten Allergien
-- [ ] **Zeit frei wählen:** Mahlzeiten und Symptome haben nur Chips (jetzt, vor 30 min … 5 h). Ein echter Zeit-Slider fehlt noch.
-- [ ] **Notrufnummer** ist fest 112 (EU). Für andere Länder (z.B. Marokko 15/150) je Region festlegen.
-- [ ] **Zahlenformat:** Schlafstunden zeigen "6.5" statt "6,5"; Formatierung über die Locale folgt mit dem Design.
-- [ ] **Android Auto-Backup** ist noch an (`allowBackup="true"`), TRD 3.5 verlangt aus. Vor dem ersten Test mit echten Daten umstellen.
-- [ ] **Begründung im Ergebnis** zeigt nur "X von Y Mal". Der Vergleich "sonst 1 von 9" (UX 5) braucht ungewichtete n₀/k₀ aus der Engine.
-- [ ] **GitHub-PRs:** Die Phase-2-Branches wurden lokal nach `develop` gemergt, weil auf dem Rechner kein `gh` installiert ist. Für echte PRs: GitHub CLI installieren und einmal `gh auth login` ausführen.
+## 🧩 Phase 2: offene Punkte (Stand 17.11.2026)
+Erledigt am 17.11.2026, je ein Branch nach `develop`:
+- [x] **Auto-Backup aus** (`allowBackup="false"`, `dataExtractionRules`), TRD 3.5
+- [x] **Zeit frei wählen:** "Andere Zeit …" mit Tag (bis vorgestern) und Uhrzeit, nie in der Zukunft
+- [x] **Favoriten:** als Favorit speichern, Favoriten-Zeile im Essen-Loggen, `favoriteId` als Herkunft der Mahlzeit
+- [x] **Eigene Zutaten:** Name, Kategorie, "ähnlich wie …" mit übernommenen Triggern; IDs ab 100000
+- [x] **Onboarding:** Zweckbestimmung + bekannte Allergien beim ersten Start
+- [x] **Tab-Bar** (Start, Historie, Favoriten, Profil); Historie der letzten 14 Tage mit Löschen; Profil mit Allergien
+- [x] **Abend-Reminder:** WorkManager, Opt-in im Profil (19–22 Uhr), entfällt bei bestätigtem Tag, Tap öffnet den Tages-Abschluss
+- [x] **Begründung im Ergebnis** mit Vergleich ("sonst X von Y"), neue ungewichtete Zähler in der Engine
+- [x] **Notrufnummer** je Region (112 / 911 / 000), **Dezimalkomma** und Datum je Sprache
+- [x] **Spracheingabe:** Mikrofon im Essen-Loggen (System-Erkennung, offline bevorzugt), Abgleich Favoriten → Synonyme → Zutaten, zusammengesetzte Wörter, Tippfehler
+
+Noch offen bzw. Annahmen:
+- [ ] **Spracheingabe auf echtem Gerät testen.** Im Emulator öffnet sich die Google-Erkennung, meldet aber "Voice search isn't available". Der Abgleich ist per Unit-Test abgedeckt.
+- [ ] **Notrufnummer Marokko** (und weitere Zielländer) fachlich klären; bis dahin gilt dort 112.
+- [ ] **Historie:** Einträge lassen sich nur löschen, nicht bearbeiten (Löschen + neu eintragen).
+- [ ] **Reminder-Zeit** nur als Chips 19–22 Uhr; freie Uhrzeit folgt mit dem Design.
+- [ ] **iOS:** Reminder-Planung, Benachrichtigungs-Erlaubnis und Spracheingabe sind nur Platzhalter (kein Mac).
+- [ ] **Onboarding** fragt den Reminder nicht ab; er ist aus, bis man ihn im Profil einschaltet.
+- [ ] **GitHub-PRs:** Branches werden lokal nach `develop` gemergt, weil kein `gh` installiert ist. Für echte PRs: GitHub CLI installieren und einmal `gh auth login` ausführen.
 
 ## 🔍 Vor Release prüfen
 - [ ] **Zeitfenster und Trigger-Zuordnungen** fachlich verifizieren (Literatur / Fachperson)
