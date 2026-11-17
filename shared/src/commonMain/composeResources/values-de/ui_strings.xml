@@ -48,6 +48,9 @@
     <string name="common_undo">Rückgängig</string>
     <string name="common_saved">Gespeichert</string>
     <string name="common_cancel">Abbrechen</string>
+    <string name="time_other">Andere Zeit …</string>
+    <string name="time_pick">Wann genau?</string>
+    <string name="time_selected">%1$s, %2$s</string>
 
     <string name="symptom_long_press_hint">Tippen für Details. Lange drücken speichert sofort (mittel, jetzt).</string>
     <string name="symptom_favorites">Am häufigsten</string>

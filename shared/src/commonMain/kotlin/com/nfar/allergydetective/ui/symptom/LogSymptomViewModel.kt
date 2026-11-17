@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
 import com.nfar.allergydetective.domain.time.AppClock
+import com.nfar.allergydetective.ui.common.ExactTime
+import com.nfar.allergydetective.ui.common.timeOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +18,8 @@ data class SymptomDraft(
     val symptom: SymptomInfo,
     val intensity: Int = LogSymptomViewModel.DEFAULT_INTENSITY,
     val minutesAgo: Int = 0,
+    /** Picked in the time dialog, overrides [minutesAgo]. */
+    val exactTime: ExactTime? = null,
     val note: String = "",
 )
 
@@ -88,7 +92,9 @@ class LogSymptomViewModel(
 
     fun onIntensityChange(intensity: Int) = updateDraft { it.copy(intensity = intensity.coerceIn(1, MAX_INTENSITY)) }
 
-    fun onMinutesAgoChange(minutes: Int) = updateDraft { it.copy(minutesAgo = minutes) }
+    fun onMinutesAgoChange(minutes: Int) = updateDraft { it.copy(minutesAgo = minutes, exactTime = null) }
+
+    fun onExactTimeChange(time: ExactTime) = updateDraft { it.copy(exactTime = time) }
 
     fun onNoteChange(note: String) = updateDraft { it.copy(note = note) }
 
@@ -104,7 +110,7 @@ class LogSymptomViewModel(
 
     private fun save(draft: SymptomDraft) {
         viewModelScope.launch {
-            val startedAt = clock.nowMillis() - draft.minutesAgo * MILLIS_PER_MINUTE
+            val startedAt = clock.timeOf(draft.exactTime, draft.minutesAgo)
             val id = repository.saveEntry(
                 symptomId = draft.symptom.id,
                 startedAt = startedAt,
@@ -139,6 +145,5 @@ class LogSymptomViewModel(
         /** Time chips of the overlay: now, 30 min, 1 h, 2 h, 3 h ago. */
         val MINUTES_AGO_OPTIONS = listOf(0, 30, 60, 120, 180)
         val GROUP_ORDER = listOf("digestive", "skin", "head", "airways", "other")
-        private const val MILLIS_PER_MINUTE = 60_000L
     }
 }

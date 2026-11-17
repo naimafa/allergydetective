@@ -3,6 +3,7 @@ package com.nfar.allergydetective.ui.symptom
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
 import com.nfar.allergydetective.domain.time.AppClock
+import com.nfar.allergydetective.ui.common.ExactTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -81,6 +82,16 @@ class LogSymptomViewModelTest {
         assertEquals(Saved(1002, now.toEpochMilliseconds() - 30 * 60_000L, 60, 5, "after lunch"), repository.saved.single())
         assertNull(vm.state.value.draft)
         assertEquals(1L, vm.state.value.savedEntryId)
+    }
+
+    @Test
+    fun pickedTimeIsUsedForTheSymptom() {
+        val vm = viewModel()
+        vm.onSymptomClick(bloating)
+        vm.onExactTimeChange(ExactTime(daysAgo = 2, hour = 7, minute = 15))
+        vm.onSaveDraft()
+
+        assertEquals(Instant.parse("2026-11-15T06:15:00Z").toEpochMilliseconds(), repository.saved.single().startedAt)
     }
 
     @Test

@@ -31,6 +31,13 @@ class AppClockTest {
     }
 
     @Test
+    fun localTimeOfADayIsConvertedToUtc() {
+        val clock = clockAt("2026-11-17T12:00:00Z")
+
+        assertEquals(Instant.parse("2026-11-16T13:30:00Z").toEpochMilliseconds(), clock.millisAt(clock.today() - 1, 14, 30))
+    }
+
+    @Test
     fun startOfDayIsLocalMidnight() {
         val clock = clockAt("2026-11-17T12:00:00Z")
 
