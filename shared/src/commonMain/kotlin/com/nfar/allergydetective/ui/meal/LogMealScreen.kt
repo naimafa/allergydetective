@@ -8,9 +8,7 @@ import allergydetective.shared.generated.resources.meal_allergy_hint
 import allergydetective.shared.generated.resources.meal_favorite_name
 import allergydetective.shared.generated.resources.meal_favorites
 import allergydetective.shared.generated.resources.meal_save_as_favorite
-import allergydetective.shared.generated.resources.meal_hours_ago
 import allergydetective.shared.generated.resources.meal_no_results
-import allergydetective.shared.generated.resources.meal_now
 import allergydetective.shared.generated.resources.meal_portion_help
 import allergydetective.shared.generated.resources.meal_portion_large
 import allergydetective.shared.generated.resources.meal_portion_medium
@@ -19,6 +17,10 @@ import allergydetective.shared.generated.resources.meal_recent
 import allergydetective.shared.generated.resources.meal_remove
 import allergydetective.shared.generated.resources.meal_search
 import allergydetective.shared.generated.resources.meal_selected
+import allergydetective.shared.generated.resources.meal_slot_breakfast
+import allergydetective.shared.generated.resources.meal_slot_dinner
+import allergydetective.shared.generated.resources.meal_slot_lunch
+import allergydetective.shared.generated.resources.meal_slot_snack
 import allergydetective.shared.generated.resources.meal_when
 import allergydetective.shared.generated.resources.meal_voice
 import androidx.compose.foundation.clickable
@@ -53,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.diary.IngredientInfo
+import com.nfar.allergydetective.domain.time.MealSlot
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.SavedSnackbarEffect
 import com.nfar.allergydetective.ui.common.ScreenScaffold
@@ -63,7 +66,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.intl.Locale
 import com.nfar.allergydetective.ui.common.displayName
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -126,14 +128,11 @@ private fun LogMealContent(
         item { SectionTitle(stringResource(Res.string.meal_when)) }
         item {
             TimeChoiceRow(
-                options = LogMealViewModel.HOURS_AGO_OPTIONS,
-                selected = state.hoursAgo,
-                quickLabel = { hours ->
-                    if (hours == 0) stringResource(Res.string.meal_now)
-                    else pluralStringResource(Res.plurals.meal_hours_ago, hours, hours)
-                },
+                options = MealSlot.entries,
+                selected = state.slot,
+                quickLabel = { mealSlotLabel(it) },
                 exact = state.exactTime,
-                onQuickSelected = viewModel::onHoursAgoChange,
+                onQuickSelected = viewModel::onSlotChange,
                 onExactSelected = viewModel::onExactTimeChange,
             )
         }
@@ -272,3 +271,12 @@ private fun portionLabel(portion: Portion): String = stringResource(
 @Composable
 fun ingredientName(ingredient: IngredientInfo): String =
     ingredient.key?.let { displayName(NamePrefix.INGREDIENT, it) } ?: ingredient.customName.orEmpty()
+@Composable
+private fun mealSlotLabel(slot: MealSlot): String = stringResource(
+    when (slot) {
+        MealSlot.BREAKFAST -> Res.string.meal_slot_breakfast
+        MealSlot.LUNCH -> Res.string.meal_slot_lunch
+        MealSlot.DINNER -> Res.string.meal_slot_dinner
+        MealSlot.SNACK -> Res.string.meal_slot_snack
+    },
+)

@@ -18,6 +18,9 @@ interface SymptomRepository {
 
     suspend fun saveEntry(symptomId: Long, startedAt: Long, tzOffsetMin: Int, intensity: Int, note: String?): Long
 
+    /** Time of the latest meal at or before [beforeMillis], for "after the meal". */
+    suspend fun lastMealAt(beforeMillis: Long): Long?
+
     /** Undo of [saveEntry]. */
     suspend fun deleteEntry(entryId: Long)
 }

@@ -3,6 +3,7 @@ package com.nfar.allergydetective.ui.symptom
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
 import com.nfar.allergydetective.domain.time.AppClock
+import com.nfar.allergydetective.domain.time.SymptomDayPart
 import com.nfar.allergydetective.ui.common.ExactTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,6 +15,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Clock
@@ -45,6 +47,8 @@ class LogSymptomViewModelTest {
         override suspend fun deleteEntry(entryId: Long) {
             deleted += entryId
         }
+        var lastMeal: Long? = null
+        override suspend fun lastMealAt(beforeMillis: Long) = lastMeal?.takeIf { it <= beforeMillis }
     }
 
     private val repository = FakeRepository()
@@ -75,13 +79,43 @@ class LogSymptomViewModelTest {
         assertEquals(3, vm.state.value.draft?.intensity)
 
         vm.onIntensityChange(5)
-        vm.onMinutesAgoChange(30)
+        vm.onDayPartChange(SymptomDayPart.MORNING)
         vm.onNoteChange("  after lunch ")
         vm.onSaveDraft()
 
-        assertEquals(Saved(1002, now.toEpochMilliseconds() - 30 * 60_000L, 60, 5, "after lunch"), repository.saved.single())
+        // Morning = 07:00 in Berlin = 06:00 UTC
+        assertEquals(Saved(1002, Instant.parse("2026-11-17T06:00:00Z").toEpochMilliseconds(), 60, 5, "after lunch"), repository.saved.single())
         assertNull(vm.state.value.draft)
         assertEquals(1L, vm.state.value.savedEntryId)
+    }
+
+    @Test
+    fun onlyDayPartsThatAlreadyStartedAreOffered() {
+        // 13:00 in Berlin, no meal yet: no afternoon, evening or "after the meal".
+        assertEquals(
+            listOf(SymptomDayPart.NOW, SymptomDayPart.MORNING, SymptomDayPart.MIDDAY, SymptomDayPart.ALL_DAY),
+            viewModel().dayParts(),
+        )
+    }
+
+    @Test
+    fun afterTheMealIsHalfAnHourAfterTodaysLastMeal() {
+        repository.lastMeal = Instant.parse("2026-11-17T11:00:00Z").toEpochMilliseconds()
+        val vm = viewModel()
+        assertTrue(SymptomDayPart.AFTER_MEAL in vm.dayParts())
+
+        vm.onSymptomClick(bloating)
+        vm.onDayPartChange(SymptomDayPart.AFTER_MEAL)
+        vm.onSaveDraft()
+
+        assertEquals(Instant.parse("2026-11-17T11:30:00Z").toEpochMilliseconds(), repository.saved.single().startedAt)
+    }
+
+    @Test
+    fun yesterdaysMealDoesNotCountForAfterTheMeal() {
+        repository.lastMeal = Instant.parse("2026-11-16T18:00:00Z").toEpochMilliseconds()
+
+        assertFalse(SymptomDayPart.AFTER_MEAL in viewModel().dayParts())
     }
 
     @Test

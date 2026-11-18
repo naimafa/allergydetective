@@ -23,5 +23,7 @@ class RoomSymptomRepository(private val dao: SymptomDao) : SymptomRepository {
             ),
         )
 
+    override suspend fun lastMealAt(beforeMillis: Long): Long? = dao.lastMealAt(beforeMillis)
+
     override suspend fun deleteEntry(entryId: Long) = dao.deleteEntry(entryId)
 }

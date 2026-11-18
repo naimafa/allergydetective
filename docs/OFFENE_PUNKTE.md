@@ -58,9 +58,9 @@ Noch offen (Entscheidung bzw. Konzept nötig):
 - [x] **Kategorie Öle, Fette & Oliven** (ID 13) mit 9 Zutaten, Migration DB 2 → 3
 - [ ] **Gerichte aus Zutaten:** Eigene Zutat ohne Trigger-Abfrage; der Nutzer setzt ein Gericht aus vorhandenen Zutaten zusammen, die Allergene kommen aus der Datenbank. Neu anlegen nur, wenn die Suche nichts findet
 - [ ] **Favoriten mit "+"** als Gericht anlegen (z.B. Linsensuppe = Linsen, Tomaten, Karotten, Gewürze)
-- [ ] **Mahlzeit statt Uhrzeit:** Frühstück / Mittag- / Abendessen, Uhrzeit nur bei Snacks
-- [ ] **Symptome nach Tageszeit** (morgens / mittags / abends / ganzer Tag / nach dem Essen) statt "vor X Stunden". Vorher klären, auf welche Uhrzeit die Analyse das abbildet
-- [ ] **Intensität pro Symptom** prüfen, wenn mehrere Symptome gewählt sind
+- [x] **Mahlzeit statt Uhrzeit:** Frühstück / Mittag- / Abendessen / Snack (ENTSCHEIDUNGEN 2)
+- [x] **Symptome nach Tageszeit** (morgens / mittags / nachmittags / abends / ganzer Tag / nach dem Essen), Uhrzeiten in ENTSCHEIDUNGEN 2
+- [x] **Intensität pro Symptom:** gibt es schon (1–5 beim Antippen). Nur langes Drücken speichert ohne Abfrage mit 3
 - [ ] **Kranke Tage markieren** (z.B. akute Nebenhöhlenentzündung) und aus der Analyse ausschließen
 - [ ] **Einführung beim ersten Start:** ein paar Slides, am Ende häufige Gerichte anlegen
 

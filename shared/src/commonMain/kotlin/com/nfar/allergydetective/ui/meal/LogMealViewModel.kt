@@ -12,6 +12,8 @@ import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.diary.SearchEntry
 import com.nfar.allergydetective.domain.diary.VoiceMatcher
 import com.nfar.allergydetective.domain.time.AppClock
+import com.nfar.allergydetective.domain.time.MealSlot
+import com.nfar.allergydetective.domain.time.timeOf
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
 import com.nfar.allergydetective.ui.common.ExactTime
 import com.nfar.allergydetective.ui.common.NamePrefix
@@ -31,8 +33,9 @@ data class LogMealState(
     val recent: List<IngredientInfo> = emptyList(),
     val favorites: List<FavoriteInfo> = emptyList(),
     val selected: List<SelectedIngredient> = emptyList(),
-    val hoursAgo: Int = 0,
-    /** Picked in the time dialog, overrides [hoursAgo]. */
+    /** Breakfast, lunch, dinner or a snack (self-test 18.11.); preselected by the time of day. */
+    val slot: MealSlot = MealSlot.SNACK,
+    /** Picked in the time dialog, overrides [slot]. */
     val exactTime: ExactTime? = null,
     /** Favorite the selection came from, stored as origin of the meal (TRD 3.2). */
     val favoriteId: Long? = null,
@@ -65,7 +68,10 @@ class LogMealViewModel(
     private var ingredientsById: Map<Long, IngredientInfo> = emptyMap()
     private var search = IngredientSearch(emptyList())
 
+    private fun suggestedSlot(): MealSlot = clock.localTime(clock.nowMillis()).let { (h, m) -> MealSlot.suggestedAt(h, m) }
+
     init {
+        _state.update { it.copy(slot = suggestedSlot()) }
         viewModelScope.launch { load() }
     }
 
@@ -100,8 +106,8 @@ class LogMealViewModel(
         _state.update { it.copy(query = query, results = search.search(query).mapNotNull(ingredientsById::get)) }
     }
 
-    fun onHoursAgoChange(hours: Int) {
-        _state.update { it.copy(hoursAgo = hours, exactTime = null) }
+    fun onSlotChange(slot: MealSlot) {
+        _state.update { it.copy(slot = slot, exactTime = null) }
     }
 
     fun onExactTimeChange(time: ExactTime) {
@@ -177,7 +183,7 @@ class LogMealViewModel(
             } else {
                 current.favoriteId
             }
-            val eatenAt = clock.timeOf(current.exactTime, current.hoursAgo * MINUTES_PER_HOUR)
+            val eatenAt = current.exactTime?.let { clock.timeOf(it, 0) } ?: clock.timeOf(current.slot)
             val mealId = repository.saveMeal(
                 eatenAt = eatenAt,
                 tzOffsetMin = clock.offsetMinAt(eatenAt),
@@ -192,7 +198,7 @@ class LogMealViewModel(
                     query = "",
                     results = emptyList(),
                     selected = emptyList(),
-                    hoursAgo = 0,
+                    slot = suggestedSlot(),
                     exactTime = null,
                     favoriteId = null,
                     saveAsFavorite = false,
@@ -219,9 +225,6 @@ class LogMealViewModel(
     }
 
     companion object {
-        /** Time chips: now, 1, 2, 3 and 5 hours ago (UX 3.1). */
-        val HOURS_AGO_OPTIONS = listOf(0, 1, 2, 3, 5)
         private const val RECENT_LIMIT = 12
-        private const val MINUTES_PER_HOUR = 60
     }
 }

@@ -85,10 +85,12 @@
     <string name="symptom_how_strong">Wie stark?</string>
     <string name="symptom_intensity_range">1 = leicht · 5 = stark</string>
     <string name="symptom_when">Wann ging es los?</string>
-    <plurals name="symptom_minutes_ago">
-        <item quantity="one">vor %1$d Minute</item>
-        <item quantity="other">vor %1$d Minuten</item>
-    </plurals>
+    <string name="symptom_part_morning">Morgens</string>
+    <string name="symptom_part_midday">Mittags</string>
+    <string name="symptom_part_afternoon">Nachmittags</string>
+    <string name="symptom_part_evening">Abends</string>
+    <string name="symptom_part_all_day">Den ganzen Tag</string>
+    <string name="symptom_part_after_meal">Nach dem Essen</string>
     <string name="symptom_note">Notiz (optional)</string>
     <string name="emergency_title">Wichtig</string>
     <string name="emergency_text">Atemnot oder eine Schwellung an Mund, Zunge oder Hals können ein Notfall sein. Im Zweifel Hilfe rufen.</string>
@@ -97,10 +99,10 @@
 
     <string name="meal_when">Wann?</string>
     <string name="meal_now">Jetzt</string>
-    <plurals name="meal_hours_ago">
-        <item quantity="one">vor %1$d Stunde</item>
-        <item quantity="other">vor %1$d Stunden</item>
-    </plurals>
+    <string name="meal_slot_breakfast">Frühstück</string>
+    <string name="meal_slot_lunch">Mittagessen</string>
+    <string name="meal_slot_dinner">Abendessen</string>
+    <string name="meal_slot_snack">Snack (jetzt)</string>
     <string name="meal_recent">Zuletzt gegessen</string>
     <string name="meal_search">Zutat suchen …</string>
     <string name="meal_no_results">Nichts gefunden.</string>

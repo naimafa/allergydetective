@@ -22,6 +22,8 @@ Zusammenfassung der Konzept-Sitzung vom **14.11.2026**. Details stehen in den ve
 | Ergebnis | Evidenzstufen Spur / Verdacht / Starker Verdacht statt Prozent | TRD 2.8 |
 | Intensität | **1–5** (bestätigt), Stress 1–5 | Symptome |
 | Portion | S / M / L = Faktor 0,5 / 1 / 2, erklärt per Hand-Maß | TRD 1.4 |
+| Mahlzeit statt Uhrzeit | Frühstück = 8:00, Mittagessen = 12:30, Abendessen = 19:00, Snack = jetzt; nie in der Zukunft. Vorauswahl nach Tageszeit. "Andere Zeit …" bleibt für Nachträge (18.11.2026, Self-Test). **Vorläufig, mit Self-Test prüfen** | `domain/time/DayParts.kt` |
+| Symptom nach Tageszeit | Morgens = 7:00 (vor dem Frühstück), Mittags = 13:00, Nachmittags = 16:00, Abends = 20:00, Ganzer Tag = 7:00, Nach dem Essen = letzte Mahlzeit von heute + 30 min. Nur Tageszeiten, die schon begonnen haben. Lange drücken speichert weiter mit Intensität 3 und "jetzt" (18.11.2026). **Vorläufig** | `domain/time/DayParts.kt` |
 | Notfall | Atemnot / Schwellung → Hinweis mit Notruf 112 | Symptome Kap. 3 |
 | Farben | Pastell für Flächen, dunkle Varianten für Text (WCAG ≥ 4,5:1) | UX 1.1 |
 

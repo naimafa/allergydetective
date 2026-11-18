@@ -6,6 +6,7 @@ import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.time.AppClock
+import com.nfar.allergydetective.domain.time.MealSlot
 import com.nfar.allergydetective.ui.common.ExactTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -156,17 +157,18 @@ class LogMealViewModelTest {
         vm.onToggleIngredient(bread)
         vm.onToggleIngredient(milk)
         vm.onPortionChange(milk.id, Portion.LARGE)
-        vm.onHoursAgoChange(2)
+        vm.onSlotChange(MealSlot.BREAKFAST)
 
         vm.onSave()
 
         val (eatenAt, offset, items) = repository.saved.single()
-        assertEquals(now.toEpochMilliseconds() - 2 * 3_600_000L, eatenAt)
+        // Breakfast = 08:00 in Berlin = 07:00 UTC
+        assertEquals(Instant.parse("2026-11-17T07:00:00Z").toEpochMilliseconds(), eatenAt)
         assertEquals(60, offset)
         assertEquals(listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(milk.id, Portion.LARGE)), items)
         assertEquals(1L, vm.state.value.savedMealId)
         assertTrue(vm.state.value.selected.isEmpty())
-        assertEquals(0, vm.state.value.hoursAgo)
+        assertEquals(MealSlot.LUNCH, vm.state.value.slot)
     }
 
     @Test
@@ -187,11 +189,42 @@ class LogMealViewModelTest {
     }
 
     @Test
+    fun slotFitsTheTimeOfDayAndIsNeverInTheFuture() {
+        // 13:00 in Berlin: lunch is preselected.
+        val vm = viewModel()
+        assertEquals(MealSlot.LUNCH, vm.state.value.slot)
+
+        vm.onToggleIngredient(bread)
+        vm.onSave()
+        assertEquals(Instant.parse("2026-11-17T11:30:00Z").toEpochMilliseconds(), repository.saved.last().first)
+
+        vm.onToggleIngredient(bread)
+        vm.onSlotChange(MealSlot.DINNER)
+        vm.onSave()
+        assertEquals(now.toEpochMilliseconds(), repository.saved.last().first)
+
+        vm.onToggleIngredient(bread)
+        vm.onSlotChange(MealSlot.SNACK)
+        vm.onSave()
+        assertEquals(now.toEpochMilliseconds(), repository.saved.last().first)
+    }
+
+    @Test
+    fun suggestedSlotFollowsTheClock() {
+        assertEquals(MealSlot.BREAKFAST, MealSlot.suggestedAt(7, 30))
+        assertEquals(MealSlot.SNACK, MealSlot.suggestedAt(10, 45))
+        assertEquals(MealSlot.LUNCH, MealSlot.suggestedAt(12, 0))
+        assertEquals(MealSlot.SNACK, MealSlot.suggestedAt(16, 0))
+        assertEquals(MealSlot.DINNER, MealSlot.suggestedAt(19, 15))
+        assertEquals(MealSlot.SNACK, MealSlot.suggestedAt(23, 0))
+    }
+
+    @Test
     fun quickChipReplacesThePickedTime() {
         val vm = viewModel()
         vm.onExactTimeChange(ExactTime(1, 8, 0))
 
-        vm.onHoursAgoChange(1)
+        vm.onSlotChange(MealSlot.DINNER)
 
         assertNull(vm.state.value.exactTime)
     }
