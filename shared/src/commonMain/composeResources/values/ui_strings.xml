@@ -78,7 +78,17 @@
     <string name="onboarding_purpose_title">What this app is and is not</string>
     <string name="onboarding_purpose">It is a diary for self-observation. It does not make diagnoses and does not replace a doctor. Everything stays on your phone.</string>
     <string name="onboarding_next">Next</string>
-    <string name="onboarding_done">Done</string>
+    <string name="onboarding_back">Back</string>
+    <string name="onboarding_how_title">How it works</string>
+    <string name="onboarding_how_meal">Log what you eat: breakfast, lunch, dinner or a snack. By search, favourite or voice.</string>
+    <string name="onboarding_how_symptom">When you have complaints, log them with strength and time of day.</string>
+    <string name="onboarding_how_check">In the evening you close the day: how did you feel, how did you sleep? Days without complaints matter too.</string>
+    <string name="onboarding_patience_title">A little patience pays off</string>
+    <string name="onboarding_patience_text">After about a week of closed days the app shows first patterns. The longer you keep going, the clearer they get. Mark days of illness (e.g. a cold) in the day check, they are then left out.</string>
+    <string name="onboarding_dishes_title">Tip: your frequent dishes</string>
+    <string name="onboarding_dishes_text">Save the dishes you eat often once with their ingredients, e.g. lentil soup = lentils, tomatoes, carrots. After that you log them with one tap every day.</string>
+    <string name="onboarding_dishes_start">Add dishes now</string>
+    <string name="onboarding_dishes_later">Later</string>
     <string name="allergies_question">Do you already know about allergies or intolerances?</string>
     <string name="allergies_hint">Known ones are not ranked. You only get a notice when you eat them. You can change this later.</string>
     <string name="time_other">Other time …</string>

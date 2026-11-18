@@ -9,6 +9,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.nfar.allergydetective.ui.home.HomeAction
 import com.nfar.allergydetective.ui.meal.LogMealScreen
 import com.nfar.allergydetective.ui.profile.OnboardingScreen
@@ -20,7 +21,10 @@ import kotlinx.serialization.Serializable
 
 /** Type-safe routes. Each screen gets its own route when it is built. */
 @Serializable
-data object HomeRoute
+data class HomeRoute(
+    /** After the intro: "add dishes now" opens the favorites tab. */
+    val openFavorites: Boolean = false,
+)
 
 @Serializable
 data object LogMealRoute
@@ -55,16 +59,17 @@ fun AppNavHost(
             onDayCheckOpened()
         }
     }
-    NavHost(navController = navController, startDestination = if (completed) HomeRoute else OnboardingRoute) {
+    NavHost(navController = navController, startDestination = if (completed) HomeRoute() else OnboardingRoute) {
         composable<OnboardingRoute> {
             OnboardingScreen(
-                onFinished = {
-                    navController.navigate(HomeRoute) { popUpTo<OnboardingRoute> { inclusive = true } }
+                onFinished = { openDishes ->
+                    navController.navigate(HomeRoute(openFavorites = openDishes)) { popUpTo<OnboardingRoute> { inclusive = true } }
                 },
             )
         }
-        composable<HomeRoute> {
+        composable<HomeRoute> { entry ->
             MainScreen(
+                initialTab = if (entry.toRoute<HomeRoute>().openFavorites) MainTab.FAVORITES else MainTab.HOME,
                 onHomeAction = { action ->
                     when (action) {
                         HomeAction.LOG_MEAL -> navController.navigate(LogMealRoute)
