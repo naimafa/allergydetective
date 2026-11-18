@@ -10,5 +10,6 @@
   {"id": 9, "key": "nuts_seeds"},
   {"id": 10, "key": "legumes_soy"},
   {"id": 11, "key": "beverages"},
-  {"id": 12, "key": "condiments_sweets"}
+  {"id": 12, "key": "condiments_sweets"},
+  {"id": 13, "key": "oils_fats"}
 ]

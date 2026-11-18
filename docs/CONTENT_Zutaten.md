@@ -7,7 +7,7 @@
 
 ---
 
-## 1. Die 12 Basis-Kategorien
+## 1. Die 13 Basis-Kategorien
 
 | ID | Kategorie |
 | :--- | :--- |
@@ -23,6 +23,7 @@
 | 10 | Hülsenfrüchte & Soja |
 | 11 | Getränke |
 | 12 | Würzmittel, Saucen & Süßes |
+| 13 | Öle, Fette & Oliven (ab 18.11.2026, Self-Test) |
 
 ---
 
@@ -235,6 +236,19 @@ Symptomgruppen: **A** Magen & Darm · **B** Haut · **C** Kopf, Energie & Kreisl
 | Zartbitterschokolade / Kakao | Histamin-Liberator, Koffein |
 | Zuckerfreie Kaugummis / Bonbons | Sorbit |
 | Zucker | – |
+
+### 13 · Öle, Fette & Oliven
+| Zutat | Trigger |
+| :--- | :--- |
+| Speiseöl (allgemein) | Fettreich |
+| Olivenöl | Fettreich |
+| Sonnenblumenöl | Fettreich |
+| Rapsöl | Fettreich |
+| Kokosöl | Fettreich |
+| Sesamöl | Sesam, Fettreich |
+| Erdnussöl | Erdnuss, Fettreich |
+| Margarine | Fettreich |
+| Oliven | Histamin |
 
 ---
 

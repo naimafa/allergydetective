@@ -14,7 +14,7 @@
 
 | Tabelle | Felder | Zweck |
 | :--- | :--- | :--- |
-| `categories` | id, name | Die 12 Basis-Kategorien (siehe [CONTENT_Zutaten.md](CONTENT_Zutaten.md)) |
+| `categories` | id, name | Die 13 Basis-Kategorien (siehe [CONTENT_Zutaten.md](CONTENT_Zutaten.md)) |
 | `properties` | id, name, group | Trigger-Eigenschaften (Histamin, Gluten, Laktose, EU-14-Allergene …) |
 | `property_windows` | property_id, start_min, end_min | Reaktions-Zeitfenster **pro Trigger** (dürfen sich überlappen) |
 | `property_symptom_map` | property_id, symptom_group | Welche Symptomgruppen zu einem Trigger plausibel passen |
