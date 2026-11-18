@@ -16,6 +16,10 @@ class IngredientCatalog(
     fun search(query: String, limit: Int = MAX_RESULTS): List<IngredientInfo> =
         search.search(query, limit).mapNotNull(byId::get)
 
+    /** Closest ingredient to [name] and its score: 0 = same name or synonym, 1–3 = part of a name, 4 = typo. */
+    fun bestMatch(name: String): Pair<IngredientInfo, Int>? =
+        search.bestMatch(name)?.let { (id, score) -> byId[id]?.let { it to score } }
+
     companion object {
         const val MAX_RESULTS = 6
         val EMPTY = IngredientCatalog(emptyMap(), IngredientSearch(emptyList()))

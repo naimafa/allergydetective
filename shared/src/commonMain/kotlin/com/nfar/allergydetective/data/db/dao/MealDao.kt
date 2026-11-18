@@ -38,6 +38,15 @@ interface MealDao {
     )
     suspend fun ingredientIdsWithKnownAllergy(): List<Long>
 
+    @Query(
+        """
+        SELECT DISTINCT ip.ingredientId FROM ingredient_properties ip
+        JOIN properties p ON p.id = ip.propertyId
+        WHERE p.`key` IN (:keys)
+        """,
+    )
+    suspend fun ingredientIdsWithProperties(keys: List<String>): List<Long>
+
     @Insert
     suspend fun insertMeal(meal: MealEntity): Long
 

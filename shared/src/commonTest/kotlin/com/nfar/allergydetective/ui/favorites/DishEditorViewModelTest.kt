@@ -2,6 +2,7 @@ package com.nfar.allergydetective.ui.favorites
 
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Portion
+import com.nfar.allergydetective.domain.analysis.model.Preparation
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.MealRepository
@@ -33,12 +34,17 @@ class DishEditorViewModelTest {
         override suspend fun ingredientIdsWithKnownAllergy() = emptySet<Long>()
         override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?) = 0L
         override suspend fun deleteMeal(mealId: Long) = Unit
-        override suspend fun favorites() = emptyList<FavoriteInfo>()
+        val existing = mutableListOf<FavoriteInfo>()
+        val deleted = mutableListOf<Long>()
+        override suspend fun favorites() = existing.toList()
+        override suspend fun ingredientIdsNeedingPreparation() = setOf(702L)
         override suspend fun saveFavorite(name: String, items: List<MealItem>): Long {
             favorites += name to items
             return favorites.size.toLong()
         }
-        override suspend fun deleteFavorite(favoriteId: Long) = Unit
+        override suspend fun deleteFavorite(favoriteId: Long) {
+            deleted += favoriteId
+        }
     }
 
     private val meals = FakeMeals()
@@ -64,14 +70,19 @@ class DishEditorViewModelTest {
         vm.onAdd(tomato)
         vm.onAdd(carrot)
         vm.onAdd(tomato)
-        vm.onRemove(carrot)
+        assertFalse(vm.state.value.canSave)
+        vm.onPreparationChange(carrot.id, Preparation.COOKED)
         assertEquals("", vm.state.value.query)
         assertTrue(vm.state.value.canSave)
 
         vm.onSave()
 
         assertEquals(
-            "Linsensuppe" to listOf(MealItem(1001, Portion.MEDIUM), MealItem(701, Portion.MEDIUM)),
+            "Linsensuppe" to listOf(
+                MealItem(1001, Portion.MEDIUM),
+                MealItem(701, Portion.MEDIUM),
+                MealItem(702, Portion.MEDIUM, Preparation.COOKED),
+            ),
             meals.favorites.single(),
         )
         assertTrue(vm.state.value.saved)
@@ -85,6 +96,21 @@ class DishEditorViewModelTest {
 
         vm.start()
 
-        assertEquals(DishEditorState(), vm.state.value)
+        assertEquals(DishEditorState(needsPreparation = setOf(702L)), vm.state.value)
+    }
+
+    @Test
+    fun sameDishNameAsksToReplace() {
+        meals.existing += FavoriteInfo(7, "Linsensuppe", emptyList())
+        val vm = viewModel()
+        vm.start()
+
+        vm.onNameChange("linsensuppe ")
+        assertEquals(7L, vm.state.value.sameNameDish?.id)
+        vm.onAdd(lentils)
+        vm.onSave()
+
+        assertEquals(listOf(7L), meals.deleted)
+        assertEquals("linsensuppe", meals.favorites.single().first)
     }
 }

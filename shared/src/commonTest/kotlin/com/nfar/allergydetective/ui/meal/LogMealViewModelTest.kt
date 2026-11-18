@@ -2,6 +2,7 @@ package com.nfar.allergydetective.ui.meal
 
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Portion
+import com.nfar.allergydetective.domain.analysis.model.Preparation
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.MealRepository
@@ -41,6 +42,8 @@ class LogMealViewModelTest {
         override suspend fun synonyms(language: String) = mapOf(101L to listOf("Semmel"))
         override suspend fun recentIngredientIds(limit: Int) = saved.flatMap { it.third }.map { it.ingredientId }.distinct().reversed()
         override suspend fun ingredientIdsWithKnownAllergy() = allergyIds
+        var preparationIds = emptySet<Long>()
+        override suspend fun ingredientIdsNeedingPreparation() = preparationIds
         val mealFavoriteIds = mutableListOf<Long?>()
         val favorites = mutableListOf<FavoriteInfo>()
 
@@ -275,5 +278,27 @@ class LogMealViewModelTest {
         assertTrue(vm.state.value.nameExists)
         vm.onQueryChange("Quinoa")
         assertFalse(vm.state.value.nameExists)
+    }
+
+    @Test
+    fun rawOrCookedMustBeChosenAndIsSaved() {
+        repository.preparationIds = setOf(milk.id)
+        val vm = viewModel()
+        vm.onToggleIngredient(bread)
+        vm.onToggleIngredient(milk)
+
+        assertTrue(vm.state.value.missingPreparation)
+        assertFalse(vm.state.value.canSave)
+        vm.onSave()
+        assertTrue(repository.saved.isEmpty())
+
+        vm.onPreparationChange(milk.id, Preparation.COOKED)
+        assertTrue(vm.state.value.canSave)
+        vm.onSave()
+
+        assertEquals(
+            listOf(MealItem(bread.id, Portion.MEDIUM, null), MealItem(milk.id, Portion.MEDIUM, Preparation.COOKED)),
+            repository.saved.single().third,
+        )
     }
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Portion
+import com.nfar.allergydetective.domain.analysis.model.Preparation
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.IngredientSearch
@@ -25,7 +26,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class SelectedIngredient(val ingredient: IngredientInfo, val portion: Portion = Portion.MEDIUM)
+data class SelectedIngredient(
+    val ingredient: IngredientInfo,
+    val portion: Portion = Portion.MEDIUM,
+    /** Raw or cooked; must be chosen for ingredients in [LogMealState.needsPreparation]. */
+    val preparation: Preparation? = null,
+)
 
 data class LogMealState(
     val loading: Boolean = true,
@@ -48,8 +54,13 @@ data class LogMealState(
     /** Set after saving, so the screen can offer undo. Cleared with [LogMealViewModel.onSavedShown]. */
     val savedMealId: Long? = null,
     private val allergyIngredientIds: Set<Long> = emptySet(),
+    /** Ingredients with a heat-labile trigger (birch pollen): raw or cooked is mandatory. */
+    val needsPreparation: Set<Long> = emptySet(),
 ) {
-    val canSave: Boolean get() = selected.isNotEmpty() && !saving && (!saveAsFavorite || favoriteName.isNotBlank())
+    val canSave: Boolean get() =
+        selected.isNotEmpty() && !saving && !missingPreparation && (!saveAsFavorite || favoriteName.isNotBlank())
+
+    val missingPreparation: Boolean get() = selected.any { it.ingredient.id in needsPreparation && it.preparation == null }
 
     /** UX 3.1: a gentle hint, saving stays possible. */
     val containsKnownAllergy: Boolean get() = selected.any { it.ingredient.id in allergyIngredientIds }
@@ -90,9 +101,12 @@ class LogMealViewModel(
         )
         knownNames = ingredients.map { normalizeForSearch(displayName(it)) }.toSet()
         val allergies = repository.ingredientIdsWithKnownAllergy()
+        val needsPreparation = repository.ingredientIdsNeedingPreparation()
         val recent = recentIngredients()
         val favorites = repository.favorites()
-        _state.update { it.copy(loading = false, recent = recent, favorites = favorites).withAllergies(allergies) }
+        _state.update {
+            it.copy(loading = false, recent = recent, favorites = favorites, needsPreparation = needsPreparation).withAllergies(allergies)
+        }
     }
 
     /** A custom ingredient was created: make it searchable and select it. */
@@ -168,7 +182,7 @@ class LogMealViewModel(
             val known = state.selected.map { it.ingredient.id }.toSet()
             val added = favorite.items
                 .filter { it.ingredientId !in known }
-                .mapNotNull { item -> ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion) } }
+                .mapNotNull { item -> ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation) } }
             state.copy(selected = state.selected + added, favoriteId = favorite.id)
         }
     }
@@ -176,6 +190,12 @@ class LogMealViewModel(
     fun onPortionChange(ingredientId: Long, portion: Portion) {
         _state.update { state ->
             state.copy(selected = state.selected.map { if (it.ingredient.id == ingredientId) it.copy(portion = portion) else it })
+        }
+    }
+
+    fun onPreparationChange(ingredientId: Long, preparation: Preparation) {
+        _state.update { state ->
+            state.copy(selected = state.selected.map { if (it.ingredient.id == ingredientId) it.copy(preparation = preparation) else it })
         }
     }
 
@@ -192,7 +212,7 @@ class LogMealViewModel(
         if (!current.canSave) return
         _state.update { it.copy(saving = true) }
         viewModelScope.launch {
-            val items = current.selected.map { MealItem(it.ingredient.id, it.portion) }
+            val items = current.selected.map { MealItem(it.ingredient.id, it.portion, if (it.ingredient.id in current.needsPreparation) it.preparation else null) }
             val favoriteId = if (current.saveAsFavorite) {
                 repository.saveFavorite(current.favoriteName.trim(), items)
             } else {

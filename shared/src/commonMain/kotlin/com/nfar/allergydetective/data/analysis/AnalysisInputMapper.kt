@@ -2,6 +2,7 @@ package com.nfar.allergydetective.data.analysis
 
 import com.nfar.allergydetective.data.db.model.DayStatus
 import com.nfar.allergydetective.data.db.model.PortionSize
+import com.nfar.allergydetective.data.diary.toDomain
 import com.nfar.allergydetective.domain.analysis.model.AnalysisInput
 import com.nfar.allergydetective.domain.analysis.model.DayCheck
 import com.nfar.allergydetective.domain.analysis.model.DayFactor
@@ -31,7 +32,12 @@ private fun AnalysisRows.toReferenceData(): ReferenceData {
     val propertiesByIngredient = ingredientProperties.groupBy({ it.ingredientId }, { it.propertyId })
     return ReferenceData(
         properties = properties.map {
-            TriggerProperty(it.id, windowsByProperty[it.id].orEmpty(), groupsByProperty[it.id].orEmpty().toSet())
+            TriggerProperty(
+                id = it.id,
+                windows = windowsByProperty[it.id].orEmpty(),
+                symptomGroups = groupsByProperty[it.id].orEmpty().toSet(),
+                heatLabile = it.key in HEAT_LABILE_PROPERTY_KEYS,
+            )
         },
         ingredients = ingredients.map { IngredientRef(it.id, propertiesByIngredient[it.id].orEmpty().toSet()) },
         symptoms = symptoms.map { SymptomRef(it.id, it.groupKey) },
@@ -40,7 +46,7 @@ private fun AnalysisRows.toReferenceData(): ReferenceData {
 }
 
 private fun AnalysisRows.toDiaryData(): DiaryData {
-    val itemsByMeal = mealIngredients.groupBy({ it.mealId }, { MealItem(it.ingredientId, it.portion.toPortion()) })
+    val itemsByMeal = mealIngredients.groupBy({ it.mealId }, { MealItem(it.ingredientId, it.portion.toPortion(), it.preparation?.toDomain()) })
     // Self-test 18.11.: symptoms of an acute illness (e.g. sinusitis) would be blamed on food.
     // A day marked as sick does not count, like an unconfirmed day; the factor itself is no candidate.
     val sickDays = dayFactors.filter { it.factorId == SICK_FACTOR_ID }.map { it.epochDay }.toSet()
@@ -53,6 +59,9 @@ private fun AnalysisRows.toDiaryData(): DiaryData {
         dayFactors = dayFactors.filter { it.factorId != SICK_FACTOR_ID }.map { DayFactor(it.epochDay, it.factorId) },
     )
 }
+
+/** Triggers destroyed by cooking. Ingredients with one of them ask "raw or cooked?". */
+val HEAT_LABILE_PROPERTY_KEYS = setOf("birch_pollen_cross")
 
 /** Lifestyle factor "sick" (seed id 4): the day is left out of the analysis. */
 const val SICK_FACTOR_ID = 4L

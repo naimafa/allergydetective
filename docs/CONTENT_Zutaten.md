@@ -159,7 +159,7 @@ Symptomgruppen: **A** Magen & Darm · **B** Haut · **C** Kopf, Energie & Kreisl
 | Lauch | Fruktane |
 | Pilze | Polyole |
 | Blumenkohl | Polyole |
-| Karotte (roh) | Pollen-kreuzreaktiv |
+| Karotte (roh / gekocht, Pflichtangabe) | Pollen-kreuzreaktiv |
 | Sellerie | Sellerie, Pollen-kreuzreaktiv |
 | Chili | Scharf |
 | Kartoffel | – |

@@ -34,7 +34,22 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+    /**
+     * Self-test 18.11.: raw or cooked for ingredients with a heat-labile trigger (birch pollen).
+     * Existing entries of those ingredients were analysed as raw, so they stay raw.
+     */
+    val MIGRATION_4_5 = object : Migration(4, 5) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE meal_ingredients ADD COLUMN preparation TEXT")
+            connection.execSQL("ALTER TABLE favorite_ingredients ADD COLUMN preparation TEXT")
+            val heatLabile = "SELECT ip.ingredientId FROM ingredient_properties ip " +
+                "JOIN properties p ON p.id = ip.propertyId WHERE p.`key` = 'birch_pollen_cross'"
+            connection.execSQL("UPDATE meal_ingredients SET preparation = 'RAW' WHERE ingredientId IN ($heatLabile)")
+            connection.execSQL("UPDATE favorite_ingredients SET preparation = 'RAW' WHERE ingredientId IN ($heatLabile)")
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
 
     private const val OILS_CATEGORY = 13L
 

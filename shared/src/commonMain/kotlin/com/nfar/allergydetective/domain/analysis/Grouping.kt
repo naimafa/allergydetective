@@ -21,7 +21,7 @@ internal fun foodExposureMeals(
         if (meal.eatenAt > now || localEpochDay(meal.eatenAt, meal.tzOffsetMin) !in validDays) continue
         for (item in meal.items) {
             exposures.getOrPut(Candidate.Ingredient(item.ingredientId)) { mutableSetOf() } += meal.id
-            for (propertyId in catalog.propertiesByIngredient[item.ingredientId].orEmpty()) {
+            for (propertyId in catalog.propertiesOf(item)) {
                 exposures.getOrPut(Candidate.Property(propertyId)) { mutableSetOf() } += meal.id
             }
         }
