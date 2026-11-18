@@ -34,7 +34,7 @@ class SeedFilesTest {
         assertEquals(26, entities.properties.size)
         assertEquals(122, entities.ingredients.size)
         assertEquals(24, entities.symptoms.size)
-        assertEquals(3, entities.lifestyleFactors.size)
+        assertEquals(4, entities.lifestyleFactors.size)
     }
 
     /** Existing installs get the oils by migration, new ones by JSON: both must be the same. */

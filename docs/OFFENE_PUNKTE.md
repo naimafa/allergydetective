@@ -61,7 +61,7 @@ Noch offen (Entscheidung bzw. Konzept nötig):
 - [x] **Mahlzeit statt Uhrzeit:** Frühstück / Mittag- / Abendessen / Snack (ENTSCHEIDUNGEN 2)
 - [x] **Symptome nach Tageszeit** (morgens / mittags / nachmittags / abends / ganzer Tag / nach dem Essen), Uhrzeiten in ENTSCHEIDUNGEN 2
 - [x] **Intensität pro Symptom:** gibt es schon (1–5 beim Antippen). Nur langes Drücken speichert ohne Abfrage mit 3
-- [ ] **Kranke Tage markieren** (z.B. akute Nebenhöhlenentzündung) und aus der Analyse ausschließen
+- [x] **Kranke Tage markieren:** Faktor "Krank" im Tages-Abschluss, der Tag fällt aus der Analyse (Migration DB 3 → 4)
 - [ ] **Einführung beim ersten Start:** ein paar Slides, am Ende häufige Gerichte anlegen
 
 ## 🔍 Vor Release prüfen

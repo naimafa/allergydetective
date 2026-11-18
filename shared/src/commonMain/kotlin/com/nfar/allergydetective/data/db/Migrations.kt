@@ -27,7 +27,14 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3)
+    /** Self-test 18.11.: days of an acute illness can be marked and are left out of the analysis. */
+    val MIGRATION_3_4 = object : Migration(3, 4) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("INSERT OR IGNORE INTO lifestyle_factors (id, `key`) VALUES (4, 'sick')")
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
 
     private const val OILS_CATEGORY = 13L
 

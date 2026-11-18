@@ -165,6 +165,22 @@ class AnalysisInputMapperTest {
     }
 
     @Test
+    fun sickDaysAreLeftOutAndSickIsNoCandidate() {
+        val rows = referenceRows.copy(
+            dayChecks = listOf(
+                DayCheckEntity(epochDay = 2, wellbeing = 1, sleepHours = null, sleepQuality = null, stress = null, status = DayStatus.COMPLETE),
+                DayCheckEntity(epochDay = 3, wellbeing = 4, sleepHours = null, sleepQuality = null, stress = null, status = DayStatus.COMPLETE),
+            ),
+            dayFactors = listOf(DayFactorEntity(epochDay = 2, factorId = SICK_FACTOR_ID), DayFactorEntity(epochDay = 2, factorId = 501)),
+        )
+
+        val diary = rows.toAnalysisInput(now = 0, nowTzOffsetMin = TZ).diary
+
+        assertEquals(listOf(false, true), diary.dayChecks.map { it.confirmed })
+        assertEquals(listOf(DayFactor(2, 501)), diary.dayFactors)
+    }
+
+    @Test
     fun symptomEntriesAreMappedWithoutTheNote() {
         val rows = referenceRows.copy(
             symptomEntries = listOf(
