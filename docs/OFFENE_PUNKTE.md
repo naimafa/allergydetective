@@ -47,6 +47,23 @@ Noch offen bzw. Annahmen:
 - [ ] **Onboarding** fragt den Reminder nicht ab; er ist aus, bis man ihn im Profil einschaltet.
 - [ ] **GitHub-PRs:** Branches werden lokal nach `develop` gemergt, weil kein `gh` installiert ist. Für echte PRs: GitHub CLI installieren und einmal `gh auth login` ausführen.
 
+## 🧪 Self-Test-Feedback (Stand 18.11.2026)
+Bugs, erledigt am 18.11.2026 (je ein Branch nach `develop`):
+- [x] **Speichern-Button im Essen-Loggen** war halb von der System-Navigationsleiste verdeckt (Edge-to-Edge)
+- [x] **JSON-Export** schlug bei WhatsApp fehl ("Teilen fehlgeschlagen"): wird jetzt als Datei-Anhang geteilt (FileProvider)
+- [x] **Tages-Abschluss bestätigte den falschen Tag:** Er wählte den ältesten offenen Tag vor (15.11. statt 17.11.). Jetzt ist immer "Heute" vorgewählt, das Datum steht groß da, offene Vortage werden nur als Hinweis genannt
+- [x] **"Dinkel Vollkornbrot"** wurde zu Dinkelbrot + Vollkornbrot (Weizen): neue Zutat Dinkelvollkornbrot (Migration DB 1 → 2, im Emulator v1 → v2 geprüft), Spracheingabe prüft getrennte Wörter auch als ein Kompositum
+
+Noch offen (Entscheidung bzw. Konzept nötig):
+- [ ] **Kategorie Öle & Fette** fehlt, ebenso Oliven
+- [ ] **Gerichte aus Zutaten:** Eigene Zutat ohne Trigger-Abfrage; der Nutzer setzt ein Gericht aus vorhandenen Zutaten zusammen, die Allergene kommen aus der Datenbank. Neu anlegen nur, wenn die Suche nichts findet
+- [ ] **Favoriten mit "+"** als Gericht anlegen (z.B. Linsensuppe = Linsen, Tomaten, Karotten, Gewürze)
+- [ ] **Mahlzeit statt Uhrzeit:** Frühstück / Mittag- / Abendessen, Uhrzeit nur bei Snacks
+- [ ] **Symptome nach Tageszeit** (morgens / mittags / abends / ganzer Tag / nach dem Essen) statt "vor X Stunden". Vorher klären, auf welche Uhrzeit die Analyse das abbildet
+- [ ] **Intensität pro Symptom** prüfen, wenn mehrere Symptome gewählt sind
+- [ ] **Kranke Tage markieren** (z.B. akute Nebenhöhlenentzündung) und aus der Analyse ausschließen
+- [ ] **Einführung beim ersten Start:** ein paar Slides, am Ende häufige Gerichte anlegen
+
 ## 🔍 Vor Release prüfen
 - [ ] **Zeitfenster und Trigger-Zuordnungen** fachlich verifizieren (Literatur / Fachperson)
 - [ ] **Schwellenwerte kalibrieren** (Episoden 3h, Gruppierung 80 %, Lift-Grenzen) mit Testdaten und Self-Test
