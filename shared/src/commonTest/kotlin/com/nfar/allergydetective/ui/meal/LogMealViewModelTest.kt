@@ -253,4 +253,27 @@ class LogMealViewModelTest {
         assertTrue(vm.state.value.containsKnownAllergy)
         assertTrue(vm.state.value.canSave)
     }
+
+    @Test
+    fun sameNameIsShownOnceInRecentAndNotCreatedAgain() {
+        // Self-test 18.11.: a custom "Dinkelvollkornbrot" from before the seed entry existed.
+        val seed = IngredientInfo(114, "spelt_wholemeal_bread", null)
+        val custom = IngredientInfo(100_000, null, "Dinkelvollkornbrot")
+        val repo = FakeRepository(listOf(seed, custom))
+        repo.saved += Triple(0L, 60, listOf(MealItem(custom.id, Portion.MEDIUM)))
+        repo.saved += Triple(1L, 60, listOf(MealItem(seed.id, Portion.MEDIUM)))
+        val vm = LogMealViewModel(
+            repository = repo,
+            clock = AppClock(clock = object : Clock { override fun now() = now }, zone = { TimeZone.of("Europe/Berlin") }),
+            names = { _, _ -> "Dinkelvollkornbrot" },
+            language = { "de" },
+        )
+
+        assertEquals(1, vm.state.value.recent.size)
+
+        vm.onQueryChange("dinkelvollkornbrot")
+        assertTrue(vm.state.value.nameExists)
+        vm.onQueryChange("Quinoa")
+        assertFalse(vm.state.value.nameExists)
+    }
 }
