@@ -44,6 +44,8 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.uiTooling)
             implementation(libs.koin.android)
+            implementation(libs.androidx.work.runtime)
+            implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -58,9 +60,14 @@ kotlin {
             implementation(libs.sqlite.bundled)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.koin.core)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.navigation.compose)
+            implementation(libs.compose.material.icons)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
         }
         getByName("androidDeviceTest").dependencies {
             implementation(libs.androidx.testRunner)

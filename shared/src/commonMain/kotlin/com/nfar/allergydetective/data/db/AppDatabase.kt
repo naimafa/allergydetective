@@ -5,10 +5,18 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import com.nfar.allergydetective.data.db.dao.AnalysisDao
+import com.nfar.allergydetective.data.db.dao.DayCheckDao
+import com.nfar.allergydetective.data.db.dao.IngredientDao
+import com.nfar.allergydetective.data.db.dao.ProfileDao
+import com.nfar.allergydetective.data.db.dao.HistoryDao
+import com.nfar.allergydetective.data.db.dao.SickPeriodDao
+import com.nfar.allergydetective.data.db.dao.MealDao
+import com.nfar.allergydetective.data.db.dao.SymptomDao
 import com.nfar.allergydetective.data.db.dao.SeedDao
 import com.nfar.allergydetective.data.db.entity.CategoryEntity
 import com.nfar.allergydetective.data.db.entity.DayCheckEntity
 import com.nfar.allergydetective.data.db.entity.DayFactorEntity
+import com.nfar.allergydetective.data.db.entity.SickPeriodEntity
 import com.nfar.allergydetective.data.db.entity.FavoriteEntity
 import com.nfar.allergydetective.data.db.entity.FavoriteIngredientEntity
 import com.nfar.allergydetective.data.db.entity.IngredientEntity
@@ -50,14 +58,22 @@ const val DATABASE_NAME = "allergy_detective.db"
         SymptomEntryEntity::class,
         DayCheckEntity::class,
         DayFactorEntity::class,
+        SickPeriodEntity::class,
     ],
-    version = 1,
+    version = 6,
     exportSchema = true,
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun seedDao(): SeedDao
     abstract fun analysisDao(): AnalysisDao
+    abstract fun mealDao(): MealDao
+    abstract fun symptomDao(): SymptomDao
+    abstract fun dayCheckDao(): DayCheckDao
+    abstract fun ingredientDao(): IngredientDao
+    abstract fun profileDao(): ProfileDao
+    abstract fun historyDao(): HistoryDao
+    abstract fun sickPeriodDao(): SickPeriodDao
 }
 
 // Room's KSP processor generates the actual implementations for each platform.

@@ -39,6 +39,7 @@
 ## 5. Git
 * **Kleine Commits** nach Conventional Commits: `feat:`, `fix:`, `test:`, `docs:`, `refactor:`
 * `main` bleibt lauffähig. Größere Features im eigenen Branch.
+* **`develop` ist der Integrations-Branch** (seit 17.11.2026): Jeder Schritt bekommt einen Branch `feature/<name>` von `develop` und wird nach `develop` gemergt. Nach `main` geht es erst nach Freigabe.
 * Nach jedem Meilenstein [PROGRESS.md](PROGRESS.md) aktualisieren.
 
 ## 6. Internationalisierung (i18n)

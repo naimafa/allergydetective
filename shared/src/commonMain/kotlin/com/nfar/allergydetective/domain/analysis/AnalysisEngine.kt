@@ -104,7 +104,7 @@ class AnalysisEngine(private val config: AnalysisConfig = AnalysisConfig()) {
         val catalog = FoodCatalog(input.reference)
         return input.diary.meals.flatMap { meal ->
             meal.items.flatMap { item ->
-                catalog.propertiesByIngredient[item.ingredientId].orEmpty()
+                catalog.propertiesOf(item)
                     .filter { it in known }
                     .map { KnownAllergyExposure(meal.id, item.ingredientId, it) }
             }

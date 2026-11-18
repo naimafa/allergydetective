@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- UI-Texte. Englisch in values. Beide Dateien synchron halten. -->
+<resources>
+    <string name="home_title">Allergie-Detektiv</string>
+    <string name="home_log_meal">Essen loggen</string>
+    <string name="home_log_symptom">Symptom melden</string>
+    <string name="home_day_check">Tages-Abschluss</string>
+    <string name="home_results">Deine Spuren</string>
+    <string name="home_log_meal_hint">Was hast du gegessen?</string>
+    <string name="home_log_symptom_hint">Beschwerden eintragen</string>
+    <string name="home_day_check_hint">Wie war dein Tag?</string>
+    <string name="home_results_hint">Muster ansehen</string>
+    <string name="home_progress_collecting">Tag %1$d von %2$d – wir sammeln Spuren</string>
+    <plurals name="home_progress_ready">
+        <item quantity="one">%1$d bestätigter Tag – deine erste Auswertung ist bereit</item>
+        <item quantity="other">%1$d bestätigte Tage – deine Auswertung ist bereit</item>
+    </plurals>
+
+    <string name="results_too_early">%1$d von %2$d bestätigten Tagen. Aussagekräftig wird die Auswertung nach %2$d Tagen, bis dahin ist alles hier vorläufig.</string>
+    <string name="results_nothing_yet">Noch keine Spuren. Einfach weiter eintragen, jeder Eintrag ist ein Puzzleteil.</string>
+    <string name="results_level_trace">🔍 Spur</string>
+    <string name="results_level_suspicion">🔎 Verdacht</string>
+    <string name="results_level_strong">🕵️ Starker Verdacht</string>
+    <string name="results_reason">Danach Beschwerden: %1$d von %2$d Mal, sonst %3$d von %4$d</string>
+    <string name="results_groups_title">Bisher nicht unterscheidbar</string>
+    <string name="results_group">%1$s kamen immer zusammen vor.</string>
+    <string name="results_safe_title">🟢 Gut vertragen (%1$d)</string>
+    <string name="results_allergy_notice">Du hast %1$s gegessen, das als bekannte Allergie hinterlegt ist.</string>
+    <string name="results_bad_sleep">Schlechter Schlaf</string>
+    <string name="results_high_stress">Hoher Stress</string>
+    <string name="results_disclaimer">Das sind Muster in deinen Einträgen, keine Diagnose. Bitte besprich Verdachtsfälle mit einer Ärztin oder einem Arzt.</string>
+    <string name="results_local">🔒 100 % lokal auf deinem Handy berechnet</string>
+
+    <string name="day_today">Heute</string>
+    <string name="day_yesterday">Gestern</string>
+    <string name="day_two_days_ago">Vorgestern</string>
+    <string name="day_confirmed_mark">%1$s ✓</string>
+    <string name="day_open_past_hint">Noch nicht abgeschlossen: %1$s. Oben antippen, um nachzutragen.</string>
+    <string name="day_wellbeing">Wie ging es dir an dem Tag?</string>
+    <string name="day_sleep">Schlaf in der Nacht davor</string>
+    <string name="day_hours">%1$s h</string>
+    <string name="day_sleep_quality">Schlafqualität</string>
+    <string name="day_stress">Stress an dem Tag</string>
+    <string name="day_scale_hint">1 = wenig · 5 = viel</string>
+    <string name="day_factors">Besonderes? (optional)</string>
+    <string name="day_sick_hint">Krankheitstage zählen nicht für die Auswertung. So werden z.B. Beschwerden einer Erkältung nicht dem Essen zugeschrieben.</string>
+    <string name="sick_title">Krankheitszeiten</string>
+    <string name="sick_hint">Tage, an denen du akut krank warst (z.B. Nebenhöhlenentzündung), zählen nicht für die Auswertung. So werden Kopfschmerzen oder Übelkeit nicht dem Essen zugeschrieben.</string>
+    <string name="sick_empty">Keine Krankheitszeiten eingetragen.</string>
+    <string name="sick_add">+ Krankheitszeit eintragen</string>
+    <string name="sick_longer">Länger krank? Zeitraum eintragen</string>
+    <string name="sick_still_ill">Bin noch krank</string>
+    <string name="sick_banner">🤒 Krank seit %1$s</string>
+    <string name="sick_recovered">Wieder gesund</string>
+    <string name="sick_since">seit %1$s</string>
+    <string name="sick_ongoing">läuft noch</string>
+    <string name="sick_range">%1$s – %2$s</string>
+    <string name="sick_day_in_period">Dieser Tag liegt in einer Krankheitszeit und zählt nicht für die Auswertung.</string>
+    <string name="day_complaints">Beschwerden an dem Tag?</string>
+    <string name="day_no_complaints">Keine Beschwerden</string>
+    <string name="day_no_complaints_disabled">Für diesen Tag sind Symptome eingetragen. Bitte „Alles eingetragen“ wählen.</string>
+    <string name="day_all_logged">Alles eingetragen</string>
+    <string name="day_later">Noch nachtragen</string>
+    <string name="common_save">Speichern</string>
+    <string name="common_back">Zurück</string>
+    <string name="common_undo">Rückgängig</string>
+    <string name="common_saved">Gespeichert</string>
+    <string name="common_cancel">Abbrechen</string>
+    <string name="export_title">Daten exportieren (Self-Test)</string>
+    <string name="export_hint">Deine Einträge und die Kennzahlen der Analyse als JSON-Datei, ohne Notizen. Wohin sie geht, entscheidest du. Hilfreich, um nach der ersten Woche die Schwellenwerte zu prüfen.</string>
+    <string name="export_button">Als JSON exportieren</string>
+    <string name="reminder_setting">Abend-Erinnerung</string>
+    <string name="reminder_setting_hint">Ein täglicher Hinweis zum Tages-Abschluss. Entfällt, wenn der Tag schon bestätigt ist.</string>
+    <string name="reminder_denied">Benachrichtigungen sind für die App ausgeschaltet. Du kannst sie in den Systemeinstellungen erlauben.</string>
+    <string name="reminder_channel">Abend-Erinnerung</string>
+    <string name="reminder_title">Detektiv-Stunde 🕵️</string>
+    <string name="reminder_text">Wie war dein Tag? In wenigen Sekunden bestätigt.</string>
+    <string name="tab_home">Start</string>
+    <string name="tab_history">Historie</string>
+    <string name="tab_favorites">Favoriten</string>
+    <string name="tab_profile">Profil</string>
+    <string name="history_empty">Keine Einträge in den letzten 14 Tagen.</string>
+    <string name="history_day_confirmed">Tag bestätigt</string>
+    <string name="history_day_open">nicht bestätigt</string>
+    <string name="history_intensity">Stärke %1$d/5</string>
+    <string name="history_meal">Mahlzeit</string>
+    <string-array name="weekdays_short">
+        <item>Mo</item>
+        <item>Di</item>
+        <item>Mi</item>
+        <item>Do</item>
+        <item>Fr</item>
+        <item>Sa</item>
+        <item>So</item>
+    </string-array>
+    <string name="history_delete">Löschen</string>
+    <string name="history_delete_question">Diesen Eintrag löschen? Das lässt sich nicht rückgängig machen.</string>
+    <string name="favorites_empty">Noch keine Gerichte. Lege deine häufigen Gerichte mit ihren Zutaten an, dann geht das tägliche Eintragen mit einem Tipp.</string>
+    <string name="favorites_add">+ Neues Gericht</string>
+    <string name="favorites_editor_title">Neues Gericht</string>
+    <string name="favorites_name">Name, z.B. Linsensuppe</string>
+    <string name="favorites_ingredients">Zutaten</string>
+    <string name="favorites_same_name">Ein Gericht „%1$s“ gibt es schon. Beim Speichern wird es ersetzt, oder gib einen anderen Namen ein.</string>
+    <string name="favorites_replace">Ersetzen</string>
+    <string name="favorites_edit">Bearbeiten</string>
+    <string name="favorites_edit_title">Gericht bearbeiten</string>
+    <string name="onboarding_welcome">Willkommen! Du trägst ein, was du isst, wie es dir geht und wie dein Tag war. Die App sucht Muster in deinen Einträgen.</string>
+    <string name="onboarding_purpose_title">Was die App ist und was nicht</string>
+    <string name="onboarding_purpose">Sie ist ein Tagebuch zur Selbstbeobachtung. Sie stellt keine Diagnosen und ersetzt keinen Arztbesuch. Alles bleibt auf deinem Handy.</string>
+    <string name="onboarding_next">Weiter</string>
+    <string name="onboarding_back">Zurück</string>
+    <string name="profile_show_intro">Einführung ansehen</string>
+    <string name="onboarding_how_title">So funktioniert es</string>
+    <string name="onboarding_how_meal">Trag ein, was du isst: Frühstück, Mittag, Abend oder einen Snack. Per Suche, Favorit oder Sprache.</string>
+    <string name="onboarding_how_symptom">Hast du Beschwerden, trag sie ein, mit Stärke und Tageszeit.</string>
+    <string name="onboarding_how_check">Abends schließt du den Tag ab: Wie ging es dir, wie hast du geschlafen? Auch Tage ohne Beschwerden sind wichtig.</string>
+    <string name="onboarding_patience_title">Etwas Geduld lohnt sich</string>
+    <string name="onboarding_patience_text">Nach etwa einer Woche mit abgeschlossenen Tagen zeigt die App erste Muster. Je länger du dabei bleibst, desto klarer werden sie. Krankheitstage (z.B. eine Erkältung) markierst du im Tages-Abschluss, sie zählen dann nicht mit.</string>
+    <string name="onboarding_dishes_title">Tipp: deine häufigen Gerichte</string>
+    <string name="onboarding_dishes_text">Lege die Gerichte, die du oft isst, einmal mit ihren Zutaten an, z.B. Linsensuppe = Linsen, Tomaten, Karotten. Danach trägst du sie jeden Tag mit einem Tipp ein.</string>
+    <string name="onboarding_dishes_start">Gerichte jetzt anlegen</string>
+    <string name="onboarding_dishes_later">Später</string>
+    <string name="allergies_question">Kennst du schon Allergien oder Unverträglichkeiten?</string>
+    <string name="allergies_hint">Bekannte kommen nicht ins Ranking. Du bekommst nur einen Hinweis, wenn du sie isst. Du kannst das später ändern.</string>
+    <string name="time_other">Andere Zeit …</string>
+    <string name="time_pick">Wann genau?</string>
+    <string name="time_selected">%1$s, %2$s</string>
+
+    <string name="symptom_long_press_hint">Tippen für Details. Lange drücken speichert sofort (mittel, jetzt).</string>
+    <string name="symptom_favorites">Am häufigsten</string>
+    <string name="symptom_how_strong">Wie stark?</string>
+    <string name="symptom_intensity_range">1 = leicht · 5 = stark</string>
+    <string name="symptom_when">Wann ging es los?</string>
+    <string name="symptom_part_morning">Morgens</string>
+    <string name="symptom_part_midday">Mittags</string>
+    <string name="symptom_part_afternoon">Nachmittags</string>
+    <string name="symptom_part_evening">Abends</string>
+    <string name="symptom_part_all_day">Den ganzen Tag</string>
+    <string name="symptom_part_after_meal">Nach dem Essen</string>
+    <string name="symptom_note">Notiz (optional)</string>
+    <string name="emergency_title">Wichtig</string>
+    <string name="emergency_text">Atemnot oder eine Schwellung an Mund, Zunge oder Hals können ein Notfall sein. Im Zweifel Hilfe rufen.</string>
+    <string name="emergency_call">Notruf %1$s</string>
+    <string name="emergency_continue">Weiter eintragen</string>
+
+    <string name="meal_when">Wann?</string>
+    <string name="meal_now">Jetzt</string>
+    <string name="meal_slot_breakfast">Frühstück</string>
+    <string name="meal_slot_lunch">Mittagessen</string>
+    <string name="meal_slot_dinner">Abendessen</string>
+    <string name="meal_slot_snack">Snack (jetzt)</string>
+    <string name="meal_recent">Zuletzt gegessen</string>
+    <string name="meal_search">Zutat suchen …</string>
+    <string name="meal_no_results">Nichts gefunden.</string>
+    <string name="meal_selected">Ausgewählt</string>
+    <string name="meal_portion_help">S = ein paar Bissen oder ½ Glas · M = eine Faust oder 1 Glas · L = zwei Fäuste oder 2 Gläser</string>
+    <string name="meal_portion_small">S</string>
+    <string name="meal_portion_medium">M</string>
+    <string name="meal_portion_large">L</string>
+    <string name="meal_remove">Entfernen</string>
+    <string name="meal_prep_raw">roh</string>
+    <string name="meal_prep_cooked">gekocht</string>
+    <string name="meal_prep_missing">Roh oder gekocht? Bitte wählen. Beim Erhitzen geht der Birkenpollen-Auslöser verloren.</string>
+    <string name="meal_voice">Mahlzeit einsprechen</string>
+    <string name="custom_create_named">Nicht dabei? „%1$s“ als neue Zutat anlegen</string>
+    <string name="custom_title">Neue Zutat</string>
+    <string name="custom_name">Name</string>
+    <string name="custom_contains">Was ist drin?</string>
+    <string name="custom_contains_hint">Wähle die Zutaten aus der Liste, z.B. Dinkelvollkornmehl, Haferflocken, Leinsamen. Allergene und Kategorie übernimmt die App.</string>
+    <string name="custom_derived">Enthält damit: %1$s</string>
+    <string name="custom_category_fallback">Nichts Passendes in der Liste? Dann wähle nur die Kategorie.</string>
+    <string name="custom_create">Anlegen</string>
+    <string name="custom_create_anyway">Trotzdem neu anlegen</string>
+    <string name="custom_duplicate">„%1$s“ gibt es schon.</string>
+    <string name="custom_similar_question">Meintest du „%1$s“? Doppelte Zutaten verteilen deine Einträge und schwächen die Auswertung.</string>
+    <string name="custom_use_existing">Diese Zutat nehmen</string>
+    <string name="meal_favorites">Favoriten</string>
+    <string name="meal_save_as_favorite">Als Favorit speichern</string>
+    <string name="meal_favorite_name">Name, z.B. Müsli mit Milch</string>
+    <string name="meal_allergy_hint">Diese Mahlzeit enthält etwas, das du als bekannte Allergie hinterlegt hast.</string>
+</resources>

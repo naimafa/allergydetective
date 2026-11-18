@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- UI texts. German in values-de. Keep both files in sync. -->
+<resources>
+    <string name="home_title">Allergy Detective</string>
+    <string name="home_log_meal">Log food</string>
+    <string name="home_log_symptom">Report symptom</string>
+    <string name="home_day_check">Day check</string>
+    <string name="home_results">Your clues</string>
+    <string name="home_log_meal_hint">What did you eat?</string>
+    <string name="home_log_symptom_hint">Log complaints</string>
+    <string name="home_day_check_hint">How was your day?</string>
+    <string name="home_results_hint">See patterns</string>
+    <string name="home_progress_collecting">Day %1$d of %2$d – collecting clues</string>
+    <plurals name="home_progress_ready">
+        <item quantity="one">%1$d confirmed day – your first evaluation is ready</item>
+        <item quantity="other">%1$d confirmed days – your evaluation is ready</item>
+    </plurals>
+
+    <string name="results_too_early">%1$d of %2$d confirmed days. The first evaluation is meaningful after %2$d days, until then everything here is preliminary.</string>
+    <string name="results_nothing_yet">No clues yet. Keep logging, every entry is a piece of the puzzle.</string>
+    <string name="results_level_trace">🔍 Trace</string>
+    <string name="results_level_suspicion">🔎 Suspicion</string>
+    <string name="results_level_strong">🕵️ Strong suspicion</string>
+    <string name="results_reason">Complaints afterwards %1$d of %2$d times, otherwise %3$d of %4$d</string>
+    <string name="results_groups_title">Not distinguishable yet</string>
+    <string name="results_group">%1$s always occurred together.</string>
+    <string name="results_safe_title">🟢 Tolerated well (%1$d)</string>
+    <string name="results_allergy_notice">You ate %1$s, which is stored as a known allergy.</string>
+    <string name="results_bad_sleep">Poor sleep</string>
+    <string name="results_high_stress">High stress</string>
+    <string name="results_disclaimer">These are patterns in your entries, not a diagnosis. Please discuss suspicions with a doctor.</string>
+    <string name="results_local">🔒 Calculated 100 % locally on your phone</string>
+
+    <string name="day_today">Today</string>
+    <string name="day_yesterday">Yesterday</string>
+    <string name="day_two_days_ago">2 days ago</string>
+    <string name="day_confirmed_mark">%1$s ✓</string>
+    <string name="day_open_past_hint">Not finished yet: %1$s. Tap it above to catch up.</string>
+    <string name="day_wellbeing">How did you feel that day?</string>
+    <string name="day_sleep">Sleep the night before</string>
+    <string name="day_hours">%1$s h</string>
+    <string name="day_sleep_quality">Sleep quality</string>
+    <string name="day_stress">Stress that day</string>
+    <string name="day_scale_hint">1 = low · 5 = high</string>
+    <string name="day_factors">Anything special? (optional)</string>
+    <string name="day_sick_hint">Days of illness are left out of the results, so that e.g. cold symptoms are not blamed on food.</string>
+    <string name="sick_title">Periods of illness</string>
+    <string name="sick_hint">Days when you were acutely ill (e.g. sinusitis) are left out of the results, so that headache or nausea are not blamed on food.</string>
+    <string name="sick_empty">No periods of illness entered.</string>
+    <string name="sick_add">+ Enter period of illness</string>
+    <string name="sick_longer">Ill for longer? Enter a period</string>
+    <string name="sick_still_ill">Still ill</string>
+    <string name="sick_banner">🤒 Ill since %1$s</string>
+    <string name="sick_recovered">Well again</string>
+    <string name="sick_since">since %1$s</string>
+    <string name="sick_ongoing">ongoing</string>
+    <string name="sick_range">%1$s – %2$s</string>
+    <string name="sick_day_in_period">This day lies in a period of illness and does not count for the results.</string>
+    <string name="day_complaints">Complaints that day?</string>
+    <string name="day_no_complaints">No complaints</string>
+    <string name="day_no_complaints_disabled">You logged symptoms on this day, so please choose “Everything logged”.</string>
+    <string name="day_all_logged">Everything logged</string>
+    <string name="day_later">I will add more later</string>
+    <string name="common_save">Save</string>
+    <string name="common_back">Back</string>
+    <string name="common_undo">Undo</string>
+    <string name="common_saved">Saved</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="export_title">Export data (self-test)</string>
+    <string name="export_hint">Your entries and the analysis numbers as a JSON file, without notes. You choose where to send it. Useful for checking the thresholds after the first week.</string>
+    <string name="export_button">Export as JSON</string>
+    <string name="reminder_setting">Evening reminder</string>
+    <string name="reminder_setting_hint">A daily notice for the day check. Skipped when the day is already confirmed.</string>
+    <string name="reminder_denied">Notifications are turned off for this app. You can allow them in the system settings.</string>
+    <string name="reminder_channel">Evening reminder</string>
+    <string name="reminder_title">Detective hour 🕵️</string>
+    <string name="reminder_text">How was your day? Confirm it in a few seconds.</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_history">History</string>
+    <string name="tab_favorites">Favourites</string>
+    <string name="tab_profile">Profile</string>
+    <string name="history_empty">No entries in the last 14 days.</string>
+    <string name="history_day_confirmed">day confirmed</string>
+    <string name="history_day_open">not confirmed</string>
+    <string name="history_intensity">strength %1$d/5</string>
+    <string name="history_meal">Meal</string>
+    <string-array name="weekdays_short">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
+    <string name="history_delete">Delete</string>
+    <string name="history_delete_question">Delete this entry? This cannot be undone.</string>
+    <string name="favorites_empty">No dishes yet. Add the dishes you eat often with their ingredients, then daily logging takes one tap.</string>
+    <string name="favorites_add">+ New dish</string>
+    <string name="favorites_editor_title">New dish</string>
+    <string name="favorites_name">Name, e.g. lentil soup</string>
+    <string name="favorites_ingredients">Ingredients</string>
+    <string name="favorites_same_name">A dish “%1$s” already exists. Saving replaces it, or enter another name.</string>
+    <string name="favorites_replace">Replace</string>
+    <string name="favorites_edit">Edit</string>
+    <string name="favorites_edit_title">Edit dish</string>
+    <string name="onboarding_welcome">Welcome! You log what you eat, how you feel and how your day was. The app looks for patterns in your entries.</string>
+    <string name="onboarding_purpose_title">What this app is and is not</string>
+    <string name="onboarding_purpose">It is a diary for self-observation. It does not make diagnoses and does not replace a doctor. Everything stays on your phone.</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_back">Back</string>
+    <string name="profile_show_intro">Show introduction</string>
+    <string name="onboarding_how_title">How it works</string>
+    <string name="onboarding_how_meal">Log what you eat: breakfast, lunch, dinner or a snack. By search, favourite or voice.</string>
+    <string name="onboarding_how_symptom">When you have complaints, log them with strength and time of day.</string>
+    <string name="onboarding_how_check">In the evening you close the day: how did you feel, how did you sleep? Days without complaints matter too.</string>
+    <string name="onboarding_patience_title">A little patience pays off</string>
+    <string name="onboarding_patience_text">After about a week of closed days the app shows first patterns. The longer you keep going, the clearer they get. Mark days of illness (e.g. a cold) in the day check, they are then left out.</string>
+    <string name="onboarding_dishes_title">Tip: your frequent dishes</string>
+    <string name="onboarding_dishes_text">Save the dishes you eat often once with their ingredients, e.g. lentil soup = lentils, tomatoes, carrots. After that you log them with one tap every day.</string>
+    <string name="onboarding_dishes_start">Add dishes now</string>
+    <string name="onboarding_dishes_later">Later</string>
+    <string name="allergies_question">Do you already know about allergies or intolerances?</string>
+    <string name="allergies_hint">Known ones are not ranked. You only get a notice when you eat them. You can change this later.</string>
+    <string name="time_other">Other time …</string>
+    <string name="time_pick">When exactly?</string>
+    <string name="time_selected">%1$s, %2$s</string>
+
+    <string name="symptom_long_press_hint">Tap to add details. Long press saves right away (medium, now).</string>
+    <string name="symptom_favorites">Used most often</string>
+    <string name="symptom_how_strong">How strong?</string>
+    <string name="symptom_intensity_range">1 = mild · 5 = severe</string>
+    <string name="symptom_when">When did it start?</string>
+    <string name="symptom_part_morning">In the morning</string>
+    <string name="symptom_part_midday">At midday</string>
+    <string name="symptom_part_afternoon">In the afternoon</string>
+    <string name="symptom_part_evening">In the evening</string>
+    <string name="symptom_part_all_day">All day</string>
+    <string name="symptom_part_after_meal">After the meal</string>
+    <string name="symptom_note">Note (optional)</string>
+    <string name="emergency_title">Important</string>
+    <string name="emergency_text">Shortness of breath or swelling of the mouth, tongue or throat can be an emergency. If in doubt, call for help.</string>
+    <string name="emergency_call">Call %1$s</string>
+    <string name="emergency_continue">Continue logging</string>
+
+    <string name="meal_when">When?</string>
+    <string name="meal_now">Now</string>
+    <string name="meal_slot_breakfast">Breakfast</string>
+    <string name="meal_slot_lunch">Lunch</string>
+    <string name="meal_slot_dinner">Dinner</string>
+    <string name="meal_slot_snack">Snack (now)</string>
+    <string name="meal_recent">Recently eaten</string>
+    <string name="meal_search">Search ingredient …</string>
+    <string name="meal_no_results">Nothing found.</string>
+    <string name="meal_selected">Selected</string>
+    <string name="meal_portion_help">S = a few bites or half a glass · M = a fist or one glass · L = two fists or two glasses</string>
+    <string name="meal_portion_small">S</string>
+    <string name="meal_portion_medium">M</string>
+    <string name="meal_portion_large">L</string>
+    <string name="meal_remove">Remove</string>
+    <string name="meal_prep_raw">raw</string>
+    <string name="meal_prep_cooked">cooked</string>
+    <string name="meal_prep_missing">Raw or cooked? Please choose. Heating destroys the birch pollen trigger.</string>
+    <string name="meal_voice">Speak your meal</string>
+    <string name="custom_create_named">Not in the list? Create “%1$s” as new ingredient</string>
+    <string name="custom_title">New ingredient</string>
+    <string name="custom_name">Name</string>
+    <string name="custom_contains">What is in it?</string>
+    <string name="custom_contains_hint">Pick the ingredients from the list, e.g. spelt flour, oat flakes, linseed. The app takes over allergens and category.</string>
+    <string name="custom_derived">So it contains: %1$s</string>
+    <string name="custom_category_fallback">Nothing fitting in the list? Then just pick the category.</string>
+    <string name="custom_create">Create</string>
+    <string name="custom_create_anyway">Create anyway</string>
+    <string name="custom_duplicate">“%1$s” already exists.</string>
+    <string name="custom_similar_question">Did you mean “%1$s”? Duplicate ingredients split your entries and weaken the results.</string>
+    <string name="custom_use_existing">Use this ingredient</string>
+    <string name="meal_favorites">Favourites</string>
+    <string name="meal_save_as_favorite">Save as favourite</string>
+    <string name="meal_favorite_name">Name, e.g. muesli with milk</string>
+    <string name="meal_allergy_hint">This meal contains something you marked as a known allergy.</string>
+</resources>

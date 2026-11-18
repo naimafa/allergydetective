@@ -18,10 +18,15 @@ Zusammenfassung der Konzept-Sitzung vom **14.11.2026**. Details stehen in den ve
 | Plausibilität | Trigger ↔ Symptomgruppe (A Magen, B Haut, C Kopf/Kreislauf, D Atemwege/Mund) | TRD 2.3 |
 | Negative Daten | Tages-Abschluss mit Bestätigung "Keine Beschwerden / Alles eingetragen"; nur bestätigte Tage zählen | TRD 3.3, UX 3.4 |
 | Lifestyle | Schlaf, Stress, Sport, Zyklus, Medikament als **eigene Kandidaten** im Ranking (kein 30-%-Abzug). Alkohol nur als Trigger der Getränke, nicht als Faktor (16.11.2026) | TRD 2.5 |
+| Roh / gekocht | Pflichtangabe nur bei Zutaten mit hitzeempfindlichem Trigger (Birkenpollen-Kreuzreaktion). Gekocht = dieser Trigger zählt nicht, andere bleiben (z.B. Sellerie-Allergen). Auch in Gerichten gespeichert (18.11.2026, Self-Test) | `HEAT_LABILE_PROPERTY_KEYS` |
+| Doppelte Zutaten | Beim Start: eigene Zutat mit dem Namen einer mitgelieferten wird mit ihr zusammengeführt (Mahlzeiten und Gerichte zeigen dann auf die mitgelieferte). Beim Anlegen: gleicher Name oder Synonym gesperrt. Ähnlich (Tippfehler, Teil eines Namens): einmal nachfragen. Grund: Doppelte verteilen die Einträge und schwächen die Analyse (18.11.2026) | `CustomIngredientViewModel` |
+| Kranke Tage | Faktor "Krank (z.B. Infekt, Erkältung)" im Tages-Abschluss oder Krankheitszeit von–bis / "noch krank" (Profil, Tages-Abschluss, Karte auf der Startseite mit "Wieder gesund" = gestern letzter kranker Tag). Der Tag zählt wie ein unbestätigter Tag nicht für die Analyse und ist kein eigener Kandidat (18.11.2026, Self-Test) | `AnalysisInputMapper` |
 | Bekannte Allergien | nicht im Ranking, nur Hinweis beim Loggen | TRD 2.6 |
 | Ergebnis | Evidenzstufen Spur / Verdacht / Starker Verdacht statt Prozent | TRD 2.8 |
 | Intensität | **1–5** (bestätigt), Stress 1–5 | Symptome |
 | Portion | S / M / L = Faktor 0,5 / 1 / 2, erklärt per Hand-Maß | TRD 1.4 |
+| Mahlzeit statt Uhrzeit | Frühstück = 8:00, Mittagessen = 12:30, Abendessen = 19:00, Snack = jetzt; nie in der Zukunft. Vorauswahl nach Tageszeit. "Andere Zeit …" bleibt für Nachträge (18.11.2026, Self-Test). **Vorläufig, mit Self-Test prüfen** | `domain/time/DayParts.kt` |
+| Symptom nach Tageszeit | Morgens = 7:00 (vor dem Frühstück), Mittags = 13:00, Nachmittags = 16:00, Abends = 20:00, Ganzer Tag = 7:00, Nach dem Essen = letzte Mahlzeit von heute + 30 min. Nur Tageszeiten, die schon begonnen haben. Lange drücken speichert weiter mit Intensität 3 und "jetzt" (18.11.2026). **Vorläufig** | `domain/time/DayParts.kt` |
 | Notfall | Atemnot / Schwellung → Hinweis mit Notruf 112 | Symptome Kap. 3 |
 | Farben | Pastell für Flächen, dunkle Varianten für Text (WCAG ≥ 4,5:1) | UX 1.1 |
 

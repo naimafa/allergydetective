@@ -3,6 +3,8 @@ package com.nfar.allergydetective.domain.analysis
 import com.nfar.allergydetective.domain.analysis.model.Candidate
 import com.nfar.allergydetective.domain.analysis.model.ExposureStats
 import com.nfar.allergydetective.domain.analysis.model.Meal
+import com.nfar.allergydetective.domain.analysis.model.MealItem
+import com.nfar.allergydetective.domain.analysis.model.Preparation
 import com.nfar.allergydetective.domain.analysis.model.ReferenceData
 import com.nfar.allergydetective.domain.analysis.model.TimeWindow
 
@@ -20,6 +22,13 @@ internal class FoodCatalog(reference: ReferenceData) {
     val propertiesByIngredient: Map<Long, Set<Long>> = reference.ingredients.associate { it.id to it.propertyIds }
     private val propertiesById = reference.properties.associateBy { it.id }
     private val known = reference.knownAllergyPropertyIds
+    private val heatLabile = reference.properties.filter { it.heatLabile }.map { it.id }.toSet()
+
+    /** Triggers of this item; a cooked item loses its heat-labile ones. */
+    fun propertiesOf(item: MealItem): Set<Long> {
+        val properties = propertiesByIngredient[item.ingredientId].orEmpty()
+        return if (item.preparation == Preparation.COOKED) properties - heatLabile else properties
+    }
 
     fun hasKnownAllergy(ingredientId: Long): Boolean =
         propertiesByIngredient[ingredientId].orEmpty().any { it in known }
@@ -48,7 +57,7 @@ internal class FoodCatalog(reference: ReferenceData) {
     fun exposurePortion(meal: Meal, candidate: Candidate, config: AnalysisConfig): Double? {
         val items = when (candidate) {
             is Candidate.Ingredient -> meal.items.filter { it.ingredientId == candidate.id }
-            is Candidate.Property -> meal.items.filter { candidate.id in propertiesByIngredient[it.ingredientId].orEmpty() }
+            is Candidate.Property -> meal.items.filter { candidate.id in propertiesOf(it) }
             else -> emptyList()
         }
         return items.maxOfOrNull { config.portionFactor(it.portion) }
@@ -74,6 +83,7 @@ internal fun foodStats(
     var k0 = 0.0
     var exposureCount = 0
     var hitCount = 0
+    var unexposedHits = 0
     for (meal in meals) {
         if (!isWindowClosed(meal, profile, validDays, now)) continue
         val weight = hitWeight(meal, profile, episodes, config)
@@ -86,9 +96,10 @@ internal fun foodStats(
         } else {
             n0 += 1.0
             k0 += weight
+            if (weight > 0.0) unexposedHits++
         }
     }
-    return ExposureStats(n1, k1, n0, k0, exposureCount, hitCount)
+    return ExposureStats(n1, k1, n0, k0, exposureCount, hitCount, n0.toInt(), unexposedHits)
 }
 
 private fun isWindowClosed(meal: Meal, profile: FoodProfile, validDays: Set<Long>, now: Long): Boolean {

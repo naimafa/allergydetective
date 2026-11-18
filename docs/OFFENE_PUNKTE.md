@@ -25,6 +25,50 @@
 - [ ] **Package / App-ID** (aktuell `com.nfar.allergydetective`): spätestens vor dem ersten Upload in die Play Console entscheiden. Die `applicationId` lässt sich unabhängig von den Kotlin-Packages ändern.
 - [ ] **Premium-Idee "Detektiv-Experimente"** (Weglassen und Wiedereinführen begleiten)
 
+## 🧩 Phase 2: offene Punkte (Stand 17.11.2026)
+Erledigt am 17.11.2026, je ein Branch nach `develop`:
+- [x] **Auto-Backup aus** (`allowBackup="false"`, `dataExtractionRules`), TRD 3.5
+- [x] **Zeit frei wählen:** "Andere Zeit …" mit Tag (bis vorgestern) und Uhrzeit, nie in der Zukunft
+- [x] **Favoriten:** als Favorit speichern, Favoriten-Zeile im Essen-Loggen, `favoriteId` als Herkunft der Mahlzeit
+- [x] **Eigene Zutaten:** Name, Kategorie, "ähnlich wie …" mit übernommenen Triggern; IDs ab 100000
+- [x] **Onboarding:** Zweckbestimmung + bekannte Allergien beim ersten Start
+- [x] **Tab-Bar** (Start, Historie, Favoriten, Profil); Historie der letzten 14 Tage mit Löschen; Profil mit Allergien
+- [x] **Abend-Reminder:** WorkManager, Opt-in im Profil (19–22 Uhr), entfällt bei bestätigtem Tag, Tap öffnet den Tages-Abschluss
+- [x] **Begründung im Ergebnis** mit Vergleich ("sonst X von Y"), neue ungewichtete Zähler in der Engine
+- [x] **Notrufnummer** je Region (112 / 911 / 000), **Dezimalkomma** und Datum je Sprache
+- [x] **Spracheingabe:** Mikrofon im Essen-Loggen (System-Erkennung, offline bevorzugt), Abgleich Favoriten → Synonyme → Zutaten, zusammengesetzte Wörter, Tippfehler
+
+Noch offen bzw. Annahmen:
+- [ ] **Spracheingabe auf echtem Gerät testen.** Im Emulator öffnet sich die Google-Erkennung, meldet aber "Voice search isn't available". Der Abgleich ist per Unit-Test abgedeckt.
+- [ ] **Notrufnummer Marokko** (und weitere Zielländer) fachlich klären; bis dahin gilt dort 112.
+- [ ] **Historie:** Einträge lassen sich nur löschen, nicht bearbeiten (Löschen + neu eintragen).
+- [ ] **Reminder-Zeit** nur als Chips 19–22 Uhr; freie Uhrzeit folgt mit dem Design.
+- [ ] **iOS:** Reminder-Planung, Benachrichtigungs-Erlaubnis und Spracheingabe sind nur Platzhalter (kein Mac).
+- [ ] **Onboarding** fragt den Reminder nicht ab; er ist aus, bis man ihn im Profil einschaltet.
+- [ ] **GitHub-PRs:** Branches werden lokal nach `develop` gemergt, weil kein `gh` installiert ist. Für echte PRs: GitHub CLI installieren und einmal `gh auth login` ausführen.
+
+## 🧪 Self-Test-Feedback (Stand 18.11.2026)
+Bugs, erledigt am 18.11.2026 (je ein Branch nach `develop`):
+- [x] **Speichern-Button im Essen-Loggen** war halb von der System-Navigationsleiste verdeckt (Edge-to-Edge)
+- [x] **JSON-Export** schlug bei WhatsApp fehl ("Teilen fehlgeschlagen"): wird jetzt als Datei-Anhang geteilt (FileProvider)
+- [x] **Tages-Abschluss bestätigte den falschen Tag:** Er wählte den ältesten offenen Tag vor (15.11. statt 17.11.). Jetzt ist immer "Heute" vorgewählt, das Datum steht groß da, offene Vortage werden nur als Hinweis genannt
+- [x] **"Dinkel Vollkornbrot"** wurde zu Dinkelbrot + Vollkornbrot (Weizen): neue Zutat Dinkelvollkornbrot (Migration DB 1 → 2, im Emulator v1 → v2 geprüft), Spracheingabe prüft getrennte Wörter auch als ein Kompositum
+
+Noch offen (Entscheidung bzw. Konzept nötig):
+- [x] **Kategorie Öle, Fette & Oliven** (ID 13) mit 9 Zutaten, Migration DB 2 → 3
+- [x] **Gerichte aus Zutaten:** "Neue Zutat" fragt nur noch "Was ist drin?" (Zutaten aus der Liste), Kategorie und Trigger übernimmt die App. Kategorie nur, wenn nichts passt. Neu anlegen erscheint als "Nicht dabei? …" unter den Suchtreffern
+- [x] **Favoriten mit "+ Neues Gericht"** (z.B. Linsensuppe = Linsen, Tomaten, Karotten), Portion M
+- [x] **Mahlzeit statt Uhrzeit:** Frühstück / Mittag- / Abendessen / Snack (ENTSCHEIDUNGEN 2)
+- [x] **Symptome nach Tageszeit** (morgens / mittags / nachmittags / abends / ganzer Tag / nach dem Essen), Uhrzeiten in ENTSCHEIDUNGEN 2
+- [x] **Intensität pro Symptom:** gibt es schon (1–5 beim Antippen). Nur langes Drücken speichert ohne Abfrage mit 3
+- [x] **Kranke Tage markieren:** Faktor "Krank" im Tages-Abschluss, der Tag fällt aus der Analyse (Migration DB 3 → 4)
+- [x] **Krankheitszeitraum** von–bis oder "noch krank", auch weiter zurück; alle Tage darin zählen nicht (Migration DB 5 → 6)
+- [x] **Einführung beim ersten Start:** 5 Seiten (Willkommen, So funktioniert es, Geduld, Allergien, Tipp Gerichte). "Gerichte jetzt anlegen" öffnet den Tab Favoriten. Im Profil über "Einführung ansehen" jederzeit wieder (ohne Allergie-Seite)
+- [x] **Roh / gekocht** (Pflicht) bei Zutaten mit Birkenpollen-Kreuzreaktion: Karotte, Sellerie, Apfel, Birne, Kirsche, Pfirsich, Pflaume, Haselnuss. Gekocht = Birken-Trigger zählt nicht. Bisherige Einträge gelten als roh (Migration DB 4 → 5)
+- [x] **Gerichte:** fehlende Zutat direkt anlegen; gleicher Name eines Gerichts wird ersetzt (mit Hinweis). Gerichte lassen sich bearbeiten (Zutaten ergänzen/entfernen, Name, roh/gekocht); die Id bleibt, eingetragene Mahlzeiten behalten ihre Herkunft
+- [x] **Keine Doppelten:** gleicher Name / Synonym sperrt das Anlegen ("Diese Zutat nehmen"), ähnlicher Name (Tippfehler, Teil eines Namens) fragt einmal nach
+- [x] **Doppelte zusammenführen:** Beim App-Start wird eine eigene Zutat mit dem Namen einer mitgelieferten Zutat (in der App-Sprache) zusammengeführt (eigenes Dinkelvollkornbrot, 18.11.2026 nach Rückfrage)
+
 ## 🔍 Vor Release prüfen
 - [ ] **Zeitfenster und Trigger-Zuordnungen** fachlich verifizieren (Literatur / Fachperson)
 - [ ] **Schwellenwerte kalibrieren** (Episoden 3h, Gruppierung 80 %, Lift-Grenzen) mit Testdaten und Self-Test
@@ -65,7 +109,7 @@ In der Engine umgesetzt, aber vom TRD nicht eindeutig vorgegeben. Alle Werte ste
 - [ ] **Impressum + Datenschutzerklärung** (in App und Store-Eintrag)
 
 ## ✍️ Noch zu liefern
-- [ ] **Pool mit 30–50 Motivations-Sprüchen**
+- [x] **Pool mit 30–50 Motivations-Sprüchen** (40 Sprüche EN/DE, 17.11.2026; FR/AR fehlen noch)
 - [ ] **Abgeschnittene Texte ergänzen:** PRD Phase 2 ("Review-Mining: Automatisi…"), UX Kap. 6 (Erfolgsanimation)
 - [ ] **PRD:** Zielgruppe/Persona, Erfolgskennzahlen (z.B. % Nutzer, die 7 Tage durchhalten), Nicht-Ziele des MVP
 - [ ] **Store-Text** an Zweckbestimmung und Datenschutz-Entscheidung angleichen

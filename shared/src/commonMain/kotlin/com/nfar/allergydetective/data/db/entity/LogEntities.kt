@@ -6,6 +6,7 @@ import androidx.room3.Index
 import androidx.room3.PrimaryKey
 import com.nfar.allergydetective.data.db.model.DayStatus
 import com.nfar.allergydetective.data.db.model.PortionSize
+import com.nfar.allergydetective.data.db.model.PreparationKind
 
 /*
  * Diary data entered by the user (TRD 1.3).
@@ -34,6 +35,7 @@ data class FavoriteIngredientEntity(
     val favoriteId: Long,
     val ingredientId: Long,
     val defaultPortion: PortionSize,
+    val preparation: PreparationKind? = null,
 )
 
 /** [favoriteId] only records the origin; ingredients are copied as a snapshot. */
@@ -64,6 +66,7 @@ data class MealIngredientEntity(
     val mealId: Long,
     val ingredientId: Long,
     val portion: PortionSize,
+    val preparation: PreparationKind? = null,
 )
 
 /** [intensity] 1–5. [note] is not used by the analysis, only in the PDF export. */
@@ -105,4 +108,15 @@ data class DayCheckEntity(
 data class DayFactorEntity(
     val epochDay: Long,
     val factorId: Long,
+)
+
+/**
+ * A period of acute illness (self-test 18.11.), local epoch days, both ends inclusive.
+ * [endDay] null = still ill. Days in a period are left out of the analysis.
+ */
+@Entity(tableName = "sick_periods")
+data class SickPeriodEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val startDay: Long,
+    val endDay: Long?,
 )
