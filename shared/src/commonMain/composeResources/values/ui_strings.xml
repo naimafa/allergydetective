@@ -85,10 +85,12 @@
     <string name="symptom_how_strong">How strong?</string>
     <string name="symptom_intensity_range">1 = mild · 5 = severe</string>
     <string name="symptom_when">When did it start?</string>
-    <plurals name="symptom_minutes_ago">
-        <item quantity="one">%1$d minute ago</item>
-        <item quantity="other">%1$d minutes ago</item>
-    </plurals>
+    <string name="symptom_part_morning">In the morning</string>
+    <string name="symptom_part_midday">At midday</string>
+    <string name="symptom_part_afternoon">In the afternoon</string>
+    <string name="symptom_part_evening">In the evening</string>
+    <string name="symptom_part_all_day">All day</string>
+    <string name="symptom_part_after_meal">After the meal</string>
     <string name="symptom_note">Note (optional)</string>
     <string name="emergency_title">Important</string>
     <string name="emergency_text">Shortness of breath or swelling of the mouth, tongue or throat can be an emergency. If in doubt, call for help.</string>
@@ -97,10 +99,10 @@
 
     <string name="meal_when">When?</string>
     <string name="meal_now">Now</string>
-    <plurals name="meal_hours_ago">
-        <item quantity="one">%1$d hour ago</item>
-        <item quantity="other">%1$d hours ago</item>
-    </plurals>
+    <string name="meal_slot_breakfast">Breakfast</string>
+    <string name="meal_slot_lunch">Lunch</string>
+    <string name="meal_slot_dinner">Dinner</string>
+    <string name="meal_slot_snack">Snack (now)</string>
     <string name="meal_recent">Recently eaten</string>
     <string name="meal_search">Search ingredient …</string>
     <string name="meal_no_results">Nothing found.</string>

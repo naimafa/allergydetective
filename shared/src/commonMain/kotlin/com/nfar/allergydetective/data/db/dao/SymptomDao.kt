@@ -24,6 +24,9 @@ interface SymptomDao {
     @Insert
     suspend fun insertEntry(entry: SymptomEntryEntity): Long
 
+    @Query("SELECT MAX(eatenAt) FROM meals WHERE eatenAt <= :beforeMillis")
+    suspend fun lastMealAt(beforeMillis: Long): Long?
+
     @Query("DELETE FROM symptom_entries WHERE id = :entryId")
     suspend fun deleteEntry(entryId: Long)
 }

@@ -8,14 +8,18 @@ import allergydetective.shared.generated.resources.emergency_continue
 import allergydetective.shared.generated.resources.emergency_text
 import allergydetective.shared.generated.resources.emergency_title
 import allergydetective.shared.generated.resources.home_log_symptom
-import allergydetective.shared.generated.resources.meal_hours_ago
 import allergydetective.shared.generated.resources.meal_now
 import allergydetective.shared.generated.resources.symptom_favorites
 import allergydetective.shared.generated.resources.symptom_how_strong
 import allergydetective.shared.generated.resources.symptom_intensity_range
 import allergydetective.shared.generated.resources.symptom_long_press_hint
-import allergydetective.shared.generated.resources.symptom_minutes_ago
 import allergydetective.shared.generated.resources.symptom_note
+import allergydetective.shared.generated.resources.symptom_part_after_meal
+import allergydetective.shared.generated.resources.symptom_part_afternoon
+import allergydetective.shared.generated.resources.symptom_part_all_day
+import allergydetective.shared.generated.resources.symptom_part_evening
+import allergydetective.shared.generated.resources.symptom_part_midday
+import allergydetective.shared.generated.resources.symptom_part_morning
 import allergydetective.shared.generated.resources.symptom_when
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -52,6 +56,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nfar.allergydetective.domain.diary.SymptomInfo
+import com.nfar.allergydetective.domain.time.SymptomDayPart
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.SavedSnackbarEffect
 import com.nfar.allergydetective.ui.common.ScreenScaffold
@@ -60,7 +65,6 @@ import com.nfar.allergydetective.ui.common.TimeChoiceRow
 import com.nfar.allergydetective.ui.common.displayName
 import com.nfar.allergydetective.ui.common.emergencyNumberFor
 import androidx.compose.ui.text.intl.Locale
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -187,11 +191,11 @@ private fun SymptomOverlay(draft: SymptomDraft, viewModel: LogSymptomViewModel) 
                 Text(stringResource(Res.string.symptom_intensity_range), style = MaterialTheme.typography.bodySmall)
                 Text(stringResource(Res.string.symptom_when), style = MaterialTheme.typography.titleSmall)
                 TimeChoiceRow(
-                    options = LogSymptomViewModel.MINUTES_AGO_OPTIONS,
-                    selected = draft.minutesAgo,
-                    quickLabel = { minutesAgoLabel(it) },
+                    options = viewModel.dayParts(),
+                    selected = draft.dayPart,
+                    quickLabel = { dayPartLabel(it) },
                     exact = draft.exactTime,
-                    onQuickSelected = viewModel::onMinutesAgoChange,
+                    onQuickSelected = viewModel::onDayPartChange,
                     onExactSelected = viewModel::onExactTimeChange,
                 )
                 OutlinedTextField(
@@ -208,8 +212,14 @@ private fun SymptomOverlay(draft: SymptomDraft, viewModel: LogSymptomViewModel) 
 }
 
 @Composable
-private fun minutesAgoLabel(minutes: Int): String = when {
-    minutes == 0 -> stringResource(Res.string.meal_now)
-    minutes % 60 == 0 -> pluralStringResource(Res.plurals.meal_hours_ago, minutes / 60, minutes / 60)
-    else -> pluralStringResource(Res.plurals.symptom_minutes_ago, minutes, minutes)
-}
+private fun dayPartLabel(part: SymptomDayPart): String = stringResource(
+    when (part) {
+        SymptomDayPart.NOW -> Res.string.meal_now
+        SymptomDayPart.MORNING -> Res.string.symptom_part_morning
+        SymptomDayPart.MIDDAY -> Res.string.symptom_part_midday
+        SymptomDayPart.AFTERNOON -> Res.string.symptom_part_afternoon
+        SymptomDayPart.EVENING -> Res.string.symptom_part_evening
+        SymptomDayPart.ALL_DAY -> Res.string.symptom_part_all_day
+        SymptomDayPart.AFTER_MEAL -> Res.string.symptom_part_after_meal
+    },
+)

@@ -69,6 +69,7 @@ class HistoryViewModelTest {
         override suspend fun symptoms() = emptyList<SymptomInfo>()
         override suspend fun mostUsedSymptomIds(limit: Int) = emptyList<Long>()
         override suspend fun saveEntry(symptomId: Long, startedAt: Long, tzOffsetMin: Int, intensity: Int, note: String?) = 0L
+        override suspend fun lastMealAt(beforeMillis: Long): Long? = null
         override suspend fun deleteEntry(entryId: Long) {
             deletedSymptoms += entryId
             entries.removeAll { it is HistoryEntry.SymptomEntry && it.id == entryId }

@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
 import com.nfar.allergydetective.domain.time.AppClock
+import com.nfar.allergydetective.domain.time.SymptomDayPart
+import com.nfar.allergydetective.domain.time.timeOf
 import com.nfar.allergydetective.ui.common.ExactTime
 import com.nfar.allergydetective.ui.common.timeOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +19,8 @@ import kotlinx.coroutines.launch
 data class SymptomDraft(
     val symptom: SymptomInfo,
     val intensity: Int = LogSymptomViewModel.DEFAULT_INTENSITY,
-    val minutesAgo: Int = 0,
-    /** Picked in the time dialog, overrides [minutesAgo]. */
+    val dayPart: SymptomDayPart = SymptomDayPart.NOW,
+    /** Picked in the time dialog, overrides [dayPart]. */
     val exactTime: ExactTime? = null,
     val note: String = "",
 )
@@ -31,6 +33,8 @@ data class LogSymptomState(
     /** Emergency notice for this symptom is shown before anything else (TRD 3.4). */
     val emergencyNoticeFor: SymptomInfo? = null,
     val draft: SymptomDraft? = null,
+    /** Time of the last logged meal, for "after the meal". */
+    val lastMealAt: Long? = null,
     val savedEntryId: Long? = null,
     /** True when the notice was opened by a long press: continuing saves directly. */
     internal val quickLogAfterNotice: Boolean = false,
@@ -54,7 +58,8 @@ class LogSymptomViewModel(
             val groups = symptoms.groupBy { it.groupKey }
                 .toList()
                 .sortedBy { (group, _) -> GROUP_ORDER.indexOf(group).let { if (it < 0) GROUP_ORDER.size else it } }
-            _state.update { it.copy(loading = false, groups = groups, favorites = favorites()) }
+            val lastMeal = repository.lastMealAt(clock.nowMillis())
+            _state.update { it.copy(loading = false, groups = groups, favorites = favorites(), lastMealAt = lastMeal) }
         }
     }
 
@@ -92,7 +97,10 @@ class LogSymptomViewModel(
 
     fun onIntensityChange(intensity: Int) = updateDraft { it.copy(intensity = intensity.coerceIn(1, MAX_INTENSITY)) }
 
-    fun onMinutesAgoChange(minutes: Int) = updateDraft { it.copy(minutesAgo = minutes, exactTime = null) }
+    fun onDayPartChange(part: SymptomDayPart) = updateDraft { it.copy(dayPart = part, exactTime = null) }
+
+    /** Day parts that can be chosen now: none in the future, "after the meal" only with a meal today. */
+    fun dayParts(): List<SymptomDayPart> = SymptomDayPart.entries.filter { clock.timeOf(it, _state.value.lastMealAt) != null }
 
     fun onExactTimeChange(time: ExactTime) = updateDraft { it.copy(exactTime = time) }
 
@@ -110,7 +118,9 @@ class LogSymptomViewModel(
 
     private fun save(draft: SymptomDraft) {
         viewModelScope.launch {
-            val startedAt = clock.timeOf(draft.exactTime, draft.minutesAgo)
+            val startedAt = draft.exactTime?.let { clock.timeOf(it, 0) }
+                ?: clock.timeOf(draft.dayPart, repository.lastMealAt(clock.nowMillis()))
+                ?: clock.nowMillis()
             val id = repository.saveEntry(
                 symptomId = draft.symptom.id,
                 startedAt = startedAt,
@@ -141,9 +151,6 @@ class LogSymptomViewModel(
         const val DEFAULT_INTENSITY = 3
         const val MAX_INTENSITY = 5
         const val FAVORITE_COUNT = 3
-
-        /** Time chips of the overlay: now, 30 min, 1 h, 2 h, 3 h ago. */
-        val MINUTES_AGO_OPTIONS = listOf(0, 30, 60, 120, 180)
         val GROUP_ORDER = listOf("digestive", "skin", "head", "airways", "other")
     }
 }
