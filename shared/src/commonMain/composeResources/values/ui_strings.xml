@@ -31,6 +31,7 @@
     <string name="day_yesterday">Yesterday</string>
     <string name="day_two_days_ago">2 days ago</string>
     <string name="day_confirmed_mark">%1$s ✓</string>
+    <string name="day_open_past_hint">Not finished yet: %1$s. Tap it above to catch up.</string>
     <string name="day_wellbeing">How did you feel that day?</string>
     <string name="day_sleep">Sleep the night before</string>
     <string name="day_hours">%1$s h</string>

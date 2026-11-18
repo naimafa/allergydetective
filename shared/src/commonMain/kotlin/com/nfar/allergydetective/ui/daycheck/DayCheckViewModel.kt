@@ -27,6 +27,9 @@ data class DayCheckState(
     val saved: Boolean = false,
 ) {
     val canChooseNoSymptoms: Boolean get() = !hasSymptoms
+
+    /** Past days in the selection that are not confirmed yet, newest first. */
+    val openPastDays: List<Long> get() = days.filter { it != today && it !in confirmedDays }
 }
 
 /** Day check (UX 3.4): wellbeing, sleep, stress, factors and the confirmation status. */
@@ -43,8 +46,9 @@ class DayCheckViewModel(
             val today = clock.today()
             val days = (0..DAYS_BACK).map { today - it }
             val confirmed = repository.confirmedDays(days)
-            // Offer the oldest unconfirmed day first, otherwise today (UX 3.4).
-            val start = days.lastOrNull { it !in confirmed && it != today } ?: today
+            // Always start with today: preselecting an open past day made users confirm the wrong day.
+            // Open past days are only pointed out (openPastDays) and chosen by tapping.
+            val start = today
             _state.update {
                 it.copy(today = today, days = days, confirmedDays = confirmed, factors = repository.lifestyleFactors())
             }

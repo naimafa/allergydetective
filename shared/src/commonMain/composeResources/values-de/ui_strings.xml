@@ -31,6 +31,7 @@
     <string name="day_yesterday">Gestern</string>
     <string name="day_two_days_ago">Vorgestern</string>
     <string name="day_confirmed_mark">%1$s ✓</string>
+    <string name="day_open_past_hint">Noch nicht abgeschlossen: %1$s. Oben antippen, um nachzutragen.</string>
     <string name="day_wellbeing">Wie ging es dir an dem Tag?</string>
     <string name="day_sleep">Schlaf in der Nacht davor</string>
     <string name="day_hours">%1$s h</string>
