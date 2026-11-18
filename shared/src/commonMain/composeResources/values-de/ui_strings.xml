@@ -83,6 +83,7 @@
     <string name="onboarding_purpose">Sie ist ein Tagebuch zur Selbstbeobachtung. Sie stellt keine Diagnosen und ersetzt keinen Arztbesuch. Alles bleibt auf deinem Handy.</string>
     <string name="onboarding_next">Weiter</string>
     <string name="onboarding_back">Zurück</string>
+    <string name="profile_show_intro">Einführung ansehen</string>
     <string name="onboarding_how_title">So funktioniert es</string>
     <string name="onboarding_how_meal">Trag ein, was du isst: Frühstück, Mittag, Abend oder einen Snack. Per Suche, Favorit oder Sprache.</string>
     <string name="onboarding_how_symptom">Hast du Beschwerden, trag sie ein, mit Stärke und Tageszeit.</string>
