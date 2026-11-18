@@ -1,7 +1,7 @@
 # Fortschritt: Allergie-Detektiv
 
-**Aktuelle Phase:** Konzept ✅ → Setup ✅ → Phase 1: Daten-Herz ✅ → Phase 2: Skelett ✅ → Phase 3: Design ✅ (auf `develop`) → Phase 4: Self-Test ⏳
-**Letztes Update:** 17.11.2026
+**Aktuelle Phase:** Konzept ✅ → Setup ✅ → Phase 1: Daten-Herz ✅ → Phase 2: Skelett ✅ → Phase 3: Design ✅ → Phase 4: Self-Test ⏳ (alles auf `main`, PR #5)
+**Letztes Update:** 18.11.2026
 **Zeiterfassung:** [ZEITPROTOKOLL.md](ZEITPROTOKOLL.md)
 
 ---
@@ -51,6 +51,9 @@
 ## Phase 4: Self-Test
 - [x] Vorbereitung: JSON-Export im Profil, Anleitung [SELFTEST.md](SELFTEST.md), Exporte per `.gitignore` geschützt
 - [x] App auf dem eigenen Handy installiert (`develop`, 17.11.2026)
+- [x] Erste Self-Test-Rückmeldungen (18.11.2026) umgesetzt: 14 Notizen plus Nachträge, Details in [OFFENE_PUNKTE.md](OFFENE_PUNKTE.md) „Self-Test-Feedback“ und [ENTSCHEIDUNGEN.md](ENTSCHEIDUNGEN.md)
+- [x] Datenbank bis Version 6 (Migrationen für bestehende Installationen, je im Emulator und auf dem Handy geprüft)
+- [x] APK für weitere Testgeräte unter `D:\workspace\allergydetective-apk`
 - [ ] 7+ Tage selbst nutzen, Notizen führen (SELFTEST.md, Kapitel 3)
 - [ ] Export + Notizen auswerten, Schwellenwerte in `AnalysisConfig` kalibrieren
 
@@ -80,3 +83,5 @@
 | 17.11.2026 | Offene Phase-2-Punkte auf `develop` (10 Branches, je lokal gemergt). 128 Unit-Tests grün, jeder Schritt im Emulator geprüft; Spracheingabe nur bis zum System-Dialog (Emulator ohne Erkennung) |
 | 17.11.2026 | Phase 3 auf `develop` (Branches `design-theme`, `home-dashboard`, `symptom-tiles`, `design-polish`): neues Farbschema hell/dunkel, Icons, Dashboard mit Tagesspruch, Symptom-Symbole, Ergebnis-Karten. 130 Unit-Tests grün, im Emulator hell und dunkel geprüft. **Phase 3 abgeschlossen** |
 | 17.11.2026 | Phase 4 vorbereitet: JSON-Export für die Kalibrierung (`feature/data-export`), Anleitung SELFTEST.md. Installation aufs Handy steht aus (Handy nicht verbunden) |
+| 18.11.2026 | Self-Test-Rückmeldungen auf `develop` (19 Branches): 4 Bugs (Speichern-Button, Export als Datei, Tages-Abschluss wählt heute, Dinkelvollkornbrot), Öle & Oliven, Mahlzeit und Tageszeit statt Uhrzeit, kranke Tage und Krankheitszeiträume, roh/gekocht als Pflicht, Gerichte anlegen/bearbeiten, neue Zutat nur „Was ist drin?“, Doppelt-Prüfung und Zusammenführen, Einführung (auch im Profil), Historie und Kacheln neu gestaltet. DB-Migrationen 1 → 6. 157 Unit-Tests grün, jeder Schritt im Emulator geprüft und aufs Handy installiert |
+| 18.11.2026 | PC-Absturz: Git-Metadaten repariert, nichts verloren. `gh` eingerichtet, `develop` per PR #5 nach `main` gemergt (erster PR seit Phase 1) |

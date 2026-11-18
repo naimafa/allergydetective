@@ -45,7 +45,7 @@ Noch offen bzw. Annahmen:
 - [ ] **Reminder-Zeit** nur als Chips 19–22 Uhr; freie Uhrzeit folgt mit dem Design.
 - [ ] **iOS:** Reminder-Planung, Benachrichtigungs-Erlaubnis und Spracheingabe sind nur Platzhalter (kein Mac).
 - [ ] **Onboarding** fragt den Reminder nicht ab; er ist aus, bis man ihn im Profil einschaltet.
-- [ ] **GitHub-PRs:** Branches werden lokal nach `develop` gemergt, weil kein `gh` installiert ist. Für echte PRs: GitHub CLI installieren und einmal `gh auth login` ausführen.
+- [x] **GitHub-PRs:** `gh` ist eingerichtet (18.11.2026); Änderungen gehen per Pull Request nach `main` (PR #5)
 
 ## 🧪 Self-Test-Feedback (Stand 18.11.2026)
 Bugs, erledigt am 18.11.2026 (je ein Branch nach `develop`):
