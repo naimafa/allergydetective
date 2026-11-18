@@ -9,6 +9,7 @@ import allergydetective.shared.generated.resources.day_hours
 import allergydetective.shared.generated.resources.day_later
 import allergydetective.shared.generated.resources.day_no_complaints
 import allergydetective.shared.generated.resources.day_no_complaints_disabled
+import allergydetective.shared.generated.resources.day_open_past_hint
 import allergydetective.shared.generated.resources.day_scale_hint
 import allergydetective.shared.generated.resources.day_sleep
 import allergydetective.shared.generated.resources.day_sleep_quality
@@ -49,8 +50,10 @@ import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.ScreenScaffold
 import com.nfar.allergydetective.ui.common.SectionTitle
 import com.nfar.allergydetective.ui.common.displayName
+import com.nfar.allergydetective.ui.common.formatDate
 import com.nfar.allergydetective.ui.common.formatDecimal
 import androidx.compose.ui.text.intl.Locale
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -85,6 +88,16 @@ private fun DayCheckContent(state: DayCheckState, viewModel: DayCheckViewModel, 
                     label = { Text(if (day in state.confirmedDays) stringResource(Res.string.day_confirmed_mark, label) else label) },
                 )
             }
+        }
+        // The date in full, so it is clear which day gets confirmed.
+        Text(
+            formatDate(LocalDate.fromEpochDays(check.epochDay), Locale.current.language),
+            style = MaterialTheme.typography.titleLarge,
+        )
+        val openPast = state.openPastDays.filter { it != check.epochDay }
+        if (openPast.isNotEmpty()) {
+            val labels = openPast.map { dayLabel(state.today - it) }.joinToString(", ")
+            Text(stringResource(Res.string.day_open_past_hint, labels), style = MaterialTheme.typography.bodySmall)
         }
 
         SectionTitle(stringResource(Res.string.day_wellbeing))

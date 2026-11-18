@@ -59,14 +59,16 @@ class DayCheckViewModelTest {
     fun tearDown() = Dispatchers.resetMain()
 
     @Test
-    fun oldestUnconfirmedDayIsOfferedFirst() {
+    fun todayIsOfferedFirstAndOpenPastDaysAreListed() {
         confirm(today - 2)
 
         val state = viewModel().state.value
 
         assertEquals(listOf(today, today - 1, today - 2), state.days)
-        assertEquals(today - 1, state.check.epochDay)
+        // Preselecting an open past day made users confirm the wrong day (self-test 17.11.).
+        assertEquals(today, state.check.epochDay)
         assertEquals(setOf(today - 2), state.confirmedDays)
+        assertEquals(listOf(today - 1), state.openPastDays)
     }
 
     @Test
@@ -130,6 +132,7 @@ class DayCheckViewModelTest {
         confirm(today - 2)
         repository.checks[today - 1] = DayCheckData(today - 1, wellbeing = 2, status = DayCheckStatus.OPEN, factorIds = setOf(1))
         val vm = viewModel()
+        vm.onDaySelected(today - 1)
 
         assertEquals(2, vm.state.value.check.wellbeing)
         assertEquals(setOf(1L), vm.state.value.check.factorIds)
