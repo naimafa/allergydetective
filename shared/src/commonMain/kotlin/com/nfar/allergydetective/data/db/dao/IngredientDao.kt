@@ -55,4 +55,49 @@ interface IngredientDao {
         insertIngredientProperties(propertyIds.map { IngredientPropertyEntity(id, it) })
         return id
     }
+
+    @Query("SELECT * FROM ingredients ORDER BY id")
+    suspend fun allIngredients(): List<IngredientEntity>
+
+    @Query(
+        """
+        DELETE FROM meal_ingredients WHERE ingredientId = :from
+        AND mealId IN (SELECT mealId FROM meal_ingredients WHERE ingredientId = :to)
+        """,
+    )
+    suspend fun dropMealItemsAlreadyContaining(from: Long, to: Long)
+
+    @Query("UPDATE meal_ingredients SET ingredientId = :to WHERE ingredientId = :from")
+    suspend fun moveMealItems(from: Long, to: Long)
+
+    @Query(
+        """
+        DELETE FROM favorite_ingredients WHERE ingredientId = :from
+        AND favoriteId IN (SELECT favoriteId FROM favorite_ingredients WHERE ingredientId = :to)
+        """,
+    )
+    suspend fun dropFavoriteItemsAlreadyContaining(from: Long, to: Long)
+
+    @Query("UPDATE favorite_ingredients SET ingredientId = :to WHERE ingredientId = :from")
+    suspend fun moveFavoriteItems(from: Long, to: Long)
+
+    @Query("UPDATE ingredients SET baseIngredientId = :to WHERE baseIngredientId = :from")
+    suspend fun moveBaseIngredient(from: Long, to: Long)
+
+    @Query("DELETE FROM ingredients WHERE id = :id AND isCustom = 1")
+    suspend fun deleteCustomIngredient(id: Long)
+
+    /**
+     * Moves every use of the custom ingredient [from] to [to] and deletes [from].
+     * A meal or dish that already contains [to] keeps only that entry (primary key).
+     */
+    @Transaction
+    suspend fun mergeCustomInto(from: Long, to: Long) {
+        dropMealItemsAlreadyContaining(from, to)
+        moveMealItems(from, to)
+        dropFavoriteItemsAlreadyContaining(from, to)
+        moveFavoriteItems(from, to)
+        moveBaseIngredient(from, to)
+        deleteCustomIngredient(from)
+    }
 }

@@ -66,7 +66,7 @@ Noch offen (Entscheidung bzw. Konzept nötig):
 - [x] **Roh / gekocht** (Pflicht) bei Zutaten mit Birkenpollen-Kreuzreaktion: Karotte, Sellerie, Apfel, Birne, Kirsche, Pfirsich, Pflaume, Haselnuss. Gekocht = Birken-Trigger zählt nicht. Bisherige Einträge gelten als roh (Migration DB 4 → 5)
 - [x] **Gerichte:** fehlende Zutat direkt anlegen; gleicher Name eines Gerichts wird ersetzt (mit Hinweis)
 - [x] **Keine Doppelten:** gleicher Name / Synonym sperrt das Anlegen ("Diese Zutat nehmen"), ähnlicher Name (Tippfehler, Teil eines Namens) fragt einmal nach
-- [ ] **Doppeltes Dinkelvollkornbrot** auf dem eigenen Handy (eigene Zutat + mitgelieferte): Zusammenführen nur nach Rückfrage
+- [x] **Doppelte zusammenführen:** Beim App-Start wird eine eigene Zutat mit dem Namen einer mitgelieferten Zutat (in der App-Sprache) zusammengeführt (eigenes Dinkelvollkornbrot, 18.11.2026 nach Rückfrage)
 
 ## 🔍 Vor Release prüfen
 - [ ] **Zeitfenster und Trigger-Zuordnungen** fachlich verifizieren (Literatur / Fachperson)

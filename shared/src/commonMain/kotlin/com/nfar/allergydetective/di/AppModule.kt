@@ -1,6 +1,7 @@
 package com.nfar.allergydetective.di
 
 import com.nfar.allergydetective.AppStartup
+import com.nfar.allergydetective.data.diary.DuplicateIngredientMerger
 import com.nfar.allergydetective.ui.profile.ReminderViewModel
 import com.nfar.allergydetective.data.db.AppDatabase
 import com.nfar.allergydetective.data.db.createAppDatabase
@@ -132,6 +133,7 @@ val appModule = module {
     }
     single<DisplayNameResolver> { ResourceDisplayNameResolver() }
     single { AnalysisEngine() }
-    single { AppStartup(seeder = get(), scope = get(AppScope), settings = get(), reminders = get()) }
+    single { DuplicateIngredientMerger(dao = get(), names = get()) }
+    single { AppStartup(seeder = get(), scope = get(AppScope), settings = get(), reminders = get(), duplicates = get()) }
     viewModelOf(::ReminderViewModel)
 }
