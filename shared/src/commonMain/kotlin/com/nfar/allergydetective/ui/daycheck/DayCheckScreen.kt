@@ -11,6 +11,7 @@ import allergydetective.shared.generated.resources.day_no_complaints
 import allergydetective.shared.generated.resources.day_no_complaints_disabled
 import allergydetective.shared.generated.resources.day_open_past_hint
 import allergydetective.shared.generated.resources.day_scale_hint
+import allergydetective.shared.generated.resources.day_sick_hint
 import allergydetective.shared.generated.resources.day_sleep
 import allergydetective.shared.generated.resources.day_sleep_quality
 import allergydetective.shared.generated.resources.day_stress
@@ -126,6 +127,9 @@ private fun DayCheckContent(state: DayCheckState, viewModel: DayCheckViewModel, 
                 )
             }
         }
+        if (state.factors.any { it.key == SICK_FACTOR_KEY && it.id in check.factorIds }) {
+            Text(stringResource(Res.string.day_sick_hint), style = MaterialTheme.typography.bodySmall)
+        }
 
         SectionTitle(stringResource(Res.string.day_complaints))
         Button(
@@ -146,6 +150,9 @@ private fun DayCheckContent(state: DayCheckState, viewModel: DayCheckViewModel, 
         ) { Text(stringResource(Res.string.day_later)) }
     }
 }
+
+/** Lifestyle factor that takes the day out of the analysis (self-test 18.11.). */
+private const val SICK_FACTOR_KEY = "sick"
 
 /** Faces for wellbeing 1–5 (UX 3.4). */
 private val WELLBEING_FACES = listOf("😣", "🙁", "😐", "🙂", "😊")

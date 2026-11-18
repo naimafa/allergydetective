@@ -18,6 +18,7 @@ Zusammenfassung der Konzept-Sitzung vom **14.11.2026**. Details stehen in den ve
 | Plausibilität | Trigger ↔ Symptomgruppe (A Magen, B Haut, C Kopf/Kreislauf, D Atemwege/Mund) | TRD 2.3 |
 | Negative Daten | Tages-Abschluss mit Bestätigung "Keine Beschwerden / Alles eingetragen"; nur bestätigte Tage zählen | TRD 3.3, UX 3.4 |
 | Lifestyle | Schlaf, Stress, Sport, Zyklus, Medikament als **eigene Kandidaten** im Ranking (kein 30-%-Abzug). Alkohol nur als Trigger der Getränke, nicht als Faktor (16.11.2026) | TRD 2.5 |
+| Kranke Tage | Faktor "Krank (z.B. Infekt, Erkältung)" im Tages-Abschluss. Der Tag zählt wie ein unbestätigter Tag nicht für die Analyse und ist kein eigener Kandidat (18.11.2026, Self-Test) | `AnalysisInputMapper` |
 | Bekannte Allergien | nicht im Ranking, nur Hinweis beim Loggen | TRD 2.6 |
 | Ergebnis | Evidenzstufen Spur / Verdacht / Starker Verdacht statt Prozent | TRD 2.8 |
 | Intensität | **1–5** (bestätigt), Stress 1–5 | Symptome |

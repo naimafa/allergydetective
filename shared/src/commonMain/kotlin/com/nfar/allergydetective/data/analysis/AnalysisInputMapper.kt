@@ -41,15 +41,21 @@ private fun AnalysisRows.toReferenceData(): ReferenceData {
 
 private fun AnalysisRows.toDiaryData(): DiaryData {
     val itemsByMeal = mealIngredients.groupBy({ it.mealId }, { MealItem(it.ingredientId, it.portion.toPortion()) })
+    // Self-test 18.11.: symptoms of an acute illness (e.g. sinusitis) would be blamed on food.
+    // A day marked as sick does not count, like an unconfirmed day; the factor itself is no candidate.
+    val sickDays = dayFactors.filter { it.factorId == SICK_FACTOR_ID }.map { it.epochDay }.toSet()
     return DiaryData(
         meals = meals.map { Meal(it.id, it.eatenAt, it.tzOffsetMin, itemsByMeal[it.id].orEmpty()) },
         symptomEntries = symptomEntries.map { SymptomEntry(it.id, it.symptomId, it.startedAt, it.tzOffsetMin, it.intensity) },
         dayChecks = dayChecks.map {
-            DayCheck(it.epochDay, it.status.isConfirmed(), it.sleepHours, it.sleepQuality, it.stress)
+            DayCheck(it.epochDay, it.status.isConfirmed() && it.epochDay !in sickDays, it.sleepHours, it.sleepQuality, it.stress)
         },
-        dayFactors = dayFactors.map { DayFactor(it.epochDay, it.factorId) },
+        dayFactors = dayFactors.filter { it.factorId != SICK_FACTOR_ID }.map { DayFactor(it.epochDay, it.factorId) },
     )
 }
+
+/** Lifestyle factor "sick" (seed id 4): the day is left out of the analysis. */
+const val SICK_FACTOR_ID = 4L
 
 /** Only these days go into the analysis (TRD 2.2). */
 private fun DayStatus.isConfirmed(): Boolean = this == DayStatus.NO_SYMPTOMS || this == DayStatus.COMPLETE

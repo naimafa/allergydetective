@@ -194,4 +194,5 @@
     <string name="factor_sport">Sport</string>
     <string name="factor_menstruation">Periode</string>
     <string name="factor_medication">Medikament</string>
+    <string name="factor_sick">Krank (z.B. Infekt, Erkältung)</string>
 </resources>

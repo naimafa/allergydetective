@@ -39,6 +39,7 @@
     <string name="day_stress">Stress an dem Tag</string>
     <string name="day_scale_hint">1 = wenig · 5 = viel</string>
     <string name="day_factors">Besonderes? (optional)</string>
+    <string name="day_sick_hint">Krankheitstage zählen nicht für die Auswertung. So werden z.B. Beschwerden einer Erkältung nicht dem Essen zugeschrieben.</string>
     <string name="day_complaints">Beschwerden an dem Tag?</string>
     <string name="day_no_complaints">Keine Beschwerden</string>
     <string name="day_no_complaints_disabled">Für diesen Tag sind Symptome eingetragen. Bitte „Alles eingetragen“ wählen.</string>

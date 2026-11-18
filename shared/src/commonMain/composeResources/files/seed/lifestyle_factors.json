@@ -1,5 +1,6 @@
 [
   {"id": 1, "key": "sport"},
   {"id": 2, "key": "menstruation"},
-  {"id": 3, "key": "medication"}
+  {"id": 3, "key": "medication"},
+  {"id": 4, "key": "sick"}
 ]

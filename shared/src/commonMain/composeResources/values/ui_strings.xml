@@ -39,6 +39,7 @@
     <string name="day_stress">Stress that day</string>
     <string name="day_scale_hint">1 = low · 5 = high</string>
     <string name="day_factors">Anything special? (optional)</string>
+    <string name="day_sick_hint">Days of illness are left out of the results, so that e.g. cold symptoms are not blamed on food.</string>
     <string name="day_complaints">Complaints that day?</string>
     <string name="day_no_complaints">No complaints</string>
     <string name="day_no_complaints_disabled">You logged symptoms on this day, so please choose “Everything logged”.</string>
