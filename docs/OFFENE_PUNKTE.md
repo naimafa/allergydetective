@@ -63,7 +63,10 @@ Noch offen (Entscheidung bzw. Konzept nötig):
 - [x] **Intensität pro Symptom:** gibt es schon (1–5 beim Antippen). Nur langes Drücken speichert ohne Abfrage mit 3
 - [x] **Kranke Tage markieren:** Faktor "Krank" im Tages-Abschluss, der Tag fällt aus der Analyse (Migration DB 3 → 4)
 - [x] **Einführung beim ersten Start:** 5 Seiten (Willkommen, So funktioniert es, Geduld, Allergien, Tipp Gerichte). "Gerichte jetzt anlegen" öffnet den Tab Favoriten
-- [x] **Roh / gekocht** (Pflicht) bei Zutaten mit Birkenpollen-Kreuzreaktion: Karotte, Sellerie, Apfel, Birne, Kirsche, Pfirsich, Pflaume, Haselnuss. Gekocht = Birken-Trigger zählt nicht. Bisherige Einträge gelten als roh (Migration DB 4 → 5)- [x] **Gerichte:** fehlende Zutat direkt anlegen; gleicher Name eines Gerichts wird ersetzt (mit Hinweis)- [x] **Keine Doppelten:** gleicher Name / Synonym sperrt das Anlegen ("Diese Zutat nehmen"), ähnlicher Name (Tippfehler, Teil eines Namens) fragt einmal nach- [ ] **Doppeltes Dinkelvollkornbrot** auf dem eigenen Handy (eigene Zutat + mitgelieferte): Zusammenführen nur nach Rückfrage
+- [x] **Roh / gekocht** (Pflicht) bei Zutaten mit Birkenpollen-Kreuzreaktion: Karotte, Sellerie, Apfel, Birne, Kirsche, Pfirsich, Pflaume, Haselnuss. Gekocht = Birken-Trigger zählt nicht. Bisherige Einträge gelten als roh (Migration DB 4 → 5)
+- [x] **Gerichte:** fehlende Zutat direkt anlegen; gleicher Name eines Gerichts wird ersetzt (mit Hinweis)
+- [x] **Keine Doppelten:** gleicher Name / Synonym sperrt das Anlegen ("Diese Zutat nehmen"), ähnlicher Name (Tippfehler, Teil eines Namens) fragt einmal nach
+- [ ] **Doppeltes Dinkelvollkornbrot** auf dem eigenen Handy (eigene Zutat + mitgelieferte): Zusammenführen nur nach Rückfrage
 
 ## 🔍 Vor Release prüfen
 - [ ] **Zeitfenster und Trigger-Zuordnungen** fachlich verifizieren (Literatur / Fachperson)
