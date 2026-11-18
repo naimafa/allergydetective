@@ -45,7 +45,8 @@ class HistoryViewModel(
             val byDay = entries.groupBy { clock.epochDayOf(it.time) }
             val days = (today downTo fromDay)
                 .filter { it in byDay || it in status }
-                .map { HistoryDay(it, status[it], byDay[it].orEmpty()) }
+                // Within a day in diary order: morning first.
+                .map { HistoryDay(it, status[it], byDay[it].orEmpty().sortedBy { entry -> entry.time }) }
             _state.value = HistoryState(loading = false, days = days)
         }
     }
