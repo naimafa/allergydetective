@@ -1,6 +1,10 @@
 package com.nfar.allergydetective.di
 
 import com.nfar.allergydetective.AppStartup
+import com.nfar.allergydetective.data.db.dao.SickPeriodDao
+import com.nfar.allergydetective.data.diary.RoomSickPeriodRepository
+import com.nfar.allergydetective.domain.diary.SickPeriodRepository
+import com.nfar.allergydetective.ui.sick.SickPeriodsViewModel
 import com.nfar.allergydetective.data.diary.DuplicateIngredientMerger
 import com.nfar.allergydetective.ui.profile.ReminderViewModel
 import com.nfar.allergydetective.data.db.AppDatabase
@@ -108,6 +112,9 @@ val appModule = module {
 
     single<DayCheckDao> { get<AppDatabase>().dayCheckDao() }
     single<DayCheckRepository> { RoomDayCheckRepository(dao = get()) }
+    single<SickPeriodDao> { get<AppDatabase>().sickPeriodDao() }
+    single<SickPeriodRepository> { RoomSickPeriodRepository(dao = get()) }
+    viewModelOf(::SickPeriodsViewModel)
     viewModelOf(::DayCheckViewModel)
     viewModelOf(::HomeViewModel)
 

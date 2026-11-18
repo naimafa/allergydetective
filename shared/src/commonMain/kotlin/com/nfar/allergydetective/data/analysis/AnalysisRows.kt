@@ -2,6 +2,7 @@ package com.nfar.allergydetective.data.analysis
 
 import com.nfar.allergydetective.data.db.entity.DayCheckEntity
 import com.nfar.allergydetective.data.db.entity.DayFactorEntity
+import com.nfar.allergydetective.data.db.entity.SickPeriodEntity
 import com.nfar.allergydetective.data.db.entity.IngredientEntity
 import com.nfar.allergydetective.data.db.entity.IngredientPropertyEntity
 import com.nfar.allergydetective.data.db.entity.KnownAllergyEntity
@@ -27,4 +28,5 @@ data class AnalysisRows(
     val symptomEntries: List<SymptomEntryEntity>,
     val dayChecks: List<DayCheckEntity>,
     val dayFactors: List<DayFactorEntity>,
+    val sickPeriods: List<SickPeriodEntity> = emptyList(),
 )

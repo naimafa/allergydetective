@@ -37,6 +37,8 @@ import com.nfar.allergydetective.ui.history.HistoryScreen
 import com.nfar.allergydetective.ui.home.HomeAction
 import com.nfar.allergydetective.ui.home.HomeScreen
 import com.nfar.allergydetective.ui.home.HomeViewModel
+import com.nfar.allergydetective.ui.sick.SickBanner
+import com.nfar.allergydetective.ui.sick.SickPeriodsViewModel
 import com.nfar.allergydetective.ui.profile.ProfileScreen
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
@@ -84,7 +86,15 @@ fun MainScreen(
                 val homeViewModel: HomeViewModel = koinViewModel()
                 val homeState by homeViewModel.state.collectAsStateWithLifecycle()
                 LaunchedEffect(Unit) { homeViewModel.refresh() }
-                HomeScreen(modifier = modifier, state = homeState, onAction = onHomeAction)
+                val sickViewModel: SickPeriodsViewModel = koinViewModel()
+                val sickState by sickViewModel.state.collectAsStateWithLifecycle()
+                LaunchedEffect(Unit) { sickViewModel.refresh() }
+                HomeScreen(
+                    modifier = modifier,
+                    state = homeState,
+                    onAction = onHomeAction,
+                    banner = { sickState.ongoing?.let { SickBanner(it, sickViewModel::onRecovered) } },
+                )
             }
             MainTab.HISTORY -> HistoryScreen(modifier = modifier)
             MainTab.FAVORITES -> FavoritesScreen(modifier = modifier)

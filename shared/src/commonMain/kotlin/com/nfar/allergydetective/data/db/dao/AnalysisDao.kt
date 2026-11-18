@@ -6,6 +6,7 @@ import androidx.room3.Transaction
 import com.nfar.allergydetective.data.analysis.AnalysisRows
 import com.nfar.allergydetective.data.db.entity.DayCheckEntity
 import com.nfar.allergydetective.data.db.entity.DayFactorEntity
+import com.nfar.allergydetective.data.db.entity.SickPeriodEntity
 import com.nfar.allergydetective.data.db.entity.IngredientEntity
 import com.nfar.allergydetective.data.db.entity.IngredientPropertyEntity
 import com.nfar.allergydetective.data.db.entity.KnownAllergyEntity
@@ -56,6 +57,9 @@ interface AnalysisDao {
     @Query("SELECT * FROM day_factors ORDER BY epochDay, factorId")
     suspend fun dayFactors(): List<DayFactorEntity>
 
+    @Query("SELECT * FROM sick_periods ORDER BY startDay")
+    suspend fun sickPeriods(): List<SickPeriodEntity>
+
     /** One transaction, so a meal saved during the read cannot appear without its ingredients. */
     @Transaction
     suspend fun loadAll(): AnalysisRows = AnalysisRows(
@@ -71,5 +75,6 @@ interface AnalysisDao {
         symptomEntries = symptomEntries(),
         dayChecks = dayChecks(),
         dayFactors = dayFactors(),
+        sickPeriods = sickPeriods(),
     )
 }

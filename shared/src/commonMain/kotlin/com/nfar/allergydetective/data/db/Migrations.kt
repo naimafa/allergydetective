@@ -49,7 +49,17 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+    /** Self-test 18.11.: an illness over several days is entered once as a period. */
+    val MIGRATION_5_6 = object : Migration(5, 6) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL(
+                "CREATE TABLE IF NOT EXISTS `sick_periods` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "`startDay` INTEGER NOT NULL, `endDay` INTEGER)",
+            )
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
 
     private const val OILS_CATEGORY = 13L
 

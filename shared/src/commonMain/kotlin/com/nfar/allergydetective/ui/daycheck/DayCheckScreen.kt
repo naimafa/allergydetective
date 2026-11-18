@@ -53,13 +53,19 @@ import com.nfar.allergydetective.ui.common.SectionTitle
 import com.nfar.allergydetective.ui.common.displayName
 import com.nfar.allergydetective.ui.common.formatDate
 import com.nfar.allergydetective.ui.common.formatDecimal
+import com.nfar.allergydetective.ui.sick.SickPeriodDayCheckPart
+import com.nfar.allergydetective.ui.sick.SickPeriodsViewModel
 import androidx.compose.ui.text.intl.Locale
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun DayCheckScreen(onDone: () -> Unit, viewModel: DayCheckViewModel = koinViewModel()) {
+fun DayCheckScreen(
+    onDone: () -> Unit,
+    viewModel: DayCheckViewModel = koinViewModel(),
+    sickViewModel: SickPeriodsViewModel = koinViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.saved) { if (state.saved) onDone() }
 
@@ -68,13 +74,18 @@ fun DayCheckScreen(onDone: () -> Unit, viewModel: DayCheckViewModel = koinViewMo
         onBack = onDone,
         snackbarHostState = remember { SnackbarHostState() },
     ) { padding ->
-        if (!state.loading) DayCheckContent(state, viewModel, Modifier.padding(padding))
+        if (!state.loading) DayCheckContent(state, viewModel, sickViewModel, Modifier.padding(padding))
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun DayCheckContent(state: DayCheckState, viewModel: DayCheckViewModel, modifier: Modifier) {
+private fun DayCheckContent(
+    state: DayCheckState,
+    viewModel: DayCheckViewModel,
+    sickViewModel: SickPeriodsViewModel,
+    modifier: Modifier,
+) {
     val check = state.check
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
@@ -130,6 +141,7 @@ private fun DayCheckContent(state: DayCheckState, viewModel: DayCheckViewModel, 
         if (state.factors.any { it.key == SICK_FACTOR_KEY && it.id in check.factorIds }) {
             Text(stringResource(Res.string.day_sick_hint), style = MaterialTheme.typography.bodySmall)
         }
+        SickPeriodDayCheckPart(check.epochDay, sickViewModel)
 
         SectionTitle(stringResource(Res.string.day_complaints))
         Button(

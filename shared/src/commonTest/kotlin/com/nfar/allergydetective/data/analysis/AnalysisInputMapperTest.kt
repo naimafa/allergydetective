@@ -2,6 +2,7 @@ package com.nfar.allergydetective.data.analysis
 
 import com.nfar.allergydetective.data.db.entity.DayCheckEntity
 import com.nfar.allergydetective.data.db.entity.DayFactorEntity
+import com.nfar.allergydetective.data.db.entity.SickPeriodEntity
 import com.nfar.allergydetective.data.db.entity.IngredientEntity
 import com.nfar.allergydetective.data.db.entity.IngredientPropertyEntity
 import com.nfar.allergydetective.data.db.entity.KnownAllergyEntity
@@ -162,6 +163,21 @@ class AnalysisInputMapperTest {
             diary.dayChecks,
         )
         assertEquals(listOf(DayFactor(3, 501)), diary.dayFactors)
+    }
+
+    @Test
+    fun daysInSickPeriodsAreLeftOutAndAnOpenPeriodRunsUntilToday() {
+        fun check(day: Long) = DayCheckEntity(epochDay = day, wellbeing = null, sleepHours = null, sleepQuality = null, stress = null, status = DayStatus.COMPLETE)
+        val rows = referenceRows.copy(
+            dayChecks = (1L..8L).map(::check),
+            sickPeriods = listOf(SickPeriodEntity(1, startDay = 2, endDay = 3), SickPeriodEntity(2, startDay = 6, endDay = null)),
+        )
+        // now = day 7 in UTC (TZ offset ignored for whole days at noon)
+        val now = 7 * 86_400_000L + 12 * 3_600_000L - TZ * 60_000L
+
+        val diary = rows.toAnalysisInput(now = now, nowTzOffsetMin = TZ).diary
+
+        assertEquals(listOf(1L, 4L, 5L, 8L), diary.dayChecks.filter { it.confirmed }.map { it.epochDay })
     }
 
     @Test

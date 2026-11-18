@@ -40,6 +40,18 @@
     <string name="day_scale_hint">1 = low · 5 = high</string>
     <string name="day_factors">Anything special? (optional)</string>
     <string name="day_sick_hint">Days of illness are left out of the results, so that e.g. cold symptoms are not blamed on food.</string>
+    <string name="sick_title">Periods of illness</string>
+    <string name="sick_hint">Days when you were acutely ill (e.g. sinusitis) are left out of the results, so that headache or nausea are not blamed on food.</string>
+    <string name="sick_empty">No periods of illness entered.</string>
+    <string name="sick_add">+ Enter period of illness</string>
+    <string name="sick_longer">Ill for longer? Enter a period</string>
+    <string name="sick_still_ill">Still ill</string>
+    <string name="sick_banner">🤒 Ill since %1$s</string>
+    <string name="sick_recovered">Well again</string>
+    <string name="sick_since">since %1$s</string>
+    <string name="sick_ongoing">ongoing</string>
+    <string name="sick_range">%1$s – %2$s</string>
+    <string name="sick_day_in_period">This day lies in a period of illness and does not count for the results.</string>
     <string name="day_complaints">Complaints that day?</string>
     <string name="day_no_complaints">No complaints</string>
     <string name="day_no_complaints_disabled">You logged symptoms on this day, so please choose “Everything logged”.</string>

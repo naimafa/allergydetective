@@ -50,12 +50,15 @@ fun HomeScreen(
     onAction: (HomeAction) -> Unit,
     modifier: Modifier = Modifier,
     state: HomeState = HomeState(),
+    /** Optional card on top, e.g. "ill since …" (self-test 18.11.). */
+    banner: @Composable () -> Unit = {},
 ) {
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(stringResource(Res.string.home_title), style = MaterialTheme.typography.headlineMedium)
+        banner()
         DailyQuote(state.today)
         state.confirmedDays?.let { HomeProgress(it) }
         HomeAction.entries.chunked(2).forEach { row ->
