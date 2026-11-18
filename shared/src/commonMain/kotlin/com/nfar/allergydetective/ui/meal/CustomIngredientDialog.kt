@@ -2,21 +2,18 @@ package com.nfar.allergydetective.ui.meal
 
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
-import allergydetective.shared.generated.resources.custom_category
+import allergydetective.shared.generated.resources.custom_category_fallback
+import allergydetective.shared.generated.resources.custom_contains
+import allergydetective.shared.generated.resources.custom_contains_hint
 import allergydetective.shared.generated.resources.custom_create
+import allergydetective.shared.generated.resources.custom_derived
 import allergydetective.shared.generated.resources.custom_name
-import allergydetective.shared.generated.resources.custom_similar
-import allergydetective.shared.generated.resources.custom_similar_chosen
 import allergydetective.shared.generated.resources.custom_title
-import allergydetective.shared.generated.resources.custom_triggers
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -37,7 +34,7 @@ import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.displayName
 import org.jetbrains.compose.resources.stringResource
 
-/** "New ingredient": name, category, "similar to …" and the triggers taken from it. */
+/** "New ingredient": name and what it contains; category and triggers follow from that. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CustomIngredientDialog(
@@ -67,44 +64,32 @@ fun CustomIngredientDialog(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                OutlinedTextField(
-                    value = state.baseQuery,
-                    onValueChange = viewModel::onBaseQueryChange,
-                    label = { Text(stringResource(Res.string.custom_similar)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
+                Text(stringResource(Res.string.custom_contains), style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(Res.string.custom_contains_hint), style = MaterialTheme.typography.bodySmall)
+                IngredientPicker(
+                    query = state.query,
+                    results = state.results,
+                    selected = state.components,
+                    onQueryChange = viewModel::onQueryChange,
+                    onAdd = viewModel::onAddComponent,
+                    onRemove = viewModel::onRemoveComponent,
                 )
-                state.baseResults.forEach { candidate ->
-                    Text(
-                        ingredientName(candidate),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 48.dp)
-                            .clickable { viewModel.onBaseSelected(candidate) }
-                            .padding(vertical = 12.dp),
-                    )
+                if (state.propertyIds.isNotEmpty()) {
+                    val names = state.properties.filter { it.id in state.propertyIds }
+                        .map { displayName(NamePrefix.PROPERTY, it.key) }
+                    Text(stringResource(Res.string.custom_derived, names.joinToString(", ")), style = MaterialTheme.typography.bodySmall)
                 }
-                state.base?.let {
-                    Text(stringResource(Res.string.custom_similar_chosen, ingredientName(it)), style = MaterialTheme.typography.bodySmall)
-                }
-                Text(stringResource(Res.string.custom_category), style = MaterialTheme.typography.titleSmall)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    state.categories.forEach { category ->
-                        FilterChip(
-                            selected = state.categoryId == category.id,
-                            onClick = { viewModel.onCategoryChange(category.id) },
-                            label = { Text(displayName(NamePrefix.CATEGORY, category.key)) },
-                        )
-                    }
-                }
-                Text(stringResource(Res.string.custom_triggers), style = MaterialTheme.typography.titleSmall)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    state.properties.forEach { property ->
-                        FilterChip(
-                            selected = property.id in state.propertyIds,
-                            onClick = { viewModel.onPropertyToggle(property.id) },
-                            label = { Text(displayName(NamePrefix.PROPERTY, property.key)) },
-                        )
+                if (state.components.isEmpty()) {
+                    // Only when nothing fits: a plain ingredient without known triggers.
+                    Text(stringResource(Res.string.custom_category_fallback), style = MaterialTheme.typography.bodySmall)
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        state.categories.forEach { category ->
+                            FilterChip(
+                                selected = state.chosenCategoryId == category.id,
+                                onClick = { viewModel.onCategoryChange(category.id) },
+                                label = { Text(displayName(NamePrefix.CATEGORY, category.key)) },
+                            )
+                        }
                     }
                 }
             }

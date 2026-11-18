@@ -56,8 +56,8 @@ Bugs, erledigt am 18.11.2026 (je ein Branch nach `develop`):
 
 Noch offen (Entscheidung bzw. Konzept nötig):
 - [x] **Kategorie Öle, Fette & Oliven** (ID 13) mit 9 Zutaten, Migration DB 2 → 3
-- [ ] **Gerichte aus Zutaten:** Eigene Zutat ohne Trigger-Abfrage; der Nutzer setzt ein Gericht aus vorhandenen Zutaten zusammen, die Allergene kommen aus der Datenbank. Neu anlegen nur, wenn die Suche nichts findet
-- [ ] **Favoriten mit "+"** als Gericht anlegen (z.B. Linsensuppe = Linsen, Tomaten, Karotten, Gewürze)
+- [x] **Gerichte aus Zutaten:** "Neue Zutat" fragt nur noch "Was ist drin?" (Zutaten aus der Liste), Kategorie und Trigger übernimmt die App. Kategorie nur, wenn nichts passt. Neu anlegen erscheint als "Nicht dabei? …" unter den Suchtreffern
+- [x] **Favoriten mit "+ Neues Gericht"** (z.B. Linsensuppe = Linsen, Tomaten, Karotten), Portion M
 - [x] **Mahlzeit statt Uhrzeit:** Frühstück / Mittag- / Abendessen / Snack (ENTSCHEIDUNGEN 2)
 - [x] **Symptome nach Tageszeit** (morgens / mittags / nachmittags / abends / ganzer Tag / nach dem Essen), Uhrzeiten in ENTSCHEIDUNGEN 2
 - [x] **Intensität pro Symptom:** gibt es schon (1–5 beim Antippen). Nur langes Drücken speichert ohne Abfrage mit 3

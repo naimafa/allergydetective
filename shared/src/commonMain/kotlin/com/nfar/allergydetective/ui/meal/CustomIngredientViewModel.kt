@@ -5,13 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.nfar.allergydetective.domain.diary.CategoryInfo
 import com.nfar.allergydetective.domain.diary.CustomIngredientRepository
 import com.nfar.allergydetective.domain.diary.IngredientInfo
-import com.nfar.allergydetective.domain.diary.IngredientSearch
 import com.nfar.allergydetective.domain.diary.LanguageProvider
 import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.diary.PropertyInfo
-import com.nfar.allergydetective.domain.diary.SearchEntry
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
-import com.nfar.allergydetective.ui.common.NamePrefix
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,21 +17,29 @@ import kotlinx.coroutines.launch
 
 data class CustomIngredientState(
     val name: String = "",
-    val categories: List<CategoryInfo> = emptyList(),
-    val categoryId: Long? = null,
-    val properties: List<PropertyInfo> = emptyList(),
+    /** Known ingredients it is made of, e.g. spelt flour, oat flakes, linseed. */
+    val components: List<IngredientInfo> = emptyList(),
+    val query: String = "",
+    val results: List<IngredientInfo> = emptyList(),
+    /** Taken from the first component; the user only picks one when there are no components. */
+    val derivedCategoryId: Long? = null,
+    val chosenCategoryId: Long? = null,
+    /** Union of the components' triggers, shown for information only. */
     val propertyIds: Set<Long> = emptySet(),
-    val baseQuery: String = "",
-    val baseResults: List<IngredientInfo> = emptyList(),
-    val base: IngredientInfo? = null,
+    val categories: List<CategoryInfo> = emptyList(),
+    val properties: List<PropertyInfo> = emptyList(),
     val saving: Boolean = false,
     /** Set once the ingredient exists, the screen then closes the dialog and selects it. */
     val created: IngredientInfo? = null,
 ) {
+    val categoryId: Long? get() = derivedCategoryId ?: chosenCategoryId
     val canCreate: Boolean get() = name.isNotBlank() && categoryId != null && !saving
 }
 
-/** "New ingredient" dialog (CONTENT_Zutaten: name + category + "similar to …"). */
+/**
+ * "New ingredient" (self-test 18.11.): the user only says what it contains.
+ * Category and triggers come from the chosen ingredients, nobody has to know allergens.
+ */
 class CustomIngredientViewModel(
     private val repository: CustomIngredientRepository,
     private val meals: MealRepository,
@@ -45,20 +50,11 @@ class CustomIngredientViewModel(
     private val _state = MutableStateFlow(CustomIngredientState())
     val state: StateFlow<CustomIngredientState> = _state.asStateFlow()
 
-    private var ingredientsById: Map<Long, IngredientInfo> = emptyMap()
-    private var search = IngredientSearch(emptyList())
+    private var catalog = IngredientCatalog.EMPTY
 
     init {
         viewModelScope.launch {
-            val ingredients = meals.ingredients()
-            ingredientsById = ingredients.associateBy { it.id }
-            val synonyms = meals.synonyms(language.language())
-            search = IngredientSearch(
-                ingredients.map { ingredient ->
-                    val name = ingredient.key?.let { names.name(NamePrefix.INGREDIENT, it) } ?: ingredient.customName.orEmpty()
-                    SearchEntry(ingredient.id, name, synonyms[ingredient.id].orEmpty())
-                },
-            )
+            catalog = IngredientCatalog.load(meals, names, language)
             val categories = repository.categories()
             val properties = repository.properties()
             _state.update { it.copy(categories = categories, properties = properties) }
@@ -74,23 +70,25 @@ class CustomIngredientViewModel(
 
     fun onNameChange(name: String) = _state.update { it.copy(name = name) }
 
-    fun onCategoryChange(categoryId: Long) = _state.update { it.copy(categoryId = categoryId) }
+    fun onQueryChange(query: String) = _state.update { it.copy(query = query, results = catalog.search(query)) }
 
-    fun onPropertyToggle(propertyId: Long) = _state.update {
-        it.copy(propertyIds = if (propertyId in it.propertyIds) it.propertyIds - propertyId else it.propertyIds + propertyId)
+    fun onAddComponent(ingredient: IngredientInfo) {
+        if (ingredient in _state.value.components) return
+        updateComponents(_state.value.components + ingredient)
     }
 
-    fun onBaseQueryChange(query: String) = _state.update {
-        it.copy(baseQuery = query, baseResults = search.search(query, limit = BASE_RESULTS).mapNotNull(ingredientsById::get))
-    }
+    fun onRemoveComponent(ingredient: IngredientInfo) = updateComponents(_state.value.components - ingredient)
 
-    /** "Similar to …": suggests category and triggers of the base, both stay editable. */
-    fun onBaseSelected(base: IngredientInfo) {
+    fun onCategoryChange(categoryId: Long) = _state.update { it.copy(chosenCategoryId = categoryId) }
+
+    private fun updateComponents(components: List<IngredientInfo>) {
+        _state.update { it.copy(components = components, query = "", results = emptyList()) }
         viewModelScope.launch {
-            val properties = repository.propertiesOf(base.id)
-            val category = repository.categoryOf(base.id)
+            val properties = components.flatMap { repository.propertiesOf(it.id) }.toSet()
+            val category = components.firstOrNull()?.let { repository.categoryOf(it.id) }
             _state.update {
-                it.copy(base = base, baseQuery = "", baseResults = emptyList(), propertyIds = properties, categoryId = category ?: it.categoryId)
+                // Only apply if the components did not change in the meantime.
+                if (it.components != components) it else it.copy(propertyIds = properties, derivedCategoryId = category)
             }
         }
     }
@@ -101,14 +99,15 @@ class CustomIngredientViewModel(
         if (!current.canCreate || categoryId == null) return
         _state.update { it.copy(saving = true) }
         viewModelScope.launch {
-            val created = repository.create(current.name.trim(), categoryId, current.base?.id, current.propertyIds)
+            val created = repository.create(
+                name = current.name.trim(),
+                categoryId = categoryId,
+                baseIngredientId = current.components.firstOrNull()?.id,
+                propertyIds = current.propertyIds,
+            )
             _state.update { it.copy(saving = false, created = created) }
         }
     }
 
     fun onCreatedHandled() = _state.update { it.copy(created = null) }
-
-    private companion object {
-        const val BASE_RESULTS = 5
-    }
 }
