@@ -83,6 +83,7 @@
     <string name="onboarding_purpose">It is a diary for self-observation. It does not make diagnoses and does not replace a doctor. Everything stays on your phone.</string>
     <string name="onboarding_next">Next</string>
     <string name="onboarding_back">Back</string>
+    <string name="profile_show_intro">Show introduction</string>
     <string name="onboarding_how_title">How it works</string>
     <string name="onboarding_how_meal">Log what you eat: breakfast, lunch, dinner or a snack. By search, favourite or voice.</string>
     <string name="onboarding_how_symptom">When you have complaints, log them with strength and time of day.</string>

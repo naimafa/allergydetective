@@ -17,6 +17,15 @@ import com.nfar.allergydetective.ui.profile.ReminderSection
 import com.nfar.allergydetective.ui.profile.ExportSection
 import androidx.compose.runtime.LaunchedEffect
 import com.nfar.allergydetective.ui.symptom.LogSymptomScreen
+import allergydetective.shared.generated.resources.Res
+import allergydetective.shared.generated.resources.profile_show_intro
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
 import kotlinx.serialization.Serializable
 
 /** Type-safe routes. Each screen gets its own route when it is built. */
@@ -40,6 +49,10 @@ data object ResultsRoute
 
 @Serializable
 data object OnboardingRoute
+
+/** The intro pages again, opened from the profile (self-test 18.11.). */
+@Serializable
+data object IntroRoute
 
 @Composable
 fun AppNavHost(
@@ -81,9 +94,14 @@ fun AppNavHost(
                 profileExtra = {
                     ReminderSection()
                     ExportSection()
+                    OutlinedButton(
+                        onClick = { navController.navigate(IntroRoute) },
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                    ) { Text(stringResource(Res.string.profile_show_intro)) }
                 },
             )
         }
+composable<IntroRoute> {            OnboardingScreen(                replay = true,                onFinished = { openDishes ->                    if (openDishes) {                        navController.navigate(HomeRoute(openFavorites = true)) { popUpTo<HomeRoute> { inclusive = true } }                    } else {                        navController.popBackStack()                    }                },            )        }
         composable<LogMealRoute> { LogMealScreen(onBack = back) }
         composable<LogSymptomRoute> { LogSymptomScreen(onBack = back) }
         composable<DayCheckRoute> { DayCheckScreen(onDone = back) }

@@ -55,22 +55,33 @@ private const val PAGE_HOW = 1
 private const val PAGE_PATIENCE = 2
 private const val PAGE_ALLERGIES = 3
 private const val PAGE_DISHES = 4
-private const val PAGE_COUNT = 5
+
 
 /**
  * First start (TRD 3.1, self-test 18.11.): a few short pages that introduce the app,
  * the known allergies, and at the end the tip to save frequent dishes.
  * [onFinished] gets true when the user wants to add dishes right away.
+ * [replay] shows the intro again from the profile, without the allergies page.
  */
 @Composable
-fun OnboardingScreen(onFinished: (openDishes: Boolean) -> Unit, viewModel: KnownAllergiesViewModel = koinViewModel()) {
+fun OnboardingScreen(
+    onFinished: (openDishes: Boolean) -> Unit,
+    replay: Boolean = false,
+    viewModel: KnownAllergiesViewModel = koinViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    var page by remember { mutableIntStateOf(PAGE_WELCOME) }
+    val pages = if (replay) {
+        listOf(PAGE_WELCOME, PAGE_HOW, PAGE_PATIENCE, PAGE_DISHES)
+    } else {
+        listOf(PAGE_WELCOME, PAGE_HOW, PAGE_PATIENCE, PAGE_ALLERGIES, PAGE_DISHES)
+    }
+    var index by remember { mutableIntStateOf(0) }
+    val page = pages[index]
     // Saving the allergies completes the onboarding; the dishes tip follows.
     LaunchedEffect(state.saved) {
         if (state.saved) {
             viewModel.onSavedHandled()
-            page = PAGE_DISHES
+            index = pages.indexOf(PAGE_DISHES)
         }
     }
     Column(
@@ -78,7 +89,7 @@ fun OnboardingScreen(onFinished: (openDishes: Boolean) -> Unit, viewModel: Known
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(stringResource(Res.string.home_title), style = MaterialTheme.typography.headlineMedium)
-        PageDots(page)
+        PageDots(index, pages.size)
         when (page) {
             PAGE_WELCOME -> {
                 Text(stringResource(Res.string.onboarding_welcome), style = MaterialTheme.typography.bodyLarge)
@@ -115,13 +126,14 @@ fun OnboardingScreen(onFinished: (openDishes: Boolean) -> Unit, viewModel: Known
                     Text(stringResource(Res.string.onboarding_dishes_later))
                 }
             }
-            else -> Button(onClick = { page++ }, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)) {
+            else -> Button(onClick = { index++ }, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)) {
                 Text(stringResource(Res.string.onboarding_next))
             }
         }
-        // Back only before the allergies are saved; afterwards the onboarding is complete.
-        if (page in (PAGE_WELCOME + 1)..PAGE_ALLERGIES) {
-            TextButton(onClick = { page-- }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.onboarding_back)) }
+        // First start: back only before the allergies are saved, afterwards the onboarding is complete.
+        val lastWithBack = if (replay) pages.lastIndex else pages.indexOf(PAGE_ALLERGIES)
+        if (index in 1..lastWithBack) {
+            TextButton(onClick = { index-- }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.onboarding_back)) }
         }
     }
 }
@@ -136,10 +148,10 @@ private fun Step(emoji: String, text: StringResource) {
 
 /** Shows where the user is in the intro. */
 @Composable
-private fun PageDots(page: Int) {
+private fun PageDots(current: Int, count: Int) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        repeat(PAGE_COUNT) { index ->
-            val color = if (index == page) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
+        repeat(count) { index ->
+            val color = if (index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
             Box(Modifier.size(10.dp).background(color, CircleShape))
         }
     }
