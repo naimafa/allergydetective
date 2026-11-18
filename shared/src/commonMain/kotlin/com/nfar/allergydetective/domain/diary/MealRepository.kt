@@ -45,6 +45,15 @@ interface MealRepository {
 
     suspend fun deleteFavorite(favoriteId: Long)
 
+    /**
+     * Changes name and ingredients of a dish. The database keeps the id, so logged meals keep
+     * their origin; this default (for simple implementations) replaces the dish instead.
+     */
+    suspend fun updateFavorite(favoriteId: Long, name: String, items: List<MealItem>) {
+        deleteFavorite(favoriteId)
+        saveFavorite(name, items)
+    }
+
     /** Undo of [saveMeal], removes the meal and its items. */
     suspend fun deleteMeal(mealId: Long)
 }

@@ -48,6 +48,13 @@ class RoomMealRepository(private val dao: MealDao) : MealRepository {
             items = items.map { FavoriteIngredientEntity(favoriteId = 0, ingredientId = it.ingredientId, defaultPortion = it.portion.toEntity(), preparation = it.preparation?.toEntity()) },
         )
 
+    override suspend fun updateFavorite(favoriteId: Long, name: String, items: List<MealItem>) =
+        dao.updateFavoriteWithItems(
+            favoriteId = favoriteId,
+            name = name,
+            items = items.map { FavoriteIngredientEntity(favoriteId = favoriteId, ingredientId = it.ingredientId, defaultPortion = it.portion.toEntity(), preparation = it.preparation?.toEntity()) },
+        )
+
     override suspend fun deleteFavorite(favoriteId: Long) = dao.deleteFavorite(favoriteId)
 
     override suspend fun deleteMeal(mealId: Long) = dao.deleteMeal(mealId)

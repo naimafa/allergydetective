@@ -64,7 +64,7 @@ Noch offen (Entscheidung bzw. Konzept nötig):
 - [x] **Kranke Tage markieren:** Faktor "Krank" im Tages-Abschluss, der Tag fällt aus der Analyse (Migration DB 3 → 4)
 - [x] **Einführung beim ersten Start:** 5 Seiten (Willkommen, So funktioniert es, Geduld, Allergien, Tipp Gerichte). "Gerichte jetzt anlegen" öffnet den Tab Favoriten
 - [x] **Roh / gekocht** (Pflicht) bei Zutaten mit Birkenpollen-Kreuzreaktion: Karotte, Sellerie, Apfel, Birne, Kirsche, Pfirsich, Pflaume, Haselnuss. Gekocht = Birken-Trigger zählt nicht. Bisherige Einträge gelten als roh (Migration DB 4 → 5)
-- [x] **Gerichte:** fehlende Zutat direkt anlegen; gleicher Name eines Gerichts wird ersetzt (mit Hinweis)
+- [x] **Gerichte:** fehlende Zutat direkt anlegen; gleicher Name eines Gerichts wird ersetzt (mit Hinweis). Gerichte lassen sich bearbeiten (Zutaten ergänzen/entfernen, Name, roh/gekocht); die Id bleibt, eingetragene Mahlzeiten behalten ihre Herkunft
 - [x] **Keine Doppelten:** gleicher Name / Synonym sperrt das Anlegen ("Diese Zutat nehmen"), ähnlicher Name (Tippfehler, Teil eines Namens) fragt einmal nach
 - [x] **Doppelte zusammenführen:** Beim App-Start wird eine eigene Zutat mit dem Namen einer mitgelieferten Zutat (in der App-Sprache) zusammengeführt (eigenes Dinkelvollkornbrot, 18.11.2026 nach Rückfrage)
 
