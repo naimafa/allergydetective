@@ -13,6 +13,7 @@
     <string name="category_legumes_soy">Legumes &amp; soy</string>
     <string name="category_beverages">Beverages</string>
     <string name="category_condiments_sweets">Condiments, sauces &amp; sweets</string>
+    <string name="category_oils_fats">Oils, fats &amp; olives</string>
     <string name="property_histamine">Histamine (high)</string>
     <string name="property_histamine_liberator">Histamine liberator</string>
     <string name="property_gluten">Gluten</string>
@@ -181,6 +182,15 @@
     <string name="ingredient_dark_chocolate_cocoa">Dark chocolate / cocoa</string>
     <string name="ingredient_sugar_free_sweets">Sugar-free chewing gum / sweets</string>
     <string name="ingredient_sugar">Sugar</string>
+    <string name="ingredient_cooking_oil">Cooking oil (general)</string>
+    <string name="ingredient_olive_oil">Olive oil</string>
+    <string name="ingredient_sunflower_oil">Sunflower oil</string>
+    <string name="ingredient_rapeseed_oil">Rapeseed oil / canola oil</string>
+    <string name="ingredient_coconut_oil">Coconut oil</string>
+    <string name="ingredient_sesame_oil">Sesame oil</string>
+    <string name="ingredient_peanut_oil">Peanut oil</string>
+    <string name="ingredient_margarine">Margarine</string>
+    <string name="ingredient_olives">Olives</string>
     <string name="factor_sport">Exercise</string>
     <string name="factor_menstruation">Menstruation</string>
     <string name="factor_medication">Medication</string>

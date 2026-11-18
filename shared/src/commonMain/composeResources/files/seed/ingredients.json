@@ -111,5 +111,14 @@
   {"id": 1208, "key": "milk_chocolate", "category": "condiments_sweets", "properties": ["histamine_liberator", "lactose", "milk_protein"], "synonyms": {"de": ["Schokolade"]}},
   {"id": 1209, "key": "dark_chocolate_cocoa", "category": "condiments_sweets", "properties": ["histamine_liberator", "caffeine"], "synonyms": {"de": ["Zartbitterschokolade", "Kakao"]}},
   {"id": 1210, "key": "sugar_free_sweets", "category": "condiments_sweets", "properties": ["polyols"], "synonyms": {"de": ["Kaugummi", "Bonbons"]}},
-  {"id": 1211, "key": "sugar", "category": "condiments_sweets"}
+  {"id": 1211, "key": "sugar", "category": "condiments_sweets"},
+  {"id": 1301, "key": "cooking_oil", "category": "oils_fats", "properties": ["high_fat"], "synonyms": {"de": ["Öl", "Speiseöl", "Pflanzenöl"]}},
+  {"id": 1302, "key": "olive_oil", "category": "oils_fats", "properties": ["high_fat"]},
+  {"id": 1303, "key": "sunflower_oil", "category": "oils_fats", "properties": ["high_fat"]},
+  {"id": 1304, "key": "rapeseed_oil", "category": "oils_fats", "properties": ["high_fat"], "synonyms": {"de": ["Rapsöl"]}},
+  {"id": 1305, "key": "coconut_oil", "category": "oils_fats", "properties": ["high_fat"], "synonyms": {"de": ["Kokosfett"]}},
+  {"id": 1306, "key": "sesame_oil", "category": "oils_fats", "properties": ["sesame", "high_fat"]},
+  {"id": 1307, "key": "peanut_oil", "category": "oils_fats", "properties": ["peanut", "high_fat"]},
+  {"id": 1308, "key": "margarine", "category": "oils_fats", "properties": ["high_fat"]},
+  {"id": 1309, "key": "olives", "category": "oils_fats", "properties": ["histamine"], "synonyms": {"de": ["Olive", "grüne Oliven", "schwarze Oliven"]}}
 ]

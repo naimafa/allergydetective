@@ -13,6 +13,7 @@
     <string name="category_legumes_soy">Hülsenfrüchte &amp; Soja</string>
     <string name="category_beverages">Getränke</string>
     <string name="category_condiments_sweets">Würzmittel, Saucen &amp; Süßes</string>
+    <string name="category_oils_fats">Öle, Fette &amp; Oliven</string>
     <string name="property_histamine">Histamin (histaminreich)</string>
     <string name="property_histamine_liberator">Histamin-Liberator</string>
     <string name="property_gluten">Gluten</string>
@@ -181,6 +182,15 @@
     <string name="ingredient_dark_chocolate_cocoa">Zartbitterschokolade / Kakao</string>
     <string name="ingredient_sugar_free_sweets">Zuckerfreie Kaugummis / Bonbons</string>
     <string name="ingredient_sugar">Zucker</string>
+    <string name="ingredient_cooking_oil">Speiseöl (allgemein)</string>
+    <string name="ingredient_olive_oil">Olivenöl</string>
+    <string name="ingredient_sunflower_oil">Sonnenblumenöl</string>
+    <string name="ingredient_rapeseed_oil">Rapsöl / Rapskernöl</string>
+    <string name="ingredient_coconut_oil">Kokosöl</string>
+    <string name="ingredient_sesame_oil">Sesamöl</string>
+    <string name="ingredient_peanut_oil">Erdnussöl</string>
+    <string name="ingredient_margarine">Margarine</string>
+    <string name="ingredient_olives">Oliven</string>
     <string name="factor_sport">Sport</string>
     <string name="factor_menstruation">Periode</string>
     <string name="factor_medication">Medikament</string>

@@ -55,7 +55,7 @@ Bugs, erledigt am 18.11.2026 (je ein Branch nach `develop`):
 - [x] **"Dinkel Vollkornbrot"** wurde zu Dinkelbrot + Vollkornbrot (Weizen): neue Zutat Dinkelvollkornbrot (Migration DB 1 → 2, im Emulator v1 → v2 geprüft), Spracheingabe prüft getrennte Wörter auch als ein Kompositum
 
 Noch offen (Entscheidung bzw. Konzept nötig):
-- [ ] **Kategorie Öle & Fette** fehlt, ebenso Oliven
+- [x] **Kategorie Öle, Fette & Oliven** (ID 13) mit 9 Zutaten, Migration DB 2 → 3
 - [ ] **Gerichte aus Zutaten:** Eigene Zutat ohne Trigger-Abfrage; der Nutzer setzt ein Gericht aus vorhandenen Zutaten zusammen, die Allergene kommen aus der Datenbank. Neu anlegen nur, wenn die Suche nichts findet
 - [ ] **Favoriten mit "+"** als Gericht anlegen (z.B. Linsensuppe = Linsen, Tomaten, Karotten, Gewürze)
 - [ ] **Mahlzeit statt Uhrzeit:** Frühstück / Mittag- / Abendessen, Uhrzeit nur bei Snacks
