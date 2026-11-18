@@ -80,6 +80,17 @@ interface MealDao {
         return favoriteId
     }
 
+    @Query("UPDATE favorites SET name = :name WHERE id = :favoriteId")
+    suspend fun renameFavorite(favoriteId: Long, name: String)
+
+    /** Editing a dish: new name and items, same id, so logged meals keep their origin. */
+    @Transaction
+    suspend fun updateFavoriteWithItems(favoriteId: Long, name: String, items: List<FavoriteIngredientEntity>) {
+        renameFavorite(favoriteId, name)
+        deleteFavoriteIngredients(favoriteId)
+        insertFavoriteIngredients(items.map { it.copy(favoriteId = favoriteId) })
+    }
+
     @Query("DELETE FROM favorite_ingredients WHERE favoriteId = :favoriteId")
     suspend fun deleteFavoriteIngredients(favoriteId: Long)
 

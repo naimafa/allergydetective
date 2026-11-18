@@ -42,6 +42,10 @@ class DishEditorViewModelTest {
             favorites += name to items
             return favorites.size.toLong()
         }
+        val updated = mutableListOf<Triple<Long, String, List<MealItem>>>()
+        override suspend fun updateFavorite(favoriteId: Long, name: String, items: List<MealItem>) {
+            updated += Triple(favoriteId, name, items)
+        }
         override suspend fun deleteFavorite(favoriteId: Long) {
             deleted += favoriteId
         }
@@ -112,5 +116,37 @@ class DishEditorViewModelTest {
 
         assertEquals(listOf(7L), meals.deleted)
         assertEquals("linsensuppe", meals.favorites.single().first)
+    }
+
+    @Test
+    fun forgottenIngredientIsAddedToAnExistingDish() {
+        // Self-test 18.11.: dishes must be editable, not only deletable.
+        val soup = FavoriteInfo(7, "Linsensuppe", listOf(MealItem(1001, Portion.LARGE), MealItem(702, Portion.MEDIUM, Preparation.COOKED)))
+        meals.existing += soup
+        val vm = viewModel()
+
+        vm.start(soup)
+        assertEquals(7L, vm.state.value.editingId)
+        assertEquals(listOf(lentils, carrot), vm.state.value.ingredients)
+        // Its own name is no conflict.
+        vm.onNameChange("Linsensuppe")
+        assertEquals(null, vm.state.value.sameNameDish)
+
+        vm.onAdd(tomato)
+        vm.onSave()
+
+        assertEquals(
+            Triple(
+                7L,
+                "Linsensuppe",
+                listOf(
+                    MealItem(1001, Portion.LARGE),
+                    MealItem(702, Portion.MEDIUM, Preparation.COOKED),
+                    MealItem(701, Portion.MEDIUM),
+                ),
+            ),
+            meals.updated.single(),
+        )
+        assertTrue(meals.favorites.isEmpty())
     }
 }

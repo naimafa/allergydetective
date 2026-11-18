@@ -5,6 +5,8 @@ import allergydetective.shared.generated.resources.common_cancel
 import allergydetective.shared.generated.resources.common_save
 import allergydetective.shared.generated.resources.custom_create_named
 import allergydetective.shared.generated.resources.favorites_add
+import allergydetective.shared.generated.resources.favorites_edit
+import allergydetective.shared.generated.resources.favorites_edit_title
 import allergydetective.shared.generated.resources.favorites_editor_title
 import allergydetective.shared.generated.resources.favorites_empty
 import allergydetective.shared.generated.resources.favorites_ingredients
@@ -83,6 +85,10 @@ fun FavoritesScreen(
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
+                TextButton(onClick = {
+                    editor.start(favorite)
+                    showEditor = true
+                }) { Text(stringResource(Res.string.favorites_edit)) }
                 TextButton(onClick = { viewModel.onDelete(favorite.id) }) { Text(stringResource(Res.string.history_delete)) }
             }
         }
@@ -109,7 +115,7 @@ private fun DishEditorDialog(
     LaunchedEffect(state.saved) { if (state.saved) onDone() }
     AlertDialog(
         onDismissRequest = onDone,
-        title = { Text(stringResource(Res.string.favorites_editor_title)) },
+        title = { Text(stringResource(if (state.editingId != null) Res.string.favorites_edit_title else Res.string.favorites_editor_title)) },
         text = {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),

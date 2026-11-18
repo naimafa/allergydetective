@@ -76,6 +76,8 @@
     <string name="favorites_ingredients">Zutaten</string>
     <string name="favorites_same_name">Ein Gericht „%1$s“ gibt es schon. Beim Speichern wird es ersetzt, oder gib einen anderen Namen ein.</string>
     <string name="favorites_replace">Ersetzen</string>
+    <string name="favorites_edit">Bearbeiten</string>
+    <string name="favorites_edit_title">Gericht bearbeiten</string>
     <string name="onboarding_welcome">Willkommen! Du trägst ein, was du isst, wie es dir geht und wie dein Tag war. Die App sucht Muster in deinen Einträgen.</string>
     <string name="onboarding_purpose_title">Was die App ist und was nicht</string>
     <string name="onboarding_purpose">Sie ist ein Tagebuch zur Selbstbeobachtung. Sie stellt keine Diagnosen und ersetzt keinen Arztbesuch. Alles bleibt auf deinem Handy.</string>

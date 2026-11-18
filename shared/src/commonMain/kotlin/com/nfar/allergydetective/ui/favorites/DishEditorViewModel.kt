@@ -19,6 +19,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class DishEditorState(
+    /** Id of the dish being edited, null for a new dish. */
+    val editingId: Long? = null,
+    /** Portions of an edited dish are kept; new ingredients get M. */
+    val portions: Map<Long, Portion> = emptyMap(),
     val name: String = "",
     val ingredients: List<IngredientInfo> = emptyList(),
     /** Raw or cooked per ingredient id, for the ingredients in [needsPreparation]. */
@@ -63,15 +67,32 @@ class DishEditorViewModel(
         _state.update { it.copy(needsPreparation = needs) }
     }
 
-    /** Fresh form each time the dialog opens; reloads the catalog for new custom ingredients. */
-    fun start() {
+    /**
+     * Opens the form: empty for a new dish, or filled with [dish] to edit it (self-test 18.11.:
+     * a forgotten ingredient). Reloads the catalog for new custom ingredients.
+     */
+    fun start(dish: FavoriteInfo? = null) {
         _state.value = DishEditorState(needsPreparation = _state.value.needsPreparation)
-        viewModelScope.launch { reload() }
+        viewModelScope.launch {
+            reload()
+            if (dish == null) return@launch
+            _state.update {
+                it.copy(
+                    editingId = dish.id,
+                    name = dish.name,
+                    ingredients = dish.items.mapNotNull { item -> catalog.byId[item.ingredientId] },
+                    portions = dish.items.associate { item -> item.ingredientId to item.portion },
+                    preparations = dish.items.mapNotNull { item -> item.preparation?.let { p -> item.ingredientId to p } }.toMap(),
+                )
+            }
+        }
     }
 
     fun onNameChange(name: String) = _state.update {
         val normalized = normalizeForSearch(name)
-        it.copy(name = name, sameNameDish = favorites.firstOrNull { f -> normalized.isNotEmpty() && normalizeForSearch(f.name) == normalized })
+        // The dish being edited may keep its own name.
+        val other = favorites.firstOrNull { f -> f.id != it.editingId && normalized.isNotEmpty() && normalizeForSearch(f.name) == normalized }
+        it.copy(name = name, sameNameDish = other)
     }
 
     fun onQueryChange(query: String) = _state.update { it.copy(query = query, results = catalog.search(query)) }
@@ -103,8 +124,10 @@ class DishEditorViewModel(
         _state.update { it.copy(saving = true) }
         viewModelScope.launch {
             current.sameNameDish?.let { meals.deleteFavorite(it.id) }
-            val items = current.ingredients.map { MealItem(it.id, Portion.MEDIUM, current.preparations[it.id]) }
-            meals.saveFavorite(current.name.trim(), items)
+            val items = current.ingredients.map { MealItem(it.id, current.portions[it.id] ?: Portion.MEDIUM, current.preparations[it.id]) }
+            val editingId = current.editingId
+            if (editingId != null) meals.updateFavorite(editingId, current.name.trim(), items)
+            else meals.saveFavorite(current.name.trim(), items)
             _state.update { it.copy(saving = false, saved = true) }
         }
     }
