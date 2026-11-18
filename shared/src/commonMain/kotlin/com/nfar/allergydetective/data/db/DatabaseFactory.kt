@@ -14,4 +14,5 @@ fun createAppDatabase(
 ): AppDatabase = builder
     .setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(ioContext)
+    .addMigrations(*Migrations.ALL)
     .build()

@@ -14,6 +14,9 @@ class VoiceMatcherTest {
         const val ROLL = 4L
         const val BUTTER = 5L
         const val BEETROOT = 6L
+        const val SPELT_BREAD = 7L
+        const val WHOLEMEAL_WHEAT = 8L
+        const val SPELT_WHOLEMEAL = 9L
     }
 
     private val search = IngredientSearch(
@@ -24,6 +27,9 @@ class VoiceMatcherTest {
             SearchEntry(ROLL, "Weißbrot", listOf("Semmel", "Brötchen")),
             SearchEntry(BUTTER, "Butter", emptyList()),
             SearchEntry(BEETROOT, "Rote Bete", emptyList()),
+            SearchEntry(SPELT_BREAD, "Dinkelbrot", emptyList()),
+            SearchEntry(WHOLEMEAL_WHEAT, "Vollkornbrot (Weizen)", listOf("Vollkornbrot")),
+            SearchEntry(SPELT_WHOLEMEAL, "Dinkelvollkornbrot", emptyList()),
         ),
     )
     private val muesli = FavoriteInfo(10, "Müsli mit Milch", listOf(MealItem(BUTTER, Portion.MEDIUM)))
@@ -42,6 +48,12 @@ class VoiceMatcherTest {
     @Test
     fun synonymsAndSmallTyposAreFound() {
         assertEquals(listOf(ROLL, BUTTER), matcher.match("Semmel mit Buter").ingredientIds)
+    }
+
+    @Test
+    fun splitCompoundIsOneIngredient() {
+        // Self-test 17.11.: "Dinkel Vollkornbrot" became spelt bread + wheat wholemeal bread.
+        assertEquals(VoiceMatch(listOf(SPELT_WHOLEMEAL), emptyList(), emptyList()), matcher.match("Dinkel Vollkornbrot"))
     }
 
     @Test

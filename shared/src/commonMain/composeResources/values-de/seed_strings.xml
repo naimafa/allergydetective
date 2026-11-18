@@ -81,6 +81,7 @@
     <string name="ingredient_rice">Reis</string>
     <string name="ingredient_corn_polenta">Mais / Polenta</string>
     <string name="ingredient_gluten_free_bread">Glutenfreies Brot</string>
+    <string name="ingredient_spelt_wholemeal_bread">Dinkelvollkornbrot</string>
     <string name="ingredient_cow_milk">Kuhmilch</string>
     <string name="ingredient_lactose_free_milk">Laktosefreie Milch</string>
     <string name="ingredient_yogurt">Joghurt</string>

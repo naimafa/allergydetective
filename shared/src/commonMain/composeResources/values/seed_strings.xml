@@ -81,6 +81,7 @@
     <string name="ingredient_rice">Rice</string>
     <string name="ingredient_corn_polenta">Corn / polenta</string>
     <string name="ingredient_gluten_free_bread">Gluten-free bread</string>
+    <string name="ingredient_spelt_wholemeal_bread">Wholemeal spelt bread</string>
     <string name="ingredient_cow_milk">Cow’s milk</string>
     <string name="ingredient_lactose_free_milk">Lactose-free milk</string>
     <string name="ingredient_yogurt">Yogurt</string>
