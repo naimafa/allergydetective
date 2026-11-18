@@ -11,6 +11,7 @@ import com.nfar.allergydetective.domain.diary.LanguageProvider
 import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.diary.SearchEntry
 import com.nfar.allergydetective.domain.diary.VoiceMatcher
+import com.nfar.allergydetective.domain.diary.normalizeForSearch
 import com.nfar.allergydetective.domain.time.AppClock
 import com.nfar.allergydetective.domain.time.MealSlot
 import com.nfar.allergydetective.domain.time.timeOf
@@ -42,6 +43,8 @@ data class LogMealState(
     val saveAsFavorite: Boolean = false,
     val favoriteName: String = "",
     val saving: Boolean = false,
+    /** The search text is exactly the name of an existing ingredient: no "create new" then. */
+    val nameExists: Boolean = false,
     /** Set after saving, so the screen can offer undo. Cleared with [LogMealViewModel.onSavedShown]. */
     val savedMealId: Long? = null,
     private val allergyIngredientIds: Set<Long> = emptySet(),
@@ -68,6 +71,9 @@ class LogMealViewModel(
     private var ingredientsById: Map<Long, IngredientInfo> = emptyMap()
     private var search = IngredientSearch(emptyList())
 
+    /** Normalized display names of all ingredients, to avoid creating the same name twice. */
+    private var knownNames: Set<String> = emptySet()
+
     private fun suggestedSlot(): MealSlot = clock.localTime(clock.nowMillis()).let { (h, m) -> MealSlot.suggestedAt(h, m) }
 
     init {
@@ -82,6 +88,7 @@ class LogMealViewModel(
         search = IngredientSearch(
             ingredients.map { SearchEntry(it.id, displayName(it), synonyms[it.id].orEmpty()) },
         )
+        knownNames = ingredients.map { normalizeForSearch(displayName(it)) }.toSet()
         val allergies = repository.ingredientIdsWithKnownAllergy()
         val recent = recentIngredients()
         val favorites = repository.favorites()
@@ -101,9 +108,17 @@ class LogMealViewModel(
 
     private suspend fun recentIngredients(): List<IngredientInfo> =
         repository.recentIngredientIds(RECENT_LIMIT).mapNotNull { ingredientsById[it] }
+            // Self-test 18.11.: a custom and a seed ingredient can share a name; show it once.
+            .distinctBy { normalizeForSearch(displayName(it)) }
 
     fun onQueryChange(query: String) {
-        _state.update { it.copy(query = query, results = search.search(query).mapNotNull(ingredientsById::get)) }
+        _state.update {
+            it.copy(
+                query = query,
+                results = search.search(query).mapNotNull(ingredientsById::get),
+                nameExists = normalizeForSearch(query) in knownNames,
+            )
+        }
     }
 
     fun onSlotChange(slot: MealSlot) {

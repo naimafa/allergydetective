@@ -32,6 +32,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -51,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nfar.allergydetective.domain.analysis.model.Portion
@@ -106,7 +109,8 @@ fun LogMealScreen(
             ) { Text(stringResource(Res.string.common_save)) }
         },
     ) { padding ->
-        LogMealContent(state, viewModel, openCustomDialog, Modifier.padding(padding))
+        // Keyboard open: the list ends above it, so every selected item can be scrolled into view.
+        LogMealContent(state, viewModel, openCustomDialog, Modifier.padding(padding).consumeWindowInsets(padding).imePadding())
     }
 }
 
@@ -119,6 +123,7 @@ private fun LogMealContent(
     modifier: Modifier,
 ) {
     val selectedIds = state.selected.map { it.ingredient.id }.toSet()
+    val keyboard = LocalSoftwareKeyboardController.current
     val voiceLabel = stringResource(Res.string.meal_voice)
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -187,14 +192,18 @@ private fun LogMealContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 48.dp)
-                    .clickable { viewModel.onToggleIngredient(ingredient) }
+                    .clickable {
+                        viewModel.onToggleIngredient(ingredient)
+                        // Search is done; without the keyboard the choice is visible right away (self-test 18.11.).
+                        keyboard?.hide()
+                    }
                     .padding(vertical = 12.dp),
             )
         }
         if (state.query.isNotBlank() && state.results.isEmpty()) {
             item { Text(stringResource(Res.string.meal_no_results), style = MaterialTheme.typography.bodyMedium) }
         }
-        if (state.query.isNotBlank()) {
+        if (state.query.isNotBlank() && !state.nameExists) {
             item {
                 TextButton(onClick = onCreateIngredient) {
                     Text(stringResource(Res.string.custom_create_named, state.query.trim()))
@@ -204,7 +213,8 @@ private fun LogMealContent(
         if (state.selected.isNotEmpty()) {
             item { SectionTitle(stringResource(Res.string.meal_selected)) }
             item { Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall) }
-            items(state.selected, key = { "selected-${it.ingredient.id}" }) { item ->
+            // Newest first: what was just added appears right below the search field.
+            items(state.selected.asReversed(), key = { "selected-${it.ingredient.id}" }) { item ->
                 SelectedRow(item, viewModel)
             }
             item {
