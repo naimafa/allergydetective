@@ -16,9 +16,9 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 1 Daten-Herz | ca. 1:16 h | Room-Schema v1, Seed-Daten, Analyse-Engine, Gruppierung, Koin/Seeder, Repository |
 | 2 Skelett | ca. 1:16 h | Alle Screens plus die offenen Punkte (Favoriten, Historie, Reminder, Spracheingabe …) |
 | 3 Design | ca. 0:16 h | Theme hell/dunkel, Icons, Dashboard, Symptom-Kacheln, Ergebnis-Karten |
-| 4 Self-Test (Vorbereitung) | ca. 0:11 h | JSON-Export, Anleitung, Installation aufs Handy; der 7-Tage-Test selbst läuft |
-| Doku / Organisation | ca. 0:07 h | OFFENE_PUNKTE, PROGRESS, Zeitprotokoll (ab 16.11. in den Phasen enthalten) |
-| **Gesamt (erfasst)** | **ca. 6:48 h** | ohne Konzeptphase |
+| 4 Self-Test | ca. 3:07 h | 17.11.: Vorbereitung (0:11). 18.11.: Rückmeldungen aus dem Self-Test umgesetzt, inkl. 0:07 Absturz-Reparatur (2:56); der 7-Tage-Test selbst läuft |
+| Doku / Organisation | ca. 0:26 h | OFFENE_PUNKTE, PROGRESS, Zeitprotokoll, 18.11. auch GitHub-PR (sonst meist in den Phasen enthalten) |
+| **Gesamt (erfasst)** | **ca. 10:03 h** | ohne Konzeptphase |
 
 ---
 
@@ -52,6 +52,18 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 17.11.2026 | 19:57–20:40 | 0:43 | 2 | Offene Punkte: Auto-Backup aus, freie Zeitwahl, Favoriten, eigene Zutaten, Onboarding, Tabs/Historie, Abend-Reminder, Vergleich im Ergebnis, Notruf je Region, Zahlenformat, Spracheingabe | WorkManager startet periodische Jobs nicht vor ihrer Zeit → kurzer Test-Build ohne Verzögerung; Spracherkennung im Emulator nicht verfügbar |
 | 17.11.2026 | 20:40–20:56 | 0:16 | 3 | Design: Farben hell/dunkel, Icons, Dashboard mit Tagesspruch, Symptom-Symbole, Ergebnis-Karten; Phase 3 fertig | Schrift Inter offen (Font-Datei nötig) |
 | 17.11.2026 | 20:56–21:07 | 0:11 | 4 | JSON-Export, SELFTEST.md, App aufs eigene Handy installiert | Handy war zuerst nicht verbunden |
+| 18.11.2026 | ca. 19:25–19:33 | ca. 0:08 | 4 | Self-Test-Notizen (14 Punkte) mit dem Code abgeglichen, in Bugs / Daten / Vereinfachungen / Neues sortiert | – |
+| 18.11.2026 | 19:33–19:53 | 0:20 | 4 | 4 Bugs: Speichern-Button, JSON-Export als Datei, Tages-Abschluss wählt heute, Dinkelvollkornbrot (Migration 1 → 2); Upgrade im Emulator geprüft | Emulator-Fenster nur zu einem Drittel sichtbar (noch beim Booten); Handy zusätzlich per USB → Befehle fest auf den Emulator |
+| 18.11.2026 | 19:53–20:00 | 0:07 | 4 | Absturz des PCs: Git-Metadaten und zwei Doku-Dateien mit Nullen überschrieben → `.git` gesichert, HEAD/Index repariert, Doku neu geschrieben | Repo zeitweise nicht mehr als Git-Repo erkannt |
+| 18.11.2026 | 20:00–20:30 | 0:30 | 4 | Build und Tests nach dem Absturz, Installation aufs Handy, Rückmeldung (3 Fixes bestätigt) | – |
+| 18.11.2026 | 20:30–20:59 | 0:29 | 4 | Übrige Punkte: Öle & Oliven (Migration 2 → 3), Mahlzeit/Tageszeit statt Uhrzeit, kranke Tage (Migration 3 → 4), Gerichte aus Zutaten, Einführung; Emulator-Check hell/dunkel, Installation | Uhrzeiten für Tageszeiten selbst festgelegt (ENTSCHEIDUNGEN) |
+| 18.11.2026 | 20:59–21:10 | 0:11 | 4 | Butter verschwand hinter der Tastatur, doppeltes Dinkelvollkornbrot unter „Zuletzt gegessen“ | Ursache: eigene Zutat von vor dem Seed-Eintrag |
+| 18.11.2026 | 21:10–21:35 | 0:25 | 4 | Roh/gekocht als Pflicht (Migration 4 → 5), Zutat im Gericht anlegen, Doppelt-Prüfung beim Anlegen; Upgrade v4 → v5 im Emulator | Testskript tippte bei offener Tastatur ins Leere (alte Version) |
+| 18.11.2026 | 21:35–21:48 | 0:13 | 4 | Doppelte Zutaten beim Start zusammenführen (vorher Handy-DB gesichert und im Emulator getestet), Gerichte bearbeiten | Kein sqlite3 im Emulator → Prüfung über die Oberfläche |
+| 18.11.2026 | 21:48–21:57 | 0:09 | 4 | „Einführung ansehen“ im Profil (Einführung kam nur beim ersten Start) | – |
+| 18.11.2026 | 21:57–22:21 | 0:24 | 4 | Krankheitszeitraum (Migration 5 → 6), Historie aufgeräumt, Kachel-Design Start und Symptome; Installation | – |
+| 18.11.2026 | 22:21–22:33 | 0:12 | Doku | APK für andere Handys bereitgelegt, `gh` angemeldet, PR #5 `develop` → `main` gemergt | `gh auth login` hing im Terminal (Sprachausgabe-Modus) → Anmeldung per Gerätecode |
+| 18.11.2026 | 22:33–22:40 | 0:07 | Doku | Zeitprotokoll und PROGRESS nachgetragen | – |
 
 ---
 
@@ -61,3 +73,5 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 - **Analyse-Engine** in ca. 12 min, weil TRD Kap. 2 die Regeln fast vollständig vorgibt. Offene Fachfragen sind als Annahmen dokumentiert statt geblockt.
 - **Phase 2 und 3 in ca. 1:30 h** (17.11.), weil Claude die Schritte ohne Rückfragen hintereinander gebaut, getestet und nach `develop` gemergt hat. Der meiste Aufwand steckte in der Prüfung im Emulator (Starten, Tippen, Datenbank auslesen), nicht im Code.
 - **Zeiten ab dem 16.11. abends** stammen aus Git-Commits und dem Reflog; der Beginn eines Blocks ist daher der erste Git-Schritt, nicht die erste Nachricht.
+- **18.11. (Self-Test-Rückmeldungen) in ca. 2:56 h:** 14 Notizen plus 6 Nachträge aus dem Testen umgesetzt, 5 Datenbank-Migrationen, jede mit Upgrade-Test im Emulator. Kurze Runden "bauen → im Emulator prüfen → aufs Handy" haben Fehler früh gezeigt (z.B. Butter hinter der Tastatur).
+- **Absturz kostete nur ca. 7 min**, weil Git-Objekte heil blieben und nur die zuletzt geschriebenen Dateien betroffen waren. Lehre: vor riskanten Schritten an echten Daten immer zuerst sichern (so beim Zusammenführen der doppelten Zutaten gemacht).
