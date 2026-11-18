@@ -24,6 +24,7 @@ import kotlin.test.assertTrue
 class CustomIngredientViewModelTest {
 
     private val hardCheese = IngredientInfo(301, "hard_cheese", null)
+    private val oats = IngredientInfo(110, "oats", null)
 
     private data class Created(val name: String, val categoryId: Long, val baseId: Long?, val propertyIds: Set<Long>)
 
@@ -31,8 +32,8 @@ class CustomIngredientViewModelTest {
         val created = mutableListOf<Created>()
         override suspend fun categories() = listOf(CategoryInfo(2, "dairy"), CategoryInfo(3, "cheese"))
         override suspend fun properties() = listOf(PropertyInfo(101, "histamine"), PropertyInfo(117, "milk_protein"))
-        override suspend fun categoryOf(ingredientId: Long) = 3L
-        override suspend fun propertiesOf(ingredientId: Long) = setOf(101L, 117L)
+        override suspend fun categoryOf(ingredientId: Long) = if (ingredientId == 110L) 1L else 3L
+        override suspend fun propertiesOf(ingredientId: Long) = if (ingredientId == 110L) setOf(102L) else setOf(101L, 117L)
         override suspend fun create(name: String, categoryId: Long, baseIngredientId: Long?, propertyIds: Set<Long>): IngredientInfo {
             created += Created(name, categoryId, baseIngredientId, propertyIds)
             return IngredientInfo(100_000, null, name)
@@ -40,7 +41,7 @@ class CustomIngredientViewModelTest {
     }
 
     private inner class FakeMeals : MealRepository {
-        override suspend fun ingredients() = listOf(hardCheese)
+        override suspend fun ingredients() = listOf(hardCheese, oats)
         override suspend fun synonyms(language: String) = emptyMap<Long, List<String>>()
         override suspend fun recentIngredientIds(limit: Int) = emptyList<Long>()
         override suspend fun ingredientIdsWithKnownAllergy() = emptySet<Long>()
@@ -56,7 +57,7 @@ class CustomIngredientViewModelTest {
     private fun viewModel() = CustomIngredientViewModel(
         repository = repository,
         meals = FakeMeals(),
-        names = { _, _ -> "Hartkäse" },
+        names = { _, key -> if (key == "oats") "Haferflocken" else "Hartkäse" },
         language = { "de" },
     )
 
@@ -78,29 +79,37 @@ class CustomIngredientViewModelTest {
     }
 
     @Test
-    fun similarIngredientSuggestsCategoryAndTriggers() {
+    fun componentsGiveCategoryAndAllTheirTriggers() {
         val vm = viewModel()
-        vm.start("Bergkäse")
+        vm.start("Dinkelbrötchen vom Bäcker")
 
-        vm.onBaseQueryChange("hart")
-        assertEquals(listOf(hardCheese), vm.state.value.baseResults)
-        vm.onBaseSelected(hardCheese)
+        vm.onQueryChange("hart")
+        assertEquals(listOf(hardCheese), vm.state.value.results)
+        vm.onAddComponent(oats)
+        vm.onAddComponent(hardCheese)
 
-        assertEquals(3L, vm.state.value.categoryId)
-        assertEquals(setOf(101L, 117L), vm.state.value.propertyIds)
-    }
-
-    @Test
-    fun suggestedTriggersCanBeChangedBeforeCreating() {
-        val vm = viewModel()
-        vm.start("Bergkäse")
-        vm.onBaseSelected(hardCheese)
-        vm.onPropertyToggle(101)
+        // Category of the first component, triggers of all.
+        assertEquals(1L, vm.state.value.categoryId)
+        assertEquals(setOf(101L, 102L, 117L), vm.state.value.propertyIds)
+        assertTrue(vm.state.value.canCreate)
 
         vm.onCreate()
 
-        assertEquals(Created("Bergkäse", 3, 301, setOf(117L)), repository.created.single())
-        assertEquals(IngredientInfo(100_000, null, "Bergkäse"), vm.state.value.created)
+        assertEquals(Created("Dinkelbrötchen vom Bäcker", 1, 110, setOf(101L, 102L, 117L)), repository.created.single())
+        assertEquals(IngredientInfo(100_000, null, "Dinkelbrötchen vom Bäcker"), vm.state.value.created)
+    }
+
+    @Test
+    fun removingAComponentUpdatesTheTriggers() {
+        val vm = viewModel()
+        vm.start("Käsebrot")
+        vm.onAddComponent(oats)
+        vm.onAddComponent(hardCheese)
+
+        vm.onRemoveComponent(oats)
+
+        assertEquals(3L, vm.state.value.categoryId)
+        assertEquals(setOf(101L, 117L), vm.state.value.propertyIds)
     }
 
     @Test

@@ -253,6 +253,6 @@ Symptomgruppen: **A** Magen & Darm · **B** Haut · **C** Kopf, Energie & Kreisl
 ---
 
 ## 4. Regeln für eigene Zutaten & Fertigprodukte
-* Eigene Zutat = Name + Kategorie + **"ähnlich wie …"**. Die Trigger der Basis-Zutat werden vorgeschlagen und sind änderbar.
-* **Fertiggerichte** am besten als Favorit mit Hauptzutaten anlegen (z.B. "Pizza Margherita" = Pizzateig, Tomate, Mozzarella), nicht als eine Zutat.
+* Eigene Zutat = Name + **"Was ist drin?"** (Zutaten aus der Liste, z.B. Dinkelvollkornmehl, Haferflocken, Leinsamen). Trigger = alle Trigger dieser Zutaten, Kategorie = Kategorie der ersten. Nur wenn nichts passt, wählt man die Kategorie (dann ohne Trigger). Seit 18.11.2026 (Self-Test: Trigger-Abfrage war zu viel).
+* **Gerichte** als Favorit mit Hauptzutaten anlegen, im Tab Favoriten über "+ Neues Gericht" (z.B. "Linsensuppe" = Linsen, Tomaten, Karotten), nicht als eine Zutat.
 * Kandidaten mit "–" erscheinen trotzdem in der Analyse **als Zutat**, nur ohne Trigger-Gruppe. Ihr Fenster ist dann das breiteste Fenster (0–48h), die Plausibilität gilt für alle Gruppen.

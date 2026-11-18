@@ -28,6 +28,7 @@ import com.nfar.allergydetective.ui.StartViewModel
 import com.nfar.allergydetective.data.db.dao.HistoryDao
 import com.nfar.allergydetective.data.diary.RoomHistoryRepository
 import com.nfar.allergydetective.domain.diary.HistoryRepository
+import com.nfar.allergydetective.ui.favorites.DishEditorViewModel
 import com.nfar.allergydetective.ui.favorites.FavoritesViewModel
 import com.nfar.allergydetective.ui.history.HistoryViewModel
 import com.nfar.allergydetective.ui.profile.KnownAllergiesViewModel
@@ -98,6 +99,7 @@ val appModule = module {
     single<HistoryRepository> { RoomHistoryRepository(dao = get(), mealDao = get(), symptomDao = get()) }
     viewModelOf(::HistoryViewModel)
     viewModelOf(::FavoritesViewModel)
+    viewModelOf(::DishEditorViewModel)
 
     single<SymptomDao> { get<AppDatabase>().symptomDao() }
     single<SymptomRepository> { RoomSymptomRepository(dao = get()) }
