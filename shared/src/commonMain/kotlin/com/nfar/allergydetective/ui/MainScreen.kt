@@ -54,8 +54,12 @@ enum class MainTab(val icon: ImageVector, val label: StringResource) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(onHomeAction: (HomeAction) -> Unit, profileExtra: @Composable () -> Unit = {}) {
-    var tab by rememberSaveable { mutableStateOf(MainTab.HOME) }
+fun MainScreen(
+    onHomeAction: (HomeAction) -> Unit,
+    profileExtra: @Composable () -> Unit = {},
+    initialTab: MainTab = MainTab.HOME,
+) {
+    var tab by rememberSaveable { mutableStateOf(initialTab) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     Scaffold(

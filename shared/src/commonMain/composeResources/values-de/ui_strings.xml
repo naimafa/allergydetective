@@ -78,7 +78,17 @@
     <string name="onboarding_purpose_title">Was die App ist und was nicht</string>
     <string name="onboarding_purpose">Sie ist ein Tagebuch zur Selbstbeobachtung. Sie stellt keine Diagnosen und ersetzt keinen Arztbesuch. Alles bleibt auf deinem Handy.</string>
     <string name="onboarding_next">Weiter</string>
-    <string name="onboarding_done">Fertig</string>
+    <string name="onboarding_back">Zurück</string>
+    <string name="onboarding_how_title">So funktioniert es</string>
+    <string name="onboarding_how_meal">Trag ein, was du isst: Frühstück, Mittag, Abend oder einen Snack. Per Suche, Favorit oder Sprache.</string>
+    <string name="onboarding_how_symptom">Hast du Beschwerden, trag sie ein, mit Stärke und Tageszeit.</string>
+    <string name="onboarding_how_check">Abends schließt du den Tag ab: Wie ging es dir, wie hast du geschlafen? Auch Tage ohne Beschwerden sind wichtig.</string>
+    <string name="onboarding_patience_title">Etwas Geduld lohnt sich</string>
+    <string name="onboarding_patience_text">Nach etwa einer Woche mit abgeschlossenen Tagen zeigt die App erste Muster. Je länger du dabei bleibst, desto klarer werden sie. Krankheitstage (z.B. eine Erkältung) markierst du im Tages-Abschluss, sie zählen dann nicht mit.</string>
+    <string name="onboarding_dishes_title">Tipp: deine häufigen Gerichte</string>
+    <string name="onboarding_dishes_text">Lege die Gerichte, die du oft isst, einmal mit ihren Zutaten an, z.B. Linsensuppe = Linsen, Tomaten, Karotten. Danach trägst du sie jeden Tag mit einem Tipp ein.</string>
+    <string name="onboarding_dishes_start">Gerichte jetzt anlegen</string>
+    <string name="onboarding_dishes_later">Später</string>
     <string name="allergies_question">Kennst du schon Allergien oder Unverträglichkeiten?</string>
     <string name="allergies_hint">Bekannte kommen nicht ins Ranking. Du bekommst nur einen Hinweis, wenn du sie isst. Du kannst das später ändern.</string>
     <string name="time_other">Andere Zeit …</string>

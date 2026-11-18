@@ -62,7 +62,7 @@ Noch offen (Entscheidung bzw. Konzept nötig):
 - [x] **Symptome nach Tageszeit** (morgens / mittags / nachmittags / abends / ganzer Tag / nach dem Essen), Uhrzeiten in ENTSCHEIDUNGEN 2
 - [x] **Intensität pro Symptom:** gibt es schon (1–5 beim Antippen). Nur langes Drücken speichert ohne Abfrage mit 3
 - [x] **Kranke Tage markieren:** Faktor "Krank" im Tages-Abschluss, der Tag fällt aus der Analyse (Migration DB 3 → 4)
-- [ ] **Einführung beim ersten Start:** ein paar Slides, am Ende häufige Gerichte anlegen
+- [x] **Einführung beim ersten Start:** 5 Seiten (Willkommen, So funktioniert es, Geduld, Allergien, Tipp Gerichte). "Gerichte jetzt anlegen" öffnet den Tab Favoriten
 
 ## 🔍 Vor Release prüfen
 - [ ] **Zeitfenster und Trigger-Zuordnungen** fachlich verifizieren (Literatur / Fachperson)
