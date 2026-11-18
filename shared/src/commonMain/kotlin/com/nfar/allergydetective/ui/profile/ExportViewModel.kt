@@ -27,7 +27,8 @@ class ExportViewModel(
     private val _busy = MutableStateFlow(false)
     val busy: StateFlow<Boolean> = _busy.asStateFlow()
 
-    fun export(onReady: (String) -> Unit) {
+    /** [onReady] gets the file name (with today's date) and the JSON. */
+    fun export(onReady: (fileName: String, json: String) -> Unit) {
         if (_busy.value) return
         _busy.value = true
         viewModelScope.launch {
@@ -36,7 +37,7 @@ class ExportViewModel(
             val keys = catalog.keys()
             val json = withContext(computeContext) { buildExport(input, engine.analyze(input), keys).toJson() }
             _busy.value = false
-            onReady(json)
+            onReady("allergy-detective-${clock.localDate(clock.today())}.json", json)
         }
     }
 }
