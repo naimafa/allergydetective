@@ -19,7 +19,7 @@ Zusammenfassung der Konzept-Sitzung vom **14.11.2026**. Details stehen in den ve
 | Negative Daten | Tages-Abschluss mit Bestätigung "Keine Beschwerden / Alles eingetragen"; nur bestätigte Tage zählen | TRD 3.3, UX 3.4 |
 | Lifestyle | Schlaf, Stress, Sport, Zyklus, Medikament als **eigene Kandidaten** im Ranking (kein 30-%-Abzug). Alkohol nur als Trigger der Getränke, nicht als Faktor (16.11.2026) | TRD 2.5 |
 | Roh / gekocht | Pflichtangabe nur bei Zutaten mit hitzeempfindlichem Trigger (Birkenpollen-Kreuzreaktion). Gekocht = dieser Trigger zählt nicht, andere bleiben (z.B. Sellerie-Allergen). Auch in Gerichten gespeichert (18.11.2026, Self-Test) | `HEAT_LABILE_PROPERTY_KEYS` |
-| Doppelte Zutaten | Gleicher Name oder Synonym: Anlegen gesperrt. Ähnlich (Tippfehler, Teil eines Namens): einmal nachfragen. Grund: Doppelte verteilen die Einträge und schwächen die Analyse (18.11.2026) | `CustomIngredientViewModel` |
+| Doppelte Zutaten | Beim Start: eigene Zutat mit dem Namen einer mitgelieferten wird mit ihr zusammengeführt (Mahlzeiten und Gerichte zeigen dann auf die mitgelieferte). Beim Anlegen: gleicher Name oder Synonym gesperrt. Ähnlich (Tippfehler, Teil eines Namens): einmal nachfragen. Grund: Doppelte verteilen die Einträge und schwächen die Analyse (18.11.2026) | `CustomIngredientViewModel` |
 | Kranke Tage | Faktor "Krank (z.B. Infekt, Erkältung)" im Tages-Abschluss. Der Tag zählt wie ein unbestätigter Tag nicht für die Analyse und ist kein eigener Kandidat (18.11.2026, Self-Test) | `AnalysisInputMapper` |
 | Bekannte Allergien | nicht im Ranking, nur Hinweis beim Loggen | TRD 2.6 |
 | Ergebnis | Evidenzstufen Spur / Verdacht / Starker Verdacht statt Prozent | TRD 2.8 |
