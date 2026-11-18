@@ -12,6 +12,7 @@
   {"id": 111, "key": "rice", "category": "grains_bakery"},
   {"id": 112, "key": "corn_polenta", "category": "grains_bakery", "synonyms": {"de": ["Mais", "Polenta"]}},
   {"id": 113, "key": "gluten_free_bread", "category": "grains_bakery"},
+  {"id": 114, "key": "spelt_wholemeal_bread", "category": "grains_bakery", "properties": ["gluten", "fructans"], "synonyms": {"de": ["Dinkel-Vollkornbrot", "Dinkel Vollkornbrot"]}},
   {"id": 201, "key": "cow_milk", "category": "dairy", "properties": ["lactose", "milk_protein"], "synonyms": {"de": ["Milch"]}},
   {"id": 202, "key": "lactose_free_milk", "category": "dairy", "properties": ["milk_protein"]},
   {"id": 203, "key": "yogurt", "category": "dairy", "properties": ["lactose", "milk_protein"]},

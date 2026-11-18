@@ -34,6 +34,9 @@ class VoiceMatcher(
                 val phrase = words.subList(i, i + length).joinToString(" ")
                 favoritesByName[phrase]?.let { PhraseMatch(length, favoriteId = it.id) }
                     ?: exactIngredient(phrase)?.let { PhraseMatch(length, ingredientId = it) }
+                    // Speech recognition often splits compounds: "dinkel vollkornbrot" → "dinkelvollkornbrot".
+                    ?: phrase.takeIf { length > 1 }?.let { exactIngredient(it.replace(" ", "")) }
+                        ?.let { PhraseMatch(length, ingredientId = it) }
             }
             if (phrase != null) {
                 phrase.favoriteId?.let(favorites::add)

@@ -57,7 +57,7 @@ const val DATABASE_NAME = "allergy_detective.db"
         DayCheckEntity::class,
         DayFactorEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 @ConstructedBy(AppDatabaseConstructor::class)

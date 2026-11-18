@@ -31,7 +31,7 @@ class SeedFilesTest {
     fun hasExpectedCounts() {
         assertEquals(12, entities.categories.size)
         assertEquals(26, entities.properties.size)
-        assertEquals(112, entities.ingredients.size)
+        assertEquals(113, entities.ingredients.size)
         assertEquals(24, entities.symptoms.size)
         assertEquals(3, entities.lifestyleFactors.size)
     }
