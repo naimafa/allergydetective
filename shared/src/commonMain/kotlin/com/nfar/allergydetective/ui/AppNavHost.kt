@@ -17,6 +17,7 @@ import com.nfar.allergydetective.ui.profile.ReminderSection
 import com.nfar.allergydetective.ui.profile.ExportSection
 import androidx.compose.runtime.LaunchedEffect
 import com.nfar.allergydetective.ui.symptom.LogSymptomScreen
+import com.nfar.allergydetective.ui.sick.SickPeriodSection
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.profile_show_intro
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -93,6 +94,7 @@ fun AppNavHost(
                 },
                 profileExtra = {
                     ReminderSection()
+                    SickPeriodSection(koinViewModel())
                     ExportSection()
                     OutlinedButton(
                         onClick = { navController.navigate(IntroRoute) },

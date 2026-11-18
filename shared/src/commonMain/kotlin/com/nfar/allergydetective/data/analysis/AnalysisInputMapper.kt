@@ -3,6 +3,7 @@ package com.nfar.allergydetective.data.analysis
 import com.nfar.allergydetective.data.db.model.DayStatus
 import com.nfar.allergydetective.data.db.model.PortionSize
 import com.nfar.allergydetective.data.diary.toDomain
+import com.nfar.allergydetective.domain.analysis.localEpochDay
 import com.nfar.allergydetective.domain.analysis.model.AnalysisInput
 import com.nfar.allergydetective.domain.analysis.model.DayCheck
 import com.nfar.allergydetective.domain.analysis.model.DayFactor
@@ -21,7 +22,7 @@ import com.nfar.allergydetective.domain.analysis.model.TriggerProperty
 fun AnalysisRows.toAnalysisInput(now: Long, nowTzOffsetMin: Int): AnalysisInput =
     AnalysisInput(
         reference = toReferenceData(),
-        diary = toDiaryData(),
+        diary = toDiaryData(today = localEpochDay(now, nowTzOffsetMin)),
         now = now,
         nowTzOffsetMin = nowTzOffsetMin,
     )
@@ -45,11 +46,12 @@ private fun AnalysisRows.toReferenceData(): ReferenceData {
     )
 }
 
-private fun AnalysisRows.toDiaryData(): DiaryData {
+private fun AnalysisRows.toDiaryData(today: Long): DiaryData {
     val itemsByMeal = mealIngredients.groupBy({ it.mealId }, { MealItem(it.ingredientId, it.portion.toPortion(), it.preparation?.toDomain()) })
     // Self-test 18.11.: symptoms of an acute illness (e.g. sinusitis) would be blamed on food.
     // A day marked as sick does not count, like an unconfirmed day; the factor itself is no candidate.
-    val sickDays = dayFactors.filter { it.factorId == SICK_FACTOR_ID }.map { it.epochDay }.toSet()
+    val sickDays = dayFactors.filter { it.factorId == SICK_FACTOR_ID }.map { it.epochDay }.toSet() +
+        sickPeriods.flatMap { (it.startDay..(it.endDay ?: today)).toList() }
     return DiaryData(
         meals = meals.map { Meal(it.id, it.eatenAt, it.tzOffsetMin, itemsByMeal[it.id].orEmpty()) },
         symptomEntries = symptomEntries.map { SymptomEntry(it.id, it.symptomId, it.startedAt, it.tzOffsetMin, it.intensity) },

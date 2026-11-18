@@ -109,3 +109,14 @@ data class DayFactorEntity(
     val epochDay: Long,
     val factorId: Long,
 )
+
+/**
+ * A period of acute illness (self-test 18.11.), local epoch days, both ends inclusive.
+ * [endDay] null = still ill. Days in a period are left out of the analysis.
+ */
+@Entity(tableName = "sick_periods")
+data class SickPeriodEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val startDay: Long,
+    val endDay: Long?,
+)
