@@ -85,11 +85,12 @@ class HistoryViewModelTest {
     fun tearDown() = Dispatchers.resetMain()
 
     @Test
-    fun entriesAreGroupedByLocalDayNewestFirst() {
+    fun entriesAreGroupedByLocalDayNewestDayFirstAndInDiaryOrder() {
         val days = viewModel().state.value.days
 
         assertEquals(listOf(today, today - 1, today - 3), days.map { it.epochDay })
-        assertEquals(listOf(2L, 1L, 3L), days[0].entries.map { it.id })
+        // Within a day morning first (self-test 18.11.): 00:30, 08:00, 09:30.
+        assertEquals(listOf(3L, 1L, 2L), days[0].entries.map { it.id })
         assertEquals(DayCheckStatus.NO_SYMPTOMS, days[1].status)
         assertEquals(emptyList(), days[1].entries)
     }

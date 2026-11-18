@@ -18,6 +18,7 @@ class RoomHistoryRepository(
     override suspend fun entriesSince(fromMillis: Long): List<HistoryEntry> {
         val ingredients = mealDao.ingredients().associate { it.id to IngredientInfo(it.id, it.key, it.customName) }
         val itemsByMeal = dao.mealIngredientsSince(fromMillis).groupBy { it.mealId }
+        val dishNames = mealDao.favorites().associate { it.id to it.name }
         val meals = dao.mealsSince(fromMillis).map { meal ->
             HistoryEntry.MealEntry(
                 id = meal.id,
@@ -25,6 +26,10 @@ class RoomHistoryRepository(
                 items = itemsByMeal[meal.id].orEmpty().mapNotNull { item ->
                     ingredients[item.ingredientId]?.let { it to item.portion.toDomain() }
                 },
+                preparations = itemsByMeal[meal.id].orEmpty().mapNotNull { item ->
+                    item.preparation?.let { item.ingredientId to it.toDomain() }
+                }.toMap(),
+                dishName = meal.favoriteId?.let(dishNames::get),
             )
         }
         val symptomKeys = symptomDao.symptoms().associate { it.id to it.key }

@@ -1,6 +1,7 @@
 package com.nfar.allergydetective.domain.diary
 
 import com.nfar.allergydetective.domain.analysis.model.Portion
+import com.nfar.allergydetective.domain.analysis.model.Preparation
 
 /** One line of the history (UX 6: tab "Historie"). */
 sealed interface HistoryEntry {
@@ -11,6 +12,10 @@ sealed interface HistoryEntry {
         override val id: Long,
         override val time: Long,
         val items: List<Pair<IngredientInfo, Portion>>,
+        /** Raw or cooked per ingredient id, only where it was asked. */
+        val preparations: Map<Long, Preparation> = emptyMap(),
+        /** Name of the dish (favorite) the meal was logged from, if any. */
+        val dishName: String? = null,
     ) : HistoryEntry
 
     data class SymptomEntry(

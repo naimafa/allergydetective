@@ -78,7 +78,17 @@
     <string name="history_empty">No entries in the last 14 days.</string>
     <string name="history_day_confirmed">day confirmed</string>
     <string name="history_day_open">not confirmed</string>
-    <string name="history_intensity">strength %1$d</string>
+    <string name="history_intensity">strength %1$d/5</string>
+    <string name="history_meal">Meal</string>
+    <string-array name="weekdays_short">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
     <string name="history_delete">Delete</string>
     <string name="history_delete_question">Delete this entry? This cannot be undone.</string>
     <string name="favorites_empty">No dishes yet. Add the dishes you eat often with their ingredients, then daily logging takes one tap.</string>
