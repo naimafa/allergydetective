@@ -21,7 +21,16 @@ import allergydetective.shared.generated.resources.symptom_part_evening
 import allergydetective.shared.generated.resources.symptom_part_midday
 import allergydetective.shared.generated.resources.symptom_part_morning
 import allergydetective.shared.generated.resources.symptom_when
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -103,30 +112,57 @@ private fun SymptomGrid(state: LogSymptomState, viewModel: LogSymptomViewModel, 
             item { TileRow(state.favorites, viewModel) }
         }
         state.groups.forEach { (group, symptoms) ->
-            item(key = group) { SectionTitle(displayName(NamePrefix.SYMPTOM_GROUP, group)) }
+            item(key = group) { GroupTitle(group) }
             item(key = "$group-tiles") { TileRow(symptoms, viewModel) }
         }
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+/** Group name with a dot in the group colour, so tiles and heading belong together visibly. */
 @Composable
-private fun TileRow(symptoms: List<SymptomInfo>, viewModel: LogSymptomViewModel) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        symptoms.forEach { SymptomTile(it, viewModel) }
+private fun GroupTitle(group: String) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
+        Box(
+            Modifier.size(12.dp).background(symptomGroupColor(group), CircleShape)
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
+        )
+        Text(
+            displayName(NamePrefix.SYMPTOM_GROUP, group),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(start = 8.dp),
+        )
     }
 }
 
+/**
+ * Self-test 18.11.: tiles had different widths and looked restless.
+ * Now a fixed grid: two equal columns, all tiles the same height.
+ */
+@Composable
+private fun TileRow(symptoms: List<SymptomInfo>, viewModel: LogSymptomViewModel) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        symptoms.chunked(TILE_COLUMNS).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                row.forEach { SymptomTile(it, viewModel, Modifier.weight(1f)) }
+                repeat(TILE_COLUMNS - row.size) { Spacer(Modifier.weight(1f)) }
+            }
+        }
+    }
+}
+
+private const val TILE_COLUMNS = 2
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun SymptomTile(symptom: SymptomInfo, viewModel: LogSymptomViewModel) {
+private fun SymptomTile(symptom: SymptomInfo, viewModel: LogSymptomViewModel, modifier: Modifier) {
     val haptics = LocalHapticFeedback.current
     Surface(
         color = symptomGroupColor(symptom.groupKey, symptom.isRedFlag),
         contentColor = MaterialTheme.colorScheme.onSurface,
-        shape = MaterialTheme.shapes.medium,
-        modifier = Modifier
-            .heightIn(min = 56.dp)
+        shape = MaterialTheme.shapes.large,
+        border = if (symptom.isRedFlag) BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary) else null,
+        modifier = modifier
+            .height(80.dp)
             .combinedClickable(
                 onClick = { viewModel.onSymptomClick(symptom) },
                 onLongClick = {
@@ -136,13 +172,23 @@ private fun SymptomTile(symptom: SymptomInfo, viewModel: LogSymptomViewModel) {
             ),
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(symptomEmoji(symptom.id), style = MaterialTheme.typography.titleMedium)
-            Text(displayName(NamePrefix.SYMPTOM, symptom.key), style = MaterialTheme.typography.bodyLarge)
-            if (symptom.isRedFlag) Text("⚠️", style = MaterialTheme.typography.bodyLarge)
+            // A light circle behind the emoji lifts it off the pastel surface.
+            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f), modifier = Modifier.size(38.dp)) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(symptomEmoji(symptom.id), style = MaterialTheme.typography.titleMedium)
+                }
+            }
+            Text(
+                displayName(NamePrefix.SYMPTOM, symptom.key) + if (symptom.isRedFlag) " ⚠️" else "",
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+            )
         }
     }
 }
