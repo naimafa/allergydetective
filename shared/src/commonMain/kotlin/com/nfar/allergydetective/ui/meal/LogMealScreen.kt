@@ -215,7 +215,7 @@ private fun LogMealContent(
             item { Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall) }
             // Newest first: what was just added appears right below the search field.
             items(state.selected.asReversed(), key = { "selected-${it.ingredient.id}" }) { item ->
-                SelectedRow(item, viewModel)
+                SelectedRow(item, item.ingredient.id in state.needsPreparation, viewModel)
             }
             item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -249,7 +249,7 @@ private fun LogMealContent(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SelectedRow(item: SelectedIngredient, viewModel: LogMealViewModel) {
+private fun SelectedRow(item: SelectedIngredient, needsPreparation: Boolean, viewModel: LogMealViewModel) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(ingredientName(item.ingredient), modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
@@ -265,6 +265,9 @@ private fun SelectedRow(item: SelectedIngredient, viewModel: LogMealViewModel) {
                     label = { Text(portionLabel(portion)) },
                 )
             }
+        }
+        if (needsPreparation) {
+            PreparationChoice(item.preparation) { viewModel.onPreparationChange(item.ingredient.id, it) }
         }
     }
 }

@@ -118,4 +118,33 @@ class CustomIngredientViewModelTest {
         assertEquals(100_000L, nextCustomIngredientId(null))
         assertEquals(100_005L, nextCustomIngredientId(100_004))
     }
+
+    @Test
+    fun sameNameOrSynonymCannotBeCreatedAgain() {
+        val vm = viewModel()
+        vm.start("hartkäse")
+        vm.onCategoryChange(3)
+
+        assertEquals(hardCheese, vm.state.value.duplicate)
+        assertFalse(vm.state.value.canCreate)
+
+        vm.onUseExisting()
+        assertEquals(hardCheese, vm.state.value.created)
+        assertTrue(repository.created.isEmpty())
+    }
+
+    @Test
+    fun similarNameIsAskedOnceBeforeCreating() {
+        val vm = viewModel()
+        vm.start("Hartkässe")
+        vm.onCategoryChange(3)
+        assertEquals(hardCheese, vm.state.value.similar)
+
+        vm.onCreate()
+        assertTrue(vm.state.value.askSimilar)
+        assertTrue(repository.created.isEmpty())
+
+        vm.onCreate()
+        assertEquals("Hartkässe", repository.created.single().name)
+    }
 }

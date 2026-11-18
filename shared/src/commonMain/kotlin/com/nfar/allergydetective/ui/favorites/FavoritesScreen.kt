@@ -3,11 +3,14 @@ package com.nfar.allergydetective.ui.favorites
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
 import allergydetective.shared.generated.resources.common_save
+import allergydetective.shared.generated.resources.custom_create_named
 import allergydetective.shared.generated.resources.favorites_add
 import allergydetective.shared.generated.resources.favorites_editor_title
 import allergydetective.shared.generated.resources.favorites_empty
 import allergydetective.shared.generated.resources.favorites_ingredients
 import allergydetective.shared.generated.resources.favorites_name
+import allergydetective.shared.generated.resources.favorites_replace
+import allergydetective.shared.generated.resources.favorites_same_name
 import allergydetective.shared.generated.resources.history_delete
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,7 +40,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.nfar.allergydetective.ui.meal.CustomIngredientDialog
+import com.nfar.allergydetective.ui.meal.CustomIngredientViewModel
 import com.nfar.allergydetective.ui.meal.IngredientPicker
+import com.nfar.allergydetective.ui.meal.PreparationChoice
 import com.nfar.allergydetective.ui.meal.ingredientName
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -93,8 +99,13 @@ fun FavoritesScreen(
 }
 
 @Composable
-private fun DishEditorDialog(viewModel: DishEditorViewModel, onDone: () -> Unit) {
+private fun DishEditorDialog(
+    viewModel: DishEditorViewModel,
+    onDone: () -> Unit,
+    customViewModel: CustomIngredientViewModel = koinViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var showCustom by remember { mutableStateOf(false) }
     LaunchedEffect(state.saved) { if (state.saved) onDone() }
     AlertDialog(
         onDismissRequest = onDone,
@@ -111,6 +122,13 @@ private fun DishEditorDialog(viewModel: DishEditorViewModel, onDone: () -> Unit)
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
+                state.sameNameDish?.let {
+                    Text(
+                        stringResource(Res.string.favorites_same_name, it.name),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
                 Text(stringResource(Res.string.favorites_ingredients), style = MaterialTheme.typography.titleSmall)
                 IngredientPicker(
                     query = state.query,
@@ -120,9 +138,34 @@ private fun DishEditorDialog(viewModel: DishEditorViewModel, onDone: () -> Unit)
                     onAdd = viewModel::onAdd,
                     onRemove = viewModel::onRemove,
                 )
+                // Not found: create it here, the duplicate check runs in the dialog.
+                if (state.query.isNotBlank()) {
+                    TextButton(onClick = {
+                        customViewModel.start(state.query)
+                        showCustom = true
+                    }) { Text(stringResource(Res.string.custom_create_named, state.query.trim())) }
+                }
+                state.ingredients.filter { it.id in state.needsPreparation }.forEach { ingredient ->
+                    Text(ingredientName(ingredient), style = MaterialTheme.typography.titleSmall)
+                    PreparationChoice(state.preparations[ingredient.id]) { viewModel.onPreparationChange(ingredient.id, it) }
+                }
             }
         },
-        confirmButton = { Button(onClick = viewModel::onSave, enabled = state.canSave) { Text(stringResource(Res.string.common_save)) } },
+        confirmButton = {
+            Button(onClick = viewModel::onSave, enabled = state.canSave) {
+                Text(stringResource(if (state.sameNameDish != null) Res.string.favorites_replace else Res.string.common_save))
+            }
+        },
         dismissButton = { TextButton(onClick = onDone) { Text(stringResource(Res.string.common_cancel)) } },
     )
+    if (showCustom) {
+        CustomIngredientDialog(
+            viewModel = customViewModel,
+            onCreated = {
+                showCustom = false
+                viewModel.onIngredientCreated(it)
+            },
+            onDismiss = { showCustom = false },
+        )
+    }
 }

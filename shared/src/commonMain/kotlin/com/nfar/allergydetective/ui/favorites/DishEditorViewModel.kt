@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Portion
+import com.nfar.allergydetective.domain.analysis.model.Preparation
+import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.LanguageProvider
 import com.nfar.allergydetective.domain.diary.MealRepository
+import com.nfar.allergydetective.domain.diary.normalizeForSearch
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
 import com.nfar.allergydetective.ui.meal.IngredientCatalog
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,18 +21,24 @@ import kotlinx.coroutines.launch
 data class DishEditorState(
     val name: String = "",
     val ingredients: List<IngredientInfo> = emptyList(),
+    /** Raw or cooked per ingredient id, for the ingredients in [needsPreparation]. */
+    val preparations: Map<Long, Preparation> = emptyMap(),
+    val needsPreparation: Set<Long> = emptySet(),
     val query: String = "",
     val results: List<IngredientInfo> = emptyList(),
+    /** A dish with the same name exists; saving replaces it after confirmation. */
+    val sameNameDish: FavoriteInfo? = null,
     val saving: Boolean = false,
     /** Set after saving, the dialog closes then. */
     val saved: Boolean = false,
 ) {
-    val canSave: Boolean get() = name.isNotBlank() && ingredients.isNotEmpty() && !saving
+    val missingPreparation: Boolean get() = ingredients.any { it.id in needsPreparation && it.id !in preparations }
+    val canSave: Boolean get() = name.isNotBlank() && ingredients.isNotEmpty() && !missingPreparation && !saving
 }
 
 /**
  * "+ New dish" in the favorites tab (self-test 18.11.): e.g. lentil soup = lentils, tomatoes,
- * carrots, spices. Saved as a favorite, so it can be logged with one tap.
+ * carrots (cooked), spices. Saved as a favorite, so it can be logged with one tap.
  */
 class DishEditorViewModel(
     private val meals: MealRepository,
@@ -41,18 +50,29 @@ class DishEditorViewModel(
     val state: StateFlow<DishEditorState> = _state.asStateFlow()
 
     private var catalog = IngredientCatalog.EMPTY
+    private var favorites: List<FavoriteInfo> = emptyList()
 
     init {
-        viewModelScope.launch { catalog = IngredientCatalog.load(meals, names, language) }
+        viewModelScope.launch { reload() }
+    }
+
+    private suspend fun reload() {
+        catalog = IngredientCatalog.load(meals, names, language)
+        favorites = meals.favorites()
+        val needs = meals.ingredientIdsNeedingPreparation()
+        _state.update { it.copy(needsPreparation = needs) }
     }
 
     /** Fresh form each time the dialog opens; reloads the catalog for new custom ingredients. */
     fun start() {
-        _state.value = DishEditorState()
-        viewModelScope.launch { catalog = IngredientCatalog.load(meals, names, language) }
+        _state.value = DishEditorState(needsPreparation = _state.value.needsPreparation)
+        viewModelScope.launch { reload() }
     }
 
-    fun onNameChange(name: String) = _state.update { it.copy(name = name) }
+    fun onNameChange(name: String) = _state.update {
+        val normalized = normalizeForSearch(name)
+        it.copy(name = name, sameNameDish = favorites.firstOrNull { f -> normalized.isNotEmpty() && normalizeForSearch(f.name) == normalized })
+    }
 
     fun onQueryChange(query: String) = _state.update { it.copy(query = query, results = catalog.search(query)) }
 
@@ -60,14 +80,31 @@ class DishEditorViewModel(
         if (ingredient in it.ingredients) it else it.copy(ingredients = it.ingredients + ingredient, query = "", results = emptyList())
     }
 
-    fun onRemove(ingredient: IngredientInfo) = _state.update { it.copy(ingredients = it.ingredients - ingredient) }
+    fun onRemove(ingredient: IngredientInfo) = _state.update {
+        it.copy(ingredients = it.ingredients - ingredient, preparations = it.preparations - ingredient.id)
+    }
 
+    fun onPreparationChange(ingredientId: Long, preparation: Preparation) = _state.update {
+        it.copy(preparations = it.preparations + (ingredientId to preparation))
+    }
+
+    /** A custom ingredient was created from the search text: make it findable and add it. */
+    fun onIngredientCreated(ingredient: IngredientInfo) {
+        viewModelScope.launch {
+            reload()
+            onAdd(catalog.byId[ingredient.id] ?: ingredient)
+        }
+    }
+
+    /** Saves the dish; a dish with the same name is replaced (the user confirmed in the dialog). */
     fun onSave() {
         val current = _state.value
         if (!current.canSave) return
         _state.update { it.copy(saving = true) }
         viewModelScope.launch {
-            meals.saveFavorite(current.name.trim(), current.ingredients.map { MealItem(it.id, Portion.MEDIUM) })
+            current.sameNameDish?.let { meals.deleteFavorite(it.id) }
+            val items = current.ingredients.map { MealItem(it.id, Portion.MEDIUM, current.preparations[it.id]) }
+            meals.saveFavorite(current.name.trim(), items)
             _state.update { it.copy(saving = false, saved = true) }
         }
     }

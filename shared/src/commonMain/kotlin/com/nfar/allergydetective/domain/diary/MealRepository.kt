@@ -29,6 +29,9 @@ interface MealRepository {
     /** Ingredients that contain a property stored as known allergy (TRD 2.6). */
     suspend fun ingredientIdsWithKnownAllergy(): Set<Long>
 
+    /** Ingredients with a heat-labile trigger: logging them asks "raw or cooked?" (self-test 18.11.). */
+    suspend fun ingredientIdsNeedingPreparation(): Set<Long> = emptySet()
+
     /**
      * Saves the meal with its items in one transaction and returns its id.
      * [favoriteId] only records the origin, the items are always a snapshot (TRD 3.2).

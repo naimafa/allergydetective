@@ -6,6 +6,7 @@ import androidx.room3.Index
 import androidx.room3.PrimaryKey
 import com.nfar.allergydetective.data.db.model.DayStatus
 import com.nfar.allergydetective.data.db.model.PortionSize
+import com.nfar.allergydetective.data.db.model.PreparationKind
 
 /*
  * Diary data entered by the user (TRD 1.3).
@@ -34,6 +35,7 @@ data class FavoriteIngredientEntity(
     val favoriteId: Long,
     val ingredientId: Long,
     val defaultPortion: PortionSize,
+    val preparation: PreparationKind? = null,
 )
 
 /** [favoriteId] only records the origin; ingredients are copied as a snapshot. */
@@ -64,6 +66,7 @@ data class MealIngredientEntity(
     val mealId: Long,
     val ingredientId: Long,
     val portion: PortionSize,
+    val preparation: PreparationKind? = null,
 )
 
 /** [intensity] 1–5. [note] is not used by the analysis, only in the PDF export. */

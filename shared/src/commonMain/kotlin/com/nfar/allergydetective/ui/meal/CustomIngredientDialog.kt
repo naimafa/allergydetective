@@ -6,6 +6,10 @@ import allergydetective.shared.generated.resources.custom_category_fallback
 import allergydetective.shared.generated.resources.custom_contains
 import allergydetective.shared.generated.resources.custom_contains_hint
 import allergydetective.shared.generated.resources.custom_create
+import allergydetective.shared.generated.resources.custom_create_anyway
+import allergydetective.shared.generated.resources.custom_duplicate
+import allergydetective.shared.generated.resources.custom_similar_question
+import allergydetective.shared.generated.resources.custom_use_existing
 import allergydetective.shared.generated.resources.custom_derived
 import allergydetective.shared.generated.resources.custom_name
 import allergydetective.shared.generated.resources.custom_title
@@ -64,6 +68,12 @@ fun CustomIngredientDialog(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
+                state.duplicate?.let { existing ->
+                    NameHint(stringResource(Res.string.custom_duplicate, ingredientName(existing)), viewModel::onUseExisting)
+                }
+                state.similar?.takeIf { state.askSimilar }?.let { similar ->
+                    NameHint(stringResource(Res.string.custom_similar_question, ingredientName(similar)), viewModel::onUseExisting)
+                }
                 Text(stringResource(Res.string.custom_contains), style = MaterialTheme.typography.titleSmall)
                 Text(stringResource(Res.string.custom_contains_hint), style = MaterialTheme.typography.bodySmall)
                 IngredientPicker(
@@ -95,8 +105,19 @@ fun CustomIngredientDialog(
             }
         },
         confirmButton = {
-            Button(onClick = viewModel::onCreate, enabled = state.canCreate) { Text(stringResource(Res.string.custom_create)) }
+            Button(onClick = viewModel::onCreate, enabled = state.canCreate) {
+                Text(stringResource(if (state.askSimilar) Res.string.custom_create_anyway else Res.string.custom_create))
+            }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.common_cancel)) } },
     )
+}
+
+/** "Already exists" / "Did you mean …?" with a button to take the existing ingredient. */
+@Composable
+private fun NameHint(text: String, onUse: () -> Unit) {
+    Column {
+        Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
+        TextButton(onClick = onUse) { Text(stringResource(Res.string.custom_use_existing)) }
+    }
 }
