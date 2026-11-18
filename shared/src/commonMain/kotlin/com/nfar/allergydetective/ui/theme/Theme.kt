@@ -86,6 +86,11 @@ data class ExtraColors(
     val head: Color,
     val airways: Color,
     val other: Color,
+    /** "Your clues" tile: lavender, so the four home tiles have four distinct colours. */
+    val clues: Color,
+    val onClues: Color,
+    /** Strong accents for the icon circles of the home tiles. */
+    val cluesAccent: Color,
     /** Emergency symptoms and the notice, always clearly visible. */
     val redFlag: Color,
 )
@@ -96,6 +101,9 @@ private val LightExtra = ExtraColors(
     head = Color(0xFFE6E3F7),
     airways = Color(0xFFDCEEF7),
     other = Color(0xFFE8ECEC),
+    clues = Color(0xFFE7E3F6),
+    onClues = Color(0xFF231B4A),
+    cluesAccent = Color(0xFF5B4F9A),
     redFlag = Color(0xFFFFCDC8),
 )
 
@@ -105,6 +113,9 @@ private val DarkExtra = ExtraColors(
     head = Color(0xFF39354F),
     airways = Color(0xFF283F4B),
     other = Color(0xFF2F3536),
+    clues = Color(0xFF39345A),
+    onClues = Color(0xFFE7E3F6),
+    cluesAccent = Color(0xFFC6BEF5),
     redFlag = Color(0xFF7E2B25),
 )
 

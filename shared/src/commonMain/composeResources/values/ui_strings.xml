@@ -6,6 +6,10 @@
     <string name="home_log_symptom">Report symptom</string>
     <string name="home_day_check">Day check</string>
     <string name="home_results">Your clues</string>
+    <string name="home_log_meal_hint">What did you eat?</string>
+    <string name="home_log_symptom_hint">Log complaints</string>
+    <string name="home_day_check_hint">How was your day?</string>
+    <string name="home_results_hint">See patterns</string>
     <string name="home_progress_collecting">Day %1$d of %2$d – collecting clues</string>
     <plurals name="home_progress_ready">
         <item quantity="one">%1$d confirmed day – your first evaluation is ready</item>

@@ -3,11 +3,21 @@ package com.nfar.allergydetective.ui.home
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.daily_quotes
 import allergydetective.shared.generated.resources.home_day_check
+import allergydetective.shared.generated.resources.home_day_check_hint
+import allergydetective.shared.generated.resources.home_log_meal_hint
+import allergydetective.shared.generated.resources.home_log_symptom_hint
+import allergydetective.shared.generated.resources.home_results_hint
 import allergydetective.shared.generated.resources.home_log_meal
 import allergydetective.shared.generated.resources.home_log_symptom
 import allergydetective.shared.generated.resources.home_results
 import allergydetective.shared.generated.resources.home_title
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Alignment
+import com.nfar.allergydetective.ui.theme.AppColors
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,11 +47,11 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 
-enum class HomeAction(val label: StringResource, val icon: ImageVector) {
-    LOG_MEAL(Res.string.home_log_meal, Icons.Outlined.Restaurant),
-    LOG_SYMPTOM(Res.string.home_log_symptom, Icons.Outlined.Bolt),
-    DAY_CHECK(Res.string.home_day_check, Icons.Outlined.Bedtime),
-    RESULTS(Res.string.home_results, Icons.Outlined.TravelExplore),
+enum class HomeAction(val label: StringResource, val hint: StringResource, val icon: ImageVector) {
+    LOG_MEAL(Res.string.home_log_meal, Res.string.home_log_meal_hint, Icons.Outlined.Restaurant),
+    LOG_SYMPTOM(Res.string.home_log_symptom, Res.string.home_log_symptom_hint, Icons.Outlined.Bolt),
+    DAY_CHECK(Res.string.home_day_check, Res.string.home_day_check_hint, Icons.Outlined.Bedtime),
+    RESULTS(Res.string.home_results, Res.string.home_results_hint, Icons.Outlined.TravelExplore),
 }
 
 /** Dashboard (UX 2): quote of the day, detective progress and the four quick actions. */
@@ -82,29 +92,54 @@ private fun DailyQuote(epochDay: Long) {
     )
 }
 
+/**
+ * Self-test 18.11.: tiles looked plain and uneven. All four have the same height, an icon in a
+ * strongly coloured circle, the title and a short hint what happens.
+ */
 @Composable
 private fun ActionTile(action: HomeAction, onClick: () -> Unit, modifier: Modifier) {
-    val (container, content) = tileColors(action)
+    val colors = tileColors(action)
     Card(
         onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = container, contentColor = content),
-        modifier = modifier.heightIn(min = 120.dp),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = colors.container, contentColor = colors.content),
+        modifier = modifier.height(TILE_HEIGHT),
     ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Icon(action.icon, contentDescription = null, modifier = Modifier.size(32.dp))
-            Text(stringResource(action.label), style = MaterialTheme.typography.titleMedium)
+        Column(
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Surface(shape = CircleShape, color = colors.accent, contentColor = colors.onAccent, modifier = Modifier.size(48.dp)) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(action.icon, contentDescription = null, modifier = Modifier.size(26.dp))
+                }
+            }
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(stringResource(action.label), style = MaterialTheme.typography.titleMedium, maxLines = 1)
+                Text(
+                    stringResource(action.hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.content.copy(alpha = 0.8f),
+                    maxLines = 2,
+                )
+            }
         }
     }
 }
 
-/** Food = petrol, symptoms = coral, day check = sage, results = neutral (UX 1.1). */
+private val TILE_HEIGHT = 156.dp
+
+private class TileColors(val container: Color, val content: Color, val accent: Color, val onAccent: Color)
+
+/** Food = petrol, symptoms = coral, day check = sage, results = lavender (UX 1.1). */
 @Composable
-private fun tileColors(action: HomeAction): Pair<Color, Color> {
+private fun tileColors(action: HomeAction): TileColors {
     val scheme = MaterialTheme.colorScheme
+    val extra = AppColors.extra
     return when (action) {
-        HomeAction.LOG_MEAL -> scheme.primaryContainer to scheme.onPrimaryContainer
-        HomeAction.LOG_SYMPTOM -> scheme.tertiaryContainer to scheme.onTertiaryContainer
-        HomeAction.DAY_CHECK -> scheme.secondaryContainer to scheme.onSecondaryContainer
-        HomeAction.RESULTS -> scheme.surfaceContainerHigh to scheme.onSurface
+        HomeAction.LOG_MEAL -> TileColors(scheme.primaryContainer, scheme.onPrimaryContainer, scheme.primary, scheme.onPrimary)
+        HomeAction.LOG_SYMPTOM -> TileColors(scheme.tertiaryContainer, scheme.onTertiaryContainer, scheme.tertiary, scheme.onTertiary)
+        HomeAction.DAY_CHECK -> TileColors(scheme.secondaryContainer, scheme.onSecondaryContainer, scheme.secondary, scheme.onSecondary)
+        HomeAction.RESULTS -> TileColors(extra.clues, extra.onClues, extra.cluesAccent, extra.clues)
     }
 }

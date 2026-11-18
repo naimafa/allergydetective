@@ -6,6 +6,10 @@
     <string name="home_log_symptom">Symptom melden</string>
     <string name="home_day_check">Tages-Abschluss</string>
     <string name="home_results">Deine Spuren</string>
+    <string name="home_log_meal_hint">Was hast du gegessen?</string>
+    <string name="home_log_symptom_hint">Beschwerden eintragen</string>
+    <string name="home_day_check_hint">Wie war dein Tag?</string>
+    <string name="home_results_hint">Muster ansehen</string>
     <string name="home_progress_collecting">Tag %1$d von %2$d – wir sammeln Spuren</string>
     <plurals name="home_progress_ready">
         <item quantity="one">%1$d bestätigter Tag – deine erste Auswertung ist bereit</item>
