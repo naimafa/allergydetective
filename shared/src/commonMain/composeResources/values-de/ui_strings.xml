@@ -7,9 +7,13 @@
     <string name="home_day_check">Tagesabschluss</string>
     <string name="home_results">Muster entdecken</string>
     <string name="home_log_meal_hint">Mahlzeiten eintragen</string>
-    <string name="home_log_symptom_hint">Beschwerden eintragen</string>
+    <string name="home_log_symptom_hint">Beschwerden erfassen</string>
     <string name="home_day_check_hint">Wie war dein Tag?</string>
-    <string name="home_results_hint">Mögliche Muster ansehen</string>
+    <string name="home_results_hint">Muster im Verlauf</string>
+    <string name="tile_meal">Essen erfassen</string>
+    <string name="tile_symptom">Symptome</string>
+    <string name="tile_day_check">Tagesabschluss</string>
+    <string name="tile_results">Muster ansehen</string>
     <string name="home_heading">Dein Allergie-Tagebuch</string>
     <string name="home_progress_title">Dein Fortschritt</string>
     <string name="home_progress_badge">Tag %1$d / %2$d</string>

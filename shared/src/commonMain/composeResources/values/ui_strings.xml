@@ -7,9 +7,13 @@
     <string name="home_day_check">Day check</string>
     <string name="home_results">Discover patterns</string>
     <string name="home_log_meal_hint">Record your meals</string>
-    <string name="home_log_symptom_hint">Log complaints</string>
+    <string name="home_log_symptom_hint">Record complaints</string>
     <string name="home_day_check_hint">How was your day?</string>
-    <string name="home_results_hint">See possible patterns</string>
+    <string name="home_results_hint">Patterns over time</string>
+    <string name="tile_meal">Record food</string>
+    <string name="tile_symptom">Symptoms</string>
+    <string name="tile_day_check">Day check</string>
+    <string name="tile_results">See patterns</string>
     <string name="home_heading">Your allergy diary</string>
     <string name="home_progress_title">Your progress</string>
     <string name="home_progress_badge">Day %1$d / %2$d</string>
