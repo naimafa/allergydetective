@@ -57,6 +57,7 @@ fun DayPicker(
                 selected = daysAgo == option,
                 onClick = { onSelect(option) },
                 label = { Text(dayLabel(option) + if (option in marked) " ✓" else "") },
+                showCheck = false,
             )
         }
         AppFilterChip(
