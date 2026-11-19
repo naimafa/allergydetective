@@ -110,7 +110,7 @@ fun AppNavHost(
 composable<IntroRoute> {            OnboardingScreen(                replay = true,                onFinished = { openDishes ->                    if (openDishes) {                        navController.navigate(HomeRoute(openFavorites = true)) { popUpTo<HomeRoute> { inclusive = true } }                    } else {                        navController.popBackStack()                    }                },            )        }
         composable<LogMealRoute> { entry -> LogMealScreen(onBack = back, editMealId = entry.toRoute<LogMealRoute>().editMealId) }
         composable<LogSymptomRoute> { LogSymptomScreen(onBack = back) }
-        composable<DayCheckRoute> { DayCheckScreen(onDone = back) }
+        composable<DayCheckRoute> { DayCheckScreen(onDone = back, onLogSymptom = { navController.navigate(LogSymptomRoute) }) }
         composable<ResultsRoute> { ResultsScreen(onBack = back) }
     }
 }
