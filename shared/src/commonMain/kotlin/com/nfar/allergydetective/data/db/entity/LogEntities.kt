@@ -5,6 +5,7 @@ import androidx.room3.ForeignKey
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
 import com.nfar.allergydetective.data.db.model.DayStatus
+import com.nfar.allergydetective.data.db.model.IllnessRelationKind
 import com.nfar.allergydetective.data.db.model.PortionSize
 import com.nfar.allergydetective.data.db.model.PreparationKind
 
@@ -84,6 +85,8 @@ data class SymptomEntryEntity(
     val tzOffsetMin: Int,
     val intensity: Int,
     val note: String?,
+    /** On a sick day: belongs to the illness or not (DB version 7). */
+    val illnessRelation: IllnessRelationKind? = null,
 )
 
 /** Evening check per day (TRD 3.3). Ratings are 1–5, null if not answered. */

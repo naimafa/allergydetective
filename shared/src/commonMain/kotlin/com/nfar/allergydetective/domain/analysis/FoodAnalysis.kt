@@ -67,6 +67,7 @@ internal class FoodCatalog(reference: ReferenceData) {
 /**
  * Counts n1/k1 (meals with the candidate) and n0/k0 (meals without), TRD 2.3–2.4.
  * A meal only counts when the candidate's window has fully passed and all touched days are valid.
+ * A meal whose window touches a sick day counts with the sick-day weight (self-test 19.11.).
  */
 internal fun foodStats(
     profile: FoodProfile,
@@ -76,6 +77,7 @@ internal fun foodStats(
     now: Long,
     catalog: FoodCatalog,
     config: AnalysisConfig,
+    sickDays: Set<Long> = emptySet(),
 ): ExposureStats {
     var n1 = 0.0
     var k1 = 0.0
@@ -83,47 +85,50 @@ internal fun foodStats(
     var k0 = 0.0
     var exposureCount = 0
     var hitCount = 0
+    var unexposedCount = 0
     var unexposedHits = 0
     for (meal in meals) {
-        if (!isWindowClosed(meal, profile, validDays, now)) continue
+        val days = windowDays(meal, profile, validDays, now) ?: continue
+        val mealWeight = if (days.any { it in sickDays }) config.sickness.dayWeight else 1.0
         val weight = hitWeight(meal, profile, episodes, config)
         val portion = catalog.exposurePortion(meal, profile.candidate, config)
         if (portion != null) {
-            n1 += portion
-            k1 += weight * portion
+            n1 += portion * mealWeight
+            k1 += weight * portion * mealWeight
             exposureCount++
             if (weight > 0.0) hitCount++
         } else {
-            n0 += 1.0
-            k0 += weight
+            n0 += mealWeight
+            k0 += weight * mealWeight
+            unexposedCount++
             if (weight > 0.0) unexposedHits++
         }
     }
-    return ExposureStats(n1, k1, n0, k0, exposureCount, hitCount, n0.toInt(), unexposedHits)
+    return ExposureStats(n1, k1, n0, k0, exposureCount, hitCount, unexposedCount, unexposedHits)
 }
 
-private fun isWindowClosed(meal: Meal, profile: FoodProfile, validDays: Set<Long>, now: Long): Boolean {
+/** Local days the candidate's window touches, or null while it is open or a day is not valid. */
+private fun windowDays(meal: Meal, profile: FoodProfile, validDays: Set<Long>, now: Long): LongRange? {
     val windowEnd = meal.eatenAt + profile.maxEndMin * MILLIS_PER_MINUTE
-    if (windowEnd > now) return false
-    val firstDay = localEpochDay(meal.eatenAt, meal.tzOffsetMin)
-    val lastDay = localEpochDay(windowEnd, meal.tzOffsetMin)
-    return (firstDay..lastDay).all { it in validDays }
+    if (windowEnd > now) return null
+    val days = localEpochDay(meal.eatenAt, meal.tzOffsetMin)..localEpochDay(windowEnd, meal.tzOffsetMin)
+    return days.takeIf { range -> range.all { it in validDays } }
 }
 
 /** Highest weight (intensity / max) of a plausible episode starting in one of the windows, 0 if none. */
 private fun hitWeight(meal: Meal, profile: FoodProfile, episodes: List<Episode>, config: AnalysisConfig): Double {
-    var maxIntensity = 0
+    var maxWeighted = 0.0
     for (window in profile.windows) {
         val from = meal.eatenAt + window.startMin * MILLIS_PER_MINUTE
         val to = meal.eatenAt + window.endMin * MILLIS_PER_MINUTE
         var i = firstIndexAtOrAfter(episodes, from)
         while (i < episodes.size && episodes[i].startedAt <= to) {
             val episode = episodes[i]
-            if (episode.groupKey in profile.symptomGroups) maxIntensity = maxOf(maxIntensity, episode.maxIntensity)
+            if (episode.groupKey in profile.symptomGroups) maxWeighted = maxOf(maxWeighted, episode.maxIntensity * episode.weight)
             i++
         }
     }
-    return maxIntensity.toDouble() / config.maxIntensity
+    return maxWeighted / config.maxIntensity
 }
 
 /** Binary search in episodes sorted by start time. */

@@ -6,6 +6,7 @@ import com.nfar.allergydetective.domain.analysis.model.Candidate
 import com.nfar.allergydetective.domain.analysis.model.CandidateResult
 import com.nfar.allergydetective.domain.analysis.model.EvidenceLevel
 import com.nfar.allergydetective.domain.analysis.model.ExposureStats
+import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
 import com.nfar.allergydetective.domain.analysis.model.KnownAllergyExposure
 
 /**
@@ -41,7 +42,8 @@ class AnalysisEngine(private val config: AnalysisConfig = AnalysisConfig()) {
         val all = foodStats + lifestyleStats(
             diary = input.diary,
             episodes = episodes(input),
-            validDays = validDays(input),
+            // An illness changes sleep and stress, too: lifestyle candidates leave sick days out.
+            validDays = validDays(input) - sickDays(input),
             today = localEpochDay(input.now, input.nowTzOffsetMin),
             config = config,
         )
@@ -62,7 +64,7 @@ class AnalysisEngine(private val config: AnalysisConfig = AnalysisConfig()) {
         return catalog.profiles()
             .filter { profile -> meals.any { catalog.exposurePortion(it, profile.candidate, config) != null } }
             .associate { profile ->
-                profile.candidate to foodStats(profile, meals, episodes, validDays, input.now, catalog, config)
+                profile.candidate to foodStats(profile, meals, episodes, validDays, input.now, catalog, config, sickDays(input))
             }
     }
 
@@ -71,19 +73,37 @@ class AnalysisEngine(private val config: AnalysisConfig = AnalysisConfig()) {
         val validDays = validDays(input)
         val today = localEpochDay(input.now, input.nowTzOffsetMin)
         return foodExposureMeals(input.diary.meals, validDays, input.now, FoodCatalog(input.reference)) +
-            lifestyleExposureDays(input.diary, validDays, today, config)
+            lifestyleExposureDays(input.diary, validDays - sickDays(input), today, config)
     }
 
     /** Only days confirmed as NO_SYMPTOMS or COMPLETE (TRD 2.2). */
     private fun validDays(input: AnalysisInput): Set<Long> =
         input.diary.dayChecks.filter { it.confirmed }.map { it.epochDay }.toSet()
 
-    /** Episodes that started before "now" on valid days. */
+    /** Confirmed days in a period of illness or marked as sick (self-test 19.11.: they count with a lower weight). */
+    private fun sickDays(input: AnalysisInput): Set<Long> =
+        input.diary.dayChecks.filter { it.confirmed && it.sick }.map { it.epochDay }.toSet()
+
+    /**
+     * Episodes that started before "now" on valid days. On a sick day a complaint that belongs to
+     * the illness is left out, one with an unknown relation counts less.
+     */
     private fun episodes(input: AnalysisInput): List<Episode> {
         val groups = input.reference.symptoms.associate { it.id to it.groupKey }
         val validDays = validDays(input)
+        val sickDays = sickDays(input)
         val entries = input.diary.symptomEntries.filter { it.startedAt <= input.now }
-        return buildEpisodes(entries, groups, config.episodeMergeWindowMin).filter { it.epochDay in validDays }
+        return buildEpisodes(entries, groups, config.episodeMergeWindowMin) { entry ->
+            if (localEpochDay(entry.startedAt, entry.tzOffsetMin) !in sickDays) {
+                1.0
+            } else {
+                when (entry.illnessRelation) {
+                    IllnessRelation.RELATED -> 0.0
+                    IllnessRelation.UNRELATED -> 1.0
+                    IllnessRelation.UNKNOWN, null -> config.sickness.unknownRelationWeight
+                }
+            }
+        }.filter { it.epochDay in validDays }
     }
 
     /** Ingredients eaten often enough without any plausible complaint (TRD 2.9). */

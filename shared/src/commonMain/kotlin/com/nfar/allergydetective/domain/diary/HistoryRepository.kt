@@ -1,6 +1,7 @@
 package com.nfar.allergydetective.domain.diary
 
 import com.nfar.allergydetective.domain.analysis.model.Portion
+import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
 import com.nfar.allergydetective.domain.analysis.model.Preparation
 
 /** One line of the history (UX 6: tab "Historie"). */
@@ -24,6 +25,8 @@ sealed interface HistoryEntry {
         val symptomKey: String,
         val intensity: Int,
         val note: String?,
+        /** On a sick day: part of the illness or not (self-test 19.11.). */
+        val illnessRelation: IllnessRelation? = null,
     ) : HistoryEntry
 }
 

@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.data.diary
 
+import com.nfar.allergydetective.data.analysis.toDomain
 import com.nfar.allergydetective.data.db.dao.HistoryDao
 import com.nfar.allergydetective.data.db.dao.MealDao
 import com.nfar.allergydetective.data.db.dao.SymptomDao
@@ -38,6 +39,7 @@ class RoomHistoryRepository(
                 symptomKey = symptomKeys[entry.symptomId].orEmpty(),
                 intensity = entry.intensity,
                 note = entry.note,
+                illnessRelation = entry.illnessRelation?.toDomain(),
             )
         }
         return (meals + symptoms).sortedByDescending { it.time }

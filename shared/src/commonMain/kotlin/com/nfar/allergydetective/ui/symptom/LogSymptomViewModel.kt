@@ -2,12 +2,14 @@ package com.nfar.allergydetective.ui.symptom
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
 import com.nfar.allergydetective.domain.time.AppClock
 import com.nfar.allergydetective.domain.time.SymptomDayPart
 import com.nfar.allergydetective.domain.time.timeOf
 import com.nfar.allergydetective.ui.common.ExactTime
+import com.nfar.allergydetective.ui.common.MAX_DAYS_BACK
 import com.nfar.allergydetective.ui.common.timeOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +25,8 @@ data class SymptomDraft(
     /** Picked in the time dialog, overrides [dayPart]. */
     val exactTime: ExactTime? = null,
     val note: String = "",
+    /** Only asked on a sick day (self-test 19.11.). */
+    val illnessRelation: IllnessRelation = IllnessRelation.UNKNOWN,
 )
 
 data class LogSymptomState(
@@ -36,9 +40,15 @@ data class LogSymptomState(
     /** Time of the last logged meal, for "after the meal". */
     val lastMealAt: Long? = null,
     val savedEntryId: Long? = null,
+    /** Today and the days that can be picked, as far as they are sick days. */
+    val sickDays: Set<Long> = emptySet(),
+    val today: Long = 0,
     /** True when the notice was opened by a long press: continuing saves directly. */
     internal val quickLogAfterNotice: Boolean = false,
-)
+) {
+    /** The draft lies on a sick day: the overlay asks whether it belongs to the illness. */
+    val draftOnSickDay: Boolean get() = draft?.let { (today - (it.exactTime?.daysAgo ?: 0)) in sickDays } == true
+}
 
 /** Report a symptom (UX 3.3): grid, overlay with intensity and time, quick log, emergency notice. */
 class LogSymptomViewModel(
@@ -59,7 +69,11 @@ class LogSymptomViewModel(
                 .toList()
                 .sortedBy { (group, _) -> GROUP_ORDER.indexOf(group).let { if (it < 0) GROUP_ORDER.size else it } }
             val lastMeal = repository.lastMealAt(clock.nowMillis())
-            _state.update { it.copy(loading = false, groups = groups, favorites = favorites(), lastMealAt = lastMeal) }
+            val today = clock.today()
+            val sickDays = (0..MAX_DAYS_BACK).map { today - it }.filter { repository.isSickDay(it) }.toSet()
+            _state.update {
+                it.copy(loading = false, groups = groups, favorites = favorites(), lastMealAt = lastMeal, today = today, sickDays = sickDays)
+            }
         }
     }
 
@@ -106,6 +120,8 @@ class LogSymptomViewModel(
 
     fun onNoteChange(note: String) = updateDraft { it.copy(note = note) }
 
+    fun onIllnessRelationChange(relation: IllnessRelation) = updateDraft { it.copy(illnessRelation = relation) }
+
     fun onDraftDismiss() {
         _state.update { it.copy(draft = null) }
     }
@@ -128,6 +144,7 @@ class LogSymptomViewModel(
                 intensity = draft.intensity,
                 note = draft.note.trim().ifEmpty { null },
             )
+            if (clock.epochDayOf(startedAt) in _state.value.sickDays) repository.setIllnessRelation(id, draft.illnessRelation)
             _state.update { it.copy(savedEntryId = id, favorites = favorites()) }
         }
     }

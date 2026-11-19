@@ -60,7 +60,7 @@ const val DATABASE_NAME = "allergy_detective.db"
         DayFactorEntity::class,
         SickPeriodEntity::class,
     ],
-    version = 6,
+    version = 7,
     exportSchema = true,
 )
 @ConstructedBy(AppDatabaseConstructor::class)

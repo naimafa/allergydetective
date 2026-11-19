@@ -1,5 +1,7 @@
 package com.nfar.allergydetective.domain.diary
 
+import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
+
 /** A symptom of the catalog (CONTENT_Symptome 1). */
 data class SymptomInfo(
     val id: Long,
@@ -23,4 +25,10 @@ interface SymptomRepository {
 
     /** Undo of [saveEntry]. */
     suspend fun deleteEntry(entryId: Long)
+
+    /** On a sick day: does the complaint belong to the illness (self-test 19.11.)? Null = not answered. */
+    suspend fun setIllnessRelation(entryId: Long, relation: IllnessRelation?) = Unit
+
+    /** In a period of illness or marked as sick in the day check. */
+    suspend fun isSickDay(epochDay: Long): Boolean = false
 }
