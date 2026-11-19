@@ -25,6 +25,8 @@ import allergydetective.shared.generated.resources.history_sick_marked
 import allergydetective.shared.generated.resources.history_sick_period
 import allergydetective.shared.generated.resources.sick_title
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -66,7 +68,8 @@ const val SICK_FACTOR_KEY = "sick"
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HistoryFilterRow(selected: HistoryFilter, onSelect: (HistoryFilter) -> Unit) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    // One line that can be swiped sideways: with a large system font the four chips do not fit (phone test 19.11.).
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) {
         HistoryFilter.entries.forEach { filter ->
             FilterChip(
                 selected = filter == selected,
