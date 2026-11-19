@@ -56,7 +56,6 @@ import com.nfar.allergydetective.ui.common.StatusBadge
 import com.nfar.allergydetective.ui.common.StatusKind
 import com.nfar.allergydetective.ui.theme.AppColors
 import allergydetective.shared.generated.resources.home_day_done
-import allergydetective.shared.generated.resources.home_today_count
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
@@ -72,6 +71,8 @@ enum class HomeAction(val label: StringResource, val hint: StringResource, val i
 @Composable
 fun HomeScreen(
     onAction: (HomeAction) -> Unit,
+    /** "Your day today" opens the history. */
+    onOpenToday: () -> Unit = {},
     modifier: Modifier = Modifier,
     state: HomeState = HomeState(),
     /** Optional card on top, e.g. "ill since ..." (self-test 18.11.). */
@@ -93,7 +94,10 @@ fun HomeScreen(
                 DailyQuote(state.today)
             }
             banner()
-            state.confirmedDays?.let { HomeProgress(it) }
+            state.confirmedDays?.let {
+                HomeProgress(it)
+                HomeToday(state, onClick = onOpenToday)
+            }
             Column(verticalArrangement = Arrangement.spacedBy(GRID), modifier = Modifier.padding(top = 8.dp)) {
                 Text(stringResource(Res.string.home_actions_title), style = MaterialTheme.typography.titleMedium)
                 HomeAction.entries.chunked(2).forEach { row ->
@@ -166,16 +170,12 @@ private val MAX_TILE_HEIGHT = 160.dp
 private val TILE_PADDING = 18.dp
 private val SAFETY_MARGIN = 6.dp
 
-/** Status of today on the tile (self-test 19.11.): "2 today" in blue, day check done in green or open in grey. */
+/** Status of today on the tile (self-test 19.11.): day check done in green or open in grey. */
 @Composable
 private fun TileBadge(action: HomeAction, state: HomeState) {
     when (action) {
-        HomeAction.LOG_MEAL -> if (state.mealsToday > 0) {
-            StatusBadge(stringResource(Res.string.home_today_count, state.mealsToday), StatusKind.NEW)
-        }
-        HomeAction.LOG_SYMPTOM -> if (state.symptomsToday > 0) {
-            StatusBadge(stringResource(Res.string.home_today_count, state.symptomsToday), StatusKind.NEW)
-        }
+        // Counts of today are in the "Your day today" card, not on the tiles.
+        HomeAction.LOG_MEAL, HomeAction.LOG_SYMPTOM -> Unit
         HomeAction.DAY_CHECK -> if (state.confirmedDays != null) {
             if (state.todayOpen) {
                 StatusBadge(stringResource(Res.string.home_day_open), StatusKind.OPEN)
