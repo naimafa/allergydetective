@@ -5,6 +5,7 @@ import allergydetective.shared.generated.resources.common_cancel
 import allergydetective.shared.generated.resources.day_today
 import allergydetective.shared.generated.resources.day_two_days_ago
 import allergydetective.shared.generated.resources.day_yesterday
+import allergydetective.shared.generated.resources.time_change
 import allergydetective.shared.generated.resources.time_other
 import allergydetective.shared.generated.resources.time_pick
 import allergydetective.shared.generated.resources.time_selected
@@ -12,10 +13,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
@@ -26,6 +36,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.nfar.allergydetective.domain.time.AppClock
 import org.jetbrains.compose.resources.stringResource
@@ -83,6 +95,41 @@ fun <T> TimeChoiceRow(
             onConfirm = {
                 showDialog = false
                 onExactSelected(it)
+            },
+            onDismiss = { showDialog = false },
+        )
+    }
+}
+
+/**
+ * "Today, 19:00 · Change" below the meal chips (self-test 19.11.): every meal shows the time that is
+ * stored and can be changed, the same way for all of them.
+ */
+@Composable
+fun TimeLine(time: ExactTime, onChange: (ExactTime) -> Unit, modifier: Modifier = Modifier) {
+    var showDialog by remember { mutableStateOf(false) }
+    Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = modifier.fillMaxWidth()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(start = 12.dp),
+        ) {
+            Icon(Icons.Outlined.Schedule, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+            Text(
+                stringResource(Res.string.time_selected, dayLabel(time.daysAgo), formatClock(time.hour, time.minute)),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            TextButton(onClick = { showDialog = true }) { Text(stringResource(Res.string.time_change)) }
+        }
+    }
+    if (showDialog) {
+        ExactTimeDialog(
+            initial = time,
+            onConfirm = {
+                showDialog = false
+                onChange(it)
             },
             onDismiss = { showDialog = false },
         )

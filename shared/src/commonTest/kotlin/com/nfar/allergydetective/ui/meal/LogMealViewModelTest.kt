@@ -75,6 +75,7 @@ class LogMealViewModelTest {
         vm.onFavoriteClick(vm.state.value.favorites.single())
 
         assertEquals(listOf(SelectedIngredient(bread), SelectedIngredient(milk, Portion.LARGE)), vm.state.value.selected)
+        vm.onSlotChange(MealSlot.BREAKFAST)
         vm.onSave()
         assertEquals(7L, repository.mealFavoriteIds.single())
     }
@@ -93,6 +94,7 @@ class LogMealViewModelTest {
     fun mealCanBeSavedAsNewFavorite() {
         val vm = viewModel()
         vm.onToggleIngredient(milk)
+        vm.onSlotChange(MealSlot.SNACK)
         vm.onSaveAsFavoriteChange(true)
 
         assertFalse(vm.state.value.canSave)
@@ -171,14 +173,18 @@ class LogMealViewModelTest {
         assertEquals(listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(milk.id, Portion.LARGE)), items)
         assertEquals(1L, vm.state.value.savedMealId)
         assertTrue(vm.state.value.selected.isEmpty())
-        assertEquals(MealSlot.LUNCH, vm.state.value.slot)
+        // The next meal starts without a preselected slot again.
+        assertNull(vm.state.value.slot)
+        assertNull(vm.state.value.shownTime)
     }
 
     @Test
     fun pickedTimeIsUsedAndNeverInTheFuture() {
         val vm = viewModel()
         vm.onToggleIngredient(bread)
+        vm.onSlotChange(MealSlot.DINNER)
         vm.onExactTimeChange(ExactTime(daysAgo = 1, hour = 19, minute = 30))
+        assertEquals(MealSlot.DINNER, vm.state.value.slot)
         vm.onSave()
 
         // Yesterday 19:30 in Berlin = 18:30 UTC
@@ -186,18 +192,53 @@ class LogMealViewModelTest {
         assertNull(vm.state.value.exactTime)
 
         vm.onToggleIngredient(bread)
+        vm.onSlotChange(MealSlot.SNACK)
         vm.onExactTimeChange(ExactTime(daysAgo = 0, hour = 23, minute = 0))
         vm.onSave()
         assertEquals(now.toEpochMilliseconds(), repository.saved.last().first)
     }
 
     @Test
-    fun slotFitsTheTimeOfDayAndIsNeverInTheFuture() {
-        // 13:00 in Berlin: lunch is preselected.
+    fun nothingIsPreselectedAndSavingAsksForTheSlot() {
+        // Self-test 19.11.: the time-based preselection ("snack") led to wrong entries.
         val vm = viewModel()
-        assertEquals(MealSlot.LUNCH, vm.state.value.slot)
+        assertNull(vm.state.value.slot)
 
         vm.onToggleIngredient(bread)
+        assertTrue(vm.state.value.canSave)
+        vm.onSave()
+
+        assertTrue(repository.saved.isEmpty())
+        assertTrue(vm.state.value.slotMissing)
+
+        vm.onSlotChange(MealSlot.LUNCH)
+        assertFalse(vm.state.value.slotMissing)
+    }
+
+    @Test
+    fun everySlotShowsTheTimeThatWillBeStored() {
+        // 13:00 in Berlin.
+        val vm = viewModel()
+
+        vm.onSlotChange(MealSlot.BREAKFAST)
+        assertEquals(ExactTime(0, 8, 0), vm.state.value.shownTime)
+        vm.onSlotChange(MealSlot.DINNER)
+        assertEquals(ExactTime(0, 13, 0), vm.state.value.shownTime)
+        vm.onSlotChange(MealSlot.SNACK)
+        assertEquals(ExactTime(0, 13, 0), vm.state.value.shownTime)
+
+        vm.onExactTimeChange(ExactTime(1, 16, 30))
+        assertEquals(ExactTime(1, 16, 30), vm.state.value.shownTime)
+        assertEquals(MealSlot.SNACK, vm.state.value.slot)
+    }
+
+    @Test
+    fun slotTimeIsNeverInTheFuture() {
+        // 13:00 in Berlin.
+        val vm = viewModel()
+
+        vm.onToggleIngredient(bread)
+        vm.onSlotChange(MealSlot.LUNCH)
         vm.onSave()
         assertEquals(Instant.parse("2026-11-17T11:30:00Z").toEpochMilliseconds(), repository.saved.last().first)
 
@@ -213,18 +254,9 @@ class LogMealViewModelTest {
     }
 
     @Test
-    fun suggestedSlotFollowsTheClock() {
-        assertEquals(MealSlot.BREAKFAST, MealSlot.suggestedAt(7, 30))
-        assertEquals(MealSlot.SNACK, MealSlot.suggestedAt(10, 45))
-        assertEquals(MealSlot.LUNCH, MealSlot.suggestedAt(12, 0))
-        assertEquals(MealSlot.SNACK, MealSlot.suggestedAt(16, 0))
-        assertEquals(MealSlot.DINNER, MealSlot.suggestedAt(19, 15))
-        assertEquals(MealSlot.SNACK, MealSlot.suggestedAt(23, 0))
-    }
-
-    @Test
     fun quickChipReplacesThePickedTime() {
         val vm = viewModel()
+        vm.onSlotChange(MealSlot.BREAKFAST)
         vm.onExactTimeChange(ExactTime(1, 8, 0))
 
         vm.onSlotChange(MealSlot.DINNER)
@@ -236,6 +268,7 @@ class LogMealViewModelTest {
     fun savedMealShowsUpAsRecentAndCanBeUndone() {
         val vm = viewModel()
         vm.onToggleIngredient(milk)
+        vm.onSlotChange(MealSlot.SNACK)
         vm.onSave()
 
         assertEquals(listOf(milk), vm.state.value.recent)
@@ -286,6 +319,7 @@ class LogMealViewModelTest {
         val vm = viewModel()
         vm.onToggleIngredient(bread)
         vm.onToggleIngredient(milk)
+        vm.onSlotChange(MealSlot.LUNCH)
 
         assertTrue(vm.state.value.missingPreparation)
         assertFalse(vm.state.value.canSave)
