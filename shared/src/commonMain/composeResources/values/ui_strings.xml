@@ -137,6 +137,7 @@
     <string name="history_sick_add">Add a period of illness</string>
     <string name="history_sick_period">Ill: %1$s</string>
     <string name="history_sick_marked">Marked as ill in the day check</string>
+    <string name="history_sick_badge">Ill</string>
     <string name="history_sick_change">Change dates</string>
     <string name="history_check_title">Day check</string>
     <string name="history_check_sleep">Sleep %1$s h</string>

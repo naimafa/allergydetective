@@ -137,6 +137,7 @@
     <string name="history_sick_add">Krankheitszeit nachtragen</string>
     <string name="history_sick_period">Krank: %1$s</string>
     <string name="history_sick_marked">Im Tagesabschluss als krank markiert</string>
+    <string name="history_sick_badge">Krank</string>
     <string name="history_sick_change">Zeitraum ändern</string>
     <string name="history_check_title">Tagesabschluss</string>
     <string name="history_check_sleep">Schlaf %1$s h</string>

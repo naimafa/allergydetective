@@ -7,6 +7,7 @@ import allergydetective.shared.generated.resources.history_day_open
 import allergydetective.shared.generated.resources.history_delete
 import allergydetective.shared.generated.resources.history_delete_question
 import allergydetective.shared.generated.resources.history_delete_sick_question
+import allergydetective.shared.generated.resources.history_sick_badge
 import allergydetective.shared.generated.resources.history_edit
 import allergydetective.shared.generated.resources.history_empty
 import allergydetective.shared.generated.resources.history_intensity
@@ -19,6 +20,7 @@ import allergydetective.shared.generated.resources.meal_slot_lunch
 import allergydetective.shared.generated.resources.weekdays_short
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -127,15 +129,20 @@ fun HistoryScreen(
         if (!state.loading && visibleDays.isEmpty()) {
             item { Text(stringResource(Res.string.history_empty)) }
         }
+        // Phone test 19.11.: a period of illness showed its full band on every day. Now the band (with
+        // dates and edit) appears once, on the newest listed day of the period; the other days get a small badge.
+        val bandDays = sickState.periods.mapNotNull { period ->
+            visibleDays.map { it.epochDay }.filter { period.contains(it, sickState.today) }.maxOrNull()
+        }.toSet()
         visibleDays.forEach { day ->
+            val period = sickState.periods.firstOrNull { it.contains(day.epochDay, sickState.today) }
+            val markedSick = day.check?.factorIds.orEmpty().any { state.factorKeys[it] == SICK_FACTOR_KEY }
             // Phone test 19.11.: with many entries the date stays visible at the top while scrolling the day.
-            stickyHeader(key = "date-${day.epochDay}") { DayHeader(day, clock) }
+            stickyHeader(key = "date-${day.epochDay}") { DayHeader(day, clock, sick = period != null || markedSick) }
             item(key = "day-${day.epochDay}") {
-                val period = sickState.periods.firstOrNull { it.contains(day.epochDay, sickState.today) }
-                val markedSick = day.check?.factorIds.orEmpty().any { state.factorKeys[it] == SICK_FACTOR_KEY }
                 DayCard(
                     day = day,
-                    sick = period != null || markedSick,
+                    sick = (period != null && day.epochDay in bandDays) || (period == null && markedSick),
                     clock = clock,
                     sickBand = { SickBand(period, onEdit = { sickActions = it }) },
                     onRelationClick = if (period != null || markedSick) { entry -> relationFor = entry } else null,
@@ -266,7 +273,7 @@ private fun DayCard(
 
 /** "Mi, 18.11.2026" and a small badge: confirmed or open. Sticky above the day card, on the screen background. */
 @Composable
-private fun DayHeader(day: HistoryDay, clock: AppClock) {
+private fun DayHeader(day: HistoryDay, clock: AppClock, sick: Boolean) {
     val date = clock.localDate(day.epochDay)
     val weekday = stringArrayResource(Res.array.weekdays_short).getOrNull(date.dayOfWeek.ordinal).orEmpty()
     val confirmed = day.status == DayCheckStatus.NO_SYMPTOMS || day.status == DayCheckStatus.COMPLETE
@@ -279,6 +286,20 @@ private fun DayHeader(day: HistoryDay, clock: AppClock) {
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.weight(1f),
         )
+        if (sick) {
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                modifier = Modifier.padding(end = 6.dp),
+            ) {
+                Text(
+                    stringResource(Res.string.history_sick_badge),
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(horizontal = 9.dp, vertical = 3.dp),
+                )
+            }
+        }
         StatusBadge(
             if (confirmed) "✓ " + stringResource(Res.string.history_day_confirmed) else stringResource(Res.string.history_day_open),
             if (confirmed) StatusKind.DONE else StatusKind.OPEN,
