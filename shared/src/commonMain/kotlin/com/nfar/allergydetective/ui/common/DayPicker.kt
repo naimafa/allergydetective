@@ -49,7 +49,9 @@ fun DayPicker(
     marked: Set<Int> = emptySet(),
 ) {
     var showCalendar by remember { mutableStateOf(false) }
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) {
+    // Phone test 19.11.: in the symptom dialog "Datum" was cut to "Dat". No check mark (the green fill
+    // marks the day), small gaps, so all three chips fit also with a large system font.
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) {
         (0..QUICK_DAYS).forEach { option ->
             AppFilterChip(
                 selected = daysAgo == option,
@@ -62,6 +64,7 @@ fun DayPicker(
             onClick = { showCalendar = true },
             label = { Text(if (daysAgo > QUICK_DAYS) shortDate(today - daysAgo) + if (daysAgo in marked) " ✓" else "" else stringResource(Res.string.day_pick_date)) },
             leadingIcon = { Icon(Icons.Outlined.CalendarMonth, contentDescription = null, modifier = Modifier.size(18.dp)) },
+            showCheck = false,
         )
     }
     if (showCalendar) {
