@@ -56,7 +56,26 @@ interface MealRepository {
 
     /** Undo of [saveMeal], removes the meal and its items. */
     suspend fun deleteMeal(mealId: Long)
+
+    /** A logged meal with its items, for editing it from the history (self-test 19.11.). */
+    suspend fun meal(mealId: Long): LoggedMeal? = null
+
+    /** Replaces time and items of a logged meal; the id stays. */
+    suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?) {
+        deleteMeal(mealId)
+        saveMeal(eatenAt, tzOffsetMin, items, favoriteId)
+    }
+
+    /** A meal logged at exactly [eatenAt], e.g. today's dinner at 19:00, or null. */
+    suspend fun mealIdAt(eatenAt: Long): Long? = null
 }
+
+data class LoggedMeal(
+    val id: Long,
+    val eatenAt: Long,
+    val items: List<MealItem>,
+    val favoriteId: Long?,
+)
 
 /** Current app language for the synonym search, e.g. "de". */
 fun interface LanguageProvider {

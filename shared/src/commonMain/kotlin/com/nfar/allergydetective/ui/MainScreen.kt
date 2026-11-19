@@ -58,6 +58,8 @@ enum class MainTab(val icon: ImageVector, val label: StringResource) {
 @Composable
 fun MainScreen(
     onHomeAction: (HomeAction) -> Unit,
+    /** Opens a logged meal from the history for editing. */
+    onEditMeal: (Long) -> Unit = {},
     profileExtra: @Composable () -> Unit = {},
     initialTab: MainTab = MainTab.HOME,
 ) {
@@ -96,7 +98,7 @@ fun MainScreen(
                     banner = { sickState.ongoing?.let { SickBanner(it, sickViewModel::onRecovered) } },
                 )
             }
-            MainTab.HISTORY -> HistoryScreen(modifier = modifier)
+            MainTab.HISTORY -> HistoryScreen(onEditMeal = onEditMeal, modifier = modifier)
             MainTab.FAVORITES -> FavoritesScreen(modifier = modifier)
             MainTab.PROFILE -> ProfileScreen(
                 modifier = modifier,

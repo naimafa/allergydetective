@@ -42,6 +42,10 @@
     <string name="day_today">Heute</string>
     <string name="day_yesterday">Gestern</string>
     <string name="day_two_days_ago">Vorgestern</string>
+    <plurals name="day_days_ago">
+        <item quantity="one">vor %1$d Tag</item>
+        <item quantity="other">vor %1$d Tagen</item>
+    </plurals>
     <string name="day_confirmed_mark">%1$s ✓</string>
     <string name="day_open_past_hint">Noch nicht abgeschlossen: %1$s. Oben antippen, um nachzutragen.</string>
     <string name="day_wellbeing">Wie ging es dir an dem Tag?</string>
@@ -102,6 +106,7 @@
         <item>So</item>
     </string-array>
     <string name="history_delete">Löschen</string>
+    <string name="history_edit">Bearbeiten</string>
     <string name="history_delete_question">Diesen Eintrag löschen? Das lässt sich nicht rückgängig machen.</string>
     <string name="favorites_empty">Noch keine Gerichte. Lege deine häufigen Gerichte mit ihren Zutaten an, dann geht das tägliche Eintragen mit einem Tipp.</string>
     <string name="favorites_add">+ Neues Gericht</string>
@@ -177,6 +182,11 @@
     <string name="meal_slot_missing">Bitte wähle zuerst, wann du gegessen hast.</string>
     <string name="meal_amount_empty">Suche oben oder tippe auf die Schnellauswahl. Deine Auswahl erscheint dann hier.</string>
     <string name="meal_save_slot">%1$s speichern</string>
+    <string name="meal_edit_title">Mahlzeit bearbeiten</string>
+    <string name="meal_existing_question">Es gibt schon ein %1$s an diesem Tag. Sollen die Zutaten dort ergänzt werden?</string>
+    <string name="meal_existing_add">Ergänzen</string>
+    <string name="meal_existing_separate">Eigene Mahlzeit</string>
+    <string name="meal_added">Zum %1$s hinzugefügt</string>
     <string name="custom_create_named">Nicht dabei? „%1$s“ als neue Zutat anlegen</string>
     <string name="custom_title">Neue Zutat</string>
     <string name="custom_name">Name</string>

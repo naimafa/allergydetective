@@ -6,6 +6,7 @@ import allergydetective.shared.generated.resources.history_day_confirmed
 import allergydetective.shared.generated.resources.history_day_open
 import allergydetective.shared.generated.resources.history_delete
 import allergydetective.shared.generated.resources.history_delete_question
+import allergydetective.shared.generated.resources.history_edit
 import allergydetective.shared.generated.resources.history_empty
 import allergydetective.shared.generated.resources.history_intensity
 import allergydetective.shared.generated.resources.history_meal
@@ -15,6 +16,7 @@ import allergydetective.shared.generated.resources.meal_slot_breakfast
 import allergydetective.shared.generated.resources.meal_slot_dinner
 import allergydetective.shared.generated.resources.meal_slot_lunch
 import allergydetective.shared.generated.resources.weekdays_short
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +29,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -67,7 +70,12 @@ import org.koin.compose.viewmodel.koinViewModel
 
 /** History (self-test 18.11.: tidied up): one card per day, entries in diary order. */
 @Composable
-fun HistoryScreen(modifier: Modifier = Modifier, viewModel: HistoryViewModel = koinViewModel(), clock: AppClock = koinInject()) {
+fun HistoryScreen(
+    onEditMeal: (Long) -> Unit = {},
+    modifier: Modifier = Modifier,
+    viewModel: HistoryViewModel = koinViewModel(),
+    clock: AppClock = koinInject(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var toDelete by remember { mutableStateOf<HistoryEntry?>(null) }
     LaunchedEffect(Unit) { viewModel.refresh() }
@@ -81,7 +89,7 @@ fun HistoryScreen(modifier: Modifier = Modifier, viewModel: HistoryViewModel = k
             item { Text(stringResource(Res.string.history_empty)) }
         }
         items(state.days, key = { "day-${it.epochDay}" }) { day ->
-            DayCard(day, clock, onDelete = { toDelete = it })
+            DayCard(day, clock, onEditMeal = onEditMeal, onDelete = { toDelete = it })
         }
     }
 
@@ -101,7 +109,7 @@ fun HistoryScreen(modifier: Modifier = Modifier, viewModel: HistoryViewModel = k
 }
 
 @Composable
-private fun DayCard(day: HistoryDay, clock: AppClock, onDelete: (HistoryEntry) -> Unit) {
+private fun DayCard(day: HistoryDay, clock: AppClock, onEditMeal: (Long) -> Unit, onDelete: (HistoryEntry) -> Unit) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
         modifier = Modifier.fillMaxWidth(),
@@ -110,7 +118,7 @@ private fun DayCard(day: HistoryDay, clock: AppClock, onDelete: (HistoryEntry) -
             DayHeader(day, clock)
             day.entries.forEachIndexed { index, entry ->
                 if (index > 0) HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                EntryRow(entry, clock, onDelete = { onDelete(entry) })
+                EntryRow(entry, clock, onEdit = (entry as? HistoryEntry.MealEntry)?.let { meal -> { onEditMeal(meal.id) } }, onDelete = { onDelete(entry) })
             }
         }
     }
@@ -145,11 +153,15 @@ private fun DayHeader(day: HistoryDay, clock: AppClock) {
     }
 }
 
-/** Time on the left, content in the middle, a small delete icon on the right. */
+/**
+ * Time on the left, content in the middle, small edit (meals, self-test 19.11.) and delete icons on the right.
+ * Tapping a meal opens it for editing, too.
+ */
 @Composable
-private fun EntryRow(entry: HistoryEntry, clock: AppClock, onDelete: () -> Unit) {
+private fun EntryRow(entry: HistoryEntry, clock: AppClock, onEdit: (() -> Unit)?, onDelete: () -> Unit) {
     val (hour, minute) = clock.localTime(entry.time)
-    Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 8.dp, bottom = 4.dp)) {
+    val rowModifier = if (onEdit != null) Modifier.clickable(onClick = onEdit) else Modifier
+    Row(verticalAlignment = Alignment.Top, modifier = rowModifier.fillMaxWidth().padding(start = 16.dp, top = 8.dp, bottom = 4.dp)) {
         Text(
             formatClock(hour, minute),
             style = MaterialTheme.typography.labelLarge,
@@ -160,6 +172,11 @@ private fun EntryRow(entry: HistoryEntry, clock: AppClock, onDelete: () -> Unit)
             when (entry) {
                 is HistoryEntry.MealEntry -> MealContent(entry, hour, minute)
                 is HistoryEntry.SymptomEntry -> SymptomContent(entry)
+            }
+        }
+        if (onEdit != null) {
+            IconButton(onClick = onEdit) {
+                Icon(Icons.Outlined.Edit, contentDescription = stringResource(Res.string.history_edit), tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         IconButton(onClick = onDelete) {
@@ -176,7 +193,7 @@ private fun EntryRow(entry: HistoryEntry, clock: AppClock, onDelete: () -> Unit)
 @Composable
 private fun MealContent(entry: HistoryEntry.MealEntry, hour: Int, minute: Int) {
     // Logged as breakfast, lunch or dinner: the time is exactly the time of that slot.
-    val slot = MealSlot.entries.firstOrNull { it != MealSlot.SNACK && it.hour == hour && it.minute == minute }
+    val slot = MealSlot.at(hour, minute)
     val label = stringResource(
         when (slot) {
             MealSlot.BREAKFAST -> Res.string.meal_slot_breakfast

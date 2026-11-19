@@ -5,6 +5,7 @@ import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.analysis.model.Preparation
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.IngredientInfo
+import com.nfar.allergydetective.domain.diary.LoggedMeal
 import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.time.AppClock
 import com.nfar.allergydetective.domain.time.MealSlot
@@ -64,6 +65,15 @@ class LogMealViewModelTest {
         override suspend fun deleteFavorite(favoriteId: Long) {
             favorites.removeAll { it.id == favoriteId }
         }
+
+        // Meal id = position in [saved] + 1.
+        override suspend fun meal(mealId: Long) =
+            saved.getOrNull(mealId.toInt() - 1)?.let { LoggedMeal(mealId, it.first, it.third, mealFavoriteIds[mealId.toInt() - 1]) }
+        override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?) {
+            saved[mealId.toInt() - 1] = Triple(eatenAt, tzOffsetMin, items)
+            mealFavoriteIds[mealId.toInt() - 1] = favoriteId
+        }
+        override suspend fun mealIdAt(eatenAt: Long) = saved.indexOfFirst { it.first == eatenAt }.takeIf { it >= 0 }?.let { it + 1L }
     }
 
     @Test
@@ -254,14 +264,100 @@ class LogMealViewModelTest {
     }
 
     @Test
-    fun quickChipReplacesThePickedTime() {
+    fun quickChipReplacesThePickedTimeButKeepsAnEarlierDay() {
         val vm = viewModel()
         vm.onSlotChange(MealSlot.BREAKFAST)
-        vm.onExactTimeChange(ExactTime(1, 8, 0))
-
-        vm.onSlotChange(MealSlot.DINNER)
-
+        vm.onExactTimeChange(ExactTime(0, 9, 15))
+        vm.onSlotChange(MealSlot.LUNCH)
         assertNull(vm.state.value.exactTime)
+
+        vm.onExactTimeChange(ExactTime(1, 8, 0))
+        vm.onSlotChange(MealSlot.DINNER)
+        assertEquals(ExactTime(1, 19, 0), vm.state.value.shownTime)
+    }
+
+    @Test
+    fun loggedMealIsEditedInPlace() {
+        // Yesterday's dinner (19:00 Berlin = 18:00 UTC) with bread.
+        val dinner = Instant.parse("2026-11-16T18:00:00Z").toEpochMilliseconds()
+        repository.saved += Triple(dinner, 60, listOf(MealItem(bread.id, Portion.MEDIUM)))
+        repository.mealFavoriteIds += null
+        val vm = viewModel()
+
+        vm.startEditing(1L)
+
+        assertEquals(1L, vm.state.value.editingMealId)
+        assertEquals(MealSlot.DINNER, vm.state.value.slot)
+        assertEquals(ExactTime(1, 19, 0), vm.state.value.shownTime)
+        assertEquals(listOf(SelectedIngredient(bread)), vm.state.value.selected)
+
+        vm.onToggleIngredient(milk)
+        vm.onSave()
+
+        assertEquals(1, repository.saved.size)
+        assertEquals(Triple(dinner, 60, listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(milk.id, Portion.MEDIUM))), repository.saved.single())
+        assertTrue(vm.state.value.finished)
+    }
+
+    @Test
+    fun secondLunchOfTheDayCanBeAddedToTheFirst() {
+        // Self-test 19.11.: a forgotten ingredient gave a second entry for the same meal.
+        val vm = viewModel()
+        vm.onToggleIngredient(bread)
+        vm.onPortionChange(bread.id, Portion.SMALL)
+        vm.onSlotChange(MealSlot.LUNCH)
+        vm.onSave()
+
+        vm.onToggleIngredient(milk)
+        vm.onToggleIngredient(bread)
+        vm.onSlotChange(MealSlot.LUNCH)
+        vm.onSave()
+
+        assertEquals(1L, vm.state.value.existingMealId)
+        assertEquals(1, repository.saved.size)
+
+        vm.onAddToExisting()
+
+        assertEquals(listOf(MealItem(milk.id, Portion.MEDIUM), MealItem(bread.id, Portion.MEDIUM)), repository.saved.single().third)
+        assertEquals(MealSlot.LUNCH, vm.state.value.addedTo)
+        assertTrue(vm.state.value.selected.isEmpty())
+    }
+
+    @Test
+    fun secondLunchCanStillBeASeparateMeal() {
+        val vm = viewModel()
+        vm.onToggleIngredient(bread)
+        vm.onSlotChange(MealSlot.LUNCH)
+        vm.onSave()
+        vm.onToggleIngredient(milk)
+        vm.onSlotChange(MealSlot.LUNCH)
+        vm.onSave()
+
+        vm.onSaveSeparately()
+
+        assertEquals(2, repository.saved.size)
+        assertNull(vm.state.value.existingMealId)
+    }
+
+    @Test
+    fun snacksAreNeverMerged() {
+        val vm = viewModel()
+        vm.onToggleIngredient(bread)
+        vm.onSlotChange(MealSlot.SNACK)
+        vm.onSave()
+        vm.onToggleIngredient(milk)
+        vm.onSlotChange(MealSlot.SNACK)
+        vm.onSave()
+
+        assertEquals(2, repository.saved.size)
+    }
+
+    @Test
+    fun mealSlotIsRecognisedByItsFixedTime() {
+        assertEquals(MealSlot.BREAKFAST, MealSlot.at(8, 0))
+        assertEquals(MealSlot.LUNCH, MealSlot.at(12, 30))
+        assertEquals(MealSlot.DINNER, MealSlot.at(19, 0))
+        assertNull(MealSlot.at(19, 1))
     }
 
     @Test
