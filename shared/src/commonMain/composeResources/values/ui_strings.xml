@@ -6,17 +6,16 @@
     <string name="home_log_symptom">Record symptoms</string>
     <string name="home_day_check">Day check</string>
     <string name="home_results">Discover patterns</string>
-    <string name="home_log_meal_hint">What did you eat?</string>
+    <string name="home_log_meal_hint">Record your meals</string>
     <string name="home_log_symptom_hint">Log complaints</string>
     <string name="home_day_check_hint">How was your day?</string>
-    <string name="home_results_hint">What belongs together?</string>
+    <string name="home_results_hint">See connections</string>
     <string name="home_heading">Your allergy diary</string>
     <string name="home_progress_title">Your progress</string>
-    <string name="home_progress_badge">Day %1$d of %2$d</string>
-    <string name="home_progress_cheer">You are on a good track!</string>
+    <string name="home_progress_badge">Day %1$d / %2$d</string>
     <plurals name="home_progress_remaining">
-        <item quantity="one">%1$d more day of collecting clues before first patterns can show.</item>
-        <item quantity="other">%1$d more days of collecting clues before first patterns can show.</item>
+        <item quantity="one">%1$d more day until the first possible evaluation.</item>
+        <item quantity="other">%1$d more days until the first possible evaluation.</item>
     </plurals>
     <string name="home_actions_title">What would you like to do today?</string>
     <string name="home_day_open">Open</string>

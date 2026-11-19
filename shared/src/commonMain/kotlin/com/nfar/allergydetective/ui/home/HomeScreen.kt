@@ -14,6 +14,12 @@ import allergydetective.shared.generated.resources.home_log_symptom_hint
 import allergydetective.shared.generated.resources.home_results
 import allergydetective.shared.generated.resources.home_results_hint
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.Column
@@ -31,7 +37,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Bedtime
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Restaurant
-import androidx.compose.material.icons.outlined.TravelExplore
+import androidx.compose.material.icons.outlined.QueryStats
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -57,7 +63,7 @@ enum class HomeAction(val label: StringResource, val hint: StringResource, val i
     LOG_MEAL(Res.string.home_log_meal, Res.string.home_log_meal_hint, Icons.Outlined.Restaurant),
     LOG_SYMPTOM(Res.string.home_log_symptom, Res.string.home_log_symptom_hint, Icons.Outlined.Bolt),
     DAY_CHECK(Res.string.home_day_check, Res.string.home_day_check_hint, Icons.Outlined.Bedtime),
-    RESULTS(Res.string.home_results, Res.string.home_results_hint, Icons.Outlined.TravelExplore),
+    RESULTS(Res.string.home_results, Res.string.home_results_hint, Icons.Outlined.QueryStats),
 }
 
 /** Dashboard (UX 2, design of 19.11.2026): heading, quote of the day, progress card and the four quick actions. */
@@ -73,6 +79,9 @@ fun HomeScreen(
     // all of them exactly the same size. Spacing on an 8 dp grid (8 / 16 / 24).
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val tileHeight = ((maxHeight * TILES_SHARE - GRID) / 2).coerceIn(MIN_TILE_HEIGHT, MAX_TILE_HEIGHT)
+        // Text width inside a tile: screen padding 2 × 16, gap, tile padding 2 × 16, and a small safety margin.
+        val textWidth = (maxWidth - 32.dp - GRID) / 2 - 32.dp - 6.dp
+        val (titleStyle, hintStyle) = sharedTileStyles(textWidth)
         Column(
             modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -93,12 +102,42 @@ fun HomeScreen(
                                 badge = { TileBadge(action, state) },
                                 onClick = { onAction(action) },
                                 modifier = Modifier.weight(1f).height(tileHeight),
+                                titleStyle = titleStyle,
+                                hintStyle = hintStyle,
                             )
                         }
                     }
                 }
             }
         }
+    }
+}
+
+/**
+ * Phone test 19.11.: at font scale 1.25 the tiles shrank their texts one by one and looked uneven.
+ * One size for all four titles and one for all four descriptions: the largest at which every text
+ * fits in one line (title 16 → 12 sp, description 12 → 10 sp, steps of 0.5 sp).
+ */
+@Composable
+private fun sharedTileStyles(textWidth: Dp): Pair<TextStyle, TextStyle> {
+    val measurer = rememberTextMeasurer()
+    val widthPx = with(LocalDensity.current) { textWidth.toPx() }
+    val titles = HomeAction.entries.map { stringResource(it.label) }
+    val hints = HomeAction.entries.map { stringResource(it.hint) }
+    val title = MaterialTheme.typography.titleMedium
+    // Without the extra letter spacing of bodySmall, so "Zusammenhänge ansehen" fits.
+    val hint = MaterialTheme.typography.bodySmall.copy(letterSpacing = 0.sp)
+    return remember(titles, hints, widthPx, title, hint) {
+        fun fitting(texts: List<String>, style: TextStyle, minSize: Float): TextStyle {
+            var size = style.fontSize.value
+            while (size > minSize) {
+                val candidate = style.copy(fontSize = size.sp)
+                if (texts.all { measurer.measure(it, candidate, maxLines = 1, softWrap = false).size.width <= widthPx }) return candidate
+                size -= 0.5f
+            }
+            return style.copy(fontSize = minSize.sp)
+        }
+        fitting(titles, title, 12f) to fitting(hints, hint, 10f)
     }
 }
 
@@ -145,11 +184,18 @@ private fun DailyQuote(epochDay: Long) {
 
 /**
  * Design of 19.11.: all four tiles follow the same rules. Same size and padding, icon top left,
- * status top right, title in the lower third with the description right below it. The description
- * always takes two lines, so every title sits on the same line; a long title grows upwards.
+ * status top right, title in the lower third with the one-line description right below it.
+ * Title and description are one line each and shrink a little with a large system font, so every title sits on the same line.
  */
 @Composable
-private fun ActionTile(action: HomeAction, badge: @Composable () -> Unit, onClick: () -> Unit, modifier: Modifier) {
+private fun ActionTile(
+    action: HomeAction,
+    badge: @Composable () -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier,
+    titleStyle: TextStyle,
+    hintStyle: TextStyle,
+) {
     val colors = tileColors(action)
     Card(
         onClick = onClick,
@@ -164,15 +210,15 @@ private fun ActionTile(action: HomeAction, badge: @Composable () -> Unit, onClic
                 badge()
             }
             Spacer(Modifier.weight(1f))
-            Text(stringResource(action.label), style = MaterialTheme.typography.titleMedium, maxLines = 2)
+            // One line each, in the size shared by all four tiles (sharedTileStyles).
+            Text(stringResource(action.label), style = titleStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(
                 stringResource(action.hint),
-                style = MaterialTheme.typography.bodySmall,
+                style = hintStyle,
                 color = colors.content.copy(alpha = 0.85f),
-                minLines = 2,
-                maxLines = 2,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(top = 2.dp),
+                modifier = Modifier.padding(top = 4.dp),
             )
         }
     }
