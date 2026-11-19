@@ -96,6 +96,9 @@ data class ExtraColors(
     val cluesAccent: Color,
     /** Emergency symptoms and the notice, always clearly visible. */
     val redFlag: Color,
+    /** Soft blue for "new entries" badges (StatusBadge). */
+    val info: Color,
+    val onInfo: Color,
 )
 
 private val LightExtra = ExtraColors(
@@ -108,6 +111,8 @@ private val LightExtra = ExtraColors(
     onClues = Color(0xFF2B2238),
     cluesAccent = Color(0xFF5E4E86),
     redFlag = Color(0xFFFFCDC8),
+    info = Color(0xFFDDEAEE),
+    onInfo = Color(0xFF24505C),
 )
 
 private val DarkExtra = ExtraColors(
@@ -120,6 +125,8 @@ private val DarkExtra = ExtraColors(
     onClues = Color(0xFFE8E2F0),
     cluesAccent = Color(0xFFCDBFE8),
     redFlag = Color(0xFF7E2B25),
+    info = Color(0xFF2A3D44),
+    onInfo = Color(0xFFCBE3EA),
 )
 
 val LocalExtraColors = staticCompositionLocalOf { LightExtra }

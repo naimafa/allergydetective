@@ -67,6 +67,8 @@ import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import com.nfar.allergydetective.domain.diary.SickPeriod
 import com.nfar.allergydetective.ui.sick.SickPeriodDialog
+import com.nfar.allergydetective.ui.common.StatusBadge
+import com.nfar.allergydetective.ui.common.StatusKind
 import com.nfar.allergydetective.ui.sick.IllnessRelationChoice
 import com.nfar.allergydetective.ui.sick.illnessRelationLabel
 import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
@@ -238,17 +240,10 @@ private fun DayHeader(day: HistoryDay, clock: AppClock) {
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.weight(1f),
         )
-        Surface(
-            shape = MaterialTheme.shapes.small,
-            color = if (confirmed) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh,
-            contentColor = if (confirmed) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-        ) {
-            Text(
-                if (confirmed) "✓ " + stringResource(Res.string.history_day_confirmed) else stringResource(Res.string.history_day_open),
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            )
-        }
+        StatusBadge(
+            if (confirmed) "✓ " + stringResource(Res.string.history_day_confirmed) else stringResource(Res.string.history_day_open),
+            if (confirmed) StatusKind.DONE else StatusKind.OPEN,
+        )
     }
 }
 

@@ -2,14 +2,14 @@
 <!-- UI texts. German in values-de. Keep both files in sync. -->
 <resources>
     <string name="home_title">Allergy Detective</string>
-    <string name="home_log_meal">Log food</string>
-    <string name="home_log_symptom">Report symptom</string>
+    <string name="home_log_meal">Record food</string>
+    <string name="home_log_symptom">Record symptoms</string>
     <string name="home_day_check">Day check</string>
-    <string name="home_results">Your clues</string>
+    <string name="home_results">Discover patterns</string>
     <string name="home_log_meal_hint">What did you eat?</string>
     <string name="home_log_symptom_hint">Log complaints</string>
     <string name="home_day_check_hint">How was your day?</string>
-    <string name="home_results_hint">See patterns</string>
+    <string name="home_results_hint">What belongs together?</string>
     <string name="home_heading">Your allergy diary</string>
     <string name="home_progress_title">Your progress</string>
     <string name="home_progress_badge">Day %1$d of %2$d</string>
@@ -20,6 +20,8 @@
     </plurals>
     <string name="home_actions_title">What would you like to do today?</string>
     <string name="home_day_open">Open</string>
+    <string name="home_day_done">Done</string>
+    <string name="home_today_count">%1$d today</string>
     <plurals name="home_progress_ready">
         <item quantity="one">%1$d confirmed day – your first evaluation is ready</item>
         <item quantity="other">%1$d confirmed days – your evaluation is ready</item>
@@ -93,8 +95,8 @@
     <string name="tab_favorites">Favourites</string>
     <string name="tab_profile">Profile</string>
     <string name="history_empty">No entries in the last 14 days.</string>
-    <string name="history_day_confirmed">day confirmed</string>
-    <string name="history_day_open">not confirmed</string>
+    <string name="history_day_confirmed">Done</string>
+    <string name="history_day_open">Open</string>
     <string name="history_intensity">strength %1$d/5</string>
     <string name="history_meal">Meal</string>
     <string-array name="weekdays_short">
@@ -130,6 +132,11 @@
     <string name="history_delete_question">Delete this entry? This cannot be undone.</string>
     <string name="favorites_empty">No dishes yet. Add the dishes you eat often with their ingredients, then daily logging takes one tap.</string>
     <string name="favorites_add">+ New dish</string>
+    <plurals name="favorites_count">
+        <item quantity="one">%1$d dish</item>
+        <item quantity="other">%1$d dishes</item>
+    </plurals>
+    <string name="favorites_more">More actions</string>
     <string name="favorites_editor_title">New dish</string>
     <string name="favorites_name">Name, e.g. lentil soup</string>
     <string name="favorites_ingredients">Ingredients</string>

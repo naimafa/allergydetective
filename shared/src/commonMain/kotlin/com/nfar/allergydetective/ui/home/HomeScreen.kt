@@ -45,7 +45,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.nfar.allergydetective.ui.common.StatusBadge
+import com.nfar.allergydetective.ui.common.StatusKind
 import com.nfar.allergydetective.ui.theme.AppColors
+import allergydetective.shared.generated.resources.home_day_done
+import allergydetective.shared.generated.resources.home_today_count
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
@@ -84,7 +88,7 @@ fun HomeScreen(
                     row.forEach { action ->
                         ActionTile(
                             action,
-                            open = action == HomeAction.DAY_CHECK && state.todayOpen,
+                            badge = { TileBadge(action, state) },
                             onClick = { onAction(action) },
                             modifier = Modifier.weight(1f),
                         )
@@ -92,6 +96,27 @@ fun HomeScreen(
                 }
             }
         }
+    }
+}
+
+/** Status of today on the tile (self-test 19.11.): "2 today" in blue, day check done in green or open in grey. */
+@Composable
+private fun TileBadge(action: HomeAction, state: HomeState) {
+    when (action) {
+        HomeAction.LOG_MEAL -> if (state.mealsToday > 0) {
+            StatusBadge(stringResource(Res.string.home_today_count, state.mealsToday), StatusKind.NEW)
+        }
+        HomeAction.LOG_SYMPTOM -> if (state.symptomsToday > 0) {
+            StatusBadge(stringResource(Res.string.home_today_count, state.symptomsToday), StatusKind.NEW)
+        }
+        HomeAction.DAY_CHECK -> if (state.confirmedDays != null) {
+            if (state.todayOpen) {
+                StatusBadge(stringResource(Res.string.home_day_open), StatusKind.OPEN)
+            } else {
+                StatusBadge(stringResource(Res.string.home_day_done), StatusKind.DONE)
+            }
+        }
+        HomeAction.RESULTS -> Unit
     }
 }
 
@@ -111,7 +136,7 @@ private fun DailyQuote(epochDay: Long) {
  * the icon without its circle, and the title may wrap to a second line instead of being clipped.
  */
 @Composable
-private fun ActionTile(action: HomeAction, open: Boolean, onClick: () -> Unit, modifier: Modifier) {
+private fun ActionTile(action: HomeAction, badge: @Composable () -> Unit, onClick: () -> Unit, modifier: Modifier) {
     val colors = tileColors(action)
     Card(
         onClick = onClick,
@@ -126,15 +151,7 @@ private fun ActionTile(action: HomeAction, open: Boolean, onClick: () -> Unit, m
             Row(verticalAlignment = Alignment.Top) {
                 Icon(action.icon, contentDescription = null, tint = colors.accent, modifier = Modifier.size(28.dp))
                 Spacer(Modifier.weight(1f))
-                if (open) {
-                    Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceContainerLowest, contentColor = colors.accent) {
-                        Text(
-                            stringResource(Res.string.home_day_open),
-                            style = MaterialTheme.typography.labelMedium,
-                            modifier = Modifier.padding(horizontal = 9.dp, vertical = 3.dp),
-                        )
-                    }
-                }
+                badge()
             }
             Column(verticalArrangement = Arrangement.spacedBy(2.dp), modifier = Modifier.padding(top = 12.dp)) {
                 Text(stringResource(action.label), style = MaterialTheme.typography.titleMedium, maxLines = 2)

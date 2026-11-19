@@ -2,14 +2,14 @@
 <!-- UI-Texte. Englisch in values. Beide Dateien synchron halten. -->
 <resources>
     <string name="home_title">Allergie-Detektiv</string>
-    <string name="home_log_meal">Essen loggen</string>
-    <string name="home_log_symptom">Symptom melden</string>
+    <string name="home_log_meal">Essen erfassen</string>
+    <string name="home_log_symptom">Symptome erfassen</string>
     <string name="home_day_check">Tagesabschluss</string>
-    <string name="home_results">Deine Spuren</string>
+    <string name="home_results">Muster entdecken</string>
     <string name="home_log_meal_hint">Was hast du gegessen?</string>
     <string name="home_log_symptom_hint">Beschwerden eintragen</string>
     <string name="home_day_check_hint">Wie war dein Tag?</string>
-    <string name="home_results_hint">Muster ansehen</string>
+    <string name="home_results_hint">Was hängt zusammen?</string>
     <string name="home_heading">Dein Allergie-Tagebuch</string>
     <string name="home_progress_title">Dein Fortschritt</string>
     <string name="home_progress_badge">Tag %1$d von %2$d</string>
@@ -20,6 +20,8 @@
     </plurals>
     <string name="home_actions_title">Was möchtest du heute machen?</string>
     <string name="home_day_open">Offen</string>
+    <string name="home_day_done">Erledigt</string>
+    <string name="home_today_count">%1$d heute</string>
     <plurals name="home_progress_ready">
         <item quantity="one">%1$d bestätigter Tag – deine erste Auswertung ist bereit</item>
         <item quantity="other">%1$d bestätigte Tage – deine Auswertung ist bereit</item>
@@ -93,8 +95,8 @@
     <string name="tab_favorites">Favoriten</string>
     <string name="tab_profile">Profil</string>
     <string name="history_empty">Keine Einträge in den letzten 14 Tagen.</string>
-    <string name="history_day_confirmed">Tag bestätigt</string>
-    <string name="history_day_open">nicht bestätigt</string>
+    <string name="history_day_confirmed">Erledigt</string>
+    <string name="history_day_open">Offen</string>
     <string name="history_intensity">Stärke %1$d/5</string>
     <string name="history_meal">Mahlzeit</string>
     <string-array name="weekdays_short">
@@ -130,6 +132,11 @@
     <string name="history_delete_question">Diesen Eintrag löschen? Das lässt sich nicht rückgängig machen.</string>
     <string name="favorites_empty">Noch keine Gerichte. Lege deine häufigen Gerichte mit ihren Zutaten an, dann geht das tägliche Eintragen mit einem Tipp.</string>
     <string name="favorites_add">+ Neues Gericht</string>
+    <plurals name="favorites_count">
+        <item quantity="one">%1$d Gericht</item>
+        <item quantity="other">%1$d Gerichte</item>
+    </plurals>
+    <string name="favorites_more">Weitere Aktionen</string>
     <string name="favorites_editor_title">Neues Gericht</string>
     <string name="favorites_name">Name, z.B. Linsensuppe</string>
     <string name="favorites_ingredients">Zutaten</string>

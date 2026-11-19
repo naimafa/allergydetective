@@ -4,6 +4,8 @@ import com.nfar.allergydetective.domain.diary.DayCheckData
 import com.nfar.allergydetective.domain.diary.DayCheckRepository
 import com.nfar.allergydetective.domain.diary.DayCheckStatus
 import com.nfar.allergydetective.domain.diary.FactorInfo
+import com.nfar.allergydetective.domain.diary.HistoryEntry
+import com.nfar.allergydetective.domain.diary.HistoryRepository
 import com.nfar.allergydetective.domain.time.AppClock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,7 +53,25 @@ class HomeViewModelTest {
     @AfterTest
     fun tearDown() = Dispatchers.resetMain()
 
-    private fun refreshedState(): HomeState = HomeViewModel(repository, clock).apply { refresh() }.state.value
+    private val entries = mutableListOf<HistoryEntry>()
+    private val history = object : HistoryRepository {
+        override suspend fun entriesSince(fromMillis: Long) = entries.filter { it.time >= fromMillis }
+    }
+
+    private fun refreshedState(): HomeState = HomeViewModel(repository, history, clock).apply { refresh() }.state.value
+
+    @Test
+    fun todaysMealsAndSymptomsAreCounted() {
+        entries += HistoryEntry.MealEntry(1, clock.millisAt(today, 8, 0), emptyList())
+        entries += HistoryEntry.MealEntry(2, clock.millisAt(today, 12, 30), emptyList())
+        entries += HistoryEntry.MealEntry(3, clock.millisAt(today - 1, 19, 0), emptyList())
+        entries += HistoryEntry.SymptomEntry(4, clock.millisAt(today, 14, 0), "bloating", 3, null)
+
+        val state = refreshedState()
+
+        assertEquals(2, state.mealsToday)
+        assertEquals(1, state.symptomsToday)
+    }
 
     @Test
     fun todayIsOpenUntilItIsConfirmed() {
