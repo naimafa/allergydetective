@@ -55,7 +55,7 @@
     <string name="symptom_itching">Itching</string>
     <string name="symptom_hives">Hives</string>
     <string name="symptom_swelling">Swelling</string>
-    <string name="symptom_eczema">Dry patches / eczema</string>
+    <string name="symptom_eczema">Dry skin</string>
     <string name="symptom_headache">Headache</string>
     <string name="symptom_dizziness">Dizziness</string>
     <string name="symptom_migraine">Migraine</string>
@@ -65,9 +65,9 @@
     <string name="symptom_runny_nose">Runny nose</string>
     <string name="symptom_blocked_nose">Blocked nose</string>
     <string name="symptom_dry_cough">Dry cough</string>
-    <string name="symptom_shortness_of_breath">Shortness of breath</string>
-    <string name="symptom_mouth_tingling">Tingling mouth / lips</string>
-    <string name="symptom_itchy_eyes">Itchy / watery eyes</string>
+    <string name="symptom_shortness_of_breath">Short of breath</string>
+    <string name="symptom_mouth_tingling">Tingling mouth</string>
+    <string name="symptom_itchy_eyes">Itchy eyes</string>
     <string name="symptom_other">Other</string>
     <string name="ingredient_white_bread">White bread / wheat roll</string>
     <string name="ingredient_wholemeal_wheat_bread">Wholemeal bread (wheat)</string>
