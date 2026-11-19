@@ -40,10 +40,14 @@ data class HistoryState(
     /** Lifestyle factor keys by id, to name the factors of a day check. */
     val factorKeys: Map<Long, String> = emptyMap(),
 ) {
-    /** Days and entries that match [filter]; a day without matching content is left out. */
-    val visibleDays: List<HistoryDay> get() = when (filter) {
+    /**
+     * Days and entries that match [filter]; a day without matching content is left out.
+     * [sickDays]: "Days" also shows an ill day without a day check (phone test 19.11.: it was
+     * missing there but shown under "All").
+     */
+    fun visibleDays(sickDays: Set<Long> = emptySet()): List<HistoryDay> = when (filter) {
         HistoryFilter.ALL -> days
-        HistoryFilter.DAYS -> days.filter { it.check != null }.map { it.copy(entries = emptyList()) }
+        HistoryFilter.DAYS -> days.filter { it.check != null || it.epochDay in sickDays }.map { it.copy(entries = emptyList()) }
         HistoryFilter.FOOD -> days.map { day -> day.copy(entries = day.entries.filterIsInstance<HistoryEntry.MealEntry>()) }
             .filter { it.entries.isNotEmpty() }
         HistoryFilter.SYMPTOMS -> days.map { day -> day.copy(entries = day.entries.filterIsInstance<HistoryEntry.SymptomEntry>()) }

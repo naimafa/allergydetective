@@ -15,6 +15,8 @@ import allergydetective.shared.generated.resources.favorites_replace
 import allergydetective.shared.generated.resources.favorites_same_name
 import allergydetective.shared.generated.resources.history_delete
 import allergydetective.shared.generated.resources.favorites_count
+import allergydetective.shared.generated.resources.favorites_delete_question
+import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import allergydetective.shared.generated.resources.favorites_more
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -83,6 +85,7 @@ fun FavoritesScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var showEditor by remember { mutableStateOf(false) }
+    var toDelete by remember { mutableStateOf<FavoriteInfo?>(null) }
     LaunchedEffect(Unit) { viewModel.refresh() }
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -122,7 +125,7 @@ fun FavoritesScreen(
                     editor.start(favorite)
                     showEditor = true
                 },
-                onDelete = { viewModel.onDelete(favorite.id) },
+                onDelete = { toDelete = favorite },
             )
         }
         item {
@@ -134,6 +137,20 @@ fun FavoritesScreen(
                 modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
             ) { Text(stringResource(Res.string.favorites_add)) }
         }
+    }
+    // Feedback 19.11.: every delete asks first.
+    toDelete?.let { dish ->
+        AlertDialog(
+            onDismissRequest = { toDelete = null },
+            text = { Text(stringResource(Res.string.favorites_delete_question, dish.name)) },
+            confirmButton = {
+                Button(onClick = {
+                    viewModel.onDelete(dish.id)
+                    toDelete = null
+                }) { Text(stringResource(Res.string.history_delete)) }
+            },
+            dismissButton = { TextButton(onClick = { toDelete = null }) { Text(stringResource(Res.string.common_cancel)) } },
+        )
     }
     if (showEditor) {
         DishEditorDialog(

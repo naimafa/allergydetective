@@ -6,6 +6,7 @@ import allergydetective.shared.generated.resources.history_day_confirmed
 import allergydetective.shared.generated.resources.history_day_open
 import allergydetective.shared.generated.resources.history_delete
 import allergydetective.shared.generated.resources.history_delete_question
+import allergydetective.shared.generated.resources.history_delete_sick_question
 import allergydetective.shared.generated.resources.history_edit
 import allergydetective.shared.generated.resources.history_empty
 import allergydetective.shared.generated.resources.history_intensity
@@ -16,6 +17,8 @@ import allergydetective.shared.generated.resources.meal_slot_breakfast
 import allergydetective.shared.generated.resources.meal_slot_dinner
 import allergydetective.shared.generated.resources.meal_slot_lunch
 import allergydetective.shared.generated.resources.weekdays_short
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -84,6 +87,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * History: one card per day, entries in diary order (self-test 18.11.). Since 19.11.: filter chips,
  * the day check of each day and periods of illness as a band that can be changed.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HistoryScreen(
     onEditMeal: (Long) -> Unit = {},
@@ -100,41 +104,47 @@ fun HistoryScreen(
     var sickEditing by remember { mutableStateOf<SickPeriod?>(null) }
     var relationFor by remember { mutableStateOf<HistoryEntry.SymptomEntry?>(null) }
     var favoriteFor by remember { mutableStateOf<Long?>(null) }
+    var sickToDelete by remember { mutableStateOf<SickPeriod?>(null) }
     LaunchedEffect(Unit) {
         viewModel.refresh()
         sickViewModel.refresh()
     }
 
+    val sickDays = state.days.map { it.epochDay }.filter { day -> sickState.periods.any { it.contains(day, sickState.today) } }.toSet()
+    val visibleDays = state.visibleDays(sickDays)
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
     ) {
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.padding(top = 16.dp)) {
                 HistoryFilterRow(state.filter, viewModel::onFilterChange)
                 TextButton(onClick = { sickEditing = SickPeriod(0, sickState.today, null) }) {
                     Text("+ " + stringResource(Res.string.history_sick_add))
                 }
             }
         }
-        if (!state.loading && state.visibleDays.isEmpty()) {
+        if (!state.loading && visibleDays.isEmpty()) {
             item { Text(stringResource(Res.string.history_empty)) }
         }
-        items(state.visibleDays, key = { "day-${it.epochDay}" }) { day ->
-            val period = sickState.periods.firstOrNull { it.contains(day.epochDay, sickState.today) }
-            val markedSick = day.check?.factorIds.orEmpty().any { state.factorKeys[it] == SICK_FACTOR_KEY }
-            DayCard(
-                day = day,
-                clock = clock,
-                sick = period != null || markedSick,
-                sickBand = { SickBand(period, onEdit = { sickActions = it }) },
-                onRelationClick = if (period != null || markedSick) { entry -> relationFor = entry } else null,
-                dayCheck = if (state.showsDayChecks) day.check?.let { { DayCheckRow(it, state.factorKeys) } } else null,
-                onEditMeal = onEditMeal,
-                onDelete = { toDelete = it },
-                onSaveFavorite = { favoriteFor = it },
-            )
+        visibleDays.forEach { day ->
+            // Phone test 19.11.: with many entries the date stays visible at the top while scrolling the day.
+            stickyHeader(key = "date-${day.epochDay}") { DayHeader(day, clock) }
+            item(key = "day-${day.epochDay}") {
+                val period = sickState.periods.firstOrNull { it.contains(day.epochDay, sickState.today) }
+                val markedSick = day.check?.factorIds.orEmpty().any { state.factorKeys[it] == SICK_FACTOR_KEY }
+                DayCard(
+                    day = day,
+                    sick = period != null || markedSick,
+                    clock = clock,
+                    sickBand = { SickBand(period, onEdit = { sickActions = it }) },
+                    onRelationClick = if (period != null || markedSick) { entry -> relationFor = entry } else null,
+                    dayCheck = if (state.showsDayChecks) day.check?.let { { DayCheckRow(it, state.factorKeys) } } else null,
+                    onEditMeal = onEditMeal,
+                    onDelete = { toDelete = it },
+                    onSaveFavorite = { favoriteFor = it },
+                )
+            }
         }
     }
 
@@ -147,9 +157,23 @@ fun HistoryScreen(
             },
             onDelete = {
                 sickActions = null
-                sickViewModel.onDelete(period.id)
+                sickToDelete = period
             },
             onDismiss = { sickActions = null },
+        )
+    }
+    // Feedback 19.11.: every delete asks first.
+    sickToDelete?.let { period ->
+        AlertDialog(
+            onDismissRequest = { sickToDelete = null },
+            text = { Text(stringResource(Res.string.history_delete_sick_question)) },
+            confirmButton = {
+                Button(onClick = {
+                    sickViewModel.onDelete(period.id)
+                    sickToDelete = null
+                }) { Text(stringResource(Res.string.history_delete)) }
+            },
+            dismissButton = { TextButton(onClick = { sickToDelete = null }) { Text(stringResource(Res.string.common_cancel)) } },
         )
     }
     favoriteFor?.let { mealId ->
@@ -220,7 +244,6 @@ private fun DayCard(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
-            DayHeader(day, clock)
             if (sick) sickBand()
             dayCheck?.let {
                 it()
@@ -241,7 +264,7 @@ private fun DayCard(
     }
 }
 
-/** "Mi, 18.11.2026" and a small badge: confirmed or open. */
+/** "Mi, 18.11.2026" and a small badge: confirmed or open. Sticky above the day card, on the screen background. */
 @Composable
 private fun DayHeader(day: HistoryDay, clock: AppClock) {
     val date = clock.localDate(day.epochDay)
@@ -249,7 +272,7 @@ private fun DayHeader(day: HistoryDay, clock: AppClock) {
     val confirmed = day.status == DayCheckStatus.NO_SYMPTOMS || day.status == DayCheckStatus.COMPLETE
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp),
+        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).padding(start = 4.dp, end = 4.dp, top = 16.dp, bottom = 8.dp),
     ) {
         Text(
             "$weekday, ${formatDate(date, Locale.current.language)}",
