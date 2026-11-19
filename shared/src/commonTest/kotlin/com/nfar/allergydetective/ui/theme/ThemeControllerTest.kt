@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 
 class ThemeControllerTest {
 
-    private class FakeStore(var saved: ThemeMode = ThemeMode.SYSTEM) : SettingsStore {
+    private class FakeStore(var saved: ThemeMode = ThemeMode.AUTO) : SettingsStore {
         override fun reminder() = ReminderSettings()
         override fun saveReminder(settings: ReminderSettings) = Unit
         override fun themeMode() = saved
@@ -30,12 +30,22 @@ class ThemeControllerTest {
     }
 
     @Test
-    fun withoutAChoiceTheAppFollowsTheSystem() {
+    fun automaticIsDarkFromEightInTheEveningToSevenInTheMorning() {
+        assertEquals(true, ThemeMode.isNight(20))
+        assertEquals(true, ThemeMode.isNight(23))
+        assertEquals(true, ThemeMode.isNight(0))
+        assertEquals(true, ThemeMode.isNight(6))
+        assertEquals(false, ThemeMode.isNight(7))
+        assertEquals(false, ThemeMode.isNight(19))
+    }
+
+    @Test
+    fun withoutAChoiceTheAppIsAutomatic() {
         val store = object : SettingsStore {
             override fun reminder() = ReminderSettings()
             override fun saveReminder(settings: ReminderSettings) = Unit
         }
 
-        assertEquals(ThemeMode.SYSTEM, ThemeController(store).mode.value)
+        assertEquals(ThemeMode.AUTO, ThemeController(store).mode.value)
     }
 }

@@ -28,7 +28,7 @@ class UserDefaultsSettingsStore : SettingsStore {
     }
 
     override fun themeMode(): ThemeMode =
-        defaults.stringForKey(KEY_THEME)?.let { name -> ThemeMode.entries.firstOrNull { it.name == name } } ?: ThemeMode.SYSTEM
+        defaults.stringForKey(KEY_THEME)?.let { name -> ThemeMode.entries.firstOrNull { it.name == name } } ?: ThemeMode.AUTO
 
     override fun saveThemeMode(mode: ThemeMode) {
         defaults.setObject(mode.name, KEY_THEME)

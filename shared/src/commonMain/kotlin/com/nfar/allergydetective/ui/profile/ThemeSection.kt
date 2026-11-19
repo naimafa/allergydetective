@@ -4,7 +4,7 @@ import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.theme_dark
 import allergydetective.shared.generated.resources.theme_hint
 import allergydetective.shared.generated.resources.theme_light
-import allergydetective.shared.generated.resources.theme_system
+import allergydetective.shared.generated.resources.theme_auto
 import allergydetective.shared.generated.resources.theme_title
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,7 +23,7 @@ import com.nfar.allergydetective.ui.theme.ThemeController
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-/** Profile: "Like the system · Light · Dark" (feedback 19.11.: dark mode for the night). */
+/** Profile: "Automatic · Light · Dark" (feedback 19.11.: dark mode for the night). */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ThemeSection(controller: ThemeController = koinInject()) {
@@ -39,7 +39,7 @@ fun ThemeSection(controller: ThemeController = koinInject()) {
                         Text(
                             stringResource(
                                 when (option) {
-                                    ThemeMode.SYSTEM -> Res.string.theme_system
+                                    ThemeMode.AUTO -> Res.string.theme_auto
                                     ThemeMode.LIGHT -> Res.string.theme_light
                                     ThemeMode.DARK -> Res.string.theme_dark
                                 },

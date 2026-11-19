@@ -88,10 +88,10 @@
     <string name="export_hint">Your entries and the analysis numbers as a JSON file, without notes. You choose where to send it. Useful for checking the thresholds after the first week.</string>
     <string name="export_button">Export as JSON</string>
     <string name="theme_title">Appearance</string>
-    <string name="theme_system">Like system</string>
+    <string name="theme_auto">Automatic</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
-    <string name="theme_hint">Dark is easier on the eyes in the evening and at night. "Like system" follows your phone, including a scheduled night mode.</string>
+    <string name="theme_hint">Automatic: dark in the evening and at night (8 pm – 7 am), light during the day. If your phone itself is dark, the app stays dark too.</string>
     <string name="reminder_setting">Evening reminder</string>
     <string name="reminder_setting_hint">A daily notice for the day check. Skipped when the day is already confirmed.</string>
     <string name="reminder_denied">Notifications are turned off for this app. You can allow them in the system settings.</string>

@@ -54,7 +54,7 @@ class SharedPreferencesSettingsStore(context: Context) : SettingsStore {
     }
 
     override fun themeMode(): ThemeMode =
-        prefs.getString(KEY_THEME, null)?.let { name -> ThemeMode.entries.firstOrNull { it.name == name } } ?: ThemeMode.SYSTEM
+        prefs.getString(KEY_THEME, null)?.let { name -> ThemeMode.entries.firstOrNull { it.name == name } } ?: ThemeMode.AUTO
 
     override fun saveThemeMode(mode: ThemeMode) {
         prefs.edit().putString(KEY_THEME, mode.name).apply()
