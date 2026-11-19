@@ -4,13 +4,21 @@
     <string name="home_title">Allergie-Detektiv</string>
     <string name="home_log_meal">Essen loggen</string>
     <string name="home_log_symptom">Symptom melden</string>
-    <string name="home_day_check">Tages-Abschluss</string>
+    <string name="home_day_check">Tagesabschluss</string>
     <string name="home_results">Deine Spuren</string>
     <string name="home_log_meal_hint">Was hast du gegessen?</string>
     <string name="home_log_symptom_hint">Beschwerden eintragen</string>
     <string name="home_day_check_hint">Wie war dein Tag?</string>
     <string name="home_results_hint">Muster ansehen</string>
-    <string name="home_progress_collecting">Tag %1$d von %2$d – wir sammeln Spuren</string>
+    <string name="home_heading">Dein Allergie-Tagebuch</string>
+    <string name="home_progress_title">Dein Fortschritt</string>
+    <string name="home_progress_badge">Tag %1$d von %2$d</string>
+    <plurals name="home_progress_remaining">
+        <item quantity="one">Noch %1$d Tag bis zur ersten möglichen Auswertung.</item>
+        <item quantity="other">Noch %1$d Tage bis zur ersten möglichen Auswertung.</item>
+    </plurals>
+    <string name="home_actions_title">Was möchtest du heute machen?</string>
+    <string name="home_day_open">Offen</string>
     <plurals name="home_progress_ready">
         <item quantity="one">%1$d bestätigter Tag – deine erste Auswertung ist bereit</item>
         <item quantity="other">%1$d bestätigte Tage – deine Auswertung ist bereit</item>
@@ -70,7 +78,7 @@
     <string name="export_hint">Deine Einträge und die Kennzahlen der Analyse als JSON-Datei, ohne Notizen. Wohin sie geht, entscheidest du. Hilfreich, um nach der ersten Woche die Schwellenwerte zu prüfen.</string>
     <string name="export_button">Als JSON exportieren</string>
     <string name="reminder_setting">Abend-Erinnerung</string>
-    <string name="reminder_setting_hint">Ein täglicher Hinweis zum Tages-Abschluss. Entfällt, wenn der Tag schon bestätigt ist.</string>
+    <string name="reminder_setting_hint">Ein täglicher Hinweis zum Tagesabschluss. Entfällt, wenn der Tag schon bestätigt ist.</string>
     <string name="reminder_denied">Benachrichtigungen sind für die App ausgeschaltet. Du kannst sie in den Systemeinstellungen erlauben.</string>
     <string name="reminder_channel">Abend-Erinnerung</string>
     <string name="reminder_title">Detektiv-Stunde 🕵️</string>
@@ -115,7 +123,7 @@
     <string name="onboarding_how_symptom">Hast du Beschwerden, trag sie ein, mit Stärke und Tageszeit.</string>
     <string name="onboarding_how_check">Abends schließt du den Tag ab: Wie ging es dir, wie hast du geschlafen? Auch Tage ohne Beschwerden sind wichtig.</string>
     <string name="onboarding_patience_title">Etwas Geduld lohnt sich</string>
-    <string name="onboarding_patience_text">Nach etwa einer Woche mit abgeschlossenen Tagen zeigt die App erste Muster. Je länger du dabei bleibst, desto klarer werden sie. Krankheitstage (z.B. eine Erkältung) markierst du im Tages-Abschluss, sie zählen dann nicht mit.</string>
+    <string name="onboarding_patience_text">Nach etwa einer Woche mit abgeschlossenen Tagen zeigt die App erste Muster. Je länger du dabei bleibst, desto klarer werden sie. Krankheitstage (z.B. eine Erkältung) markierst du im Tagesabschluss, sie zählen dann nicht mit.</string>
     <string name="onboarding_dishes_title">Tipp: deine häufigen Gerichte</string>
     <string name="onboarding_dishes_text">Lege die Gerichte, die du oft isst, einmal mit ihren Zutaten an, z.B. Linsensuppe = Linsen, Tomaten, Karotten. Danach trägst du sie jeden Tag mit einem Tipp ein.</string>
     <string name="onboarding_dishes_start">Gerichte jetzt anlegen</string>
