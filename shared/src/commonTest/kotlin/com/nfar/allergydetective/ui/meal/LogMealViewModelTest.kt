@@ -192,6 +192,7 @@ class LogMealViewModelTest {
     fun pickedTimeIsUsedAndNeverInTheFuture() {
         val vm = viewModel()
         vm.onToggleIngredient(bread)
+        vm.onDayChange(1)
         vm.onSlotChange(MealSlot.DINNER)
         vm.onExactTimeChange(ExactTime(daysAgo = 1, hour = 19, minute = 30))
         assertEquals(MealSlot.DINNER, vm.state.value.slot)
@@ -202,6 +203,8 @@ class LogMealViewModelTest {
         assertNull(vm.state.value.exactTime)
 
         vm.onToggleIngredient(bread)
+        // The day row stays on yesterday after saving; back to today.
+        vm.onDayChange(0)
         vm.onSlotChange(MealSlot.SNACK)
         vm.onExactTimeChange(ExactTime(daysAgo = 0, hour = 23, minute = 0))
         vm.onSave()
@@ -237,7 +240,8 @@ class LogMealViewModelTest {
         vm.onSlotChange(MealSlot.SNACK)
         assertEquals(ExactTime(0, 13, 0), vm.state.value.shownTime)
 
-        vm.onExactTimeChange(ExactTime(1, 16, 30))
+        vm.onDayChange(1)
+        vm.onExactTimeChange(ExactTime(0, 16, 30))
         assertEquals(ExactTime(1, 16, 30), vm.state.value.shownTime)
         assertEquals(MealSlot.SNACK, vm.state.value.slot)
     }
@@ -271,7 +275,8 @@ class LogMealViewModelTest {
         vm.onSlotChange(MealSlot.LUNCH)
         assertNull(vm.state.value.exactTime)
 
-        vm.onExactTimeChange(ExactTime(1, 8, 0))
+        vm.onDayChange(1)
+        vm.onExactTimeChange(ExactTime(0, 8, 0))
         vm.onSlotChange(MealSlot.DINNER)
         assertEquals(ExactTime(1, 19, 0), vm.state.value.shownTime)
     }

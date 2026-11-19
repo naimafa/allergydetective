@@ -60,6 +60,7 @@
     <string name="day_today">Heute</string>
     <string name="day_yesterday">Gestern</string>
     <string name="day_two_days_ago">Vorgestern</string>
+    <string name="day_pick_date">Datum …</string>
     <plurals name="day_days_ago">
         <item quantity="one">vor %1$d Tag</item>
         <item quantity="other">vor %1$d Tagen</item>

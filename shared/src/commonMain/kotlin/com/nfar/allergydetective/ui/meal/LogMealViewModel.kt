@@ -18,7 +18,6 @@ import com.nfar.allergydetective.domain.time.MealSlot
 import com.nfar.allergydetective.domain.time.timeOf
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
 import com.nfar.allergydetective.ui.common.ExactTime
-import com.nfar.allergydetective.ui.common.MAX_DAYS_BACK
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.timeOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -70,7 +69,7 @@ class LogMealViewModel(
         val recent = recentIngredients()
         val favorites = repository.favorites()
         _state.update {
-            it.copy(loading = false, recent = recent, favorites = favorites, needsPreparation = needsPreparation).withAllergies(allergies)
+            it.copy(loading = false, today = clock.today(), recent = recent, favorites = favorites, needsPreparation = needsPreparation).withAllergies(allergies)
         }
     }
 
@@ -88,6 +87,7 @@ class LogMealViewModel(
                     slot = MealSlot.at(hour, minute) ?: MealSlot.SNACK,
                     slotTime = null,
                     exactTime = ExactTime(daysAgo, hour, minute),
+                    day = daysAgo,
                     favoriteId = meal.favoriteId,
                     selected = meal.items.mapNotNull { item ->
                         ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation) }
@@ -106,20 +106,13 @@ class LogMealViewModel(
         }
     }
 
-    /** Earlier day chosen in the history; the next meal after saving starts there again. */
-    private var pastDaysAgo = 0
-
-    private fun pastDayTime(): ExactTime? = pastDaysAgo.takeIf { it > 0 }?.let { ExactTime(it, PAST_DAY_HOUR, 0) }
 
     /**
      * "+ Essen" on a day in the history (feedback 19.11.): the form starts on that day; choosing
      * breakfast, lunch or dinner keeps the day (onSlotChange).
      */
     fun startForDay(daysAgo: Int) {
-        val day = daysAgo.coerceIn(0, MAX_DAYS_BACK)
-        if (day == 0) return
-        pastDaysAgo = day
-        _state.update { it.copy(exactTime = pastDayTime()) }
+        onDayChange(daysAgo)
     }
 
     /** A custom ingredient was created: make it searchable and select it. */
@@ -151,18 +144,32 @@ class LogMealViewModel(
     }
 
     /** Today: the slot's default time. An earlier day (a picked or edited time) keeps its day. */
+    /** The day row (feedback 19.11.): today or up to five days back; the meal's time follows. */
+    fun onDayChange(daysAgo: Int) {
+        val day = daysAgo.coerceAtLeast(0)
+        _state.update { it.copy(day = day) }
+        _state.value.slot?.let(::onSlotChange)
+    }
+
+    /** Today: the slot's default time. An earlier day: the slot's fixed time on that day (snack keeps its clock time). */
     fun onSlotChange(slot: MealSlot) {
-        val shown = _state.value.shownTime
-        if (shown == null || shown.daysAgo == 0) {
+        val day = _state.value.day
+        if (day == 0) {
             _state.update { it.copy(slot = slot, slotTime = defaultTimeOf(slot), exactTime = null, slotMissing = false) }
         } else {
-            val time = if (slot == MealSlot.SNACK) shown else ExactTime(shown.daysAgo, slot.hour, slot.minute)
+            val shown = _state.value.shownTime
+            val time = if (slot == MealSlot.SNACK) {
+                ExactTime(day, shown?.hour ?: PAST_DAY_HOUR, shown?.minute ?: 0)
+            } else {
+                ExactTime(day, slot.hour, slot.minute)
+            }
             _state.update { it.copy(slot = slot, slotTime = null, exactTime = time, slotMissing = false) }
         }
     }
 
+    /** The time dialog only changes the clock time; the day comes from the day row. */
     fun onExactTimeChange(time: ExactTime) {
-        _state.update { it.copy(exactTime = time) }
+        _state.update { it.copy(exactTime = time.copy(daysAgo = it.day)) }
     }
 
     /** Adds the ingredient, or removes it when it is already selected. Clears the search. */
@@ -307,7 +314,7 @@ class LogMealViewModel(
                 selected = emptyList(),
                 slot = null,
                 slotTime = null,
-                exactTime = pastDayTime(),
+                exactTime = null,
                 slotMissing = false,
                 favoriteId = null,
                 saveAsFavorite = false,

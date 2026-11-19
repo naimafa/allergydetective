@@ -77,7 +77,9 @@ class LogSymptomViewModelTest {
         vm.startEditing(1L)
         assertEquals(ExactTime(1, 9, 0), vm.state.value.draft?.exactTime)
         assertEquals(2, vm.state.value.draft?.intensity)
-        assertTrue(vm.dayParts().isEmpty())
+        // Yesterday: parts of the day, but no "now" or "after the meal".
+        assertFalse(SymptomDayPart.NOW in vm.dayParts())
+        assertTrue(SymptomDayPart.MORNING in vm.dayParts())
 
         vm.onIntensityChange(4)
         vm.onExactTimeChange(ExactTime(1, 18, 30))
@@ -95,10 +97,11 @@ class LogSymptomViewModelTest {
 
         vm.startForDay(1)
         vm.onSymptomClick(bloating)
-        assertEquals(ExactTime(1, 12, 0), vm.state.value.draft?.exactTime)
+        assertEquals(SymptomDayPart.MIDDAY, vm.state.value.draft?.dayPart)
         vm.onSaveDraft()
 
-        assertEquals(clock.millisAt(clock.today() - 1, 12, 0), repository.saved.single().startedAt)
+        // Midday of yesterday (13:00).
+        assertEquals(clock.millisAt(clock.today() - 1, 13, 0), repository.saved.single().startedAt)
     }
 
     @Test
@@ -198,6 +201,7 @@ class LogSymptomViewModelTest {
     @Test
     fun pickedTimeIsUsedForTheSymptom() {
         val vm = viewModel()
+        vm.onDayChange(2)
         vm.onSymptomClick(bloating)
         vm.onExactTimeChange(ExactTime(daysAgo = 2, hour = 7, minute = 15))
         vm.onSaveDraft()

@@ -64,11 +64,12 @@ class DayCheckViewModelTest {
 
         val state = viewModel().state.value
 
-        assertEquals(listOf(today, today - 1, today - 2), state.days)
+        // Feedback 19.11.: five days back, like the day row of the forms.
+        assertEquals((0L..5L).map { today - it }, state.days)
         // Preselecting an open past day made users confirm the wrong day (self-test 17.11.).
         assertEquals(today, state.check.epochDay)
         assertEquals(setOf(today - 2), state.confirmedDays)
-        assertEquals(listOf(today - 1), state.openPastDays)
+        assertEquals(listOf(today - 1, today - 3, today - 4, today - 5), state.openPastDays)
     }
 
     @Test
