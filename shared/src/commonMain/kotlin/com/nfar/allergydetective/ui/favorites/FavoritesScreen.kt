@@ -31,7 +31,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.MoreHoriz
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.foundation.layout.size
+import allergydetective.shared.generated.resources.favorites_log
+import allergydetective.shared.generated.resources.favorites_no_match
+import allergydetective.shared.generated.resources.favorites_search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
@@ -69,6 +75,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun FavoritesScreen(
+    /** "Log it": opens the food log with this dish (self-test 19.11.). */
+    onLogDish: (Long) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: FavoritesViewModel = koinViewModel(),
     editor: DishEditorViewModel = koinViewModel(),
@@ -87,14 +95,29 @@ fun FavoritesScreen(
                     StatusBadge(pluralStringResource(Res.plurals.favorites_count, state.favorites.size, state.favorites.size), StatusKind.OPEN)
                 }
             }
+            item {
+                OutlinedTextField(
+                    value = state.query,
+                    onValueChange = viewModel::onQueryChange,
+                    placeholder = { Text(stringResource(Res.string.favorites_search)) },
+                    leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            if (state.visibleFavorites.isEmpty()) {
+                item { Text(stringResource(Res.string.favorites_no_match), color = MaterialTheme.colorScheme.onSurfaceVariant) }
+            }
         }
         if (!state.loading && state.favorites.isEmpty()) {
             item { Text(stringResource(Res.string.favorites_empty)) }
         }
-        items(state.favorites, key = { it.id }) { favorite ->
+        items(state.visibleFavorites, key = { it.id }) { favorite ->
             DishCard(
                 name = favorite.name,
                 ingredients = favorite.items.mapNotNull { state.ingredients[it.ingredientId] }.map { ingredientName(it) },
+                onLog = { onLogDish(favorite.id) },
                 onEdit = {
                     editor.start(favorite)
                     showEditor = true
@@ -125,7 +148,7 @@ fun FavoritesScreen(
 
 /** Design of 19.11.: name, ingredients separated by dots, "Edit" and "Delete" behind "…". */
 @Composable
-private fun DishCard(name: String, ingredients: List<String>, onEdit: () -> Unit, onDelete: () -> Unit) {
+private fun DishCard(name: String, ingredients: List<String>, onLog: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
     var menuOpen by remember { mutableStateOf(false) }
     OutlinedCard(
         colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
@@ -146,6 +169,10 @@ private fun DishCard(name: String, ingredients: List<String>, onEdit: () -> Unit
                     Text(stringResource(Res.string.favorites_edit))
                 }
                 Spacer(Modifier.weight(1f))
+                FilledTonalButton(onClick = onLog, contentPadding = PaddingValues(horizontal = 14.dp)) {
+                    Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Text(stringResource(Res.string.favorites_log), modifier = Modifier.padding(start = 4.dp))
+                }
                 Box {
                     IconButton(onClick = { menuOpen = true }) {
                         Icon(Icons.Outlined.MoreHoriz, contentDescription = stringResource(Res.string.favorites_more))

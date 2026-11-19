@@ -2,6 +2,14 @@ package com.nfar.allergydetective.ui.history
 
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
+import allergydetective.shared.generated.resources.common_save
+import allergydetective.shared.generated.resources.favorites_name
+import allergydetective.shared.generated.resources.history_save_favorite
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import allergydetective.shared.generated.resources.history_check_sleep
 import allergydetective.shared.generated.resources.history_check_sleep_quality
 import allergydetective.shared.generated.resources.history_check_stress
@@ -131,6 +139,27 @@ fun DayCheckRow(check: DayCheckData, factorKeys: Map<Long, String>) {
 
 private fun formatHours(hours: Float): String =
     if (hours % 1f == 0f) hours.toInt().toString() else hours.toString()
+
+/** Name for a meal that becomes a dish (self-test 19.11.). */
+@Composable
+fun SaveFavoriteDialog(onSave: (String) -> Unit, onDismiss: () -> Unit) {
+    var name by remember { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.history_save_favorite)) },
+        text = {
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text(stringResource(Res.string.favorites_name)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        },
+        confirmButton = { Button(onClick = { onSave(name) }, enabled = name.isNotBlank()) { Text(stringResource(Res.string.common_save)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.common_cancel)) } },
+    )
+}
 
 /** Tapping the sick band: change the dates or delete the period. */
 @Composable

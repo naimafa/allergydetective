@@ -52,6 +52,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Mic
+import androidx.compose.material.icons.outlined.StarOutline
+import androidx.compose.material3.AssistChip
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -98,6 +101,8 @@ fun LogMealScreen(
     onBack: () -> Unit,
     /** A logged meal to edit (from the history), or null for a new one. */
     editMealId: Long? = null,
+    /** A dish to start with ("Log" in the favourites). */
+    favoriteId: Long? = null,
     viewModel: LogMealViewModel = koinViewModel(),
     customViewModel: CustomIngredientViewModel = koinViewModel(),
 ) {
@@ -105,6 +110,7 @@ fun LogMealScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var showCustomDialog by remember { mutableStateOf(false) }
     LaunchedEffect(editMealId) { editMealId?.let(viewModel::startEditing) }
+    LaunchedEffect(favoriteId) { favoriteId?.let(viewModel::startWithFavorite) }
     LaunchedEffect(state.finished) { if (state.finished) onBack() }
     SavedSnackbarEffect(state.savedMealId, snackbarHostState, viewModel::onUndo, viewModel::onSavedShown)
     state.addedTo?.let { slot ->
@@ -226,6 +232,17 @@ private fun WhatStep(state: LogMealState, viewModel: LogMealViewModel, onCreateI
             },
             modifier = Modifier.fillMaxWidth(),
         )
+        if (state.dishResults.isNotEmpty()) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                state.dishResults.forEach { dish ->
+                    AssistChip(
+                        onClick = { viewModel.onFavoriteClick(dish) },
+                        label = { Text(dish.name) },
+                        leadingIcon = { Icon(Icons.Outlined.StarOutline, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                    )
+                }
+            }
+        }
         state.results.forEach { ingredient ->
             Text(
                 text = ingredientName(ingredient),

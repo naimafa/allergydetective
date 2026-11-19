@@ -19,6 +19,8 @@ data class LogMealState(
     val loading: Boolean = true,
     val query: String = "",
     val results: List<IngredientInfo> = emptyList(),
+    /** Dishes matching the search by name or ingredient. */
+    val dishResults: List<FavoriteInfo> = emptyList(),
     val recent: List<IngredientInfo> = emptyList(),
     val favorites: List<FavoriteInfo> = emptyList(),
     val selected: List<SelectedIngredient> = emptyList(),

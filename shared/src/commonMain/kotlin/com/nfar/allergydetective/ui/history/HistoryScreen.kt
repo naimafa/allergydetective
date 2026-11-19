@@ -30,6 +30,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.StarOutline
+import allergydetective.shared.generated.resources.history_save_favorite
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -97,6 +99,7 @@ fun HistoryScreen(
     // A period to change, or a new one (id 0).
     var sickEditing by remember { mutableStateOf<SickPeriod?>(null) }
     var relationFor by remember { mutableStateOf<HistoryEntry.SymptomEntry?>(null) }
+    var favoriteFor by remember { mutableStateOf<Long?>(null) }
     LaunchedEffect(Unit) {
         viewModel.refresh()
         sickViewModel.refresh()
@@ -130,6 +133,7 @@ fun HistoryScreen(
                 dayCheck = if (state.showsDayChecks) day.check?.let { { DayCheckRow(it, state.factorKeys) } } else null,
                 onEditMeal = onEditMeal,
                 onDelete = { toDelete = it },
+                onSaveFavorite = { favoriteFor = it },
             )
         }
     }
@@ -146,6 +150,15 @@ fun HistoryScreen(
                 sickViewModel.onDelete(period.id)
             },
             onDismiss = { sickActions = null },
+        )
+    }
+    favoriteFor?.let { mealId ->
+        SaveFavoriteDialog(
+            onSave = { name ->
+                viewModel.onSaveAsFavorite(mealId, name)
+                favoriteFor = null
+            },
+            onDismiss = { favoriteFor = null },
         )
     }
     relationFor?.let { entry ->
@@ -198,6 +211,8 @@ private fun DayCard(
     onDelete: (HistoryEntry) -> Unit,
     /** Sick day: a symptom shows "part of the illness: ..." and opens the question. */
     onRelationClick: ((HistoryEntry.SymptomEntry) -> Unit)? = null,
+    /** Meal not logged from a dish: star to save it as one (self-test 19.11.). */
+    onSaveFavorite: (Long) -> Unit = {},
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
@@ -219,6 +234,7 @@ private fun DayCard(
                     onEdit = (entry as? HistoryEntry.MealEntry)?.let { meal -> { onEditMeal(meal.id) } },
                     onDelete = { onDelete(entry) },
                     onRelation = (entry as? HistoryEntry.SymptomEntry)?.let { symptom -> onRelationClick?.let { click -> { click(symptom) } } },
+                    onFavorite = (entry as? HistoryEntry.MealEntry)?.takeIf { it.dishName == null }?.let { meal -> { onSaveFavorite(meal.id) } },
                 )
             }
         }
@@ -252,7 +268,14 @@ private fun DayHeader(day: HistoryDay, clock: AppClock) {
  * Tapping a meal opens it for editing, too.
  */
 @Composable
-private fun EntryRow(entry: HistoryEntry, clock: AppClock, onEdit: (() -> Unit)?, onDelete: () -> Unit, onRelation: (() -> Unit)? = null) {
+private fun EntryRow(
+    entry: HistoryEntry,
+    clock: AppClock,
+    onEdit: (() -> Unit)?,
+    onDelete: () -> Unit,
+    onRelation: (() -> Unit)? = null,
+    onFavorite: (() -> Unit)? = null,
+) {
     val (hour, minute) = clock.localTime(entry.time)
     val rowModifier = if (onEdit != null) Modifier.clickable(onClick = onEdit) else Modifier
     Row(verticalAlignment = Alignment.Top, modifier = rowModifier.fillMaxWidth().padding(start = 16.dp, top = 8.dp, bottom = 4.dp)) {
@@ -266,6 +289,11 @@ private fun EntryRow(entry: HistoryEntry, clock: AppClock, onEdit: (() -> Unit)?
             when (entry) {
                 is HistoryEntry.MealEntry -> MealContent(entry, hour, minute)
                 is HistoryEntry.SymptomEntry -> SymptomContent(entry, onRelation)
+            }
+        }
+        if (onFavorite != null) {
+            IconButton(onClick = onFavorite) {
+                Icon(Icons.Outlined.StarOutline, contentDescription = stringResource(Res.string.history_save_favorite), tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         if (onEdit != null) {
