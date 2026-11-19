@@ -60,6 +60,7 @@ fun DayPicker(
                 onClick = { onSelect(option) },
                 label = { Text(dayLabel(option)) },
                 trailingIcon = doneMark(option in marked, selected = daysAgo == option),
+                showCheck = false,
             )
         }
         AppFilterChip(
