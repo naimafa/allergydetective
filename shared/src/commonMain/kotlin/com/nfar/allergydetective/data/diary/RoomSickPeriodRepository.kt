@@ -12,5 +12,7 @@ class RoomSickPeriodRepository(private val dao: SickPeriodDao) : SickPeriodRepos
 
     override suspend fun setEnd(id: Long, endDay: Long?) = dao.setEnd(id, endDay)
 
+    override suspend fun update(id: Long, startDay: Long, endDay: Long?) = dao.update(id, startDay, endDay)
+
     override suspend fun delete(id: Long) = dao.delete(id)
 }

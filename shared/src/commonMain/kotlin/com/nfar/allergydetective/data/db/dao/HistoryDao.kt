@@ -2,7 +2,6 @@ package com.nfar.allergydetective.data.db.dao
 
 import androidx.room3.Dao
 import androidx.room3.Query
-import com.nfar.allergydetective.data.db.entity.DayCheckEntity
 import com.nfar.allergydetective.data.db.entity.MealEntity
 import com.nfar.allergydetective.data.db.entity.MealIngredientEntity
 import com.nfar.allergydetective.data.db.entity.SymptomEntryEntity
@@ -24,7 +23,4 @@ interface HistoryDao {
 
     @Query("SELECT * FROM symptom_entries WHERE startedAt >= :fromMillis ORDER BY startedAt DESC, id DESC")
     suspend fun symptomEntriesSince(fromMillis: Long): List<SymptomEntryEntity>
-
-    @Query("SELECT * FROM day_checks WHERE epochDay >= :fromDay")
-    suspend fun dayChecksSince(fromDay: Long): List<DayCheckEntity>
 }

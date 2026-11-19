@@ -3,8 +3,6 @@ package com.nfar.allergydetective.data.diary
 import com.nfar.allergydetective.data.db.dao.HistoryDao
 import com.nfar.allergydetective.data.db.dao.MealDao
 import com.nfar.allergydetective.data.db.dao.SymptomDao
-import com.nfar.allergydetective.data.db.model.DayStatus
-import com.nfar.allergydetective.domain.diary.DayCheckStatus
 import com.nfar.allergydetective.domain.diary.HistoryEntry
 import com.nfar.allergydetective.domain.diary.HistoryRepository
 import com.nfar.allergydetective.domain.diary.IngredientInfo
@@ -44,13 +42,4 @@ class RoomHistoryRepository(
         }
         return (meals + symptoms).sortedByDescending { it.time }
     }
-
-    override suspend fun dayStatusSince(fromDay: Long): Map<Long, DayCheckStatus> =
-        dao.dayChecksSince(fromDay).associate {
-            it.epochDay to when (it.status) {
-                DayStatus.OPEN -> DayCheckStatus.OPEN
-                DayStatus.NO_SYMPTOMS -> DayCheckStatus.NO_SYMPTOMS
-                DayStatus.COMPLETE -> DayCheckStatus.COMPLETE
-            }
-        }
 }

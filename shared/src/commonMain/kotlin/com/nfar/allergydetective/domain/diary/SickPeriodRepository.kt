@@ -14,5 +14,11 @@ interface SickPeriodRepository {
 
     suspend fun setEnd(id: Long, endDay: Long?)
 
+    /** Changes start and end, e.g. from the history (self-test 19.11.). */
+    suspend fun update(id: Long, startDay: Long, endDay: Long?) {
+        delete(id)
+        add(startDay, endDay)
+    }
+
     suspend fun delete(id: Long)
 }

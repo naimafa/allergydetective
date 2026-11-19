@@ -56,6 +56,22 @@ class SickPeriodsViewModel(
         }
     }
 
+    /** Corrects a period afterwards, e.g. from the history; same limits as [onAdd]. */
+    fun onUpdate(id: Long, startDay: Long, endDay: Long?) {
+        val today = clock.today()
+        val start = minOf(startDay, today)
+        val end = endDay?.coerceIn(start, today)
+        viewModelScope.launch {
+            // Still only one open period.
+            if (end == null) {
+                _state.value.periods.firstOrNull { it.endDay == null && it.id != id }
+                    ?.let { repository.setEnd(it.id, maxOf(it.startDay, start - 1)) }
+            }
+            repository.update(id, start, end)
+            refresh()
+        }
+    }
+
     /** "Well again": today counts as healthy, unless the illness only started today. */
     fun onRecovered() {
         val ongoing = _state.value.ongoing ?: return

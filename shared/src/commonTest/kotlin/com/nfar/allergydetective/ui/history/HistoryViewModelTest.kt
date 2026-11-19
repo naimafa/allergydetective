@@ -2,7 +2,10 @@ package com.nfar.allergydetective.ui.history
 
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Portion
+import com.nfar.allergydetective.domain.diary.DayCheckData
+import com.nfar.allergydetective.domain.diary.DayCheckRepository
 import com.nfar.allergydetective.domain.diary.DayCheckStatus
+import com.nfar.allergydetective.domain.diary.FactorInfo
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.HistoryEntry
 import com.nfar.allergydetective.domain.diary.HistoryRepository
@@ -47,7 +50,6 @@ class HistoryViewModelTest {
 
     private val history = object : HistoryRepository {
         override suspend fun entriesSince(fromMillis: Long) = entries.filter { it.time >= fromMillis }.sortedByDescending { it.time }
-        override suspend fun dayStatusSince(fromDay: Long) = mapOf(today - 1 to DayCheckStatus.NO_SYMPTOMS)
     }
 
     private val meals = object : MealRepository {
@@ -76,7 +78,17 @@ class HistoryViewModelTest {
         }
     }
 
-    private fun viewModel() = HistoryViewModel(history, meals, symptoms, clock).also { it.refresh() }
+    private val dayChecks = object : DayCheckRepository {
+        val checks = mapOf(today - 1 to DayCheckData(today - 1, sleepHours = 7f, stress = 2, status = DayCheckStatus.NO_SYMPTOMS, factorIds = setOf(1L)))
+        override suspend fun load(epochDay: Long) = checks[epochDay]
+        override suspend fun lifestyleFactors() = listOf(FactorInfo(1, "sport"), FactorInfo(4, "sick"))
+        override suspend fun symptomCount(fromMillis: Long, toMillis: Long) = 0
+        override suspend fun save(check: DayCheckData) = Unit
+        override suspend fun confirmedDays(days: List<Long>) = emptySet<Long>()
+        override suspend fun confirmedDayCount() = 0
+    }
+
+    private fun viewModel() = HistoryViewModel(history, meals, symptoms, dayChecks, clock).also { it.refresh() }
 
     @BeforeTest
     fun setUp() = Dispatchers.setMain(UnconfinedTestDispatcher())
@@ -93,6 +105,35 @@ class HistoryViewModelTest {
         assertEquals(listOf(3L, 1L, 2L), days[0].entries.map { it.id })
         assertEquals(DayCheckStatus.NO_SYMPTOMS, days[1].status)
         assertEquals(emptyList(), days[1].entries)
+    }
+
+    @Test
+    fun dayChecksAreShownWithTheirFactors() {
+        val state = viewModel().state.value
+
+        assertEquals(7f, state.days[1].check?.sleepHours)
+        assertEquals("sport", state.factorKeys[1L])
+        assertEquals(true, state.showsDayChecks)
+    }
+
+    @Test
+    fun filtersNarrowDownTheTimeline() {
+        val vm = viewModel()
+
+        vm.onFilterChange(HistoryFilter.FOOD)
+        assertEquals(listOf(today, today - 3), vm.state.value.visibleDays.map { it.epochDay })
+        assertEquals(listOf(3L, 1L), vm.state.value.visibleDays[0].entries.map { it.id })
+
+        vm.onFilterChange(HistoryFilter.SYMPTOMS)
+        assertEquals(listOf(today), vm.state.value.visibleDays.map { it.epochDay })
+        assertEquals(listOf(2L), vm.state.value.visibleDays[0].entries.map { it.id })
+
+        vm.onFilterChange(HistoryFilter.DAYS)
+        assertEquals(listOf(today - 1), vm.state.value.visibleDays.map { it.epochDay })
+        assertEquals(false, vm.state.value.visibleDays.any { it.entries.isNotEmpty() })
+
+        vm.onFilterChange(HistoryFilter.ALL)
+        assertEquals(3, vm.state.value.visibleDays.size)
     }
 
     @Test
