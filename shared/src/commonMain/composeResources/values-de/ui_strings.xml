@@ -13,9 +13,10 @@
     <string name="home_heading">Dein Allergie-Tagebuch</string>
     <string name="home_progress_title">Dein Fortschritt</string>
     <string name="home_progress_badge">Tag %1$d von %2$d</string>
+    <string name="home_progress_cheer">Du bist auf einem guten Weg!</string>
     <plurals name="home_progress_remaining">
-        <item quantity="one">Noch %1$d Tag bis zur ersten möglichen Auswertung.</item>
-        <item quantity="other">Noch %1$d Tage bis zur ersten möglichen Auswertung.</item>
+        <item quantity="one">Noch %1$d Tag sammeln wir Hinweise, bevor erste Muster sichtbar werden können.</item>
+        <item quantity="other">Noch %1$d Tage sammeln wir Hinweise, bevor erste Muster sichtbar werden können.</item>
     </plurals>
     <string name="home_actions_title">Was möchtest du heute machen?</string>
     <string name="home_day_open">Offen</string>

@@ -13,9 +13,10 @@
     <string name="home_heading">Your allergy diary</string>
     <string name="home_progress_title">Your progress</string>
     <string name="home_progress_badge">Day %1$d of %2$d</string>
+    <string name="home_progress_cheer">You are on a good track!</string>
     <plurals name="home_progress_remaining">
-        <item quantity="one">%1$d more day until the first possible evaluation.</item>
-        <item quantity="other">%1$d more days until the first possible evaluation.</item>
+        <item quantity="one">%1$d more day of collecting clues before first patterns can show.</item>
+        <item quantity="other">%1$d more days of collecting clues before first patterns can show.</item>
     </plurals>
     <string name="home_actions_title">What would you like to do today?</string>
     <string name="home_day_open">Open</string>
