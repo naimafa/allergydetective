@@ -35,7 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 private const val DAY_MILLIS = 86_400_000L
 
 /**
- * The same day row in every form (feedback 19.11.): "Today · Yesterday · Day before · 📅 Date …".
+ * The same day row in every form (feedback 19.11.): "Today · Yesterday · 📅 Date …".
  * The date chip opens a calendar for up to [MAX_DAYS_BACK] days back and then shows the chosen day,
  * e.g. "Mo, 16.11.". [marked] days (days ago) get a check mark, e.g. confirmed days in the day check.
  */
@@ -87,8 +87,8 @@ fun DayPicker(
     }
 }
 
-/** Today, yesterday and the day before have their own chip. */
-private const val QUICK_DAYS = 2
+/** Today and yesterday have their own chip; from the day before on the calendar chip (feedback 19.11.: so the date chip stays visible). */
+private const val QUICK_DAYS = 1
 
 @Composable
 private fun shortDate(epochDay: Long): String {
