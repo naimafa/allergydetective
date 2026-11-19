@@ -49,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.ScreenScaffold
 import com.nfar.allergydetective.ui.common.StepCard
+import com.nfar.allergydetective.ui.common.ScaleChips
 import com.nfar.allergydetective.ui.common.dayLabel
 import com.nfar.allergydetective.ui.common.displayName
 import com.nfar.allergydetective.ui.common.formatDate
@@ -163,7 +164,7 @@ private fun DayCheckContent(
                 OutlinedButton(onClick = { viewModel.onSleepHoursChange(DayCheckViewModel.SLEEP_STEP_HOURS) }) { Text("+") }
             }
             Text(stringResource(Res.string.day_sleep_quality), style = MaterialTheme.typography.bodyMedium)
-            ScaleRow(check.sleepQuality, viewModel::onSleepQualityChange, labels = (1..5).map { "★".repeat(it) })
+            ScaleRow(check.sleepQuality, viewModel::onSleepQualityChange, labels = (1..5).map { "$it ★" })
         }
 
         StepCard(title = stringResource(Res.string.day_stress)) {
@@ -198,10 +199,5 @@ private val WELLBEING_FACES = listOf("😣", "🙁", "😐", "🙂", "😊")
 /** Five tap points, 1 = low, 5 = high (UX 6). */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ScaleRow(value: Int?, onChange: (Int) -> Unit, labels: List<String> = (1..5).map { it.toString() }) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        (1..5).forEach { option ->
-            AppFilterChip(selected = value == option, onClick = { onChange(option) }, label = { Text(labels[option - 1]) })
-        }
-    }
-}
+private fun ScaleRow(value: Int?, onChange: (Int) -> Unit, labels: List<String> = (1..5).map { it.toString() }) =
+    ScaleChips(value, onChange, labels)
