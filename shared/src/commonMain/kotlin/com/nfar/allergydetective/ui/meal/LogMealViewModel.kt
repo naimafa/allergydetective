@@ -40,10 +40,17 @@ data class LogMealState(
     val recent: List<IngredientInfo> = emptyList(),
     val favorites: List<FavoriteInfo> = emptyList(),
     val selected: List<SelectedIngredient> = emptyList(),
-    /** Breakfast, lunch, dinner or a snack (self-test 18.11.); preselected by the time of day. */
-    val slot: MealSlot = MealSlot.SNACK,
-    /** Picked in the time dialog, overrides [slot]. */
+    /**
+     * Breakfast, lunch, dinner or a snack. Nothing is preselected (self-test 19.11.: the time-based
+     * preselection led to wrong entries); saving asks for it first.
+     */
+    val slot: MealSlot? = null,
+    /** Default time of [slot]: its fixed time (never in the future), "now" for a snack. Shown below the chips. */
+    val slotTime: ExactTime? = null,
+    /** Time changed in the dialog ("Change"), replaces [slotTime]. */
     val exactTime: ExactTime? = null,
+    /** Save was tapped without a [slot]: the "when" step is highlighted. */
+    val slotMissing: Boolean = false,
     /** Favorite the selection came from, stored as origin of the meal (TRD 3.2). */
     val favoriteId: Long? = null,
     val saveAsFavorite: Boolean = false,
@@ -59,6 +66,9 @@ data class LogMealState(
 ) {
     val canSave: Boolean get() =
         selected.isNotEmpty() && !saving && !missingPreparation && (!saveAsFavorite || favoriteName.isNotBlank())
+
+    /** The time that will be stored: the changed one or the slot's default. */
+    val shownTime: ExactTime? get() = exactTime ?: slotTime
 
     val missingPreparation: Boolean get() = selected.any { it.ingredient.id in needsPreparation && it.preparation == null }
 
@@ -85,12 +95,12 @@ class LogMealViewModel(
     /** Normalized display names of all ingredients, to avoid creating the same name twice. */
     private var knownNames: Set<String> = emptySet()
 
-    private fun suggestedSlot(): MealSlot = clock.localTime(clock.nowMillis()).let { (h, m) -> MealSlot.suggestedAt(h, m) }
-
     init {
-        _state.update { it.copy(slot = suggestedSlot()) }
         viewModelScope.launch { load() }
     }
+
+    private fun defaultTimeOf(slot: MealSlot): ExactTime =
+        clock.localTime(clock.timeOf(slot)).let { (hour, minute) -> ExactTime(daysAgo = 0, hour = hour, minute = minute) }
 
     private suspend fun load() {
         val ingredients = repository.ingredients()
@@ -136,7 +146,7 @@ class LogMealViewModel(
     }
 
     fun onSlotChange(slot: MealSlot) {
-        _state.update { it.copy(slot = slot, exactTime = null) }
+        _state.update { it.copy(slot = slot, slotTime = defaultTimeOf(slot), exactTime = null, slotMissing = false) }
     }
 
     fun onExactTimeChange(time: ExactTime) {
@@ -210,6 +220,11 @@ class LogMealViewModel(
     fun onSave() {
         val current = _state.value
         if (!current.canSave) return
+        val slot = current.slot
+        if (slot == null) {
+            _state.update { it.copy(slotMissing = true) }
+            return
+        }
         _state.update { it.copy(saving = true) }
         viewModelScope.launch {
             val items = current.selected.map { MealItem(it.ingredient.id, it.portion, if (it.ingredient.id in current.needsPreparation) it.preparation else null) }
@@ -218,7 +233,7 @@ class LogMealViewModel(
             } else {
                 current.favoriteId
             }
-            val eatenAt = current.exactTime?.let { clock.timeOf(it, 0) } ?: clock.timeOf(current.slot)
+            val eatenAt = current.exactTime?.let { clock.timeOf(it, 0) } ?: clock.timeOf(slot)
             val mealId = repository.saveMeal(
                 eatenAt = eatenAt,
                 tzOffsetMin = clock.offsetMinAt(eatenAt),
@@ -233,8 +248,10 @@ class LogMealViewModel(
                     query = "",
                     results = emptyList(),
                     selected = emptyList(),
-                    slot = suggestedSlot(),
+                    slot = null,
+                    slotTime = null,
                     exactTime = null,
+                    slotMissing = false,
                     favoriteId = null,
                     saveAsFavorite = false,
                     favoriteName = "",

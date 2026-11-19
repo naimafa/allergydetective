@@ -5,73 +5,88 @@ import allergydetective.shared.generated.resources.common_save
 import allergydetective.shared.generated.resources.custom_create_named
 import allergydetective.shared.generated.resources.home_log_meal
 import allergydetective.shared.generated.resources.meal_allergy_hint
+import allergydetective.shared.generated.resources.meal_amount_empty
 import allergydetective.shared.generated.resources.meal_favorite_name
 import allergydetective.shared.generated.resources.meal_favorites
-import allergydetective.shared.generated.resources.meal_save_as_favorite
+import allergydetective.shared.generated.resources.meal_favorites_hint
 import allergydetective.shared.generated.resources.meal_no_results
 import allergydetective.shared.generated.resources.meal_portion_help
 import allergydetective.shared.generated.resources.meal_portion_large
 import allergydetective.shared.generated.resources.meal_portion_medium
 import allergydetective.shared.generated.resources.meal_portion_small
-import allergydetective.shared.generated.resources.meal_recent
+import allergydetective.shared.generated.resources.meal_quick
+import allergydetective.shared.generated.resources.meal_quick_hint
 import allergydetective.shared.generated.resources.meal_remove
+import allergydetective.shared.generated.resources.meal_save_as_favorite
+import allergydetective.shared.generated.resources.meal_save_slot
 import allergydetective.shared.generated.resources.meal_search
-import allergydetective.shared.generated.resources.meal_selected
 import allergydetective.shared.generated.resources.meal_slot_breakfast
 import allergydetective.shared.generated.resources.meal_slot_dinner
 import allergydetective.shared.generated.resources.meal_slot_lunch
+import allergydetective.shared.generated.resources.meal_slot_missing
 import allergydetective.shared.generated.resources.meal_slot_snack
-import allergydetective.shared.generated.resources.meal_when
+import allergydetective.shared.generated.resources.meal_step_amount
+import allergydetective.shared.generated.resources.meal_step_what
+import allergydetective.shared.generated.resources.meal_step_when
 import allergydetective.shared.generated.resources.meal_voice
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.time.MealSlot
+import com.nfar.allergydetective.platform.rememberSpeechInput
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.SavedSnackbarEffect
 import com.nfar.allergydetective.ui.common.ScreenScaffold
-import com.nfar.allergydetective.ui.common.SectionTitle
-import com.nfar.allergydetective.ui.common.TimeChoiceRow
-import com.nfar.allergydetective.platform.rememberSpeechInput
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.intl.Locale
+import com.nfar.allergydetective.ui.common.StepCard
+import com.nfar.allergydetective.ui.common.TimeLine
 import com.nfar.allergydetective.ui.common.displayName
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * Food log (UX 3.1), self-test 19.11.: three numbered steps as questions in their own cards,
+ * so a new user sees what to do: 1 when, 2 what, 3 how much.
+ */
 @Composable
 fun LogMealScreen(
     onBack: () -> Unit,
@@ -106,7 +121,9 @@ fun LogMealScreen(
                 onClick = viewModel::onSave,
                 enabled = state.canSave,
                 modifier = Modifier.navigationBarsPadding().fillMaxWidth().padding(16.dp).heightIn(min = 56.dp),
-            ) { Text(stringResource(Res.string.common_save)) }
+            ) {
+                Text(state.slot?.let { stringResource(Res.string.meal_save_slot, mealSlotLabel(it)) } ?: stringResource(Res.string.common_save))
+            }
         },
     ) { padding ->
         // Keyboard open: the list ends above it, so every selected item can be scrolled into view.
@@ -114,7 +131,6 @@ fun LogMealScreen(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun LogMealContent(
     state: LogMealState,
@@ -122,71 +138,64 @@ private fun LogMealContent(
     onCreateIngredient: () -> Unit,
     modifier: Modifier,
 ) {
+    val listState = rememberLazyListState()
+    // Save without a meal: show the "when" step with its hint.
+    LaunchedEffect(state.slotMissing) {
+        if (state.slotMissing) listState.animateScrollToItem(0)
+    }
+    LazyColumn(
+        state = listState,
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+        contentPadding = PaddingValues(16.dp),
+    ) {
+        item { WhenStep(state, viewModel) }
+        item { WhatStep(state, viewModel, onCreateIngredient) }
+        item { AmountStep(state, viewModel) }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun WhenStep(state: LogMealState, viewModel: LogMealViewModel) {
+    StepCard(number = 1, title = stringResource(Res.string.meal_step_when), highlighted = state.slotMissing) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            MealSlot.entries.forEach { slot ->
+                FilterChip(
+                    selected = state.slot == slot,
+                    onClick = { viewModel.onSlotChange(slot) },
+                    label = { Text(mealSlotLabel(slot)) },
+                )
+            }
+        }
+        if (state.slotMissing) {
+            Text(stringResource(Res.string.meal_slot_missing), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
+        }
+        state.shownTime?.let { TimeLine(it, viewModel::onExactTimeChange) }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun WhatStep(state: LogMealState, viewModel: LogMealViewModel, onCreateIngredient: () -> Unit) {
     val selectedIds = state.selected.map { it.ingredient.id }.toSet()
     val keyboard = LocalSoftwareKeyboardController.current
     val voiceLabel = stringResource(Res.string.meal_voice)
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
-    ) {
-        item { SectionTitle(stringResource(Res.string.meal_when)) }
-        item {
-            TimeChoiceRow(
-                options = MealSlot.entries,
-                selected = state.slot,
-                quickLabel = { mealSlotLabel(it) },
-                exact = state.exactTime,
-                onQuickSelected = viewModel::onSlotChange,
-                onExactSelected = viewModel::onExactTimeChange,
-            )
-        }
-        if (state.favorites.isNotEmpty()) {
-            item { SectionTitle(stringResource(Res.string.meal_favorites)) }
-            item {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    state.favorites.forEach { favorite ->
-                        FilterChip(
-                            selected = state.favoriteId == favorite.id,
-                            onClick = { viewModel.onFavoriteClick(favorite) },
-                            label = { Text(favorite.name) },
-                        )
-                    }
+    StepCard(number = 2, title = stringResource(Res.string.meal_step_what)) {
+        val speech = rememberSpeechInput(Locale.current.toLanguageTag()) { text -> text?.let(viewModel::onVoiceResult) }
+        OutlinedTextField(
+            value = state.query,
+            onValueChange = viewModel::onQueryChange,
+            label = { Text(stringResource(Res.string.meal_search)) },
+            singleLine = true,
+            trailingIcon = speech?.let { start ->
+                {
+                    IconButton(onClick = start) { Icon(Icons.Outlined.Mic, contentDescription = voiceLabel) }
                 }
-            }
-        }
-        if (state.recent.isNotEmpty()) {
-            item { SectionTitle(stringResource(Res.string.meal_recent)) }
-            item {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    state.recent.forEach { ingredient ->
-                        FilterChip(
-                            selected = ingredient.id in selectedIds,
-                            onClick = { viewModel.onToggleIngredient(ingredient) },
-                            label = { Text(ingredientName(ingredient)) },
-                        )
-                    }
-                }
-            }
-        }
-        item {
-            val speech = rememberSpeechInput(Locale.current.toLanguageTag()) { text -> text?.let(viewModel::onVoiceResult) }
-            OutlinedTextField(
-                value = state.query,
-                onValueChange = viewModel::onQueryChange,
-                label = { Text(stringResource(Res.string.meal_search)) },
-                singleLine = true,
-                trailingIcon = speech?.let { start ->
-                    {
-                        TextButton(onClick = start) {
-                            Text("🎤", modifier = Modifier.semantics { contentDescription = voiceLabel })
-                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-        items(state.results, key = { "result-${it.id}" }) { ingredient ->
+            },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        state.results.forEach { ingredient ->
             Text(
                 text = ingredientName(ingredient),
                 modifier = Modifier
@@ -201,49 +210,77 @@ private fun LogMealContent(
             )
         }
         if (state.query.isNotBlank() && state.results.isEmpty()) {
-            item { Text(stringResource(Res.string.meal_no_results), style = MaterialTheme.typography.bodyMedium) }
+            Text(stringResource(Res.string.meal_no_results), style = MaterialTheme.typography.bodyMedium)
         }
         if (state.query.isNotBlank() && !state.nameExists) {
-            item {
-                TextButton(onClick = onCreateIngredient) {
-                    Text(stringResource(Res.string.custom_create_named, state.query.trim()))
+            TextButton(onClick = onCreateIngredient) {
+                Text(stringResource(Res.string.custom_create_named, state.query.trim()))
+            }
+        }
+        if (state.favorites.isNotEmpty()) {
+            ChipGroupTitle(stringResource(Res.string.meal_favorites), stringResource(Res.string.meal_favorites_hint))
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                state.favorites.forEach { favorite ->
+                    FilterChip(
+                        selected = state.favoriteId == favorite.id,
+                        onClick = { viewModel.onFavoriteClick(favorite) },
+                        label = { Text(favorite.name) },
+                    )
                 }
             }
         }
-        if (state.selected.isNotEmpty()) {
-            item { SectionTitle(stringResource(Res.string.meal_selected)) }
-            item { Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall) }
-            // Newest first: what was just added appears right below the search field.
-            items(state.selected.asReversed(), key = { "selected-${it.ingredient.id}" }) { item ->
-                SelectedRow(item, item.ingredient.id in state.needsPreparation, viewModel)
-            }
-            item {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = state.saveAsFavorite, onCheckedChange = viewModel::onSaveAsFavoriteChange)
-                    Text(stringResource(Res.string.meal_save_as_favorite))
-                }
-            }
-            if (state.saveAsFavorite) {
-                item {
-                    OutlinedTextField(
-                        value = state.favoriteName,
-                        onValueChange = viewModel::onFavoriteNameChange,
-                        label = { Text(stringResource(Res.string.meal_favorite_name)) },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
+        if (state.recent.isNotEmpty()) {
+            ChipGroupTitle(stringResource(Res.string.meal_quick), stringResource(Res.string.meal_quick_hint))
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                state.recent.forEach { ingredient ->
+                    FilterChip(
+                        selected = ingredient.id in selectedIds,
+                        onClick = { viewModel.onToggleIngredient(ingredient) },
+                        label = { Text(ingredientName(ingredient)) },
                     )
                 }
             }
         }
         if (state.containsKnownAllergy) {
-            item {
-                Text(
-                    stringResource(Res.string.meal_allergy_hint),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
+            Text(stringResource(Res.string.meal_allergy_hint), color = MaterialTheme.colorScheme.tertiary, style = MaterialTheme.typography.bodyMedium)
         }
+    }
+}
+
+@Composable
+private fun AmountStep(state: LogMealState, viewModel: LogMealViewModel) {
+    StepCard(number = 3, title = stringResource(Res.string.meal_step_amount)) {
+        if (state.selected.isEmpty()) {
+            Text(stringResource(Res.string.meal_amount_empty), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            return@StepCard
+        }
+        Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        // Newest first: what was just added appears on top.
+        state.selected.asReversed().forEachIndexed { index, item ->
+            if (index > 0) HorizontalDivider(color = MaterialTheme.colorScheme.surfaceContainerHigh)
+            SelectedRow(item, item.ingredient.id in state.needsPreparation, viewModel)
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(checked = state.saveAsFavorite, onCheckedChange = viewModel::onSaveAsFavoriteChange)
+            Text(stringResource(Res.string.meal_save_as_favorite))
+        }
+        if (state.saveAsFavorite) {
+            OutlinedTextField(
+                value = state.favoriteName,
+                onValueChange = viewModel::onFavoriteNameChange,
+                label = { Text(stringResource(Res.string.meal_favorite_name)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChipGroupTitle(title: String, hint: String) {
+    Column(modifier = Modifier.padding(top = 4.dp)) {
+        Text(title, style = MaterialTheme.typography.labelLarge)
+        Text(hint, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -284,8 +321,9 @@ private fun portionLabel(portion: Portion): String = stringResource(
 @Composable
 fun ingredientName(ingredient: IngredientInfo): String =
     ingredient.key?.let { displayName(NamePrefix.INGREDIENT, it) } ?: ingredient.customName.orEmpty()
+
 @Composable
-private fun mealSlotLabel(slot: MealSlot): String = stringResource(
+fun mealSlotLabel(slot: MealSlot): String = stringResource(
     when (slot) {
         MealSlot.BREAKFAST -> Res.string.meal_slot_breakfast
         MealSlot.LUNCH -> Res.string.meal_slot_lunch

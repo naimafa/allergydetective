@@ -11,22 +11,8 @@ enum class MealSlot(val hour: Int, val minute: Int) {
     LUNCH(12, 30),
     DINNER(19, 0),
 
-    /** Snacks keep their clock time: "now" or the time dialog. */
+    /** Snacks keep their clock time: "now" unless changed in the time dialog. */
     SNACK(-1, -1),
-    ;
-
-    companion object {
-        /** Preselection that fits the current local time; outside meal times it is a snack. */
-        fun suggestedAt(hour: Int, minute: Int): MealSlot {
-            val minutes = hour * 60 + minute
-            return when (minutes) {
-                in 5 * 60 until 10 * 60 + 30 -> BREAKFAST
-                in 11 * 60 + 30 until 14 * 60 + 30 -> LUNCH
-                in 17 * 60 + 30 until 21 * 60 + 30 -> DINNER
-                else -> SNACK
-            }
-        }
-    }
 }
 
 /** When a symptom started, as the user remembers it. */

@@ -133,6 +133,7 @@
     <string name="time_other">Other time …</string>
     <string name="time_pick">When exactly?</string>
     <string name="time_selected">%1$s, %2$s</string>
+    <string name="time_change">Change</string>
 
     <string name="symptom_long_press_hint">Tap to add details. Long press saves right away (medium, now).</string>
     <string name="symptom_favorites">Used most often</string>
@@ -151,16 +152,13 @@
     <string name="emergency_call">Call %1$s</string>
     <string name="emergency_continue">Continue logging</string>
 
-    <string name="meal_when">When?</string>
     <string name="meal_now">Now</string>
     <string name="meal_slot_breakfast">Breakfast</string>
     <string name="meal_slot_lunch">Lunch</string>
     <string name="meal_slot_dinner">Dinner</string>
-    <string name="meal_slot_snack">Snack (now)</string>
-    <string name="meal_recent">Recently eaten</string>
+    <string name="meal_slot_snack">Snack</string>
     <string name="meal_search">Search ingredient …</string>
     <string name="meal_no_results">Nothing found.</string>
-    <string name="meal_selected">Selected</string>
     <string name="meal_portion_help">S = a few bites or half a glass · M = a fist or one glass · L = two fists or two glasses</string>
     <string name="meal_portion_small">S</string>
     <string name="meal_portion_medium">M</string>
@@ -170,6 +168,15 @@
     <string name="meal_prep_cooked">cooked</string>
     <string name="meal_prep_missing">Raw or cooked? Please choose. Heating destroys the birch pollen trigger.</string>
     <string name="meal_voice">Speak your meal</string>
+    <string name="meal_step_when">When did you eat?</string>
+    <string name="meal_step_what">What did you eat?</string>
+    <string name="meal_step_amount">How much?</string>
+    <string name="meal_quick">Quick pick</string>
+    <string name="meal_quick_hint">Recently eaten – a tap adds it</string>
+    <string name="meal_favorites_hint">Your saved meals – a tap adds all their ingredients</string>
+    <string name="meal_slot_missing">Please choose first when you ate.</string>
+    <string name="meal_amount_empty">Search above or tap a quick pick. What you choose appears here.</string>
+    <string name="meal_save_slot">Save %1$s</string>
     <string name="custom_create_named">Not in the list? Create “%1$s” as new ingredient</string>
     <string name="custom_title">New ingredient</string>
     <string name="custom_name">Name</string>
