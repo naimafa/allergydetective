@@ -41,7 +41,8 @@ fun HomeProgress(confirmedDays: Int) {
         shape = MaterialTheme.shapes.large,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        // Design of 19.11.: compact; title row, bar, then the two short lines close together.
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     stringResource(Res.string.home_progress_title),
@@ -60,7 +61,7 @@ fun HomeProgress(confirmedDays: Int) {
             }
             LinearProgressIndicator(
                 progress = { (confirmedDays.toFloat() / total).coerceAtMost(1f) },
-                modifier = Modifier.fillMaxWidth().height(8.dp),
+                modifier = Modifier.fillMaxWidth().height(6.dp),
                 color = scheme.primary,
                 trackColor = scheme.surfaceContainerHigh,
                 strokeCap = StrokeCap.Round,
@@ -76,7 +77,7 @@ fun HomeProgress(confirmedDays: Int) {
                 } else {
                     pluralStringResource(Res.plurals.home_progress_remaining, total - confirmedDays, total - confirmedDays)
                 },
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
             )
         }
     }

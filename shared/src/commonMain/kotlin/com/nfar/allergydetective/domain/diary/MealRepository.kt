@@ -75,6 +75,7 @@ data class LoggedMeal(
     val eatenAt: Long,
     val items: List<MealItem>,
     val favoriteId: Long?,
+    val tzOffsetMin: Int = 0,
 )
 
 /** Current app language for the synonym search, e.g. "de". */

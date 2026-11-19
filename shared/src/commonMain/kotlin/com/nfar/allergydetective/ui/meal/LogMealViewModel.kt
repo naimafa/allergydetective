@@ -11,6 +11,7 @@ import com.nfar.allergydetective.domain.diary.LanguageProvider
 import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.diary.SearchEntry
 import com.nfar.allergydetective.domain.diary.VoiceMatcher
+import com.nfar.allergydetective.domain.diary.matches
 import com.nfar.allergydetective.domain.diary.normalizeForSearch
 import com.nfar.allergydetective.domain.time.AppClock
 import com.nfar.allergydetective.domain.time.MealSlot
@@ -42,6 +43,9 @@ class LogMealViewModel(
     private var ingredientsById: Map<Long, IngredientInfo> = emptyMap()
     private var search = IngredientSearch(emptyList())
 
+    /** Display names by ingredient id, so the search also finds dishes by their ingredients. */
+    private var ingredientNames: Map<Long, String> = emptyMap()
+
     /** Normalized display names of all ingredients, to avoid creating the same name twice. */
     private var knownNames: Set<String> = emptySet()
 
@@ -58,7 +62,8 @@ class LogMealViewModel(
         search = IngredientSearch(
             ingredients.map { SearchEntry(it.id, displayName(it), synonyms[it.id].orEmpty()) },
         )
-        knownNames = ingredients.map { normalizeForSearch(displayName(it)) }.toSet()
+        ingredientNames = ingredients.associate { it.id to displayName(it) }
+        knownNames = ingredientNames.values.map(::normalizeForSearch).toSet()
         val allergies = repository.ingredientIdsWithKnownAllergy()
         val needsPreparation = repository.ingredientIdsNeedingPreparation()
         val recent = recentIngredients()
@@ -91,6 +96,15 @@ class LogMealViewModel(
         }
     }
 
+    /** "Log" on a dish in the favourites (self-test 19.11.): the form starts with its ingredients; the meal is chosen as usual. */
+    fun startWithFavorite(favoriteId: Long) {
+        if (_state.value.favoriteId == favoriteId) return
+        viewModelScope.launch {
+            loadJob.join()
+            _state.value.favorites.firstOrNull { it.id == favoriteId }?.let(::onFavoriteClick)
+        }
+    }
+
     /** A custom ingredient was created: make it searchable and select it. */
     fun onCustomIngredientCreated(ingredient: IngredientInfo) {
         viewModelScope.launch {
@@ -112,6 +126,8 @@ class LogMealViewModel(
             it.copy(
                 query = query,
                 results = search.search(query).mapNotNull(ingredientsById::get),
+                // Self-test 19.11.: a dish can be found by its name or an ingredient.
+                dishResults = if (query.isBlank()) emptyList() else it.favorites.filter { dish -> dish.matches(query, ingredientNames) },
                 nameExists = normalizeForSearch(query) in knownNames,
             )
         }
@@ -144,6 +160,7 @@ class LogMealViewModel(
                 selected = selected,
                 query = "",
                 results = emptyList(),
+                dishResults = emptyList(),
                 favoriteId = state.favoriteId.takeIf { selected.isNotEmpty() },
             )
         }
@@ -172,7 +189,7 @@ class LogMealViewModel(
             val added = favorite.items
                 .filter { it.ingredientId !in known }
                 .mapNotNull { item -> ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation) } }
-            state.copy(selected = state.selected + added, favoriteId = favorite.id)
+            state.copy(selected = state.selected + added, favoriteId = favorite.id, query = "", results = emptyList(), dishResults = emptyList())
         }
     }
 
@@ -269,6 +286,7 @@ class LogMealViewModel(
             it.copy(
                 query = "",
                 results = emptyList(),
+                dishResults = emptyList(),
                 selected = emptyList(),
                 slot = null,
                 slotTime = null,

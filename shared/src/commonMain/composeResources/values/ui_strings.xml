@@ -137,6 +137,10 @@
         <item quantity="other">%1$d dishes</item>
     </plurals>
     <string name="favorites_more">More actions</string>
+    <string name="favorites_search">Search dish or ingredient …</string>
+    <string name="favorites_no_match">No dish found.</string>
+    <string name="favorites_log">Log</string>
+    <string name="history_save_favorite">Save as favourite</string>
     <string name="favorites_editor_title">New dish</string>
     <string name="favorites_name">Name, e.g. lentil soup</string>
     <string name="favorites_ingredients">Ingredients</string>

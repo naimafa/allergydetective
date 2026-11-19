@@ -60,6 +60,8 @@ fun MainScreen(
     onHomeAction: (HomeAction) -> Unit,
     /** Opens a logged meal from the history for editing. */
     onEditMeal: (Long) -> Unit = {},
+    /** Opens the food log with a dish from the favourites. */
+    onLogDish: (Long) -> Unit = {},
     profileExtra: @Composable () -> Unit = {},
     initialTab: MainTab = MainTab.HOME,
 ) {
@@ -99,7 +101,7 @@ fun MainScreen(
                 )
             }
             MainTab.HISTORY -> HistoryScreen(onEditMeal = onEditMeal, modifier = modifier)
-            MainTab.FAVORITES -> FavoritesScreen(modifier = modifier)
+            MainTab.FAVORITES -> FavoritesScreen(onLogDish = onLogDish, modifier = modifier)
             MainTab.PROFILE -> ProfileScreen(
                 modifier = modifier,
                 onSaved = { scope.launch { snackbarHostState.showSnackbar(getString(Res.string.common_saved)) } },

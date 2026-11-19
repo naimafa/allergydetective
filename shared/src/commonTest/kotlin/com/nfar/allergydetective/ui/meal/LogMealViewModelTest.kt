@@ -353,6 +353,33 @@ class LogMealViewModelTest {
     }
 
     @Test
+    fun searchFindsDishesByIngredientAndPickingOneFillsTheForm() {
+        repository.favorites += FavoriteInfo(7, "Frühstück", listOf(MealItem(bread.id, Portion.SMALL), MealItem(milk.id, Portion.MEDIUM)))
+        val vm = viewModel()
+
+        vm.onQueryChange("kuhm")
+        assertEquals(listOf(7L), vm.state.value.dishResults.map { it.id })
+
+        vm.onFavoriteClick(vm.state.value.dishResults.single())
+        assertEquals(listOf(bread.id, milk.id), vm.state.value.selected.map { it.ingredient.id })
+        assertTrue(vm.state.value.dishResults.isEmpty())
+        assertEquals("", vm.state.value.query)
+    }
+
+    @Test
+    fun dishFromTheFavouritesStartsTheFormWithoutAMeal() {
+        repository.favorites += FavoriteInfo(7, "Milchkaffee", listOf(MealItem(milk.id, Portion.LARGE)))
+        val vm = viewModel()
+
+        vm.startWithFavorite(7)
+
+        assertEquals(listOf(SelectedIngredient(milk, Portion.LARGE)), vm.state.value.selected)
+        assertEquals(7L, vm.state.value.favoriteId)
+        // The meal is still chosen by the user.
+        assertNull(vm.state.value.slot)
+    }
+
+    @Test
     fun mealSlotIsRecognisedByItsFixedTime() {
         assertEquals(MealSlot.BREAKFAST, MealSlot.at(8, 0))
         assertEquals(MealSlot.LUNCH, MealSlot.at(12, 30))

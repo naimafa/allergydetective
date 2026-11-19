@@ -14,15 +14,14 @@ import allergydetective.shared.generated.resources.home_log_symptom_hint
 import allergydetective.shared.generated.resources.home_results
 import allergydetective.shared.generated.resources.home_results_hint
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -70,34 +69,44 @@ fun HomeScreen(
     /** Optional card on top, e.g. "ill since ..." (self-test 18.11.). */
     banner: @Composable () -> Unit = {},
 ) {
-    Column(
-        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(stringResource(Res.string.home_heading), style = MaterialTheme.typography.headlineMedium)
-            DailyQuote(state.today)
-        }
-        banner()
-        state.confirmedDays?.let { HomeProgress(it) }
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text(stringResource(Res.string.home_actions_title), style = MaterialTheme.typography.titleMedium)
-            HomeAction.entries.chunked(2).forEach { row ->
-                // Same height in a row, also when one title wraps.
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.height(IntrinsicSize.Min)) {
-                    row.forEach { action ->
-                        ActionTile(
-                            action,
-                            badge = { TileBadge(action, state) },
-                            onClick = { onAction(action) },
-                            modifier = Modifier.weight(1f),
-                        )
+    // Design of 19.11.: a slimmer top, the four tiles get about half of the screen (47 %),
+    // all of them exactly the same size. Spacing on an 8 dp grid (8 / 16 / 24).
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        val tileHeight = ((maxHeight * TILES_SHARE - GRID) / 2).coerceIn(MIN_TILE_HEIGHT, MAX_TILE_HEIGHT)
+        Column(
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(stringResource(Res.string.home_heading), style = MaterialTheme.typography.headlineSmall)
+                DailyQuote(state.today)
+            }
+            banner()
+            state.confirmedDays?.let { HomeProgress(it) }
+            Column(verticalArrangement = Arrangement.spacedBy(GRID), modifier = Modifier.padding(top = 8.dp)) {
+                Text(stringResource(Res.string.home_actions_title), style = MaterialTheme.typography.titleMedium)
+                HomeAction.entries.chunked(2).forEach { row ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(GRID)) {
+                        row.forEach { action ->
+                            ActionTile(
+                                action,
+                                badge = { TileBadge(action, state) },
+                                onClick = { onAction(action) },
+                                modifier = Modifier.weight(1f).height(tileHeight),
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
+
+/** Part of the screen height for the four tiles (design of 19.11.). */
+private const val TILES_SHARE = 0.47f
+private val GRID = 12.dp
+private val MIN_TILE_HEIGHT = 128.dp
+private val MAX_TILE_HEIGHT = 184.dp
 
 /** Status of today on the tile (self-test 19.11.): "2 today" in blue, day check done in green or open in grey. */
 @Composable
@@ -124,16 +133,20 @@ private fun TileBadge(action: HomeAction, state: HomeState) {
 private fun DailyQuote(epochDay: Long) {
     val quotes = stringArrayResource(Res.array.daily_quotes)
     if (quotes.isEmpty()) return
+    // One or two short lines.
     Text(
         quotes[HomeViewModel.quoteIndex(epochDay, quotes.size)],
-        style = MaterialTheme.typography.bodyLarge,
+        style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
     )
 }
 
 /**
- * Self-test 19.11.: "Tages-Abschluss" was cut off although there was room. Less inner padding,
- * the icon without its circle, and the title may wrap to a second line instead of being clipped.
+ * Design of 19.11.: all four tiles follow the same rules. Same size and padding, icon top left,
+ * status top right, title in the lower third with the description right below it. The description
+ * always takes two lines, so every title sits on the same line; a long title grows upwards.
  */
 @Composable
 private fun ActionTile(action: HomeAction, badge: @Composable () -> Unit, onClick: () -> Unit, modifier: Modifier) {
@@ -142,31 +155,28 @@ private fun ActionTile(action: HomeAction, badge: @Composable () -> Unit, onClic
         onClick = onClick,
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = colors.container, contentColor = colors.content),
-        modifier = modifier.fillMaxHeight().heightIn(min = TILE_HEIGHT),
+        modifier = modifier,
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(14.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Row(verticalAlignment = Alignment.Top) {
+        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
                 Icon(action.icon, contentDescription = null, tint = colors.accent, modifier = Modifier.size(28.dp))
                 Spacer(Modifier.weight(1f))
                 badge()
             }
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp), modifier = Modifier.padding(top = 12.dp)) {
-                Text(stringResource(action.label), style = MaterialTheme.typography.titleMedium, maxLines = 2)
-                Text(
-                    stringResource(action.hint),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = colors.content.copy(alpha = 0.85f),
-                    maxLines = 2,
-                )
-            }
+            Spacer(Modifier.weight(1f))
+            Text(stringResource(action.label), style = MaterialTheme.typography.titleMedium, maxLines = 2)
+            Text(
+                stringResource(action.hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.content.copy(alpha = 0.85f),
+                minLines = 2,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(top = 2.dp),
+            )
         }
     }
 }
-
-private val TILE_HEIGHT = 136.dp
 
 private class TileColors(val container: Color, val content: Color, val accent: Color)
 

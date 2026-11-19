@@ -10,6 +10,7 @@ import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.HistoryEntry
 import com.nfar.allergydetective.domain.diary.HistoryRepository
 import com.nfar.allergydetective.domain.diary.IngredientInfo
+import com.nfar.allergydetective.domain.diary.LoggedMeal
 import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
@@ -46,6 +47,8 @@ class HistoryViewModelTest {
         HistoryEntry.MealEntry(4, clock.millisAt(today - 3, 12, 0), emptyList()),
     )
     private val deletedMeals = mutableListOf<Long>()
+    private val savedFavorites = mutableListOf<Pair<String, List<MealItem>>>()
+    private val linkedFavorites = mutableListOf<Pair<Long, Long?>>()
     private val deletedSymptoms = mutableListOf<Long>()
 
     private val history = object : HistoryRepository {
@@ -63,7 +66,14 @@ class HistoryViewModelTest {
             entries.removeAll { it is HistoryEntry.MealEntry && it.id == mealId }
         }
         override suspend fun favorites() = emptyList<FavoriteInfo>()
-        override suspend fun saveFavorite(name: String, items: List<MealItem>) = 0L
+        override suspend fun saveFavorite(name: String, items: List<MealItem>): Long {
+            savedFavorites += name to items
+            return 77L
+        }
+        override suspend fun meal(mealId: Long) = LoggedMeal(mealId, clock.millisAt(today, 8, 0), listOf(MealItem(milk.id, Portion.MEDIUM)), null, 60)
+        override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?) {
+            linkedFavorites += mealId to favoriteId
+        }
         override suspend fun deleteFavorite(favoriteId: Long) = Unit
     }
 
@@ -134,6 +144,17 @@ class HistoryViewModelTest {
 
         vm.onFilterChange(HistoryFilter.ALL)
         assertEquals(3, vm.state.value.visibleDays.size)
+    }
+
+    @Test
+    fun loggedMealBecomesADishAndIsLinkedToIt() {
+        val vm = viewModel()
+
+        vm.onSaveAsFavorite(1L, "  Milchfrühstück ")
+        vm.onSaveAsFavorite(1L, " ")
+
+        assertEquals(listOf("Milchfrühstück" to listOf(MealItem(milk.id, Portion.MEDIUM))), savedFavorites)
+        assertEquals<List<Pair<Long, Long?>>>(listOf(1L to 77L), linkedFavorites)
     }
 
     @Test

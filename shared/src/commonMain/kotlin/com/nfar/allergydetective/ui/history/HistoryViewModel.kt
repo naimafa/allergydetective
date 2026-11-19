@@ -86,6 +86,21 @@ class HistoryViewModel(
         _state.update { it.copy(filter = filter) }
     }
 
+    /**
+     * Self-test 19.11.: a logged meal becomes a dish with one tap. The meal is linked to the new dish,
+     * so the history shows its name.
+     */
+    fun onSaveAsFavorite(mealId: Long, name: String) {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return
+        viewModelScope.launch {
+            val meal = meals.meal(mealId) ?: return@launch
+            val favoriteId = meals.saveFavorite(trimmed, meal.items)
+            meals.updateMeal(meal.id, meal.eatenAt, meal.tzOffsetMin, meal.items, favoriteId)
+            refresh()
+        }
+    }
+
     /** A complaint on a sick day: part of the illness or not (self-test 19.11.). */
     fun onIllnessRelationChange(entry: HistoryEntry.SymptomEntry, relation: IllnessRelation) {
         viewModelScope.launch {

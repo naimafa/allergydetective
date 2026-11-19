@@ -63,7 +63,7 @@ class RoomMealRepository(private val dao: MealDao) : MealRepository {
     override suspend fun meal(mealId: Long): LoggedMeal? {
         val meal = dao.meal(mealId) ?: return null
         val items = dao.mealIngredients(mealId).map { MealItem(it.ingredientId, it.portion.toDomain(), it.preparation?.toDomain()) }
-        return LoggedMeal(meal.id, meal.eatenAt, items, meal.favoriteId)
+        return LoggedMeal(meal.id, meal.eatenAt, items, meal.favoriteId, meal.tzOffsetMin)
     }
 
     override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?) =
