@@ -15,7 +15,14 @@ data class ReminderSettings(
 interface SettingsStore {
     fun reminder(): ReminderSettings
     fun saveReminder(settings: ReminderSettings)
+
+    /** Light, dark or like the system (feedback 19.11.). */
+    fun themeMode(): ThemeMode = ThemeMode.SYSTEM
+    fun saveThemeMode(mode: ThemeMode) = Unit
 }
+
+/** App look: follow the system (incl. its night schedule) or always light / dark. */
+enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
 /** Platform adapter (ARCHITEKTUR): schedules the daily notification. */
 interface ReminderScheduler {
