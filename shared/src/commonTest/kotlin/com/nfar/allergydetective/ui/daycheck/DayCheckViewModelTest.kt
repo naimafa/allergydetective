@@ -91,17 +91,60 @@ class DayCheckViewModelTest {
     }
 
     @Test
-    fun noComplaintsIsNotOfferedWhenSymptomsWereLogged() {
+    fun withSymptomsFinishingCompletesTheDayWithoutAsking() {
         confirm(today - 1)
         confirm(today - 2)
         repository.symptomTimes += clock.startOfDayMillis(today) + 3_600_000L
         val vm = viewModel()
 
-        assertFalse(vm.state.value.canChooseNoSymptoms)
-        vm.onFinish(DayCheckStatus.NO_SYMPTOMS)
+        vm.onFinish()
+
+        assertFalse(vm.state.value.askNoSymptoms)
+        assertEquals(DayCheckStatus.COMPLETE, repository.checks[today]?.status)
+        assertTrue(vm.state.value.saved)
+    }
+
+    @Test
+    fun withoutSymptomsFinishingAsksFirst() {
+        confirm(today - 1)
+        confirm(today - 2)
+        val vm = viewModel()
+
+        vm.onFinish()
+        assertTrue(vm.state.value.askNoSymptoms)
         assertTrue(repository.checks[today] == null)
 
-        vm.onFinish(DayCheckStatus.COMPLETE)
+        // "I had some": the day stays open, a symptom gets logged, then back here.
+        vm.onNoSymptomsDismissed()
+        repository.symptomTimes += clock.startOfDayMillis(today) + 3_600_000L
+        vm.onResume()
+        vm.onFinish()
+
+        assertEquals(DayCheckStatus.COMPLETE, repository.checks[today]?.status)
+    }
+
+    @Test
+    fun answersAreSavedRightAwayAndTheDayStaysOpen() {
+        // Self-test 19.11.: "add later" was unclear; leaving the screen keeps everything.
+        confirm(today - 1)
+        confirm(today - 2)
+        val vm = viewModel()
+
+        vm.onStressChange(3)
+
+        assertEquals(DayCheckData(today, sleepHours = 7f, stress = 3, status = DayCheckStatus.OPEN), repository.checks[today])
+        assertFalse(vm.state.value.saved)
+    }
+
+    @Test
+    fun changingAConfirmedDayKeepsItConfirmed() {
+        repository.checks[today] = DayCheckData(today, stress = 2, status = DayCheckStatus.COMPLETE)
+        confirm(today - 1)
+        confirm(today - 2)
+        val vm = viewModel()
+
+        vm.onStressChange(4)
+
         assertEquals(DayCheckStatus.COMPLETE, repository.checks[today]?.status)
     }
 
@@ -118,7 +161,8 @@ class DayCheckViewModelTest {
         vm.onFactorToggle(1)
         vm.onFactorToggle(3)
         vm.onFactorToggle(1)
-        vm.onFinish(DayCheckStatus.NO_SYMPTOMS)
+        vm.onFinish()
+        vm.onConfirmNoSymptoms()
 
         assertEquals(
             DayCheckData(today, wellbeing = 4, sleepHours = 5.5f, sleepQuality = 2, stress = 5, status = DayCheckStatus.NO_SYMPTOMS, factorIds = setOf(3)),

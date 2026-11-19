@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 data class DayCheckState(
     val loading: Boolean = true,
@@ -21,24 +23,31 @@ data class DayCheckState(
     val confirmedDays: Set<Long> = emptySet(),
     val check: DayCheckData = DayCheckData(epochDay = 0),
     val factors: List<FactorInfo> = emptyList(),
-    /** Symptoms were logged on this day, so "no complaints" is not offered. */
+    /** Symptoms were logged on this day: finishing confirms "all logged" without asking. */
     val hasSymptoms: Boolean = false,
-    /** Set after saving, the screen closes then. */
+    /** No symptoms logged: "Finish day" asks "no complaints on this day?" first. */
+    val askNoSymptoms: Boolean = false,
+    /** Set after finishing, the screen closes then. */
     val saved: Boolean = false,
 ) {
-    val canChooseNoSymptoms: Boolean get() = !hasSymptoms
-
     /** Past days in the selection that are not confirmed yet, newest first. */
     val openPastDays: List<Long> get() = days.filter { it != today && it !in confirmedDays }
 }
 
-/** Day check (UX 3.4): wellbeing, sleep, stress, factors and the confirmation status. */
+/**
+ * Day check (UX 3.4): wellbeing, sleep, stress, factors and the confirmation.
+ * Self-test 19.11.: every answer is saved right away (the day stays open), one button "Finish day"
+ * confirms it; the three status buttons with the unclear "add later" are gone.
+ */
 class DayCheckViewModel(
     private val repository: DayCheckRepository,
     private val clock: AppClock,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DayCheckState())
+
+    /** Saves one after the other, so a quick second tap never overtakes the first. */
+    private val saveLock = Mutex()
     val state: StateFlow<DayCheckState> = _state.asStateFlow()
 
     init {
@@ -48,11 +57,10 @@ class DayCheckViewModel(
             val confirmed = repository.confirmedDays(days)
             // Always start with today: preselecting an open past day made users confirm the wrong day.
             // Open past days are only pointed out (openPastDays) and chosen by tapping.
-            val start = today
             _state.update {
                 it.copy(today = today, days = days, confirmedDays = confirmed, factors = repository.lifestyleFactors())
             }
-            loadDay(start)
+            loadDay(today)
         }
     }
 
@@ -60,13 +68,19 @@ class DayCheckViewModel(
         viewModelScope.launch { loadDay(epochDay) }
     }
 
+    /** Back on the screen, e.g. after logging a symptom from the "no complaints?" question. */
+    fun onResume() {
+        if (_state.value.loading) return
+        viewModelScope.launch { _state.update { it.copy(hasSymptoms = hasSymptoms(it.check.epochDay)) } }
+    }
+
     private suspend fun loadDay(epochDay: Long) {
         val check = repository.load(epochDay) ?: DayCheckData(epochDay = epochDay, sleepHours = DEFAULT_SLEEP_HOURS)
-        val from = clock.startOfDayMillis(epochDay)
-        val to = clock.startOfDayMillis(epochDay + 1)
-        val hasSymptoms = repository.symptomCount(from, to) > 0
-        _state.update { it.copy(loading = false, check = check, hasSymptoms = hasSymptoms) }
+        _state.update { it.copy(loading = false, check = check, hasSymptoms = hasSymptoms(epochDay), askNoSymptoms = false) }
     }
+
+    private suspend fun hasSymptoms(epochDay: Long): Boolean =
+        repository.symptomCount(clock.startOfDayMillis(epochDay), clock.startOfDayMillis(epochDay + 1)) > 0
 
     fun onWellbeingChange(value: Int) = updateCheck { it.copy(wellbeing = value) }
 
@@ -84,18 +98,33 @@ class DayCheckViewModel(
         it.copy(factorIds = if (factorId in it.factorIds) it.factorIds - factorId else it.factorIds + factorId)
     }
 
-    /** Saves with the chosen status. NO_SYMPTOMS is refused when symptoms were logged that day. */
-    fun onFinish(status: DayCheckStatus) {
-        val current = _state.value
-        if (status == DayCheckStatus.NO_SYMPTOMS && !current.canChooseNoSymptoms) return
+    /** "Finish day": with symptoms the day is complete; without, the screen asks first. */
+    fun onFinish() {
+        if (_state.value.hasSymptoms) finish(DayCheckStatus.COMPLETE) else _state.update { it.copy(askNoSymptoms = true) }
+    }
+
+    /** Answer "yes, no complaints". */
+    fun onConfirmNoSymptoms() = finish(DayCheckStatus.NO_SYMPTOMS)
+
+    /** "Not yet" or "log a symptom first": the day stays open. */
+    fun onNoSymptomsDismissed() {
+        _state.update { it.copy(askNoSymptoms = false) }
+    }
+
+    private fun finish(status: DayCheckStatus) {
+        val check = _state.value.check.copy(status = status)
+        _state.update { it.copy(check = check, askNoSymptoms = false) }
         viewModelScope.launch {
-            repository.save(current.check.copy(status = status))
+            saveLock.withLock { repository.save(check) }
             _state.update { it.copy(saved = true) }
         }
     }
 
+    /** Applies the change and saves it at once; the confirmation status stays as it is. */
     private fun updateCheck(change: (DayCheckData) -> DayCheckData) {
-        _state.update { it.copy(check = change(it.check)) }
+        val check = change(_state.value.check)
+        _state.update { it.copy(check = check) }
+        viewModelScope.launch { saveLock.withLock { repository.save(check) } }
     }
 
     companion object {

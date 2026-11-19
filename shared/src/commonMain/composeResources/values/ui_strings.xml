@@ -68,11 +68,11 @@
     <string name="sick_ongoing">ongoing</string>
     <string name="sick_range">%1$s – %2$s</string>
     <string name="sick_day_in_period">This day lies in a period of illness and does not count for the results.</string>
-    <string name="day_complaints">Complaints that day?</string>
-    <string name="day_no_complaints">No complaints</string>
-    <string name="day_no_complaints_disabled">You logged symptoms on this day, so please choose “Everything logged”.</string>
-    <string name="day_all_logged">Everything logged</string>
-    <string name="day_later">I will add more later</string>
+    <string name="day_finish">Finish day</string>
+    <string name="day_autosave_hint">Your answers are saved right away. The day counts for the evaluation once you finish it.</string>
+    <string name="day_no_symptoms_question">No complaints on this day?</string>
+    <string name="day_no_symptoms_yes">Yes, no complaints</string>
+    <string name="day_no_symptoms_log">I had some: log a symptom</string>
     <string name="common_save">Save</string>
     <string name="common_back">Back</string>
     <string name="common_undo">Undo</string>

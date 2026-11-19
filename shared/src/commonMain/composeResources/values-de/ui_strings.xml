@@ -68,11 +68,11 @@
     <string name="sick_ongoing">läuft noch</string>
     <string name="sick_range">%1$s – %2$s</string>
     <string name="sick_day_in_period">Dieser Tag liegt in einer Krankheitszeit und zählt nicht für die Auswertung.</string>
-    <string name="day_complaints">Beschwerden an dem Tag?</string>
-    <string name="day_no_complaints">Keine Beschwerden</string>
-    <string name="day_no_complaints_disabled">Für diesen Tag sind Symptome eingetragen. Bitte „Alles eingetragen“ wählen.</string>
-    <string name="day_all_logged">Alles eingetragen</string>
-    <string name="day_later">Noch nachtragen</string>
+    <string name="day_finish">Tag abschließen</string>
+    <string name="day_autosave_hint">Deine Angaben werden sofort gespeichert. Der Tag zählt für die Auswertung, sobald du ihn abschließt.</string>
+    <string name="day_no_symptoms_question">Hattest du an diesem Tag keine Beschwerden?</string>
+    <string name="day_no_symptoms_yes">Ja, keine Beschwerden</string>
+    <string name="day_no_symptoms_log">Doch – Symptom eintragen</string>
     <string name="common_save">Speichern</string>
     <string name="common_back">Zurück</string>
     <string name="common_undo">Rückgängig</string>
