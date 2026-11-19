@@ -9,13 +9,13 @@
     <string name="home_log_meal_hint">Mahlzeiten eintragen</string>
     <string name="home_log_symptom_hint">Beschwerden eintragen</string>
     <string name="home_day_check_hint">Wie war dein Tag?</string>
-    <string name="home_results_hint">Zusammenhänge sehen</string>
+    <string name="home_results_hint">Mögliche Muster ansehen</string>
     <string name="home_heading">Dein Allergie-Tagebuch</string>
     <string name="home_progress_title">Dein Fortschritt</string>
     <string name="home_progress_badge">Tag %1$d / %2$d</string>
     <plurals name="home_progress_remaining">
-        <item quantity="one">Noch %1$d Tag bis zur ersten möglichen Auswertung.</item>
-        <item quantity="other">Noch %1$d Tage bis zur ersten möglichen Auswertung.</item>
+        <item quantity="one">Noch %1$d Tag bis zur ersten Auswertung.</item>
+        <item quantity="other">Noch %1$d Tage bis zur ersten Auswertung.</item>
     </plurals>
     <string name="home_actions_title">Was möchtest du heute machen?</string>
     <string name="home_day_open">Offen</string>

@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.ui.text.style.TextOverflow
@@ -79,15 +81,15 @@ fun HomeScreen(
     // all of them exactly the same size. Spacing on an 8 dp grid (8 / 16 / 24).
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val tileHeight = ((maxHeight * TILES_SHARE - GRID) / 2).coerceIn(MIN_TILE_HEIGHT, MAX_TILE_HEIGHT)
-        // Text width inside a tile: screen padding 2 × 16, gap, tile padding 2 × 16, and a small safety margin.
-        val textWidth = (maxWidth - 32.dp - GRID) / 2 - 32.dp - 6.dp
+        // Text width inside a tile: screen padding 2 × 16, gap, tile padding on both sides, a small safety margin.
+        val textWidth = (maxWidth - 32.dp - GRID) / 2 - TILE_PADDING * 2 - 6.dp
         val (titleStyle, hintStyle) = sharedTileStyles(textWidth)
         Column(
             modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(stringResource(Res.string.home_heading), style = MaterialTheme.typography.headlineSmall)
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(stringResource(Res.string.home_heading), style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
                 DailyQuote(state.today)
             }
             banner()
@@ -115,8 +117,9 @@ fun HomeScreen(
 
 /**
  * Phone test 19.11.: at font scale 1.25 the tiles shrank their texts one by one and looked uneven.
- * One size for all four titles and one for all four descriptions: the largest at which every text
- * fits in one line (title 16 → 12 sp, description 12 → 10 sp, steps of 0.5 sp).
+ * One size for all four titles and one for all four descriptions, the largest that fits:
+ * titles 18 → 13 sp in one line (never wrapped), descriptions 15 → 11 sp in at most two lines
+ * without breaking a word. Steps of 0.5 sp.
  */
 @Composable
 private fun sharedTileStyles(textWidth: Dp): Pair<TextStyle, TextStyle> {
@@ -124,20 +127,27 @@ private fun sharedTileStyles(textWidth: Dp): Pair<TextStyle, TextStyle> {
     val widthPx = with(LocalDensity.current) { textWidth.toPx() }
     val titles = HomeAction.entries.map { stringResource(it.label) }
     val hints = HomeAction.entries.map { stringResource(it.hint) }
-    val title = MaterialTheme.typography.titleMedium
-    // Without the extra letter spacing of bodySmall, so "Zusammenhänge ansehen" fits.
-    val hint = MaterialTheme.typography.bodySmall.copy(letterSpacing = 0.sp)
+    val title = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp, lineHeight = 24.sp)
+    val hint = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp, lineHeight = 20.sp, letterSpacing = 0.sp)
     return remember(titles, hints, widthPx, title, hint) {
-        fun fitting(texts: List<String>, style: TextStyle, minSize: Float): TextStyle {
+        fun oneLine(text: String, style: TextStyle) =
+            measurer.measure(text, style, maxLines = 1, softWrap = false).size.width <= widthPx
+
+        fun twoLines(text: String, style: TextStyle) =
+            text.split(' ').all { oneLine(it, style) } &&
+                !measurer.measure(text, style, maxLines = 2, constraints = Constraints(maxWidth = widthPx.toInt())).hasVisualOverflow
+
+        fun fitting(texts: List<String>, style: TextStyle, minSize: Float, fits: (String, TextStyle) -> Boolean): TextStyle {
             var size = style.fontSize.value
             while (size > minSize) {
-                val candidate = style.copy(fontSize = size.sp)
-                if (texts.all { measurer.measure(it, candidate, maxLines = 1, softWrap = false).size.width <= widthPx }) return candidate
+                // Line height shrinks along with the font.
+                val candidate = style.copy(fontSize = size.sp, lineHeight = (size * style.lineHeight.value / style.fontSize.value).sp)
+                if (texts.all { fits(it, candidate) }) return candidate
                 size -= 0.5f
             }
-            return style.copy(fontSize = minSize.sp)
+            return style.copy(fontSize = minSize.sp, lineHeight = (minSize * style.lineHeight.value / style.fontSize.value).sp)
         }
-        fitting(titles, title, 12f) to fitting(hints, hint, 10f)
+        fitting(titles, title, 13f, ::oneLine) to fitting(hints, hint, 11f, ::twoLines)
     }
 }
 
@@ -146,6 +156,7 @@ private const val TILES_SHARE = 0.47f
 private val GRID = 12.dp
 private val MIN_TILE_HEIGHT = 128.dp
 private val MAX_TILE_HEIGHT = 184.dp
+private val TILE_PADDING = 20.dp
 
 /** Status of today on the tile (self-test 19.11.): "2 today" in blue, day check done in green or open in grey. */
 @Composable
@@ -184,8 +195,8 @@ private fun DailyQuote(epochDay: Long) {
 
 /**
  * Design of 19.11.: all four tiles follow the same rules. Same size and padding, icon top left,
- * status top right, title in the lower third with the one-line description right below it.
- * Title and description are one line each and shrink a little with a large system font, so every title sits on the same line.
+ * status top right, title in the lower third with the description (up to two lines) right below it.
+ * Title 18 sp, description 15 sp, icon 34 dp, padding 20 dp; with a large system font all four shrink together.
  */
 @Composable
 private fun ActionTile(
@@ -203,20 +214,22 @@ private fun ActionTile(
         colors = CardDefaults.cardColors(containerColor = colors.container, contentColor = colors.content),
         modifier = modifier,
     ) {
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Column(modifier = Modifier.fillMaxSize().padding(TILE_PADDING)) {
             Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
-                Icon(action.icon, contentDescription = null, tint = colors.accent, modifier = Modifier.size(28.dp))
+                Icon(action.icon, contentDescription = null, tint = colors.accent, modifier = Modifier.size(34.dp))
                 Spacer(Modifier.weight(1f))
                 badge()
             }
             Spacer(Modifier.weight(1f))
-            // One line each, in the size shared by all four tiles (sharedTileStyles).
+            // Sizes shared by all four tiles (sharedTileStyles). The title never wraps; the description
+            // always reserves two lines, so the text area has the same height and every title sits on the same line.
             Text(stringResource(action.label), style = titleStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(
                 stringResource(action.hint),
                 style = hintStyle,
                 color = colors.content.copy(alpha = 0.85f),
-                maxLines = 1,
+                minLines = 2,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(top = 4.dp),
             )

@@ -41,7 +41,7 @@ fun HomeProgress(confirmedDays: Int) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         // Design of 19.11.: compact; title row, bar, then the two short lines close together.
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     stringResource(Res.string.home_progress_title),
