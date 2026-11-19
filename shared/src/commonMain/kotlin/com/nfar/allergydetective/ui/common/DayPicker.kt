@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -54,13 +56,15 @@ fun DayPicker(
             AppFilterChip(
                 selected = daysAgo == option,
                 onClick = { onSelect(option) },
-                label = { Text(dayLabel(option) + if (option in marked) " ✓" else "") },
+                label = { Text(dayLabel(option)) },
+                trailingIcon = doneMark(option in marked, selected = daysAgo == option),
             )
         }
         AppFilterChip(
             selected = daysAgo > QUICK_DAYS,
             onClick = { showCalendar = true },
-            label = { Text(if (daysAgo > QUICK_DAYS) shortDate(today - daysAgo) + if (daysAgo in marked) " ✓" else "" else stringResource(Res.string.day_pick_date)) },
+            label = { Text(if (daysAgo > QUICK_DAYS) shortDate(today - daysAgo) else stringResource(Res.string.day_pick_date)) },
+            trailingIcon = doneMark(daysAgo > QUICK_DAYS && daysAgo in marked, selected = true),
             leadingIcon = { Icon(Icons.Outlined.CalendarMonth, contentDescription = null, modifier = Modifier.size(18.dp)) },
         )
     }
@@ -95,4 +99,15 @@ private fun shortDate(epochDay: Long): String {
     val date = LocalDate.fromEpochDays(epochDay)
     val weekday = stringArrayResource(Res.array.weekdays_short).getOrNull(date.dayOfWeek.ordinal).orEmpty()
     return "$weekday, ${date.day.toString().padStart(2, '0')}.${(date.month.ordinal + 1).toString().padStart(2, '0')}."
+}
+
+/** Finished day: the "done" green of the status badges (dark mode feedback 19.11.: use it consistently). */
+private fun doneMark(done: Boolean, selected: Boolean): (@Composable () -> Unit)? = if (!done) {
+    null
+} else {
+    {
+        // White on a selected (green) chip.
+        val scheme = MaterialTheme.colorScheme
+        Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = if (selected) scheme.onPrimary else scheme.primary, modifier = Modifier.size(18.dp))
+    }
 }

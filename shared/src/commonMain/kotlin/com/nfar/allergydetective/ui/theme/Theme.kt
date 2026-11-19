@@ -62,19 +62,22 @@ private val DarkColors = darkColorScheme(
     onSecondary = Color(0xFF1F2E27),
     secondaryContainer = Color(0xFF34433C),
     onSecondaryContainer = Color(0xFFE5EBE7),
-    tertiary = Color(0xFFF0B9A3),
+    // Dark mode feedback 19.11.: terracotta a little less saturated.
+    tertiary = Color(0xFFE6BFAE),
     onTertiary = Color(0xFF55200F),
-    tertiaryContainer = Color(0xFF6E3524),
+    tertiaryContainer = Color(0xFF5A3B31),
     onTertiaryContainer = Color(0xFFF6E4DC),
     background = Color(0xFF121512),
     onBackground = Color(0xFFE2E4DE),
     surface = Color(0xFF121512),
     onSurface = Color(0xFFE2E4DE),
     surfaceVariant = Color(0xFF424A44),
-    onSurfaceVariant = Color(0xFFC2C9C1),
+    // Dark mode feedback 19.11.: secondary and status texts a little lighter.
+    onSurfaceVariant = Color(0xFFD2D8D1),
     surfaceContainerLowest = Color(0xFF0D100D),
     surfaceContainerLow = Color(0xFF1A1D1A),
-    surfaceContainer = Color(0xFF1E221E),
+    // Bottom navigation: clearly lighter than the page.
+    surfaceContainer = Color(0xFF242924),
     surfaceContainerHigh = Color(0xFF282C28),
     surfaceContainerHighest = Color(0xFF333733),
     outline = Color(0xFF8C948C),
@@ -117,7 +120,7 @@ private val LightExtra = ExtraColors(
 
 private val DarkExtra = ExtraColors(
     digestive = Color(0xFF4A3D28),
-    skin = Color(0xFF4D3329),
+    skin = Color(0xFF4A3830),
     head = Color(0xFF3A3349),
     airways = Color(0xFF2A3D44),
     other = Color(0xFF34433C),
