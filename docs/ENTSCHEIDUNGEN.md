@@ -29,6 +29,7 @@ Zusammenfassung der Konzept-Sitzung vom **14.11.2026**. Details stehen in den ve
 | Symptom nach Tageszeit | Morgens = 7:00 (vor dem Frühstück), Mittags = 13:00, Nachmittags = 16:00, Abends = 20:00, Ganzer Tag = 7:00, Nach dem Essen = letzte Mahlzeit von heute + 30 min. Nur Tageszeiten, die schon begonnen haben. Lange drücken speichert weiter mit Intensität 3 und "jetzt" (18.11.2026). **Vorläufig** | `domain/time/DayParts.kt` |
 | Notfall | Atemnot / Schwellung → Hinweis mit Notruf 112 | Symptome Kap. 3 |
 | Farben | Pastell für Flächen, dunkle Varianten für Text (WCAG ≥ 4,5:1) | UX 1.1 |
+| Designsystem | Verbindliche Palette (19.11.2026): Warmweiß `#F6F7F3` Hintergrund, Salbei `#DCE8DF` Essen, Apricot `#F6E4DC` Symptome, Lavendel `#E8E2F0` Tagesabschluss, Graugrün `#E5EBE7` Auswertung, Waldgrün `#385B50` einziger Akzent (Buttons, aktive Navigation, wichtige Icons), Text `#293831`. Sekundärtext `#5F6A63` statt `#818A82` (nur ~3,3:1). Verteilung ca. 60 % Warmweiß, 25 % Pastell, 10 % Salbei/Graugrün, 5 % Waldgrün | `ui/theme/Theme.kt` |
 
 ## 3. Technik
 * **Zielplattformen:** Android + iOS aus **einer Codebasis**.
