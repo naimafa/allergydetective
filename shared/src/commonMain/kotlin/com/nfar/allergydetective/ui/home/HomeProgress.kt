@@ -2,6 +2,7 @@ package com.nfar.allergydetective.ui.home
 
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.home_progress_badge
+import allergydetective.shared.generated.resources.home_progress_cheer
 import allergydetective.shared.generated.resources.home_progress_ready
 import allergydetective.shared.generated.resources.home_progress_remaining
 import allergydetective.shared.generated.resources.home_progress_title
@@ -63,9 +64,12 @@ fun HomeProgress(confirmedDays: Int) {
                 color = scheme.primary,
                 trackColor = scheme.surfaceContainerHigh,
                 strokeCap = StrokeCap.Round,
-                gapSize = 0.dp,
                 drawStopIndicator = {},
             )
+            // Design of 19.11.: an encouraging line while the clues are being collected.
+            if (!ready) {
+                Text(stringResource(Res.string.home_progress_cheer), style = MaterialTheme.typography.titleSmall)
+            }
             Text(
                 if (ready) {
                     pluralStringResource(Res.plurals.home_progress_ready, confirmedDays, confirmedDays)
@@ -73,7 +77,6 @@ fun HomeProgress(confirmedDays: Int) {
                     pluralStringResource(Res.plurals.home_progress_remaining, total - confirmedDays, total - confirmedDays)
                 },
                 style = MaterialTheme.typography.bodyMedium,
-                color = scheme.onSurfaceVariant,
             )
         }
     }

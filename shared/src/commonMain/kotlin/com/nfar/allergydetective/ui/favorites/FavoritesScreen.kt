@@ -14,21 +14,35 @@ import allergydetective.shared.generated.resources.favorites_name
 import allergydetective.shared.generated.resources.favorites_replace
 import allergydetective.shared.generated.resources.favorites_same_name
 import allergydetective.shared.generated.resources.history_delete
+import allergydetective.shared.generated.resources.favorites_count
+import allergydetective.shared.generated.resources.favorites_more
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -42,7 +56,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.nfar.allergydetective.ui.common.StatusBadge
+import com.nfar.allergydetective.ui.common.StatusKind
 import com.nfar.allergydetective.ui.meal.CustomIngredientDialog
+import org.jetbrains.compose.resources.pluralStringResource
 import com.nfar.allergydetective.ui.meal.CustomIngredientViewModel
 import com.nfar.allergydetective.ui.meal.IngredientPicker
 import com.nfar.allergydetective.ui.meal.PreparationChoice
@@ -64,33 +81,35 @@ fun FavoritesScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        item {
-            OutlinedButton(
-                onClick = {
-                    editor.start()
-                    showEditor = true
-                },
-                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-            ) { Text(stringResource(Res.string.favorites_add)) }
+        if (state.favorites.isNotEmpty()) {
+            item {
+                Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                    StatusBadge(pluralStringResource(Res.plurals.favorites_count, state.favorites.size, state.favorites.size), StatusKind.OPEN)
+                }
+            }
         }
         if (!state.loading && state.favorites.isEmpty()) {
             item { Text(stringResource(Res.string.favorites_empty)) }
         }
         items(state.favorites, key = { it.id }) { favorite ->
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(favorite.name, style = MaterialTheme.typography.titleMedium)
-                    Text(
-                        favorite.items.mapNotNull { state.ingredients[it.ingredientId] }.map { ingredientName(it) }.joinToString(", "),
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-                TextButton(onClick = {
+            DishCard(
+                name = favorite.name,
+                ingredients = favorite.items.mapNotNull { state.ingredients[it.ingredientId] }.map { ingredientName(it) },
+                onEdit = {
                     editor.start(favorite)
                     showEditor = true
-                }) { Text(stringResource(Res.string.favorites_edit)) }
-                TextButton(onClick = { viewModel.onDelete(favorite.id) }) { Text(stringResource(Res.string.history_delete)) }
-            }
+                },
+                onDelete = { viewModel.onDelete(favorite.id) },
+            )
+        }
+        item {
+            FilledTonalButton(
+                onClick = {
+                    editor.start()
+                    showEditor = true
+                },
+                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+            ) { Text(stringResource(Res.string.favorites_add)) }
         }
     }
     if (showEditor) {
@@ -101,6 +120,48 @@ fun FavoritesScreen(
                 viewModel.refresh()
             },
         )
+    }
+}
+
+/** Design of 19.11.: name, ingredients separated by dots, "Edit" and "Delete" behind "…". */
+@Composable
+private fun DishCard(name: String, ingredients: List<String>, onEdit: () -> Unit, onDelete: () -> Unit) {
+    var menuOpen by remember { mutableStateOf(false) }
+    OutlinedCard(
+        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+        shape = MaterialTheme.shapes.large,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.padding(start = 16.dp, end = 8.dp, top = 16.dp, bottom = 4.dp)) {
+            Text(name, style = MaterialTheme.typography.titleMedium)
+            Text(
+                ingredients.joinToString(" · "),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 6.dp, end = 8.dp),
+            )
+            HorizontalDivider(modifier = Modifier.padding(top = 12.dp, end = 8.dp), color = MaterialTheme.colorScheme.surfaceContainerHigh)
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                TextButton(onClick = onEdit, contentPadding = PaddingValues(horizontal = 0.dp)) {
+                    Text(stringResource(Res.string.favorites_edit))
+                }
+                Spacer(Modifier.weight(1f))
+                Box {
+                    IconButton(onClick = { menuOpen = true }) {
+                        Icon(Icons.Outlined.MoreHoriz, contentDescription = stringResource(Res.string.favorites_more))
+                    }
+                    DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(Res.string.history_delete), color = MaterialTheme.colorScheme.error) },
+                            onClick = {
+                                menuOpen = false
+                                onDelete()
+                            },
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
