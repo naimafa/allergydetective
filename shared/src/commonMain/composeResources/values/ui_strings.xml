@@ -31,8 +31,8 @@
         <item quantity="one">%1$d symptom</item>
         <item quantity="other">%1$d symptoms</item>
     </plurals>
-    <string name="today_nothing_yet">Nothing logged yet – start with your first meal.</string>
-    <string name="today_open">Finish the day in the evening so it counts.</string>
+    <string name="today_nothing_yet">Nothing logged yet.</string>
+    <string name="today_open">Finish the day in the evening.</string>
     <string name="today_done">Today is done.</string>
     <string name="home_day_open">Open</string>
     <string name="home_day_done">Done</string>

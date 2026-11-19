@@ -21,7 +21,6 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -52,7 +51,7 @@ fun HomeToday(state: HomeState, onClick: () -> Unit) {
         colors = CardDefaults.cardColors(containerColor = scheme.secondaryContainer, contentColor = scheme.onSecondaryContainer),
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.today_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                 Text(
@@ -65,7 +64,6 @@ fun HomeToday(state: HomeState, onClick: () -> Unit) {
                 Count(Icons.Outlined.Restaurant, pluralStringResource(Res.plurals.today_meals, state.mealsToday, state.mealsToday))
                 Count(Icons.Outlined.Bolt, pluralStringResource(Res.plurals.today_symptoms, state.symptomsToday, state.symptomsToday))
             }
-            HorizontalDivider(color = scheme.outlineVariant.copy(alpha = 0.5f))
             val (icon, hint) = when {
                 !state.todayOpen -> Icons.Outlined.CheckCircle to stringResource(Res.string.today_done)
                 state.mealsToday + state.symptomsToday == 0 -> Icons.Outlined.Info to stringResource(Res.string.today_nothing_yet)
@@ -73,7 +71,7 @@ fun HomeToday(state: HomeState, onClick: () -> Unit) {
             }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(icon, contentDescription = null, tint = scheme.primary, modifier = Modifier.size(18.dp))
-                Text(hint, style = MaterialTheme.typography.bodySmall)
+                Text(hint, style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant, maxLines = 1)
             }
         }
     }
@@ -83,6 +81,6 @@ fun HomeToday(state: HomeState, onClick: () -> Unit) {
 private fun Count(icon: ImageVector, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-        Text(text, style = MaterialTheme.typography.bodyMedium)
+        Text(text, style = MaterialTheme.typography.bodySmall)
     }
 }
