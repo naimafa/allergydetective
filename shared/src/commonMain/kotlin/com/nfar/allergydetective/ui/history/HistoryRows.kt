@@ -175,6 +175,7 @@ fun EntrySheet(
     clock: AppClock,
     sickDay: Boolean,
     onEdit: (Long) -> Unit,
+    onEditSymptom: (Long) -> Unit,
     onSaveFavorite: (Long) -> Unit,
     onRelation: (HistoryEntry.SymptomEntry, com.nfar.allergydetective.domain.analysis.model.IllnessRelation) -> Unit,
     onDelete: (HistoryEntry) -> Unit,
@@ -217,6 +218,11 @@ fun EntrySheet(
                     )
                     entry.note?.let { Text(it, style = MaterialTheme.typography.bodyLarge.copy(fontStyle = FontStyle.Italic)) }
                     if (sickDay) IllnessRelationChoice(entry.illnessRelation) { onRelation(entry, it) }
+                    // Feedback 19.11.: complaints can be corrected, too.
+                    FilledTonalButton(onClick = { onEditSymptom(entry.id) }, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Text(stringResource(Res.string.history_edit), modifier = Modifier.padding(start = 8.dp))
+                    }
                 }
             }
             TextButton(onClick = { onDelete(entry) }, modifier = Modifier.fillMaxWidth()) {

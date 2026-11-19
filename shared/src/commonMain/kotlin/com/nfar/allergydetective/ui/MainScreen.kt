@@ -64,6 +64,10 @@ fun MainScreen(
     onLogDish: (Long) -> Unit = {},
     /** Opens the day check of a day from the history. */
     onOpenDayCheck: (Long) -> Unit = {},
+    /** History: correct a complaint, add food or a complaint for an earlier day (feedback 19.11.). */
+    onEditSymptom: (Long) -> Unit = {},
+    onAddMealForDay: (Int) -> Unit = {},
+    onAddSymptomForDay: (Int) -> Unit = {},
     profileExtra: @Composable () -> Unit = {},
     initialTab: MainTab = MainTab.HOME,
 ) {
@@ -103,7 +107,14 @@ fun MainScreen(
                     banner = { sickState.ongoing?.let { SickBanner(it, sickViewModel::onRecovered) } },
                 )
             }
-            MainTab.HISTORY -> HistoryScreen(onEditMeal = onEditMeal, onOpenDayCheck = onOpenDayCheck, modifier = modifier)
+            MainTab.HISTORY -> HistoryScreen(
+                onEditMeal = onEditMeal,
+                onOpenDayCheck = onOpenDayCheck,
+                onEditSymptom = onEditSymptom,
+                onAddMealForDay = onAddMealForDay,
+                onAddSymptomForDay = onAddSymptomForDay,
+                modifier = modifier,
+            )
             MainTab.FAVORITES -> FavoritesScreen(onLogDish = onLogDish, modifier = modifier)
             MainTab.PROFILE -> ProfileScreen(
                 modifier = modifier,

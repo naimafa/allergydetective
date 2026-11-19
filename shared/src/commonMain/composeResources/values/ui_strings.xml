@@ -130,6 +130,11 @@
     </string-array>
     <string name="history_delete">Delete</string>
     <string name="history_edit">Edit</string>
+    <string name="history_add">Add for this day</string>
+    <string name="history_add_meal">Add food</string>
+    <string name="history_add_symptom">Add symptom</string>
+    <string name="symptom_edit_title">Edit symptom</string>
+    <string name="symptom_for_day">Symptoms · %1$s</string>
     <string name="history_filter_all">All</string>
     <string name="history_filter_food">Food</string>
     <string name="history_filter_symptoms">Symptoms</string>

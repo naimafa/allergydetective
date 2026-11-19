@@ -130,6 +130,11 @@
     </string-array>
     <string name="history_delete">Löschen</string>
     <string name="history_edit">Bearbeiten</string>
+    <string name="history_add">Für diesen Tag nachtragen</string>
+    <string name="history_add_meal">Essen nachtragen</string>
+    <string name="history_add_symptom">Symptom nachtragen</string>
+    <string name="symptom_edit_title">Symptom bearbeiten</string>
+    <string name="symptom_for_day">Symptome · %1$s</string>
     <string name="history_filter_all">Alle</string>
     <string name="history_filter_food">Essen</string>
     <string name="history_filter_symptoms">Symptome</string>
