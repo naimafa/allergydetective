@@ -77,7 +77,7 @@ fun HomeScreen(
     /** Optional card on top, e.g. "ill since ..." (self-test 18.11.). */
     banner: @Composable () -> Unit = {},
 ) {
-    // Design of 19.11.: a slimmer top, the four tiles get about half of the screen (47 %),
+    // Design of 19.11.: a slimmer top, the four tiles get about 40 % of the screen height (47 % left too much room between icon and text),
     // all of them exactly the same size. Spacing on an 8 dp grid (8 / 16 / 24).
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val tileHeight = ((maxHeight * TILES_SHARE - GRID) / 2).coerceIn(MIN_TILE_HEIGHT, MAX_TILE_HEIGHT)
@@ -159,10 +159,10 @@ private fun sharedTileStyles(textWidth: Dp): TileTextStyles {
 }
 
 /** Part of the screen height for the four tiles (design of 19.11.). */
-private const val TILES_SHARE = 0.47f
+private const val TILES_SHARE = 0.40f
 private val GRID = 12.dp
-private val MIN_TILE_HEIGHT = 128.dp
-private val MAX_TILE_HEIGHT = 184.dp
+private val MIN_TILE_HEIGHT = 120.dp
+private val MAX_TILE_HEIGHT = 160.dp
 private val TILE_PADDING = 18.dp
 private val SAFETY_MARGIN = 6.dp
 
