@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.material3.FilterChip
+import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +29,7 @@ fun IllnessRelationChoice(selected: IllnessRelation?, onSelect: (IllnessRelation
         Text(stringResource(Res.string.illness_question), style = MaterialTheme.typography.titleSmall)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             IllnessRelation.entries.forEach { relation ->
-                FilterChip(
+                AppFilterChip(
                     selected = (selected ?: IllnessRelation.UNKNOWN) == relation,
                     onClick = { onSelect(relation) },
                     label = { Text(illnessRelationLabel(relation)) },

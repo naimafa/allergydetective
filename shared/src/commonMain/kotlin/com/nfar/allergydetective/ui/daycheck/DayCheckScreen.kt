@@ -31,7 +31,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
+import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHostState
@@ -133,7 +133,7 @@ private fun DayCheckContent(
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 state.days.forEach { day ->
                     val label = dayLabel((state.today - day).toInt())
-                    FilterChip(
+                    AppFilterChip(
                         selected = check.epochDay == day,
                         onClick = { viewModel.onDaySelected(day) },
                         label = { Text(if (day in state.confirmedDays) stringResource(Res.string.day_confirmed_mark, label) else label) },
@@ -174,7 +174,7 @@ private fun DayCheckContent(
         StepCard(title = stringResource(Res.string.day_factors)) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 state.factors.forEach { factor ->
-                    FilterChip(
+                    AppFilterChip(
                         selected = factor.id in check.factorIds,
                         onClick = { viewModel.onFactorToggle(factor.id) },
                         label = { Text(displayName(NamePrefix.FACTOR, factor.key)) },
@@ -201,7 +201,7 @@ private val WELLBEING_FACES = listOf("😣", "🙁", "😐", "🙂", "😊")
 private fun ScaleRow(value: Int?, onChange: (Int) -> Unit, labels: List<String> = (1..5).map { it.toString() }) {
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         (1..5).forEach { option ->
-            FilterChip(selected = value == option, onClick = { onChange(option) }, label = { Text(labels[option - 1]) })
+            AppFilterChip(selected = value == option, onClick = { onChange(option) }, label = { Text(labels[option - 1]) })
         }
     }
 }

@@ -46,7 +46,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
+import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
@@ -228,7 +228,7 @@ private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, viewModel: L
                 Text(stringResource(Res.string.symptom_how_strong), style = MaterialTheme.typography.titleSmall)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     (1..LogSymptomViewModel.MAX_INTENSITY).forEach { value ->
-                        FilterChip(
+                        AppFilterChip(
                             selected = draft.intensity == value,
                             onClick = { viewModel.onIntensityChange(value) },
                             label = { Text(value.toString()) },

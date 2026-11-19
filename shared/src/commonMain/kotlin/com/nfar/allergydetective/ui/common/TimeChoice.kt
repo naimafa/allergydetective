@@ -23,7 +23,7 @@ import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -74,13 +74,13 @@ fun <T> TimeChoiceRow(
     var showDialog by remember { mutableStateOf(false) }
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         options.forEach { option ->
-            FilterChip(
+            AppFilterChip(
                 selected = exact == null && selected == option,
                 onClick = { onQuickSelected(option) },
                 label = { Text(quickLabel(option)) },
             )
         }
-        FilterChip(
+        AppFilterChip(
             selected = exact != null,
             onClick = { showDialog = true },
             label = {
@@ -152,7 +152,7 @@ private fun ExactTimeDialog(initial: ExactTime?, onConfirm: (ExactTime) -> Unit,
                     // An edited meal from the history can be older than the usual choice; its day stays selectable.
                     val days = (0..MAX_DAYS_BACK) + listOfNotNull(initial?.daysAgo?.takeIf { it > MAX_DAYS_BACK })
                     days.forEach { option ->
-                        FilterChip(selected = daysAgo == option, onClick = { daysAgo = option }, label = { Text(dayLabel(option)) })
+                        AppFilterChip(selected = daysAgo == option, onClick = { daysAgo = option }, label = { Text(dayLabel(option)) })
                     }
                 }
                 TimeInput(state = timeState)

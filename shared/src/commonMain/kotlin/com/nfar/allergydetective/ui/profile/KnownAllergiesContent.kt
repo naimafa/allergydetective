@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.material3.FilterChip
+import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +26,7 @@ fun KnownAllergiesContent(state: KnownAllergiesState, onToggle: (Long) -> Unit, 
         Text(stringResource(Res.string.allergies_hint), style = MaterialTheme.typography.bodyMedium)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             state.properties.forEach { property ->
-                FilterChip(
+                AppFilterChip(
                     selected = property.id in state.selected,
                     onClick = { onToggle(property.id) },
                     label = { Text(displayName(NamePrefix.PROPERTY, property.key)) },

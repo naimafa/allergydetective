@@ -58,7 +58,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.FilterChip
+import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -198,7 +198,7 @@ private fun WhenStep(state: LogMealState, viewModel: LogMealViewModel) {
     StepCard(number = 1, title = stringResource(Res.string.meal_step_when), highlighted = state.slotMissing) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             MealSlot.entries.forEach { slot ->
-                FilterChip(
+                AppFilterChip(
                     selected = state.slot == slot,
                     onClick = { viewModel.onSlotChange(slot) },
                     label = { Text(mealSlotLabel(slot)) },
@@ -269,7 +269,7 @@ private fun WhatStep(state: LogMealState, viewModel: LogMealViewModel, onCreateI
             ChipGroupTitle(stringResource(Res.string.meal_favorites), stringResource(Res.string.meal_favorites_hint))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 state.favorites.forEach { favorite ->
-                    FilterChip(
+                    AppFilterChip(
                         selected = state.favoriteId == favorite.id,
                         onClick = { viewModel.onFavoriteClick(favorite) },
                         label = { Text(favorite.name) },
@@ -281,7 +281,7 @@ private fun WhatStep(state: LogMealState, viewModel: LogMealViewModel, onCreateI
             ChipGroupTitle(stringResource(Res.string.meal_quick), stringResource(Res.string.meal_quick_hint))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 state.recent.forEach { ingredient ->
-                    FilterChip(
+                    AppFilterChip(
                         selected = ingredient.id in selectedIds,
                         onClick = { viewModel.onToggleIngredient(ingredient) },
                         label = { Text(ingredientName(ingredient)) },
@@ -344,7 +344,7 @@ private fun SelectedRow(item: SelectedIngredient, needsPreparation: Boolean, vie
         }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Portion.entries.forEach { portion ->
-                FilterChip(
+                AppFilterChip(
                     selected = item.portion == portion,
                     onClick = { viewModel.onPortionChange(item.ingredient.id, portion) },
                     label = { Text(portionLabel(portion)) },

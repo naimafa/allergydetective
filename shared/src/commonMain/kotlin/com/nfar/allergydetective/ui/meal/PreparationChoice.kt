@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.material3.FilterChip
+import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,12 +25,12 @@ import org.jetbrains.compose.resources.stringResource
 fun PreparationChoice(selected: Preparation?, onSelect: (Preparation) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(
+            AppFilterChip(
                 selected = selected == Preparation.RAW,
                 onClick = { onSelect(Preparation.RAW) },
                 label = { Text(stringResource(Res.string.meal_prep_raw)) },
             )
-            FilterChip(
+            AppFilterChip(
                 selected = selected == Preparation.COOKED,
                 onClick = { onSelect(Preparation.COOKED) },
                 label = { Text(stringResource(Res.string.meal_prep_cooked)) },
