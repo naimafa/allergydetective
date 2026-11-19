@@ -40,6 +40,20 @@ class SickPeriodsViewModelTest {
         override suspend fun delete(id: Long) {
             periods.removeAll { it.id == id }
         }
+        override suspend fun update(id: Long, startDay: Long, endDay: Long?) {
+            periods.replaceAll { if (it.id == id) SickPeriod(id, startDay, endDay) else it }
+        }
+    }
+
+    @Test
+    fun periodCanBeCorrectedFromTheHistory() {
+        val vm = SickPeriodsViewModel(repository, clock)
+        vm.onAdd(today - 5, today - 3)
+
+        vm.onUpdate(1, today - 6, today + 2)
+
+        // Same id, future end cut to today.
+        assertEquals(SickPeriod(1, today - 6, today), repository.periods.single())
     }
 
     private val repository = FakeRepository()

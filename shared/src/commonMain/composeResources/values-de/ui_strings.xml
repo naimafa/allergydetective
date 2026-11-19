@@ -107,6 +107,19 @@
     </string-array>
     <string name="history_delete">Löschen</string>
     <string name="history_edit">Bearbeiten</string>
+    <string name="history_filter_all">Alle</string>
+    <string name="history_filter_food">Essen</string>
+    <string name="history_filter_symptoms">Symptome</string>
+    <string name="history_filter_days">Tage</string>
+    <string name="history_sick_add">Krankheitszeit nachtragen</string>
+    <string name="history_sick_period">Krank: %1$s</string>
+    <string name="history_sick_marked">Im Tagesabschluss als krank markiert</string>
+    <string name="history_sick_change">Zeitraum ändern</string>
+    <string name="history_check_title">Tagesabschluss</string>
+    <string name="history_check_sleep">Schlaf %1$s h</string>
+    <string name="history_check_sleep_quality">Schlafqualität %1$d/5</string>
+    <string name="history_check_stress">Stress %1$d/5</string>
+    <string name="history_check_wellbeing">Befinden %1$d/5</string>
     <string name="history_delete_question">Diesen Eintrag löschen? Das lässt sich nicht rückgängig machen.</string>
     <string name="favorites_empty">Noch keine Gerichte. Lege deine häufigen Gerichte mit ihren Zutaten an, dann geht das tägliche Eintragen mit einem Tipp.</string>
     <string name="favorites_add">+ Neues Gericht</string>

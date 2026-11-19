@@ -59,15 +59,22 @@ private fun dayText(epochDay: Long): String = formatDate(LocalDate.fromEpochDays
 /** "From … to …" in a calendar, or "still ill". Days in the future cannot be picked. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SickPeriodDialog(today: Long, onConfirm: (startDay: Long, endDay: Long?) -> Unit, onDismiss: () -> Unit) {
+fun SickPeriodDialog(
+    today: Long,
+    onConfirm: (startDay: Long, endDay: Long?) -> Unit,
+    onDismiss: () -> Unit,
+    /** A period to change (from the history), or null for a new one. */
+    initial: SickPeriod? = null,
+) {
     val todayMillis = today * DAY_MILLIS
     val state = rememberDateRangePickerState(
-        initialSelectedStartDateMillis = todayMillis,
+        initialSelectedStartDateMillis = (initial?.startDay ?: today) * DAY_MILLIS,
+        initialSelectedEndDateMillis = initial?.endDay?.times(DAY_MILLIS),
         selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis <= todayMillis
         },
     )
-    var stillIll by remember { mutableStateOf(true) }
+    var stillIll by remember { mutableStateOf(initial == null || initial.endDay == null) }
     DatePickerDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -95,6 +102,14 @@ fun SickPeriodDialog(today: Long, onConfirm: (startDay: Long, endDay: Long?) -> 
             )
         }
     }
+}
+
+/** "12.11.2026 – 15.11.2026", "since 12.11.2026 · ongoing" or a single day. */
+@Composable
+fun sickPeriodText(period: SickPeriod): String = when (val end = period.endDay) {
+    null -> stringResource(Res.string.sick_since, dayText(period.startDay)) + " · " + stringResource(Res.string.sick_ongoing)
+    period.startDay -> dayText(period.startDay)
+    else -> stringResource(Res.string.sick_range, dayText(period.startDay), dayText(end))
 }
 
 /** Home screen: shown while a period is open. */
@@ -149,12 +164,7 @@ fun SickPeriodSection(viewModel: SickPeriodsViewModel) {
         }
         state.periods.forEach { period ->
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                val text = when (val end = period.endDay) {
-                    null -> stringResource(Res.string.sick_since, dayText(period.startDay)) + " · " + stringResource(Res.string.sick_ongoing)
-                    period.startDay -> dayText(period.startDay)
-                    else -> stringResource(Res.string.sick_range, dayText(period.startDay), dayText(end))
-                }
-                Text(text, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                Text(sickPeriodText(period), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
                 TextButton(onClick = { viewModel.onDelete(period.id) }) { Text(stringResource(Res.string.history_delete)) }
             }
         }

@@ -30,7 +30,4 @@ sealed interface HistoryEntry {
 interface HistoryRepository {
     /** Meals and symptoms from [fromMillis] on, newest first. */
     suspend fun entriesSince(fromMillis: Long): List<HistoryEntry>
-
-    /** Status of the day checks from [fromDay] on. */
-    suspend fun dayStatusSince(fromDay: Long): Map<Long, DayCheckStatus>
 }

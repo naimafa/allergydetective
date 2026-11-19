@@ -2,6 +2,8 @@ package com.nfar.allergydetective.ui.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nfar.allergydetective.domain.diary.DayCheckData
+import com.nfar.allergydetective.domain.diary.DayCheckRepository
 import com.nfar.allergydetective.domain.diary.DayCheckStatus
 import com.nfar.allergydetective.domain.diary.HistoryEntry
 import com.nfar.allergydetective.domain.diary.HistoryRepository
@@ -11,25 +13,52 @@ import com.nfar.allergydetective.domain.time.AppClock
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class HistoryDay(
     val epochDay: Long,
-    val status: DayCheckStatus?,
     val entries: List<HistoryEntry>,
-)
+    /** The day check with sleep, stress and factors, null if the day was never checked. */
+    val check: DayCheckData? = null,
+) {
+    val status: DayCheckStatus? get() = check?.status
+}
+
+/**
+ * Self-test 19.11.: one timeline keeps food and symptoms side by side (that is the point of the
+ * diary); the chips narrow it down instead of separate tabs.
+ */
+enum class HistoryFilter { ALL, FOOD, SYMPTOMS, DAYS }
 
 data class HistoryState(
     val loading: Boolean = true,
     /** Newest day first. Days without entries and without a check are left out. */
     val days: List<HistoryDay> = emptyList(),
-)
+    val filter: HistoryFilter = HistoryFilter.ALL,
+    /** Lifestyle factor keys by id, to name the factors of a day check. */
+    val factorKeys: Map<Long, String> = emptyMap(),
+) {
+    /** Days and entries that match [filter]; a day without matching content is left out. */
+    val visibleDays: List<HistoryDay> get() = when (filter) {
+        HistoryFilter.ALL -> days
+        HistoryFilter.DAYS -> days.filter { it.check != null }.map { it.copy(entries = emptyList()) }
+        HistoryFilter.FOOD -> days.map { day -> day.copy(entries = day.entries.filterIsInstance<HistoryEntry.MealEntry>()) }
+            .filter { it.entries.isNotEmpty() }
+        HistoryFilter.SYMPTOMS -> days.map { day -> day.copy(entries = day.entries.filterIsInstance<HistoryEntry.SymptomEntry>()) }
+            .filter { it.entries.isNotEmpty() }
+    }
 
-/** History of the last [DAYS] days with deletion of single entries. */
+    /** The day check is shown for "all" and "days". */
+    val showsDayChecks: Boolean get() = filter == HistoryFilter.ALL || filter == HistoryFilter.DAYS
+}
+
+/** History of the last [DAYS] days with editing and deletion of single entries. */
 class HistoryViewModel(
     private val history: HistoryRepository,
     private val meals: MealRepository,
     private val symptoms: SymptomRepository,
+    private val dayChecks: DayCheckRepository,
     private val clock: AppClock,
 ) : ViewModel() {
 
@@ -41,14 +70,19 @@ class HistoryViewModel(
             val today = clock.today()
             val fromDay = today - DAYS + 1
             val entries = history.entriesSince(clock.startOfDayMillis(fromDay))
-            val status = history.dayStatusSince(fromDay)
+            val checks = (fromDay..today).mapNotNull { dayChecks.load(it) }.associateBy { it.epochDay }
             val byDay = entries.groupBy { clock.epochDayOf(it.time) }
             val days = (today downTo fromDay)
-                .filter { it in byDay || it in status }
+                .filter { it in byDay || it in checks }
                 // Within a day in diary order: morning first.
-                .map { HistoryDay(it, status[it], byDay[it].orEmpty().sortedBy { entry -> entry.time }) }
-            _state.value = HistoryState(loading = false, days = days)
+                .map { HistoryDay(it, byDay[it].orEmpty().sortedBy { entry -> entry.time }, checks[it]) }
+            val factorKeys = dayChecks.lifestyleFactors().associate { it.id to it.key }
+            _state.update { it.copy(loading = false, days = days, factorKeys = factorKeys) }
         }
+    }
+
+    fun onFilterChange(filter: HistoryFilter) {
+        _state.update { it.copy(filter = filter) }
     }
 
     /** Permanently removes the entry; the screen asks first. */

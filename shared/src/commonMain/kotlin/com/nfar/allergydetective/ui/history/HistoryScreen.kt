@@ -65,32 +65,91 @@ import com.nfar.allergydetective.ui.common.formatDate
 import com.nfar.allergydetective.ui.meal.ingredientName
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
+import com.nfar.allergydetective.domain.diary.SickPeriod
+import com.nfar.allergydetective.ui.sick.SickPeriodDialog
+import com.nfar.allergydetective.ui.sick.SickPeriodsViewModel
+import allergydetective.shared.generated.resources.history_sick_add
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
-/** History (self-test 18.11.: tidied up): one card per day, entries in diary order. */
+/**
+ * History: one card per day, entries in diary order (self-test 18.11.). Since 19.11.: filter chips,
+ * the day check of each day and periods of illness as a band that can be changed.
+ */
 @Composable
 fun HistoryScreen(
     onEditMeal: (Long) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: HistoryViewModel = koinViewModel(),
+    sickViewModel: SickPeriodsViewModel = koinViewModel(),
     clock: AppClock = koinInject(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val sickState by sickViewModel.state.collectAsStateWithLifecycle()
     var toDelete by remember { mutableStateOf<HistoryEntry?>(null) }
-    LaunchedEffect(Unit) { viewModel.refresh() }
+    var sickActions by remember { mutableStateOf<SickPeriod?>(null) }
+    // A period to change, or a new one (id 0).
+    var sickEditing by remember { mutableStateOf<SickPeriod?>(null) }
+    LaunchedEffect(Unit) {
+        viewModel.refresh()
+        sickViewModel.refresh()
+    }
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        if (!state.loading && state.days.isEmpty()) {
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                HistoryFilterRow(state.filter, viewModel::onFilterChange)
+                TextButton(onClick = { sickEditing = SickPeriod(0, sickState.today, null) }) {
+                    Text("+ " + stringResource(Res.string.history_sick_add))
+                }
+            }
+        }
+        if (!state.loading && state.visibleDays.isEmpty()) {
             item { Text(stringResource(Res.string.history_empty)) }
         }
-        items(state.days, key = { "day-${it.epochDay}" }) { day ->
-            DayCard(day, clock, onEditMeal = onEditMeal, onDelete = { toDelete = it })
+        items(state.visibleDays, key = { "day-${it.epochDay}" }) { day ->
+            val period = sickState.periods.firstOrNull { it.contains(day.epochDay, sickState.today) }
+            val markedSick = day.check?.factorIds.orEmpty().any { state.factorKeys[it] == SICK_FACTOR_KEY }
+            DayCard(
+                day = day,
+                clock = clock,
+                sick = period != null || markedSick,
+                sickBand = { SickBand(period, onEdit = { sickActions = it }) },
+                dayCheck = if (state.showsDayChecks) day.check?.let { { DayCheckRow(it, state.factorKeys) } } else null,
+                onEditMeal = onEditMeal,
+                onDelete = { toDelete = it },
+            )
         }
+    }
+
+    sickActions?.let { period ->
+        SickPeriodActionsDialog(
+            period = period,
+            onChange = {
+                sickActions = null
+                sickEditing = period
+            },
+            onDelete = {
+                sickActions = null
+                sickViewModel.onDelete(period.id)
+            },
+            onDismiss = { sickActions = null },
+        )
+    }
+    sickEditing?.let { period ->
+        SickPeriodDialog(
+            today = sickState.today,
+            initial = period.takeIf { it.id != 0L },
+            onConfirm = { start, end ->
+                sickEditing = null
+                if (period.id == 0L) sickViewModel.onAdd(start, end) else sickViewModel.onUpdate(period.id, start, end)
+            },
+            onDismiss = { sickEditing = null },
+        )
     }
 
     toDelete?.let { entry ->
@@ -109,13 +168,27 @@ fun HistoryScreen(
 }
 
 @Composable
-private fun DayCard(day: HistoryDay, clock: AppClock, onEditMeal: (Long) -> Unit, onDelete: (HistoryEntry) -> Unit) {
+private fun DayCard(
+    day: HistoryDay,
+    clock: AppClock,
+    sick: Boolean,
+    sickBand: @Composable () -> Unit,
+    dayCheck: (@Composable () -> Unit)?,
+    onEditMeal: (Long) -> Unit,
+    onDelete: (HistoryEntry) -> Unit,
+) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+        shape = MaterialTheme.shapes.large,
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
             DayHeader(day, clock)
+            if (sick) sickBand()
+            dayCheck?.let {
+                it()
+                if (day.entries.isNotEmpty()) HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            }
             day.entries.forEachIndexed { index, entry ->
                 if (index > 0) HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 EntryRow(entry, clock, onEdit = (entry as? HistoryEntry.MealEntry)?.let { meal -> { onEditMeal(meal.id) } }, onDelete = { onDelete(entry) })

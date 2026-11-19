@@ -16,6 +16,9 @@ interface SickPeriodDao {
     @Query("UPDATE sick_periods SET endDay = :endDay WHERE id = :id")
     suspend fun setEnd(id: Long, endDay: Long?)
 
+    @Query("UPDATE sick_periods SET startDay = :startDay, endDay = :endDay WHERE id = :id")
+    suspend fun update(id: Long, startDay: Long, endDay: Long?)
+
     @Query("DELETE FROM sick_periods WHERE id = :id")
     suspend fun delete(id: Long)
 }

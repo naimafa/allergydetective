@@ -107,6 +107,19 @@
     </string-array>
     <string name="history_delete">Delete</string>
     <string name="history_edit">Edit</string>
+    <string name="history_filter_all">All</string>
+    <string name="history_filter_food">Food</string>
+    <string name="history_filter_symptoms">Symptoms</string>
+    <string name="history_filter_days">Days</string>
+    <string name="history_sick_add">Add a period of illness</string>
+    <string name="history_sick_period">Ill: %1$s</string>
+    <string name="history_sick_marked">Marked as ill in the day check</string>
+    <string name="history_sick_change">Change dates</string>
+    <string name="history_check_title">Day check</string>
+    <string name="history_check_sleep">Sleep %1$s h</string>
+    <string name="history_check_sleep_quality">Sleep quality %1$d/5</string>
+    <string name="history_check_stress">Stress %1$d/5</string>
+    <string name="history_check_wellbeing">Wellbeing %1$d/5</string>
     <string name="history_delete_question">Delete this entry? This cannot be undone.</string>
     <string name="favorites_empty">No dishes yet. Add the dishes you eat often with their ingredients, then daily logging takes one tap.</string>
     <string name="favorites_add">+ New dish</string>
