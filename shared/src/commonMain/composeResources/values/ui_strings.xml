@@ -133,7 +133,7 @@
     <string name="history_filter_all">All</string>
     <string name="history_filter_food">Food</string>
     <string name="history_filter_symptoms">Symptoms</string>
-    <string name="history_filter_days">Days</string>
+    <string name="history_filter_days">Day checks</string>
     <string name="history_sick_add">Add a period of illness</string>
     <string name="history_sick_period">Ill: %1$s</string>
     <string name="history_sick_marked">Marked as ill in the day check</string>

@@ -133,7 +133,7 @@
     <string name="history_filter_all">Alle</string>
     <string name="history_filter_food">Essen</string>
     <string name="history_filter_symptoms">Symptome</string>
-    <string name="history_filter_days">Tage</string>
+    <string name="history_filter_days">Abschlüsse</string>
     <string name="history_sick_add">Krankheitszeit nachtragen</string>
     <string name="history_sick_period">Krank: %1$s</string>
     <string name="history_sick_marked">Im Tagesabschluss als krank markiert</string>
