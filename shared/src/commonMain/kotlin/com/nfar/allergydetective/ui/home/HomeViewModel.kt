@@ -14,6 +14,8 @@ data class HomeState(
     val confirmedDays: Int? = null,
     /** Local epoch day, picks the daily quote. */
     val today: Long = 0,
+    /** Today is not confirmed yet: the day check tile shows "open" (self-test 18.11.). */
+    val todayOpen: Boolean = false,
 )
 
 /** Home dashboard (UX 2): detective progress from confirmed days and the quote of the day. */
@@ -28,7 +30,12 @@ class HomeViewModel(
     /** Called whenever the home screen becomes visible, e.g. after a day check. */
     fun refresh() {
         viewModelScope.launch {
-            _state.value = HomeState(confirmedDays = dayChecks.confirmedDayCount(), today = clock.today())
+            val today = clock.today()
+            _state.value = HomeState(
+                confirmedDays = dayChecks.confirmedDayCount(),
+                today = today,
+                todayOpen = dayChecks.load(today)?.isConfirmed != true,
+            )
         }
     }
 
