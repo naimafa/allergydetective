@@ -5,7 +5,12 @@ import allergydetective.shared.generated.resources.common_save
 import allergydetective.shared.generated.resources.custom_create_named
 import allergydetective.shared.generated.resources.home_log_meal
 import allergydetective.shared.generated.resources.meal_allergy_hint
+import allergydetective.shared.generated.resources.meal_added
 import allergydetective.shared.generated.resources.meal_amount_empty
+import allergydetective.shared.generated.resources.meal_edit_title
+import allergydetective.shared.generated.resources.meal_existing_add
+import allergydetective.shared.generated.resources.meal_existing_question
+import allergydetective.shared.generated.resources.meal_existing_separate
 import allergydetective.shared.generated.resources.meal_favorite_name
 import allergydetective.shared.generated.resources.meal_favorites
 import allergydetective.shared.generated.resources.meal_favorites_hint
@@ -47,6 +52,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Mic
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilterChip
@@ -90,13 +96,27 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun LogMealScreen(
     onBack: () -> Unit,
+    /** A logged meal to edit (from the history), or null for a new one. */
+    editMealId: Long? = null,
     viewModel: LogMealViewModel = koinViewModel(),
     customViewModel: CustomIngredientViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     var showCustomDialog by remember { mutableStateOf(false) }
+    LaunchedEffect(editMealId) { editMealId?.let(viewModel::startEditing) }
+    LaunchedEffect(state.finished) { if (state.finished) onBack() }
     SavedSnackbarEffect(state.savedMealId, snackbarHostState, viewModel::onUndo, viewModel::onSavedShown)
+    state.addedTo?.let { slot ->
+        val message = stringResource(Res.string.meal_added, mealSlotLabel(slot))
+        LaunchedEffect(slot) {
+            snackbarHostState.showSnackbar(message)
+            viewModel.onSavedShown()
+        }
+    }
+    if (state.existingMealId != null) {
+        state.slot?.let { slot -> ExistingMealDialog(slot, viewModel) }
+    }
     if (showCustomDialog) {
         CustomIngredientDialog(
             viewModel = customViewModel,
@@ -113,7 +133,7 @@ fun LogMealScreen(
     }
 
     ScreenScaffold(
-        title = stringResource(Res.string.home_log_meal),
+        title = stringResource(if (editMealId != null) Res.string.meal_edit_title else Res.string.home_log_meal),
         onBack = onBack,
         snackbarHostState = snackbarHostState,
         bottomBar = {
@@ -129,6 +149,17 @@ fun LogMealScreen(
         // Keyboard open: the list ends above it, so every selected item can be scrolled into view.
         LogMealContent(state, viewModel, openCustomDialog, Modifier.padding(padding).consumeWindowInsets(padding).imePadding())
     }
+}
+
+/** "There is already a dinner on this day. Add the ingredients to it?" (self-test 19.11.) */
+@Composable
+private fun ExistingMealDialog(slot: MealSlot, viewModel: LogMealViewModel) {
+    AlertDialog(
+        onDismissRequest = viewModel::onExistingDismissed,
+        text = { Text(stringResource(Res.string.meal_existing_question, mealSlotLabel(slot))) },
+        confirmButton = { Button(onClick = viewModel::onAddToExisting) { Text(stringResource(Res.string.meal_existing_add)) } },
+        dismissButton = { TextButton(onClick = viewModel::onSaveSeparately) { Text(stringResource(Res.string.meal_existing_separate)) } },
+    )
 }
 
 @Composable

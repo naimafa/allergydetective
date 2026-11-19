@@ -42,6 +42,10 @@
     <string name="day_today">Today</string>
     <string name="day_yesterday">Yesterday</string>
     <string name="day_two_days_ago">2 days ago</string>
+    <plurals name="day_days_ago">
+        <item quantity="one">%1$d day ago</item>
+        <item quantity="other">%1$d days ago</item>
+    </plurals>
     <string name="day_confirmed_mark">%1$s ✓</string>
     <string name="day_open_past_hint">Not finished yet: %1$s. Tap it above to catch up.</string>
     <string name="day_wellbeing">How did you feel that day?</string>
@@ -102,6 +106,7 @@
         <item>Sun</item>
     </string-array>
     <string name="history_delete">Delete</string>
+    <string name="history_edit">Edit</string>
     <string name="history_delete_question">Delete this entry? This cannot be undone.</string>
     <string name="favorites_empty">No dishes yet. Add the dishes you eat often with their ingredients, then daily logging takes one tap.</string>
     <string name="favorites_add">+ New dish</string>
@@ -177,6 +182,11 @@
     <string name="meal_slot_missing">Please choose first when you ate.</string>
     <string name="meal_amount_empty">Search above or tap a quick pick. What you choose appears here.</string>
     <string name="meal_save_slot">Save %1$s</string>
+    <string name="meal_edit_title">Edit meal</string>
+    <string name="meal_existing_question">There is already a %1$s on this day. Add the ingredients to it?</string>
+    <string name="meal_existing_add">Add to it</string>
+    <string name="meal_existing_separate">Separate meal</string>
+    <string name="meal_added">Added to %1$s</string>
     <string name="custom_create_named">Not in the list? Create “%1$s” as new ingredient</string>
     <string name="custom_title">New ingredient</string>
     <string name="custom_name">Name</string>

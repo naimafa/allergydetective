@@ -2,6 +2,7 @@ package com.nfar.allergydetective.ui.common
 
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
+import allergydetective.shared.generated.resources.day_days_ago
 import allergydetective.shared.generated.resources.day_today
 import allergydetective.shared.generated.resources.day_two_days_ago
 import allergydetective.shared.generated.resources.day_yesterday
@@ -40,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.nfar.allergydetective.domain.time.AppClock
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 /** A time picked in the dialog: local day relative to today plus wall-clock time. */
@@ -147,7 +149,9 @@ private fun ExactTimeDialog(initial: ExactTime?, onConfirm: (ExactTime) -> Unit,
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    (0..MAX_DAYS_BACK).forEach { option ->
+                    // An edited meal from the history can be older than the usual choice; its day stays selectable.
+                    val days = (0..MAX_DAYS_BACK) + listOfNotNull(initial?.daysAgo?.takeIf { it > MAX_DAYS_BACK })
+                    days.forEach { option ->
                         FilterChip(selected = daysAgo == option, onClick = { daysAgo = option }, label = { Text(dayLabel(option)) })
                     }
                 }
@@ -162,13 +166,12 @@ private fun ExactTimeDialog(initial: ExactTime?, onConfirm: (ExactTime) -> Unit,
 }
 
 @Composable
-fun dayLabel(daysAgo: Int): String = stringResource(
-    when (daysAgo) {
-        0 -> Res.string.day_today
-        1 -> Res.string.day_yesterday
-        else -> Res.string.day_two_days_ago
-    },
-)
+fun dayLabel(daysAgo: Int): String = when (daysAgo) {
+    0 -> stringResource(Res.string.day_today)
+    1 -> stringResource(Res.string.day_yesterday)
+    2 -> stringResource(Res.string.day_two_days_ago)
+    else -> pluralStringResource(Res.plurals.day_days_ago, daysAgo, daysAgo)
+}
 
 fun formatClock(hour: Int, minute: Int): String =
     hour.toString().padStart(2, '0') + ":" + minute.toString().padStart(2, '0')

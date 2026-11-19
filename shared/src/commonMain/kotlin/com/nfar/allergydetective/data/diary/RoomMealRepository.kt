@@ -13,6 +13,7 @@ import com.nfar.allergydetective.domain.analysis.model.Preparation
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.diary.IngredientInfo
+import com.nfar.allergydetective.domain.diary.LoggedMeal
 import com.nfar.allergydetective.domain.diary.MealRepository
 
 class RoomMealRepository(private val dao: MealDao) : MealRepository {
@@ -58,6 +59,23 @@ class RoomMealRepository(private val dao: MealDao) : MealRepository {
     override suspend fun deleteFavorite(favoriteId: Long) = dao.deleteFavorite(favoriteId)
 
     override suspend fun deleteMeal(mealId: Long) = dao.deleteMeal(mealId)
+
+    override suspend fun meal(mealId: Long): LoggedMeal? {
+        val meal = dao.meal(mealId) ?: return null
+        val items = dao.mealIngredients(mealId).map { MealItem(it.ingredientId, it.portion.toDomain(), it.preparation?.toDomain()) }
+        return LoggedMeal(meal.id, meal.eatenAt, items, meal.favoriteId)
+    }
+
+    override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?) =
+        dao.updateMealWithItems(
+            mealId = mealId,
+            eatenAt = eatenAt,
+            tzOffsetMin = tzOffsetMin,
+            favoriteId = favoriteId,
+            items = items.map { MealIngredientEntity(mealId = mealId, ingredientId = it.ingredientId, portion = it.portion.toEntity(), preparation = it.preparation?.toEntity()) },
+        )
+
+    override suspend fun mealIdAt(eatenAt: Long): Long? = dao.mealIdAt(eatenAt)
 }
 
 internal fun PortionSize.toDomain(): Portion = when (this) {

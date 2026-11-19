@@ -13,6 +13,12 @@ enum class MealSlot(val hour: Int, val minute: Int) {
 
     /** Snacks keep their clock time: "now" unless changed in the time dialog. */
     SNACK(-1, -1),
+    ;
+
+    companion object {
+        /** The meal logged at exactly [hour]:[minute] (e.g. 19:00 = dinner); null for any other time. */
+        fun at(hour: Int, minute: Int): MealSlot? = entries.firstOrNull { it != SNACK && it.hour == hour && it.minute == minute }
+    }
 }
 
 /** When a symptom started, as the user remembers it. */

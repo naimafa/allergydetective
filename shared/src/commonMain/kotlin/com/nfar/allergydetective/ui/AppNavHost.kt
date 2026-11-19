@@ -37,7 +37,10 @@ data class HomeRoute(
 )
 
 @Serializable
-data object LogMealRoute
+data class LogMealRoute(
+    /** A logged meal opened from the history for editing (self-test 19.11.). */
+    val editMealId: Long? = null,
+)
 
 @Serializable
 data object LogSymptomRoute
@@ -84,9 +87,10 @@ fun AppNavHost(
         composable<HomeRoute> { entry ->
             MainScreen(
                 initialTab = if (entry.toRoute<HomeRoute>().openFavorites) MainTab.FAVORITES else MainTab.HOME,
+                onEditMeal = { navController.navigate(LogMealRoute(editMealId = it)) },
                 onHomeAction = { action ->
                     when (action) {
-                        HomeAction.LOG_MEAL -> navController.navigate(LogMealRoute)
+                        HomeAction.LOG_MEAL -> navController.navigate(LogMealRoute())
                         HomeAction.LOG_SYMPTOM -> navController.navigate(LogSymptomRoute)
                         HomeAction.DAY_CHECK -> navController.navigate(DayCheckRoute)
                         HomeAction.RESULTS -> navController.navigate(ResultsRoute)
@@ -104,7 +108,7 @@ fun AppNavHost(
             )
         }
 composable<IntroRoute> {            OnboardingScreen(                replay = true,                onFinished = { openDishes ->                    if (openDishes) {                        navController.navigate(HomeRoute(openFavorites = true)) { popUpTo<HomeRoute> { inclusive = true } }                    } else {                        navController.popBackStack()                    }                },            )        }
-        composable<LogMealRoute> { LogMealScreen(onBack = back) }
+        composable<LogMealRoute> { entry -> LogMealScreen(onBack = back, editMealId = entry.toRoute<LogMealRoute>().editMealId) }
         composable<LogSymptomRoute> { LogSymptomScreen(onBack = back) }
         composable<DayCheckRoute> { DayCheckScreen(onDone = back) }
         composable<ResultsRoute> { ResultsScreen(onBack = back) }

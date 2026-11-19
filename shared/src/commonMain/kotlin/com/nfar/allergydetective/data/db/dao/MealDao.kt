@@ -114,6 +114,26 @@ interface MealDao {
     @Query("DELETE FROM meals WHERE id = :mealId")
     suspend fun deleteMealRow(mealId: Long)
 
+    @Query("SELECT * FROM meals WHERE id = :mealId")
+    suspend fun meal(mealId: Long): MealEntity?
+
+    @Query("SELECT * FROM meal_ingredients WHERE mealId = :mealId")
+    suspend fun mealIngredients(mealId: Long): List<MealIngredientEntity>
+
+    @Query("SELECT id FROM meals WHERE eatenAt = :eatenAt ORDER BY id LIMIT 1")
+    suspend fun mealIdAt(eatenAt: Long): Long?
+
+    @Query("UPDATE meals SET eatenAt = :eatenAt, tzOffsetMin = :tzOffsetMin, favoriteId = :favoriteId WHERE id = :mealId")
+    suspend fun updateMealRow(mealId: Long, eatenAt: Long, tzOffsetMin: Int, favoriteId: Long?)
+
+    /** Editing a logged meal: new time and items, same id. */
+    @Transaction
+    suspend fun updateMealWithItems(mealId: Long, eatenAt: Long, tzOffsetMin: Int, favoriteId: Long?, items: List<MealIngredientEntity>) {
+        updateMealRow(mealId, eatenAt, tzOffsetMin, favoriteId)
+        deleteMealIngredients(mealId)
+        insertMealIngredients(items.map { it.copy(mealId = mealId) })
+    }
+
     /** Items first, so this does not depend on the foreign key cascade being enabled. */
     @Transaction
     suspend fun deleteMeal(mealId: Long) {
