@@ -5,6 +5,7 @@ import androidx.room3.Insert
 import androidx.room3.Query
 import com.nfar.allergydetective.data.db.entity.SymptomEntity
 import com.nfar.allergydetective.data.db.entity.SymptomEntryEntity
+import com.nfar.allergydetective.data.db.model.IllnessRelationKind
 
 @Dao
 interface SymptomDao {
@@ -26,6 +27,19 @@ interface SymptomDao {
 
     @Query("SELECT MAX(eatenAt) FROM meals WHERE eatenAt <= :beforeMillis")
     suspend fun lastMealAt(beforeMillis: Long): Long?
+
+    @Query("UPDATE symptom_entries SET illnessRelation = :relation WHERE id = :entryId")
+    suspend fun setIllnessRelation(entryId: Long, relation: IllnessRelationKind?)
+
+    /** In a period of illness or marked as sick in the day check (factor key "sick"). */
+    @Query(
+        """
+        SELECT EXISTS(SELECT 1 FROM sick_periods WHERE startDay <= :epochDay AND (endDay IS NULL OR endDay >= :epochDay))
+            OR EXISTS(SELECT 1 FROM day_factors df JOIN lifestyle_factors lf ON lf.id = df.factorId
+                WHERE df.epochDay = :epochDay AND lf.`key` = 'sick')
+        """,
+    )
+    suspend fun isSickDay(epochDay: Long): Boolean
 
     @Query("DELETE FROM symptom_entries WHERE id = :entryId")
     suspend fun deleteEntry(entryId: Long)

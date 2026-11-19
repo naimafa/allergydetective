@@ -1,7 +1,9 @@
 package com.nfar.allergydetective.data.diary
 
 import com.nfar.allergydetective.data.db.dao.SymptomDao
+import com.nfar.allergydetective.data.analysis.toEntity
 import com.nfar.allergydetective.data.db.entity.SymptomEntryEntity
+import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
 
@@ -26,4 +28,9 @@ class RoomSymptomRepository(private val dao: SymptomDao) : SymptomRepository {
     override suspend fun lastMealAt(beforeMillis: Long): Long? = dao.lastMealAt(beforeMillis)
 
     override suspend fun deleteEntry(entryId: Long) = dao.deleteEntry(entryId)
+
+    override suspend fun setIllnessRelation(entryId: Long, relation: IllnessRelation?) =
+        dao.setIllnessRelation(entryId, relation?.toEntity())
+
+    override suspend fun isSickDay(epochDay: Long): Boolean = dao.isSickDay(epochDay)
 }

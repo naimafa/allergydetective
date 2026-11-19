@@ -70,11 +70,19 @@ data class SymptomEntry(
     val tzOffsetMin: Int,
     /** 1–5 */
     val intensity: Int,
+    /** On a sick day: does the user count it to the illness? Null = not answered, like [IllnessRelation.UNKNOWN]. */
+    val illnessRelation: IllnessRelation? = null,
 )
 
 /**
+ * Self-test 19.11.: not every complaint on a sick day comes from the illness. The user decides per
+ * symptom; [RELATED] ones are left out, the others count with a lower weight (AnalysisConfig.sickness).
+ */
+enum class IllnessRelation { RELATED, UNRELATED, UNKNOWN }
+
+/**
  * Evening check of a day. [confirmed] is true for NO_SYMPTOMS and COMPLETE (TRD 2.2).
- * Sleep values describe the night before this day.
+ * Sleep values describe the night before this day. [sick]: in a period of illness or marked as sick.
  */
 data class DayCheck(
     val epochDay: Long,
@@ -82,6 +90,7 @@ data class DayCheck(
     val sleepHours: Float?,
     val sleepQuality: Int?,
     val stress: Int?,
+    val sick: Boolean = false,
 )
 
 data class DayFactor(val epochDay: Long, val factorId: Long)

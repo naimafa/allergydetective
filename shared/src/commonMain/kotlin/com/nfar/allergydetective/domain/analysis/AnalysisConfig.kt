@@ -25,6 +25,7 @@ data class AnalysisConfig(
     val safeList: SafeListThresholds = SafeListThresholds(),
     val lifestyle: LifestyleThresholds = LifestyleThresholds(),
     val grouping: GroupingThresholds = GroupingThresholds(),
+    val sickness: SicknessWeights = SicknessWeights(),
 ) {
     fun portionFactor(portion: Portion): Double = portionFactors.getValue(portion)
 }
@@ -53,6 +54,16 @@ data class GroupingThresholds(
     val minSharedRatio: Double = 0.8,
     /** A group is only reported when at least one member reaches this level. */
     val minLevel: EvidenceLevel = EvidenceLevel.TRACE,
+)
+
+/**
+ * Sick days (self-test 19.11.). Meals and symptoms of a sick day count with [dayWeight]; a symptom
+ * with an unknown relation to the illness additionally with [unknownRelationWeight]; symptoms that
+ * belong to the illness do not count. Lifestyle candidates leave sick days out. **Preliminary.**
+ */
+data class SicknessWeights(
+    val dayWeight: Double = 0.5,
+    val unknownRelationWeight: Double = 0.5,
 )
 
 /** Lifestyle candidates (TRD 2.5). */

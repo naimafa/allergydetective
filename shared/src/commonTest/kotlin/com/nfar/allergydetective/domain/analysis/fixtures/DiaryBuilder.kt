@@ -4,6 +4,7 @@ import com.nfar.allergydetective.domain.analysis.model.AnalysisInput
 import com.nfar.allergydetective.domain.analysis.model.DayCheck
 import com.nfar.allergydetective.domain.analysis.model.DayFactor
 import com.nfar.allergydetective.domain.analysis.model.DiaryData
+import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
 import com.nfar.allergydetective.domain.analysis.model.Meal
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Portion
@@ -34,10 +35,11 @@ class DiaryBuilder(
         sleepQuality: Int? = null,
         stress: Int? = null,
         factorIds: Set<Long> = emptySet(),
+        sick: Boolean = false,
         block: DayScope.() -> Unit = {},
     ) {
         val epochDay = startEpochDay + index
-        dayChecks += DayCheck(epochDay, confirmed, sleepHours, sleepQuality, stress)
+        dayChecks += DayCheck(epochDay, confirmed, sleepHours, sleepQuality, stress, sick)
         factorIds.forEach { dayFactors += DayFactor(epochDay, it) }
         DayScope(index).block()
         if (index > lastDayIndex) lastDayIndex = index
@@ -61,13 +63,14 @@ class DiaryBuilder(
         fun meal(hour: Int, vararg ingredientIds: Long) =
             meal(hour, 0, *ingredientIds.map { it to Portion.MEDIUM }.toTypedArray())
 
-        fun symptom(hour: Int, minute: Int = 0, symptomId: Long, intensity: Int) {
+        fun symptom(hour: Int, minute: Int = 0, symptomId: Long, intensity: Int, relation: IllnessRelation? = null) {
             symptoms += SymptomEntry(
                 id = nextId++,
                 symptomId = symptomId,
                 startedAt = utcMillis(index, hour, minute),
                 tzOffsetMin = tzOffsetMin,
                 intensity = intensity,
+                illnessRelation = relation,
             )
         }
     }

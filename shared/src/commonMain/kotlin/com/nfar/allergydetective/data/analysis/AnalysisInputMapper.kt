@@ -1,6 +1,8 @@
 package com.nfar.allergydetective.data.analysis
 
 import com.nfar.allergydetective.data.db.model.DayStatus
+import com.nfar.allergydetective.data.db.model.IllnessRelationKind
+import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
 import com.nfar.allergydetective.data.db.model.PortionSize
 import com.nfar.allergydetective.data.diary.toDomain
 import com.nfar.allergydetective.domain.analysis.localEpochDay
@@ -49,14 +51,17 @@ private fun AnalysisRows.toReferenceData(): ReferenceData {
 private fun AnalysisRows.toDiaryData(today: Long): DiaryData {
     val itemsByMeal = mealIngredients.groupBy({ it.mealId }, { MealItem(it.ingredientId, it.portion.toPortion(), it.preparation?.toDomain()) })
     // Self-test 18.11.: symptoms of an acute illness (e.g. sinusitis) would be blamed on food.
-    // A day marked as sick does not count, like an unconfirmed day; the factor itself is no candidate.
+    // Since 19.11. a sick day counts with a lower weight and the user decides per symptom whether
+    // it belongs to the illness (engine: AnalysisConfig.sickness). The factor itself is no candidate.
     val sickDays = dayFactors.filter { it.factorId == SICK_FACTOR_ID }.map { it.epochDay }.toSet() +
         sickPeriods.flatMap { (it.startDay..(it.endDay ?: today)).toList() }
     return DiaryData(
         meals = meals.map { Meal(it.id, it.eatenAt, it.tzOffsetMin, itemsByMeal[it.id].orEmpty()) },
-        symptomEntries = symptomEntries.map { SymptomEntry(it.id, it.symptomId, it.startedAt, it.tzOffsetMin, it.intensity) },
+        symptomEntries = symptomEntries.map {
+            SymptomEntry(it.id, it.symptomId, it.startedAt, it.tzOffsetMin, it.intensity, it.illnessRelation?.toDomain())
+        },
         dayChecks = dayChecks.map {
-            DayCheck(it.epochDay, it.status.isConfirmed() && it.epochDay !in sickDays, it.sleepHours, it.sleepQuality, it.stress)
+            DayCheck(it.epochDay, it.status.isConfirmed(), it.sleepHours, it.sleepQuality, it.stress, sick = it.epochDay in sickDays)
         },
         dayFactors = dayFactors.filter { it.factorId != SICK_FACTOR_ID }.map { DayFactor(it.epochDay, it.factorId) },
     )
@@ -65,7 +70,19 @@ private fun AnalysisRows.toDiaryData(today: Long): DiaryData {
 /** Triggers destroyed by cooking. Ingredients with one of them ask "raw or cooked?". */
 val HEAT_LABILE_PROPERTY_KEYS = setOf("birch_pollen_cross")
 
-/** Lifestyle factor "sick" (seed id 4): the day is left out of the analysis. */
+internal fun IllnessRelationKind.toDomain(): IllnessRelation = when (this) {
+    IllnessRelationKind.RELATED -> IllnessRelation.RELATED
+    IllnessRelationKind.UNRELATED -> IllnessRelation.UNRELATED
+    IllnessRelationKind.UNKNOWN -> IllnessRelation.UNKNOWN
+}
+
+internal fun IllnessRelation.toEntity(): IllnessRelationKind = when (this) {
+    IllnessRelation.RELATED -> IllnessRelationKind.RELATED
+    IllnessRelation.UNRELATED -> IllnessRelationKind.UNRELATED
+    IllnessRelation.UNKNOWN -> IllnessRelationKind.UNKNOWN
+}
+
+/** Lifestyle factor "sick" (seed id 4): the day counts with a lower weight (AnalysisConfig.sickness). */
 const val SICK_FACTOR_ID = 4L
 
 /** Only these days go into the analysis (TRD 2.2). */

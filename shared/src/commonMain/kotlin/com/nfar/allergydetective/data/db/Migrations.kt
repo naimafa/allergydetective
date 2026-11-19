@@ -59,7 +59,14 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+    /** Self-test 19.11.: on a sick day the user says whether a complaint belongs to the illness. */
+    val MIGRATION_6_7 = object : Migration(6, 7) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE symptom_entries ADD COLUMN illnessRelation TEXT")
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
 
     private const val OILS_CATEGORY = 13L
 

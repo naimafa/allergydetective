@@ -2,6 +2,7 @@ package com.nfar.allergydetective.ui.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
 import com.nfar.allergydetective.domain.diary.DayCheckData
 import com.nfar.allergydetective.domain.diary.DayCheckRepository
 import com.nfar.allergydetective.domain.diary.DayCheckStatus
@@ -83,6 +84,14 @@ class HistoryViewModel(
 
     fun onFilterChange(filter: HistoryFilter) {
         _state.update { it.copy(filter = filter) }
+    }
+
+    /** A complaint on a sick day: part of the illness or not (self-test 19.11.). */
+    fun onIllnessRelationChange(entry: HistoryEntry.SymptomEntry, relation: IllnessRelation) {
+        viewModelScope.launch {
+            symptoms.setIllnessRelation(entry.id, relation)
+            refresh()
+        }
     }
 
     /** Permanently removes the entry; the screen asks first. */

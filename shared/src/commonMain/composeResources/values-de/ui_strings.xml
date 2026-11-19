@@ -55,9 +55,9 @@
     <string name="day_stress">Stress an dem Tag</string>
     <string name="day_scale_hint">1 = wenig · 5 = viel</string>
     <string name="day_factors">Besonderes? (optional)</string>
-    <string name="day_sick_hint">Krankheitstage zählen nicht für die Auswertung. So werden z.B. Beschwerden einer Erkältung nicht dem Essen zugeschrieben.</string>
+    <string name="day_sick_hint">Krankheitstage zählen schwächer. Bei jedem Symptom fragt die App, ob es zur Krankheit gehört – dann zählt es nicht. So werden z.B. Beschwerden einer Erkältung nicht dem Essen zugeschrieben.</string>
     <string name="sick_title">Krankheitszeiten</string>
-    <string name="sick_hint">Tage, an denen du akut krank warst (z.B. Nebenhöhlenentzündung), zählen nicht für die Auswertung. So werden Kopfschmerzen oder Übelkeit nicht dem Essen zugeschrieben.</string>
+    <string name="sick_hint">Tage, an denen du akut krank warst (z.B. Nebenhöhlenentzündung), zählen schwächer. Beschwerden, die zur Krankheit gehören, zählen gar nicht. So werden Kopfschmerzen oder Übelkeit nicht dem Essen zugeschrieben.</string>
     <string name="sick_empty">Keine Krankheitszeiten eingetragen.</string>
     <string name="sick_add">+ Krankheitszeit eintragen</string>
     <string name="sick_longer">Länger krank? Zeitraum eintragen</string>
@@ -67,7 +67,7 @@
     <string name="sick_since">seit %1$s</string>
     <string name="sick_ongoing">läuft noch</string>
     <string name="sick_range">%1$s – %2$s</string>
-    <string name="sick_day_in_period">Dieser Tag liegt in einer Krankheitszeit und zählt nicht für die Auswertung.</string>
+    <string name="sick_day_in_period">Dieser Tag liegt in einer Krankheitszeit und zählt schwächer für die Auswertung.</string>
     <string name="day_finish">Tag abschließen</string>
     <string name="day_autosave_hint">Deine Angaben werden sofort gespeichert. Der Tag zählt für die Auswertung, sobald du ihn abschließt.</string>
     <string name="day_no_symptoms_question">Hattest du an diesem Tag keine Beschwerden?</string>
@@ -120,6 +120,12 @@
     <string name="history_check_sleep_quality">Schlafqualität %1$d/5</string>
     <string name="history_check_stress">Stress %1$d/5</string>
     <string name="history_check_wellbeing">Befinden %1$d/5</string>
+    <string name="illness_question">Gehört das zur Krankheit?</string>
+    <string name="illness_related">Ja</string>
+    <string name="illness_unrelated">Nein</string>
+    <string name="illness_unknown">Weiß nicht</string>
+    <string name="illness_hint">Ja = zählt nicht für die Auswertung. Nein oder Weiß nicht = zählt schwächer, weil du krank warst.</string>
+    <string name="illness_label">Zur Krankheit: %1$s</string>
     <string name="history_delete_question">Diesen Eintrag löschen? Das lässt sich nicht rückgängig machen.</string>
     <string name="favorites_empty">Noch keine Gerichte. Lege deine häufigen Gerichte mit ihren Zutaten an, dann geht das tägliche Eintragen mit einem Tipp.</string>
     <string name="favorites_add">+ Neues Gericht</string>
@@ -141,7 +147,7 @@
     <string name="onboarding_how_symptom">Hast du Beschwerden, trag sie ein, mit Stärke und Tageszeit.</string>
     <string name="onboarding_how_check">Abends schließt du den Tag ab: Wie ging es dir, wie hast du geschlafen? Auch Tage ohne Beschwerden sind wichtig.</string>
     <string name="onboarding_patience_title">Etwas Geduld lohnt sich</string>
-    <string name="onboarding_patience_text">Nach etwa einer Woche mit abgeschlossenen Tagen zeigt die App erste Muster. Je länger du dabei bleibst, desto klarer werden sie. Krankheitstage (z.B. eine Erkältung) markierst du im Tagesabschluss, sie zählen dann nicht mit.</string>
+    <string name="onboarding_patience_text">Nach etwa einer Woche mit abgeschlossenen Tagen zeigt die App erste Muster. Je länger du dabei bleibst, desto klarer werden sie. Krankheitstage (z.B. eine Erkältung) markierst du im Tagesabschluss, sie zählen dann schwächer.</string>
     <string name="onboarding_dishes_title">Tipp: deine häufigen Gerichte</string>
     <string name="onboarding_dishes_text">Lege die Gerichte, die du oft isst, einmal mit ihren Zutaten an, z.B. Linsensuppe = Linsen, Tomaten, Karotten. Danach trägst du sie jeden Tag mit einem Tipp ein.</string>
     <string name="onboarding_dishes_start">Gerichte jetzt anlegen</string>

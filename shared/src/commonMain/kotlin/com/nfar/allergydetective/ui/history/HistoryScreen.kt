@@ -67,6 +67,10 @@ import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import com.nfar.allergydetective.domain.diary.SickPeriod
 import com.nfar.allergydetective.ui.sick.SickPeriodDialog
+import com.nfar.allergydetective.ui.sick.IllnessRelationChoice
+import com.nfar.allergydetective.ui.sick.illnessRelationLabel
+import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
+import allergydetective.shared.generated.resources.illness_label
 import com.nfar.allergydetective.ui.sick.SickPeriodsViewModel
 import allergydetective.shared.generated.resources.history_sick_add
 import org.koin.compose.koinInject
@@ -90,6 +94,7 @@ fun HistoryScreen(
     var sickActions by remember { mutableStateOf<SickPeriod?>(null) }
     // A period to change, or a new one (id 0).
     var sickEditing by remember { mutableStateOf<SickPeriod?>(null) }
+    var relationFor by remember { mutableStateOf<HistoryEntry.SymptomEntry?>(null) }
     LaunchedEffect(Unit) {
         viewModel.refresh()
         sickViewModel.refresh()
@@ -119,6 +124,7 @@ fun HistoryScreen(
                 clock = clock,
                 sick = period != null || markedSick,
                 sickBand = { SickBand(period, onEdit = { sickActions = it }) },
+                onRelationClick = if (period != null || markedSick) { entry -> relationFor = entry } else null,
                 dayCheck = if (state.showsDayChecks) day.check?.let { { DayCheckRow(it, state.factorKeys) } } else null,
                 onEditMeal = onEditMeal,
                 onDelete = { toDelete = it },
@@ -138,6 +144,18 @@ fun HistoryScreen(
                 sickViewModel.onDelete(period.id)
             },
             onDismiss = { sickActions = null },
+        )
+    }
+    relationFor?.let { entry ->
+        AlertDialog(
+            onDismissRequest = { relationFor = null },
+            text = {
+                IllnessRelationChoice(entry.illnessRelation) {
+                    viewModel.onIllnessRelationChange(entry, it)
+                    relationFor = null
+                }
+            },
+            confirmButton = { TextButton(onClick = { relationFor = null }) { Text(stringResource(Res.string.common_cancel)) } },
         )
     }
     sickEditing?.let { period ->
@@ -176,6 +194,8 @@ private fun DayCard(
     dayCheck: (@Composable () -> Unit)?,
     onEditMeal: (Long) -> Unit,
     onDelete: (HistoryEntry) -> Unit,
+    /** Sick day: a symptom shows "part of the illness: ..." and opens the question. */
+    onRelationClick: ((HistoryEntry.SymptomEntry) -> Unit)? = null,
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
@@ -191,7 +211,13 @@ private fun DayCard(
             }
             day.entries.forEachIndexed { index, entry ->
                 if (index > 0) HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                EntryRow(entry, clock, onEdit = (entry as? HistoryEntry.MealEntry)?.let { meal -> { onEditMeal(meal.id) } }, onDelete = { onDelete(entry) })
+                EntryRow(
+                    entry,
+                    clock,
+                    onEdit = (entry as? HistoryEntry.MealEntry)?.let { meal -> { onEditMeal(meal.id) } },
+                    onDelete = { onDelete(entry) },
+                    onRelation = (entry as? HistoryEntry.SymptomEntry)?.let { symptom -> onRelationClick?.let { click -> { click(symptom) } } },
+                )
             }
         }
     }
@@ -231,7 +257,7 @@ private fun DayHeader(day: HistoryDay, clock: AppClock) {
  * Tapping a meal opens it for editing, too.
  */
 @Composable
-private fun EntryRow(entry: HistoryEntry, clock: AppClock, onEdit: (() -> Unit)?, onDelete: () -> Unit) {
+private fun EntryRow(entry: HistoryEntry, clock: AppClock, onEdit: (() -> Unit)?, onDelete: () -> Unit, onRelation: (() -> Unit)? = null) {
     val (hour, minute) = clock.localTime(entry.time)
     val rowModifier = if (onEdit != null) Modifier.clickable(onClick = onEdit) else Modifier
     Row(verticalAlignment = Alignment.Top, modifier = rowModifier.fillMaxWidth().padding(start = 16.dp, top = 8.dp, bottom = 4.dp)) {
@@ -244,7 +270,7 @@ private fun EntryRow(entry: HistoryEntry, clock: AppClock, onEdit: (() -> Unit)?
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             when (entry) {
                 is HistoryEntry.MealEntry -> MealContent(entry, hour, minute)
-                is HistoryEntry.SymptomEntry -> SymptomContent(entry)
+                is HistoryEntry.SymptomEntry -> SymptomContent(entry, onRelation)
             }
         }
         if (onEdit != null) {
@@ -290,8 +316,17 @@ private fun MealContent(entry: HistoryEntry.MealEntry, hour: Int, minute: Int) {
 }
 
 @Composable
-private fun SymptomContent(entry: HistoryEntry.SymptomEntry) {
+private fun SymptomContent(entry: HistoryEntry.SymptomEntry, onRelation: (() -> Unit)?) {
     Text("⚡ " + displayName(NamePrefix.SYMPTOM, entry.symptomKey), style = MaterialTheme.typography.titleSmall)
     Text(stringResource(Res.string.history_intensity, entry.intensity), style = MaterialTheme.typography.bodyMedium)
     entry.note?.let { Text(it, style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)) }
+    if (onRelation != null) {
+        val relation = illnessRelationLabel(entry.illnessRelation ?: IllnessRelation.UNKNOWN)
+        Text(
+            stringResource(Res.string.illness_label, relation),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.clickable(onClick = onRelation).padding(vertical = 6.dp),
+        )
+    }
 }

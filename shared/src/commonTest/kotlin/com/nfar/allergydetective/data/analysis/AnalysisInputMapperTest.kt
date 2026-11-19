@@ -14,6 +14,8 @@ import com.nfar.allergydetective.data.db.entity.PropertyWindowEntity
 import com.nfar.allergydetective.data.db.entity.SymptomEntity
 import com.nfar.allergydetective.data.db.entity.SymptomEntryEntity
 import com.nfar.allergydetective.data.db.model.DayStatus
+import com.nfar.allergydetective.data.db.model.IllnessRelationKind
+import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
 import com.nfar.allergydetective.data.db.model.PortionSize
 import com.nfar.allergydetective.domain.analysis.AnalysisEngine
 import com.nfar.allergydetective.domain.analysis.model.Candidate
@@ -166,7 +168,7 @@ class AnalysisInputMapperTest {
     }
 
     @Test
-    fun daysInSickPeriodsAreLeftOutAndAnOpenPeriodRunsUntilToday() {
+    fun daysInSickPeriodsAreMarkedSickAndAnOpenPeriodRunsUntilToday() {
         fun check(day: Long) = DayCheckEntity(epochDay = day, wellbeing = null, sleepHours = null, sleepQuality = null, stress = null, status = DayStatus.COMPLETE)
         val rows = referenceRows.copy(
             dayChecks = (1L..8L).map(::check),
@@ -177,11 +179,13 @@ class AnalysisInputMapperTest {
 
         val diary = rows.toAnalysisInput(now = now, nowTzOffsetMin = TZ).diary
 
-        assertEquals(listOf(1L, 4L, 5L, 8L), diary.dayChecks.filter { it.confirmed }.map { it.epochDay })
+        // Self-test 19.11.: sick days still count (with a lower weight in the engine).
+        assertEquals((1L..8L).toList(), diary.dayChecks.filter { it.confirmed }.map { it.epochDay })
+        assertEquals(listOf(2L, 3L, 6L, 7L), diary.dayChecks.filter { it.sick }.map { it.epochDay })
     }
 
     @Test
-    fun sickDaysAreLeftOutAndSickIsNoCandidate() {
+    fun sickFactorMarksTheDayAndIsNoCandidate() {
         val rows = referenceRows.copy(
             dayChecks = listOf(
                 DayCheckEntity(epochDay = 2, wellbeing = 1, sleepHours = null, sleepQuality = null, stress = null, status = DayStatus.COMPLETE),
@@ -192,8 +196,22 @@ class AnalysisInputMapperTest {
 
         val diary = rows.toAnalysisInput(now = 0, nowTzOffsetMin = TZ).diary
 
-        assertEquals(listOf(false, true), diary.dayChecks.map { it.confirmed })
+        assertEquals(listOf(true, true), diary.dayChecks.map { it.confirmed })
+        assertEquals(listOf(true, false), diary.dayChecks.map { it.sick })
         assertEquals(listOf(DayFactor(2, 501)), diary.dayFactors)
+    }
+
+    @Test
+    fun illnessRelationIsMapped() {
+        val rows = referenceRows.copy(
+            symptomEntries = listOf(
+                SymptomEntryEntity(id = 21, symptomId = BLOATING, startedAt = 7_000, tzOffsetMin = TZ, intensity = 2, note = null, illnessRelation = IllnessRelationKind.RELATED),
+            ),
+        )
+
+        val entry = rows.toAnalysisInput(now = 0, nowTzOffsetMin = TZ).diary.symptomEntries.single()
+
+        assertEquals(IllnessRelation.RELATED, entry.illnessRelation)
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.ui.symptom
 
+import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
 import com.nfar.allergydetective.domain.time.AppClock
@@ -49,6 +50,39 @@ class LogSymptomViewModelTest {
         }
         var lastMeal: Long? = null
         override suspend fun lastMealAt(beforeMillis: Long) = lastMeal?.takeIf { it <= beforeMillis }
+        var sickDays = emptySet<Long>()
+        val relations = mutableMapOf<Long, IllnessRelation?>()
+        override suspend fun isSickDay(epochDay: Long) = epochDay in sickDays
+        override suspend fun setIllnessRelation(entryId: Long, relation: IllnessRelation?) {
+            relations[entryId] = relation
+        }
+    }
+
+    @Test
+    fun onASickDayTheRelationToTheIllnessIsAskedAndSaved() {
+        val clock = AppClock(clock = object : Clock { override fun now() = now }, zone = { TimeZone.of("Europe/Berlin") })
+        repository.sickDays = setOf(clock.today())
+        val vm = viewModel()
+
+        vm.onSymptomClick(headache)
+        assertTrue(vm.state.value.draftOnSickDay)
+        assertEquals(IllnessRelation.UNKNOWN, vm.state.value.draft?.illnessRelation)
+
+        vm.onIllnessRelationChange(IllnessRelation.RELATED)
+        vm.onSaveDraft()
+
+        assertEquals<Map<Long, IllnessRelation?>>(mapOf(1L to IllnessRelation.RELATED), repository.relations)
+    }
+
+    @Test
+    fun onAHealthyDayNothingIsAsked() {
+        val vm = viewModel()
+
+        vm.onSymptomClick(headache)
+        assertFalse(vm.state.value.draftOnSickDay)
+        vm.onSaveDraft()
+
+        assertTrue(repository.relations.isEmpty())
     }
 
     private val repository = FakeRepository()

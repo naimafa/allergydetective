@@ -71,6 +71,7 @@ import com.nfar.allergydetective.ui.common.SavedSnackbarEffect
 import com.nfar.allergydetective.ui.common.ScreenScaffold
 import com.nfar.allergydetective.ui.common.SectionTitle
 import com.nfar.allergydetective.ui.common.TimeChoiceRow
+import com.nfar.allergydetective.ui.sick.IllnessRelationChoice
 import com.nfar.allergydetective.ui.common.displayName
 import com.nfar.allergydetective.ui.common.emergencyNumberFor
 import androidx.compose.ui.text.intl.Locale
@@ -95,7 +96,7 @@ fun LogSymptomScreen(onBack: () -> Unit, viewModel: LogSymptomViewModel = koinVi
     state.emergencyNoticeFor?.let {
         EmergencyNotice(onContinue = viewModel::onEmergencyNoticeContinue, onDismiss = viewModel::onEmergencyNoticeDismiss)
     }
-    state.draft?.let { SymptomOverlay(it, viewModel) }
+    state.draft?.let { SymptomOverlay(it, onSickDay = state.draftOnSickDay, viewModel = viewModel) }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -215,7 +216,7 @@ private fun EmergencyNotice(onContinue: () -> Unit, onDismiss: () -> Unit) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SymptomOverlay(draft: SymptomDraft, viewModel: LogSymptomViewModel) {
+private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, viewModel: LogSymptomViewModel) {
     AlertDialog(
         onDismissRequest = viewModel::onDraftDismiss,
         title = { Text(symptomEmoji(draft.symptom.id) + " " + displayName(NamePrefix.SYMPTOM, draft.symptom.key)) },
@@ -244,6 +245,7 @@ private fun SymptomOverlay(draft: SymptomDraft, viewModel: LogSymptomViewModel) 
                     onQuickSelected = viewModel::onDayPartChange,
                     onExactSelected = viewModel::onExactTimeChange,
                 )
+                if (onSickDay) IllnessRelationChoice(draft.illnessRelation, viewModel::onIllnessRelationChange)
                 OutlinedTextField(
                     value = draft.note,
                     onValueChange = viewModel::onNoteChange,

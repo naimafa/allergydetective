@@ -55,9 +55,9 @@
     <string name="day_stress">Stress that day</string>
     <string name="day_scale_hint">1 = low · 5 = high</string>
     <string name="day_factors">Anything special? (optional)</string>
-    <string name="day_sick_hint">Days of illness are left out of the results, so that e.g. cold symptoms are not blamed on food.</string>
+    <string name="day_sick_hint">Days of illness count less. For each symptom the app asks whether it belongs to the illness – then it does not count. So e.g. cold symptoms are not blamed on food.</string>
     <string name="sick_title">Periods of illness</string>
-    <string name="sick_hint">Days when you were acutely ill (e.g. sinusitis) are left out of the results, so that headache or nausea are not blamed on food.</string>
+    <string name="sick_hint">Days when you were acutely ill (e.g. sinusitis) count less, complaints that belong to the illness do not count at all. So headache or nausea are not blamed on food.</string>
     <string name="sick_empty">No periods of illness entered.</string>
     <string name="sick_add">+ Enter period of illness</string>
     <string name="sick_longer">Ill for longer? Enter a period</string>
@@ -67,7 +67,7 @@
     <string name="sick_since">since %1$s</string>
     <string name="sick_ongoing">ongoing</string>
     <string name="sick_range">%1$s – %2$s</string>
-    <string name="sick_day_in_period">This day lies in a period of illness and does not count for the results.</string>
+    <string name="sick_day_in_period">This day lies in a period of illness and counts less for the results.</string>
     <string name="day_finish">Finish day</string>
     <string name="day_autosave_hint">Your answers are saved right away. The day counts for the evaluation once you finish it.</string>
     <string name="day_no_symptoms_question">No complaints on this day?</string>
@@ -120,6 +120,12 @@
     <string name="history_check_sleep_quality">Sleep quality %1$d/5</string>
     <string name="history_check_stress">Stress %1$d/5</string>
     <string name="history_check_wellbeing">Wellbeing %1$d/5</string>
+    <string name="illness_question">Part of the illness?</string>
+    <string name="illness_related">Yes</string>
+    <string name="illness_unrelated">No</string>
+    <string name="illness_unknown">Don’t know</string>
+    <string name="illness_hint">Yes = does not count for the evaluation. No or don’t know = counts less, because you were ill.</string>
+    <string name="illness_label">Part of the illness: %1$s</string>
     <string name="history_delete_question">Delete this entry? This cannot be undone.</string>
     <string name="favorites_empty">No dishes yet. Add the dishes you eat often with their ingredients, then daily logging takes one tap.</string>
     <string name="favorites_add">+ New dish</string>
@@ -141,7 +147,7 @@
     <string name="onboarding_how_symptom">When you have complaints, log them with strength and time of day.</string>
     <string name="onboarding_how_check">In the evening you close the day: how did you feel, how did you sleep? Days without complaints matter too.</string>
     <string name="onboarding_patience_title">A little patience pays off</string>
-    <string name="onboarding_patience_text">After about a week of closed days the app shows first patterns. The longer you keep going, the clearer they get. Mark days of illness (e.g. a cold) in the day check, they are then left out.</string>
+    <string name="onboarding_patience_text">After about a week of closed days the app shows first patterns. The longer you keep going, the clearer they get. Mark days of illness (e.g. a cold) in the day check, they then count less.</string>
     <string name="onboarding_dishes_title">Tip: your frequent dishes</string>
     <string name="onboarding_dishes_text">Save the dishes you eat often once with their ingredients, e.g. lentil soup = lentils, tomatoes, carrots. After that you log them with one tap every day.</string>
     <string name="onboarding_dishes_start">Add dishes now</string>
