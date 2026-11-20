@@ -22,6 +22,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -138,7 +142,14 @@ fun SickPeriodDayCheckPart(day: Long, viewModel: SickPeriodsViewModel) {
     if (state.isSick(day)) {
         Text(stringResource(Res.string.sick_day_in_period), style = MaterialTheme.typography.bodySmall)
     }
-    TextButton(onClick = { showDialog = true }) { Text(stringResource(Res.string.sick_longer)) }
+    // Feedback 20.11.: a button with a calendar, so it does not look like plain text.
+    OutlinedButton(
+        onClick = { showDialog = true },
+        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+    ) {
+        Icon(Icons.Outlined.DateRange, contentDescription = null, modifier = Modifier.size(18.dp))
+        Text(stringResource(Res.string.sick_longer), modifier = Modifier.padding(start = 8.dp))
+    }
     if (showDialog) {
         SickPeriodDialog(
             today = state.today,

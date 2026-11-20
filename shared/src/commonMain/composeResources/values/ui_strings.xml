@@ -68,11 +68,12 @@
     <string name="day_confirmed_mark">%1$s ✓</string>
     <string name="day_open_past_hint">Not finished yet: %1$s. Tap it above to catch up.</string>
     <string name="day_wellbeing">How did you feel that day?</string>
-    <string name="day_sleep">Sleep the night before</string>
+    <string name="day_sleep">Sleep last night</string>
     <string name="day_hours">%1$s h</string>
     <string name="day_sleep_quality">Sleep quality</string>
     <string name="day_stress">Stress that day</string>
-    <string name="day_scale_hint">1 = low · 5 = high</string>
+    <string name="day_scale_hint">1 = hardly any · 5 = very high</string>
+    <string name="day_sleep_quality_hint">1 = very poor · 5 = very good</string>
     <string name="day_factors">Anything special? (optional)</string>
     <string name="day_sick_hint">Days of illness count less. For each symptom the app asks whether it belongs to the illness – then it does not count. So e.g. cold symptoms are not blamed on food.</string>
     <string name="sick_title">Periods of illness</string>
@@ -242,7 +243,13 @@
     <string name="symptom_long_press_hint">Tap to add details. Long press saves right away (medium, now).</string>
     <string name="symptom_favorites">Used most often</string>
     <string name="symptom_how_strong">How strong?</string>
-    <string name="symptom_intensity_range">1 = mild · 5 = severe</string>
+    <string name="symptom_intensity_range">1 = barely noticeable · 5 = very strong</string>
+    <string name="symptom_intensity_1">barely noticeable</string>
+    <string name="symptom_intensity_2">mild</string>
+    <string name="symptom_intensity_3">moderate</string>
+    <string name="symptom_intensity_4">strong</string>
+    <string name="symptom_intensity_5">very strong</string>
+    <string name="symptom_intensity_selected">%1$d = %2$s</string>
     <string name="symptom_when">When did it start?</string>
     <string name="symptom_part_morning">In the morning</string>
     <string name="symptom_part_midday">At midday</string>

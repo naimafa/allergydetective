@@ -68,11 +68,12 @@
     <string name="day_confirmed_mark">%1$s ✓</string>
     <string name="day_open_past_hint">Noch nicht abgeschlossen: %1$s. Oben antippen, um nachzutragen.</string>
     <string name="day_wellbeing">Wie ging es dir an dem Tag?</string>
-    <string name="day_sleep">Schlaf in der Nacht davor</string>
+    <string name="day_sleep">Schlaf letzte Nacht</string>
     <string name="day_hours">%1$s h</string>
     <string name="day_sleep_quality">Schlafqualität</string>
     <string name="day_stress">Stress an dem Tag</string>
-    <string name="day_scale_hint">1 = wenig · 5 = viel</string>
+    <string name="day_scale_hint">1 = kaum · 5 = sehr stark</string>
+    <string name="day_sleep_quality_hint">1 = sehr schlecht · 5 = sehr gut</string>
     <string name="day_factors">Besonderes? (optional)</string>
     <string name="day_sick_hint">Krankheitstage zählen schwächer. Bei jedem Symptom fragt die App, ob es zur Krankheit gehört – dann zählt es nicht. So werden z.B. Beschwerden einer Erkältung nicht dem Essen zugeschrieben.</string>
     <string name="sick_title">Krankheitszeiten</string>
@@ -242,7 +243,13 @@
     <string name="symptom_long_press_hint">Tippen für Details. Lange drücken speichert sofort (mittel, jetzt).</string>
     <string name="symptom_favorites">Am häufigsten</string>
     <string name="symptom_how_strong">Wie stark?</string>
-    <string name="symptom_intensity_range">1 = leicht · 5 = stark</string>
+    <string name="symptom_intensity_range">1 = kaum spürbar · 5 = sehr stark</string>
+    <string name="symptom_intensity_1">kaum spürbar</string>
+    <string name="symptom_intensity_2">leicht</string>
+    <string name="symptom_intensity_3">mittel</string>
+    <string name="symptom_intensity_4">stark</string>
+    <string name="symptom_intensity_5">sehr stark</string>
+    <string name="symptom_intensity_selected">%1$d = %2$s</string>
     <string name="symptom_when">Wann ging es los?</string>
     <string name="symptom_part_morning">Morgens</string>
     <string name="symptom_part_midday">Mittags</string>
