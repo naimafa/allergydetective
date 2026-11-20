@@ -15,6 +15,7 @@ import com.nfar.allergydetective.ui.meal.LogMealScreen
 import com.nfar.allergydetective.ui.profile.OnboardingScreen
 import com.nfar.allergydetective.ui.profile.ReminderSection
 import com.nfar.allergydetective.ui.profile.ThemeSection
+import com.nfar.allergydetective.ui.profile.DoctorReportSection
 import com.nfar.allergydetective.ui.profile.ExportSection
 import androidx.compose.runtime.LaunchedEffect
 import com.nfar.allergydetective.ui.symptom.LogSymptomScreen
@@ -115,6 +116,7 @@ fun AppNavHost(
                     }
                 },
                 profileExtra = {
+                    DoctorReportSection()
                     ThemeSection()
                     ReminderSection()
                     SickPeriodSection(koinViewModel())

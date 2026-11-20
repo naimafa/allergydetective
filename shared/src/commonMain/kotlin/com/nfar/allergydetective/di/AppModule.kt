@@ -50,6 +50,7 @@ import com.nfar.allergydetective.ui.theme.ThemeController
 import com.nfar.allergydetective.data.analysis.RoomCandidateCatalog
 import com.nfar.allergydetective.domain.analysis.CandidateCatalog
 import com.nfar.allergydetective.ui.results.ResultsViewModel
+import com.nfar.allergydetective.ui.profile.DoctorReportViewModel
 import com.nfar.allergydetective.ui.profile.ExportViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -135,6 +136,18 @@ val appModule = module {
             repository = get(),
             engine = get(),
             catalog = get(),
+            clock = get(),
+            computeContext = get(ComputeContext),
+        )
+    }
+    viewModel {
+        DoctorReportViewModel(
+            history = get(),
+            analysis = get(),
+            engine = get(),
+            catalog = get(),
+            names = get(),
+            language = get(),
             clock = get(),
             computeContext = get(ComputeContext),
         )
