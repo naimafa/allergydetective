@@ -134,6 +134,8 @@ p, h1, h2, h3 { margin: 0; }
 .chips.scroll::-webkit-scrollbar { display: none; }
 .chip { height: calc(32px * max(1, var(--fs) * .9)); border: 1px solid var(--outline-variant); background: transparent; border-radius: 12px; padding: 0 16px; font-size: calc(14px * var(--fs)); font-weight: 500; white-space: nowrap; display: inline-flex; gap: 8px; align-items: center; color: var(--muted); }
 .chip svg { width: 18px; height: 18px; flex: 0 0 auto; }
+.chip.wrap { white-space: normal; height: auto; min-height: 32px; padding-block: 6px; text-align: left; }
+.btn.filled:disabled { background: color-mix(in srgb, var(--fg) 12%, transparent); color: color-mix(in srgb, var(--fg) 38%, transparent); cursor: default; }
 .chip.on { background: var(--primary); border-color: var(--primary); color: var(--on-primary); padding-left: 8px; }
 .chip.on::before { content: ""; width: 18px; height: 18px; background: currentColor; -webkit-mask: var(--check) center / 18px no-repeat; mask: var(--check) center / 18px no-repeat; }
 .chip.on.noicon::before, .chip.on.hasicon::before { display: none; }
@@ -190,7 +192,11 @@ p, h1, h2, h3 { margin: 0; }
 /* Like sharedNameStyle(): one size for all names, the largest at which every name fits. */
 :root { --sym-shrink: .93; }
 :root[data-font="125"] { --sym-shrink: .74; }
-.sym.flag { border: 2px solid var(--tertiary); }
+/* Emergency symptoms (swelling, shortness of breath): red tile with a terracotta border, notice first. */
+.sym.flag { border: 2px solid var(--tertiary); background: var(--red-flag); }
+:root { --red-flag: #FFCDC8; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --red-flag: #7E2B25; } }
+:root[data-theme="dark"] { --red-flag: #7E2B25; }
 .g-digestive { background: var(--digestive); } .g-skin { background: var(--skin); } .g-head { background: var(--head); } .g-airways { background: var(--airways); } .g-other { background: var(--other); }
 .group { display: flex; align-items: center; gap: 8px; padding-top: 8px; }
 .group i { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--outline-variant); }
@@ -216,7 +222,7 @@ p, h1, h2, h3 { margin: 0; }
 .dayhead .iconbtn { color: var(--primary); width: 40px; height: 40px; }
 
 /* Favoriten */
-.dish { background: var(--lowest); border: 1px solid var(--outline-variant); border-radius: 16px; padding: 16px 8px 8px 16px; display: flex; flex-direction: column; gap: 4px; }
+.dish { background: var(--lowest); border: 1px solid var(--outline-variant); border-radius: 22px; padding: 16px 8px 8px 16px; display: flex; flex-direction: column; gap: 4px; }
 .dish hr { border: 0; border-top: 1px solid var(--high); margin: 12px 8px 4px 0; }
 .dish .acts { display: flex; align-items: center; gap: 4px; }
 .dish .acts .grow { flex: 1; }
@@ -245,7 +251,7 @@ p, h1, h2, h3 { margin: 0; }
 .navbar .pill svg { width: 24px; height: 24px; }
 .navbar button.on { color: var(--fg); }
 .navbar button.on .pill { background: var(--secondary-container); color: var(--on-secondary-container); }
-.bottombar { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 8px; background: var(--bg); flex: 0 0 auto; border-top: 1px solid var(--container); }
+.bottombar { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 8px; background: var(--bg); flex: 0 0 auto; }
 
 @media (max-width: 460px) {
   body { padding-block: 16px; }
@@ -261,6 +267,7 @@ p, h1, h2, h3 { margin: 0; }
   <symbol id="i-bedtime" viewBox="0 0 24 24"><path fill="currentColor" d="M9.27 4.49c-1.63 7.54 3.75 12.41 7.66 13.8A7.947 7.947 0 0 1 12.36 20c-4.41 0-8-3.59-8-8 0-3.45 2.2-6.4 4.91-7.51m2.98-2.48C6.71 2.4 2.36 6.71 2.36 12c0 5.52 4.48 10 10 10 3.71 0 6.93-2.02 8.66-5.02-7.51-.25-12.09-8.43-8.77-14.97z"/></symbol>
   <symbol id="i-stats" viewBox="0 0 24 24"><path fill="currentColor" d="M19.88 18.47c.44-.7.7-1.51.7-2.39 0-2.49-2.01-4.5-4.5-4.5s-4.5 2.01-4.5 4.5 2.01 4.5 4.49 4.5c.88 0 1.7-.26 2.39-.7L21.58 23 23 21.58l-3.12-3.11zm-3.8.11a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5zm-.36-8.5c-.74.02-1.45.18-2.1.45l-.55-.83-3.8 6.18-3.01-3.52-3.63 5.81L1 17l5-8 3 3.5L13 6l2.72 4.08zm2.59.5c-.64-.28-1.33-.45-2.05-.49L21.38 2 23 3.18l-4.69 7.4z"/></symbol>
   <symbol id="i-cup" viewBox="0 0 24 24"><path fill="currentColor" d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3zM16 5v3H6V5h10zm.5 6c0 2.76-2.24 5-5 5s-5-2.24-5-5v-1h10v1zm2-3H18V5h.5c.83 0 1.5.67 1.5 1.5S19.33 8 18.5 8zM4 19h16v2H4z"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><path fill="currentColor" d="M16.59 7.58 10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><path fill="currentColor" d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path fill="currentColor" d="m12 5.69 5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3 2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></symbol>
   <symbol id="i-history" viewBox="0 0 24 24"><path fill="currentColor" d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></symbol>
@@ -340,7 +347,7 @@ p, h1, h2, h3 { margin: 0; }
         <div class="body" style="gap:14px">
           <section class="step">
             <div class="step-head"><span class="step-num">1</span><h3 class="t-tm">Wann hast du gegessen?</h3></div>
-            <div class="chips" data-single><button class="chip on">Heute</button><button class="chip">Gestern</button><button class="chip">Datum</button></div>
+            <div class="chips" data-single><button class="chip on noicon">Heute</button><button class="chip noicon">Gestern</button><button class="chip noicon hasicon"><svg><use href="#i-cal"/></svg>Datum</button></div>
             <div class="chips" data-single>
               <button class="chip">Frühstück</button><button class="chip">Mittagessen</button><button class="chip">Abendessen</button>
               <button class="chip">Snack</button><button class="chip on">Getränk</button>
@@ -351,7 +358,7 @@ p, h1, h2, h3 { margin: 0; }
             <div class="step-head"><span class="step-num">2</span><h3 class="t-tm">Was hast du gegessen?</h3></div>
             <label class="field" for="mealSearch"><input id="mealSearch" placeholder="Zutat suchen …"><button class="iconbtn" type="button" aria-label="Mahlzeit einsprechen"><svg><use href="#i-mic"/></svg></button></label>
             <div><h4 class="t-ts" style="margin:0">Favoriten</h4><p class="t-small muted">Deine gespeicherten Mahlzeiten – ein Tipp fügt alle Zutaten hinzu</p></div>
-            <div class="chips"><button class="chip hasicon"><svg><use href="#i-star"/></svg>Müsli</button><button class="chip hasicon"><svg><use href="#i-star"/></svg>Linsensuppe</button><button class="chip hasicon"><svg><use href="#i-star"/></svg>Kaffee mit Milch</button></div>
+            <div class="chips" data-multi><button class="chip wrap">Frühstück mit Käse, Oliven und Butter</button><button class="chip">Gemüsemischung</button><button class="chip">Linsensuppe</button><button class="chip">Kaffee mit Milch</button></div>
             <div><h4 class="t-ts" style="margin:0">Schnellauswahl</h4><p class="t-small muted">Zuletzt gegessen – ein Tipp fügt es hinzu</p></div>
             <div class="chips" data-multi><button class="chip on">Kaffee</button><button class="chip">Kuhmilch</button><button class="chip">Weißbrot</button><button class="chip">Tomate</button><button class="chip">Hafer</button></div>
           </section>
@@ -373,26 +380,26 @@ p, h1, h2, h3 { margin: 0; }
           <p class="t-small">Tippen für Details. Lange drücken speichert sofort (mittel, jetzt).</p>
           <h3 class="t-tm" style="padding-top:8px">Am häufigsten</h3>
           <div class="sym-row">
+            <button class="sym g-airways" data-sym="👃 Verstopfte Nase"><span class="e">👃</span><span class="n">Verstopfte Nase</span></button>
             <button class="sym g-head" data-sym="🤯 Kopfschmerzen"><span class="e">🤯</span><span class="n">Kopfschmerzen</span></button>
-            <button class="sym g-digestive" data-sym="🎈 Blähbauch"><span class="e">🎈</span><span class="n">Blähbauch</span></button>
-            <button class="sym g-skin" data-sym="🐜 Juckreiz"><span class="e">🐜</span><span class="n">Juckreiz</span></button>
+            <button class="sym g-head" data-sym="💤 Müdigkeit"><span class="e">💤</span><span class="n">Müdigkeit</span></button>
           </div>
           <div class="group"><i class="g-digestive"></i><h3 class="t-tm">Magen &amp; Darm</h3></div>
           <div class="sym-row">
             <button class="sym g-digestive" data-sym="🤢 Übelkeit"><span class="e">🤢</span><span class="n">Übelkeit</span></button>
             <button class="sym g-digestive" data-sym="🎈 Blähbauch"><span class="e">🎈</span><span class="n">Blähbauch</span></button>
             <button class="sym g-digestive" data-sym="🔥 Sodbrennen"><span class="e">🔥</span><span class="n">Sodbrennen</span></button>
-            <button class="sym g-digestive" data-sym="📉 Bauchschmerzen"><span class="e">📉</span><span class="n">Bauchschmerzen</span></button>
+            <button class="sym g-digestive" data-sym="📉 Bauchkrämpfe"><span class="e">📉</span><span class="n">Bauchkrämpfe</span></button>
             <button class="sym g-digestive" data-sym="💩 Durchfall"><span class="e">💩</span><span class="n">Durchfall</span></button>
             <button class="sym g-digestive" data-sym="🧱 Verstopfung"><span class="e">🧱</span><span class="n">Verstopfung</span></button>
           </div>
           <div class="group"><i class="g-skin"></i><h3 class="t-tm">Haut</h3></div>
           <div class="sym-row">
-            <button class="sym g-skin" data-sym="🔴 Rötung"><span class="e">🔴</span><span class="n">Rötung</span></button>
+            <button class="sym g-skin" data-sym="🔴 Flush (Rötung)"><span class="e">🔴</span><span class="n">Flush (Rötung)</span></button>
             <button class="sym g-skin" data-sym="🐜 Juckreiz"><span class="e">🐜</span><span class="n">Juckreiz</span></button>
             <button class="sym g-skin" data-sym="🖐️ Quaddeln"><span class="e">🖐️</span><span class="n">Quaddeln</span></button>
-            <button class="sym g-skin" data-sym="💧 Schwellungen"><span class="e">💧</span><span class="n">Schwellungen</span></button>
-            <button class="sym g-skin" data-sym="🌵 Ekzem"><span class="e">🌵</span><span class="n">Ekzem</span></button>
+            <button class="sym flag" data-sym="💧 Schwellungen"><span class="e">💧</span><span class="n">Schwellungen ⚠️</span></button>
+            <button class="sym g-skin" data-sym="🌵 Trockene Haut"><span class="e">🌵</span><span class="n">Trockene Haut</span></button>
           </div>
           <div class="group"><i class="g-head"></i><h3 class="t-tm">Kopf, Energie &amp; Kreislauf</h3></div>
           <div class="sym-row">
@@ -405,11 +412,12 @@ p, h1, h2, h3 { margin: 0; }
           </div>
           <div class="group"><i class="g-airways"></i><h3 class="t-tm">Atemwege, Augen &amp; Mund</h3></div>
           <div class="sym-row">
-            <button class="sym g-airways" data-sym="🤧 Niesen"><span class="e">🤧</span><span class="n">Niesen</span></button>
-            <button class="sym g-airways" data-sym="👃 Schnupfen"><span class="e">👃</span><span class="n">Schnupfen</span></button>
-            <button class="sym g-airways" data-sym="🌬️ Husten"><span class="e">🌬️</span><span class="n">Husten</span></button>
-            <button class="sym g-airways" data-sym="👄 Mund kribbelt"><span class="e">👄</span><span class="n">Mund kribbelt</span></button>
-            <button class="sym g-airways" data-sym="👁️ Augen jucken"><span class="e">👁️</span><span class="n">Augen jucken</span></button>
+            <button class="sym g-airways" data-sym="🤧 Schnupfen"><span class="e">🤧</span><span class="n">Schnupfen</span></button>
+            <button class="sym g-airways" data-sym="👃 Verstopfte Nase"><span class="e">👃</span><span class="n">Verstopfte Nase</span></button>
+            <button class="sym g-airways" data-sym="😤 Reizhusten"><span class="e">😤</span><span class="n">Reizhusten</span></button>
+            <button class="sym flag" data-sym="🌬️ Atemnot"><span class="e">🌬️</span><span class="n">Atemnot ⚠️</span></button>
+            <button class="sym g-airways" data-sym="👄 Kribbeln im Mund"><span class="e">👄</span><span class="n">Kribbeln im Mund</span></button>
+            <button class="sym g-airways" data-sym="👁️ Juckende Augen"><span class="e">👁️</span><span class="n">Juckende Augen</span></button>
           </div>
           <div class="group"><i class="g-other"></i><h3 class="t-tm">Sonstiges</h3></div>
           <div class="sym-row">
@@ -422,20 +430,25 @@ p, h1, h2, h3 { margin: 0; }
       <section class="view" id="v-day" data-title="Tagesabschluss">
         <header class="appbar"><button class="iconbtn" data-go="start" aria-label="Zurück"><svg><use href="#i-back"/></svg></button><h2 class="t-title">Tagesabschluss</h2></header>
         <div class="body" style="gap:14px">
-          <div class="chips" data-single><button class="chip on">Heute</button><button class="chip">Gestern ✓</button><button class="chip">Datum</button></div>
+          <div class="chips" data-single><button class="chip on noicon">Heute</button><button class="chip noicon">Gestern <svg style="color:var(--primary)"><use href="#i-check-circle"/></svg></button><button class="chip noicon hasicon"><svg><use href="#i-cal"/></svg>Datum</button></div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <h3 class="t-headline">20.11.2026</h3>
+            <p class="t-small">Noch nicht abgeschlossen: vor 4 Tagen. Oben antippen, um nachzutragen.</p>
+          </div>
           <section class="step">
             <h3 class="t-tm">Wie ging es dir an dem Tag?</h3>
-            <div class="scale" data-single><button class="chip">😣</button><button class="chip">🙁</button><button class="chip on">😐</button><button class="chip">🙂</button><button class="chip">😊</button></div>
+            <div class="scale" data-single><button class="chip">😣</button><button class="chip">🙁</button><button class="chip">😐</button><button class="chip">🙂</button><button class="chip">😊</button></div>
           </section>
           <section class="step">
             <h3 class="t-tm">Schlaf letzte Nacht</h3>
-            <div class="row-between" style="justify-content:flex-start">
-              <button class="btn outline" type="button" data-step="-0.5" style="flex:0 0 auto" aria-label="Weniger">−</button>
-              <b class="t-bl" id="sleepH" style="flex:0 0 auto;min-width:72px;text-align:center">7,5 h</b>
-              <button class="btn outline" type="button" data-step="0.5" style="flex:0 0 auto" aria-label="Mehr">+</button>
+            <div class="row-between" style="justify-content:flex-start;gap:4px">
+              <button class="btn outline mid" type="button" data-step="-0.5" style="flex:0 0 auto" aria-label="Weniger">−</button>
+              <b class="t-bl" id="sleepH" style="flex:0 0 auto;min-width:56px;text-align:center">7 h</b>
+              <button class="btn outline mid" type="button" data-step="0.5" style="flex:0 0 auto" aria-label="Mehr">+</button>
             </div>
             <p class="t-body">Schlafqualität</p>
-            <div class="scale" data-single><button class="chip">1 ★</button><button class="chip">2 ★</button><button class="chip">3 ★</button><button class="chip on">4 ★</button><button class="chip">5 ★</button></div>
+            <!-- In the code the labels are "1 ★" … "5 ★"; at font scale 1.25 the phone shows only the digits. -->
+            <div class="scale" data-single><button class="chip">1</button><button class="chip">2</button><button class="chip">3</button><button class="chip">4</button><button class="chip">5</button></div>
             <p class="t-small muted">1 = sehr schlecht · 5 = sehr gut</p>
           </section>
           <section class="step">
@@ -459,7 +472,8 @@ p, h1, h2, h3 { margin: 0; }
       <section class="view" id="v-results" data-title="Muster entdecken">
         <header class="appbar"><button class="iconbtn" data-go="start" aria-label="Zurück"><svg><use href="#i-back"/></svg></button><h2 class="t-title">Muster entdecken</h2></header>
         <div class="body" style="gap:12px">
-          <div class="card m" style="background:var(--info);color:var(--on-info)"><p class="t-body">4 von 7 bestätigten Tagen. Aussagekräftig wird die Auswertung nach 7 Tagen, bis dahin ist alles hier vorläufig.</p></div>
+          <div class="card m" style="background:var(--highest)"><p class="t-bl">4 von 7 bestätigten Tagen. Aussagekräftig wird die Auswertung nach 7 Tagen, bis dahin ist alles hier vorläufig.</p></div>
+          <p class="t-small muted">Beispiel-Ergebnisse, wie sie nach einigen Tagen erscheinen. Ohne Muster steht hier: „Noch keine Spuren. Einfach weiter eintragen, jeder Eintrag ist ein Puzzleteil.“</p>
           <div class="card m" style="background:var(--tertiary-container)"><span class="t-label">🕵️ Starker Verdacht</span><h3 class="t-tm">Kuhmilch</h3><p class="t-body">Danach Beschwerden: 4 von 5 Mal, sonst 1 von 9</p></div>
           <div class="card m" style="background:var(--digestive)"><span class="t-label">🔎 Verdacht</span><h3 class="t-tm">Histamin</h3><p class="t-body">Danach Beschwerden: 3 von 5 Mal, sonst 2 von 10</p></div>
           <div class="card m" style="background:var(--high)"><span class="t-label">🔍 Spur</span><h3 class="t-tm">Schlechter Schlaf</h3><p class="t-body">Danach Beschwerden: 2 von 3 Mal, sonst 3 von 11</p></div>
@@ -485,7 +499,7 @@ p, h1, h2, h3 { margin: 0; }
           <button class="listrow"><span class="circle c-symptom"><svg><use href="#i-bolt"/></svg></span><span class="txt"><b class="t-ts">Kopfschmerzen</b><span class="t-small muted">13:00 · Stärke 3/5 · 1–3 Std.</span></span><svg class="ico24 muted"><use href="#i-right"/></svg></button>
           <button class="listrow"><span class="circle c-food"><svg><use href="#i-cup"/></svg></span><span class="txt"><b class="t-ts">Getränk</b><span class="t-small muted">11:00 · Kaffee</span></span><svg class="ico24 muted"><use href="#i-right"/></svg></button>
           <button class="listrow"><span class="circle c-food"><svg><use href="#i-restaurant"/></svg></span><span class="txt"><b class="t-ts">Frühstück · Müsli</b><span class="t-small muted">08:00 · Hafer · Kuhmilch · Apfel</span></span><svg class="ico24 muted"><use href="#i-right"/></svg></button>
-          <div class="dayhead"><h3 class="t-tm">Do, 19.11.2026</h3><span class="badge b-done">✓ Erledigt</span><button class="iconbtn" aria-label="Für diesen Tag nachtragen"><svg><use href="#i-add-circle"/></svg></button></div>
+          <div class="dayhead"><h3 class="t-tm">Do, 19.11.2026</h3><span class="badge" style="background:var(--tertiary-container);color:var(--on-tertiary-container)">Krank</span><span class="badge b-done">✓ Erledigt</span><button class="iconbtn" aria-label="Für diesen Tag nachtragen"><svg><use href="#i-add-circle"/></svg></button></div>
           <button class="listrow"><span class="circle c-day"><svg><use href="#i-bedtime"/></svg></span><span class="txt"><b class="t-ts">Tagesabschluss</b><span class="t-small muted">Schlaf 7 h · Befinden 4/5 · Stress 2/5 · Schlafqualität 4/5</span></span><svg class="ico24 muted"><use href="#i-right"/></svg></button>
           <button class="listrow"><span class="circle c-food"><svg><use href="#i-restaurant"/></svg></span><span class="txt"><b class="t-ts">Abendessen · Linsensuppe</b><span class="t-small muted">19:00 · Linsen · Karotte · Zwiebel</span></span><svg class="ico24 muted"><use href="#i-right"/></svg></button>
           <button class="listrow"><span class="circle c-symptom"><svg><use href="#i-bolt"/></svg></span><span class="txt"><b class="t-ts">Blähbauch</b><span class="t-small muted">16:00 · Stärke 2/5</span></span><svg class="ico24 muted"><use href="#i-right"/></svg></button>
@@ -499,18 +513,18 @@ p, h1, h2, h3 { margin: 0; }
         <div class="body" style="gap:12px;padding-top:0">
           <label class="field" for="dishSearch" style="border-radius:8px"><svg class="ico24 muted"><use href="#i-search"/></svg><input id="dishSearch" placeholder="Gericht oder Zutat suchen …"></label>
           <article class="dish">
-            <h3 class="t-tm">Müsli</h3><p class="t-body muted">Hafer, Kuhmilch, Apfel</p><hr>
+            <h3 class="t-tm">Gemüsesuppe</h3><p class="t-bl muted">Lauch · Blumenkohl · Karotte · Bohnen · Erbsen · Brokkoli</p><hr>
             <div class="acts"><button class="btn text">Bearbeiten</button><span class="grow"></span><button class="btn tonal" data-go="meal" style="padding:0 14px"><svg><use href="#i-add"/></svg>Erfassen</button><button class="iconbtn" aria-label="Weitere Aktionen"><svg><use href="#i-more"/></svg></button></div>
           </article>
           <article class="dish">
-            <h3 class="t-tm">Linsensuppe</h3><p class="t-body muted">Linsen, Karotte, Zwiebel, Kreuzkümmel</p><hr>
+            <h3 class="t-tm">Linsensuppe</h3><p class="t-bl muted">Tomate · Zwiebel · Knoblauch · Karotte · Kartoffel · Linsen · Olivenöl</p><hr>
             <div class="acts"><button class="btn text">Bearbeiten</button><span class="grow"></span><button class="btn tonal" data-go="meal" style="padding:0 14px"><svg><use href="#i-add"/></svg>Erfassen</button><button class="iconbtn" aria-label="Weitere Aktionen"><svg><use href="#i-more"/></svg></button></div>
           </article>
           <article class="dish">
-            <h3 class="t-tm">Kaffee mit Milch</h3><p class="t-body muted">Kaffee, Kuhmilch</p><hr>
+            <h3 class="t-tm">Tomatensauce</h3><p class="t-bl muted">Tomate · Karotte · Kartoffel · Zucchini</p><hr>
             <div class="acts"><button class="btn text">Bearbeiten</button><span class="grow"></span><button class="btn tonal" data-go="meal" style="padding:0 14px"><svg><use href="#i-add"/></svg>Erfassen</button><button class="iconbtn" aria-label="Weitere Aktionen"><svg><use href="#i-more"/></svg></button></div>
           </article>
-          <button class="btn tonal full mid">+ Neues Gericht</button>
+          <button class="btn tonal full tall">+ Neues Gericht</button>
         </div>
       </section>
 
@@ -520,9 +534,9 @@ p, h1, h2, h3 { margin: 0; }
         <div class="body" style="gap:12px;padding-top:0">
           <div class="section">
             <h3 class="t-tm">Bericht für den Arzt</h3>
-            <p class="t-body">Ein PDF mit Zeitraum, Häufigkeit und Stärke deiner Beschwerden, Tageszeiten, Dauer, Notizen und auffälligen Mustern. Zum Mitnehmen in die Sprechstunde. Wohin es geht, entscheidest du.</p>
+            <p class="t-bl">Ein PDF mit Zeitraum, Häufigkeit und Stärke deiner Beschwerden, Tageszeiten, Dauer, Notizen und auffälligen Mustern. Zum Mitnehmen in die Sprechstunde. Wohin es geht, entscheidest du.</p>
             <div class="chips" data-single><button class="chip on">14 Tage</button><button class="chip">30 Tage</button><button class="chip">90 Tage</button></div>
-            <button class="btn filled full mid">PDF erstellen und teilen</button>
+            <button class="btn filled full tall">PDF erstellen und teilen</button>
           </div>
           <div class="section">
             <h3 class="t-tm">Darstellung</h3>
@@ -531,7 +545,7 @@ p, h1, h2, h3 { margin: 0; }
           </div>
           <div class="section">
             <h3 class="t-tm">Abend-Erinnerung</h3>
-            <div class="switchrow"><p class="t-body">Ein täglicher Hinweis zum Tagesabschluss. Entfällt, wenn der Tag schon bestätigt ist.</p><button class="switch" role="switch" aria-checked="true" aria-label="Abend-Erinnerung"></button></div>
+            <div class="switchrow"><p class="t-bl">Ein täglicher Hinweis zum Tagesabschluss. Entfällt, wenn der Tag schon bestätigt ist.</p><button class="switch" role="switch" aria-checked="true" aria-label="Abend-Erinnerung"></button></div>
             <div class="chips" data-single><button class="chip">19:00</button><button class="chip">20:00</button><button class="chip on">21:00</button><button class="chip">22:00</button></div>
           </div>
           <div class="section">
@@ -568,15 +582,15 @@ p, h1, h2, h3 { margin: 0; }
         <div class="dialog">
           <h2 class="t-title" style="font-weight:400" id="symTitle">🤯 Kopfschmerzen</h2>
           <div class="scrollpart">
-            <h3 class="t-ts">Wie stark?</h3>
+            <h3 class="t-ts muted">Wie stark?</h3>
             <div class="scale" data-single id="intensity"><button class="chip">1</button><button class="chip">2</button><button class="chip on">3</button><button class="chip">4</button><button class="chip">5</button></div>
             <span class="t-label" style="color:var(--primary)" id="intensityWord">3 = mittel</span>
             <p class="t-small">1 = kaum spürbar · 5 = sehr stark</p>
-            <h3 class="t-ts">Wann ging es los?</h3>
-            <div class="chips" data-single><button class="chip on">Heute</button><button class="chip">Gestern</button><button class="chip">Datum</button></div>
-            <div class="chips" data-single><button class="chip on">Jetzt</button><button class="chip">Morgens</button><button class="chip">Mittags</button><button class="chip">Nachmittags</button><button class="chip">Nach dem Essen</button><button class="chip">Andere Zeit …</button></div>
-            <h3 class="t-ts">Wie lange? (optional)</h3>
-            <div class="chips" data-toggle><button class="chip">unter 1 Std.</button><button class="chip on">1–3 Std.</button><button class="chip">3–12 Std.</button><button class="chip">länger</button></div>
+            <h3 class="t-ts muted">Wann ging es los?</h3>
+            <div class="chips" data-single><button class="chip on noicon">Heute</button><button class="chip noicon">Gestern</button><button class="chip noicon hasicon"><svg><use href="#i-cal"/></svg>Datum</button></div>
+            <div class="chips" data-single><button class="chip on">Jetzt</button><button class="chip">Morgens</button><button class="chip">Mittags</button><button class="chip">Nachmittags</button><button class="chip">Abends</button><button class="chip">Den ganzen Tag</button><button class="chip">Nach dem Essen</button><button class="chip">Andere Zeit …</button></div>
+            <h3 class="t-ts muted">Wie lange? (optional)</h3>
+            <div class="chips" data-toggle><button class="chip">unter 1 Std.</button><button class="chip">1–3 Std.</button><button class="chip">3–12 Std.</button><button class="chip">länger</button></div>
             <label class="field" for="symNote"><textarea id="symNote" rows="1" placeholder="Notiz (optional)"></textarea></label>
           </div>
           <div class="actions"><button class="btn text" data-close>Abbrechen</button><button class="btn filled" data-close>Speichern</button></div>
@@ -623,7 +637,7 @@ p, h1, h2, h3 { margin: 0; }
     if (location.hash.slice(1) !== name) history.replaceState(null, "", "#" + name);
   }
 
-  let sleep = 7.5;
+  let sleep = 7;
   const words = ["kaum spürbar", "leicht", "mittel", "stark", "sehr stark"];
 
   document.addEventListener("click", e => {
@@ -670,7 +684,7 @@ p, h1, h2, h3 { margin: 0; }
     const step = e.target.closest("[data-step]");
     if (step) {
       sleep = Math.min(14, Math.max(0, sleep + Number(step.dataset.step)));
-      document.getElementById("sleepH").textContent = sleep.toLocaleString("de-DE", { minimumFractionDigits: 1 }) + " h";
+      document.getElementById("sleepH").textContent = sleep.toLocaleString("de-DE") + " h";
     }
   });
   document.addEventListener("keydown", e => { if (e.key === "Escape") overlay.classList.remove("open"); });
