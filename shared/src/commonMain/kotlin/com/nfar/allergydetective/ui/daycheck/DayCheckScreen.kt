@@ -13,6 +13,7 @@ import allergydetective.shared.generated.resources.day_scale_hint
 import allergydetective.shared.generated.resources.day_sick_hint
 import allergydetective.shared.generated.resources.day_sleep
 import allergydetective.shared.generated.resources.day_sleep_quality
+import allergydetective.shared.generated.resources.day_sleep_quality_hint
 import allergydetective.shared.generated.resources.day_stress
 import allergydetective.shared.generated.resources.day_wellbeing
 import allergydetective.shared.generated.resources.home_day_check
@@ -162,6 +163,8 @@ private fun DayCheckContent(
             }
             Text(stringResource(Res.string.day_sleep_quality), style = MaterialTheme.typography.bodyMedium)
             ScaleRow(check.sleepQuality, viewModel::onSleepQualityChange, labels = (1..5).map { "$it ★" })
+            // Feedback 20.11.: everyone should read the scale the same way.
+            Text(stringResource(Res.string.day_sleep_quality_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
         StepCard(title = stringResource(Res.string.day_stress)) {
