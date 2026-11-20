@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- App icon (feedback 20.11.): detective hat over a magnifier with fork, knife and a bolt.
+     Source and preview: docs/marketing/app-icon.svg (same shapes). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:pivotX="54"
+        android:pivotY="56"
+        android:scaleX="1.1"
+        android:scaleY="1.1">
+        <!-- lens -->
+        <path
+            android:fillColor="#FFFDF8"
+            android:pathData="M36,58 a15,15 0 1,0 30,0 a15,15 0 1,0 -30,0 Z"
+            android:strokeWidth="4"
+            android:strokeColor="#2F5D4A" />
+        <!-- handle -->
+        <path
+            android:pathData="M62.2,69.2 L70.5,77.5"
+            android:strokeWidth="7"
+            android:strokeColor="#2F5D4A"
+            android:strokeLineCap="round" />
+        <!-- fork -->
+        <path
+            android:pathData="M43.4,50 V54.6 M45.4,50 V54.6 M47.4,50 V54.6 M43.4,54.6 Q43.4,57.6 45.4,57.6 Q47.4,57.6 47.4,54.6 M45.4,57.6 V66.5"
+            android:strokeWidth="1.5"
+            android:strokeColor="#2F5D4A"
+            android:strokeLineCap="round" />
+        <!-- knife -->
+        <path
+            android:fillColor="#2F5D4A"
+            android:pathData="M50.2,49.8 C53,50.8 53.2,54.6 52.8,58 L50.2,58 Z" />
+        <path
+            android:pathData="M51.3,57.5 V66.5"
+            android:strokeWidth="2"
+            android:strokeColor="#2F5D4A"
+            android:strokeLineCap="round" />
+        <!-- bolt -->
+        <path
+            android:fillColor="#E0603F"
+            android:pathData="M59.4,50 L53.8,59.4 L57.2,59.4 L55,67.6 L61.8,56 L58.4,56 L60.8,50 Z" />
+        <!-- hat: crown, band, brim -->
+        <path
+            android:fillColor="#2F5D4A"
+            android:pathData="M38.5,41 L40.6,30.2 Q42.4,26.4 47,27.2 L51,28.8 L55,27.2 Q59.6,26.4 61.4,30.2 L63.5,41 Z" />
+        <path
+            android:fillColor="#A8CBB4"
+            android:pathData="M39.3,36.6 H62.7 L63.4,40.2 H38.6 Z" />
+        <path
+            android:fillColor="#2F5D4A"
+            android:pathData="M29,41.6 a22,3 0 1,0 44,0 a22,3 0 1,0 -44,0 Z" />
+    </group>
+</vector>
