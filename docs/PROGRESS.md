@@ -59,7 +59,7 @@
 
 ## Später
 - [ ] Zeitfenster und Trigger fachlich prüfen
-- [ ] Verschlüsselung entscheiden
+- [x] Verschlüsselung: SQLCipher + Android Keystore (20.11.2026)
 - [ ] iOS-Build per CI
 - [ ] Store-Text anpassen, MDR-Einordnung prüfen
 

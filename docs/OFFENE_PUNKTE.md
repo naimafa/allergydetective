@@ -20,7 +20,8 @@
 - [x] **minSdk 26 (Android 8.0), targetSdk 37 (Android 17):** große Reichweite, auch ältere Geräte (wichtig für FR/AR-Zielgruppe). Eigenes Testgerät: Android 13.
 
 ## ⏳ Später entscheiden
-- [ ] **Verschlüsselung** (SQLCipher), verschlüsselter Export/Import, App-Sperre: beim Thema Datenschutz besprechen. Bis dahin das Wort "verschlüsselt" **nicht** im Store-Text verwenden.
+- [x] **Verschlüsselung der Datenbank (Android)** (20.11.2026): SQLCipher (`net.zetetic:sqlcipher-android`) über einen eigenen Room-3-Treiber, Schlüssel zufällig und vom Android Keystore geschützt, alte Daten werden beim ersten Start einmalig verschlüsselt. iOS folgt mit dem iOS-Build. "Verschlüsselt" im Store-Text erst nach dem Handy-Test von develop und nur für Android.
+- [ ] **Verschlüsselter Export/Import** (Backup mit Passwort) und **App-Sperre**: später.
 - [ ] **App-Name** ("Allergie" vs. breiter, z.B. Bauch-/Spurensucher)
 - [ ] **Package / App-ID** (aktuell `com.nfar.allergydetective`): spätestens vor dem ersten Upload in die Play Console entscheiden. Die `applicationId` lässt sich unabhängig von den Kotlin-Packages ändern.
 - [ ] **Premium-Idee "Detektiv-Experimente"** (Weglassen und Wiedereinführen begleiten)

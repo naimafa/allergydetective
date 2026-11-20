@@ -60,7 +60,7 @@ Zusammenfassung der Konzept-Sitzung vom **14.11.2026**. Details stehen in den ve
 * **Workflow:** siehe [workflow/KI_Coding_Workflow.md](workflow/KI_Coding_Workflow.md). Pro Prompt nur das nötige Dokument mitgeben, bei Code-Prompts immer `ARCHITEKTUR.md`.
 
 ## 5. Bewusst vertagt
-* Verschlüsselung (SQLCipher), verschlüsselter Export/Import, App-Sperre
+* Verschlüsselter Export/Import, App-Sperre (die Datenbank selbst ist seit 20.11.2026 auf Android verschlüsselt)
 * App-Name
 * Premium-Idee "Detektiv-Experimente"
 * Desktop-Version, Geräte-Sync
