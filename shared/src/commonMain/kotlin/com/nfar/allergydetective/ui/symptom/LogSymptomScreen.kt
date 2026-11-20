@@ -45,6 +45,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -277,6 +278,10 @@ private fun EmergencyNotice(onContinue: () -> Unit, onDismiss: () -> Unit) {
 private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, day: Int, today: Long, viewModel: LogSymptomViewModel) {
     AlertDialog(
         onDismissRequest = viewModel::onDraftDismiss,
+        // Feedback 20.11.: the platform width (~270 dp) wrapped "Heute · Gestern · Datum" at font scale 1.25,
+        // which looked restless. The dialog now uses the screen width minus 16 dp on each side.
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         title = { Text(symptomEmoji(draft.symptom.id) + " " + displayName(NamePrefix.SYMPTOM, draft.symptom.key)) },
         text = {
             Column(
