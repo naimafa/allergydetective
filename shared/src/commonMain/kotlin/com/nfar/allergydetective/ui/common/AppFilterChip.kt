@@ -25,6 +25,7 @@ fun AppFilterChip(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     leadingIcon: (@Composable () -> Unit)? = null,
+    trailingIcon: (@Composable () -> Unit)? = null,
     /** Check mark on the selected chip; off for narrow chips like a 1–5 scale. */
     showCheck: Boolean = true,
 ) {
@@ -35,6 +36,7 @@ fun AppFilterChip(
         label = label,
         modifier = modifier,
         enabled = enabled,
+        trailingIcon = trailingIcon,
         leadingIcon = if (selected && leadingIcon == null && showCheck) {
             { Icon(Icons.Outlined.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
         } else {

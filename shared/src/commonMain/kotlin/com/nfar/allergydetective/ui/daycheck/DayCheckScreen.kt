@@ -2,7 +2,6 @@ package com.nfar.allergydetective.ui.daycheck
 
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.day_autosave_hint
-import allergydetective.shared.generated.resources.day_confirmed_mark
 import allergydetective.shared.generated.resources.day_factors
 import allergydetective.shared.generated.resources.day_finish
 import allergydetective.shared.generated.resources.day_hours
