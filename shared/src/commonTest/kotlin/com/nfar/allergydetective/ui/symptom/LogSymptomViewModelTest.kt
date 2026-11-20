@@ -2,6 +2,7 @@ package com.nfar.allergydetective.ui.symptom
 
 import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
 import com.nfar.allergydetective.domain.diary.LoggedSymptom
+import com.nfar.allergydetective.domain.diary.SymptomDuration
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
 import com.nfar.allergydetective.domain.time.AppClock
@@ -57,10 +58,14 @@ class LogSymptomViewModelTest {
         override suspend fun setIllnessRelation(entryId: Long, relation: IllnessRelation?) {
             relations[entryId] = relation
         }
+        val durations = mutableMapOf<Long, SymptomDuration?>()
+        override suspend fun setDuration(entryId: Long, duration: SymptomDuration?) {
+            durations[entryId] = duration
+        }
 
         // Entry id = position in [saved] + 1.
         override suspend fun entry(entryId: Long) = saved.getOrNull(entryId.toInt() - 1)?.let {
-            LoggedSymptom(entryId, it.symptomId, it.startedAt, it.intensity, it.note, relations[entryId])
+            LoggedSymptom(entryId, it.symptomId, it.startedAt, it.intensity, it.note, relations[entryId], durations[entryId])
         }
         override suspend fun updateEntry(entryId: Long, startedAt: Long, tzOffsetMin: Int, intensity: Int, note: String?) {
             saved[entryId.toInt() - 1] = saved[entryId.toInt() - 1].copy(startedAt = startedAt, offset = tzOffsetMin, intensity = intensity, note = note)
@@ -129,6 +134,42 @@ class LogSymptomViewModelTest {
         vm.onSaveDraft()
 
         assertTrue(repository.relations.isEmpty())
+    }
+
+    @Test
+    fun durationIsOptionalAndCanBeTakenBack() {
+        // Feedback 20.11.: how long a complaint lasted, without making logging slower.
+        val vm = viewModel()
+        vm.onSymptomClick(headache)
+        assertNull(vm.state.value.draft?.duration)
+
+        vm.onDurationChange(SymptomDuration.H1_TO_3)
+        assertEquals(SymptomDuration.H1_TO_3, vm.state.value.draft?.duration)
+        vm.onDurationChange(SymptomDuration.H1_TO_3)
+        assertNull(vm.state.value.draft?.duration)
+
+        vm.onSaveDraft()
+        assertTrue(repository.durations.isEmpty())
+
+        vm.onSymptomClick(bloating)
+        vm.onDurationChange(SymptomDuration.H3_TO_12)
+        vm.onSaveDraft()
+        assertEquals<Map<Long, SymptomDuration?>>(mapOf(2L to SymptomDuration.H3_TO_12), repository.durations)
+    }
+
+    @Test
+    fun durationIsKeptAndChangedWhenEditing() {
+        val clock = AppClock(clock = object : Clock { override fun now() = now }, zone = { TimeZone.of("Europe/Berlin") })
+        repository.saved += Saved(headache.id, clock.millisAt(clock.today(), 9, 0), 60, 2, null)
+        repository.durations[1L] = SymptomDuration.UNDER_1H
+        val vm = viewModel()
+
+        vm.startEditing(1L)
+        assertEquals(SymptomDuration.UNDER_1H, vm.state.value.draft?.duration)
+        vm.onDurationChange(SymptomDuration.OVER_12H)
+        vm.onSaveDraft()
+
+        assertEquals(SymptomDuration.OVER_12H, repository.durations[1L])
     }
 
     private val repository = FakeRepository()

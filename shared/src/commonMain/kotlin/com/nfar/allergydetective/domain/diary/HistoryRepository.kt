@@ -30,6 +30,8 @@ sealed interface HistoryEntry {
         val note: String?,
         /** On a sick day: part of the illness or not (self-test 19.11.). */
         val illnessRelation: IllnessRelation? = null,
+        /** How long it lasted, if given (feedback 20.11.). */
+        val duration: SymptomDuration? = null,
     ) : HistoryEntry
 }
 

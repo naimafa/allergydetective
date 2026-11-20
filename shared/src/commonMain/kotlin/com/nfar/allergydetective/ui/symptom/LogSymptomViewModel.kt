@@ -3,6 +3,7 @@ package com.nfar.allergydetective.ui.symptom
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
+import com.nfar.allergydetective.domain.diary.SymptomDuration
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
 import com.nfar.allergydetective.domain.time.AppClock
@@ -27,6 +28,8 @@ data class SymptomDraft(
     val note: String = "",
     /** Only asked on a sick day (self-test 19.11.). */
     val illnessRelation: IllnessRelation = IllnessRelation.UNKNOWN,
+    /** Optional (feedback 20.11.): how long it lasted. */
+    val duration: SymptomDuration? = null,
 )
 
 data class LogSymptomState(
@@ -126,6 +129,7 @@ class LogSymptomViewModel(
                         exactTime = ExactTime((it.today - day).toInt(), hour, minute),
                         note = entry.note.orEmpty(),
                         illnessRelation = entry.illnessRelation ?: IllnessRelation.UNKNOWN,
+                        duration = entry.duration,
                     ),
                 )
             }
@@ -188,6 +192,9 @@ class LogSymptomViewModel(
 
     fun onNoteChange(note: String) = updateDraft { it.copy(note = note) }
 
+    /** Tapping the chosen duration again removes it: the duration stays optional. */
+    fun onDurationChange(duration: SymptomDuration) = updateDraft { it.copy(duration = duration.takeIf { d -> d != it.duration }) }
+
     fun onIllnessRelationChange(relation: IllnessRelation) = updateDraft { it.copy(illnessRelation = relation) }
 
     fun onDraftDismiss() {
@@ -216,6 +223,7 @@ class LogSymptomViewModel(
                 if (clock.epochDayOf(startedAt) in _state.value.sickDays || repository.isSickDay(clock.epochDayOf(startedAt))) {
                     repository.setIllnessRelation(entryId, draft.illnessRelation)
                 }
+                repository.setDuration(entryId, draft.duration)
                 _state.update { it.copy(finished = true) }
                 return@launch
             }
@@ -227,6 +235,7 @@ class LogSymptomViewModel(
                 note = draft.note.trim().ifEmpty { null },
             )
             if (clock.epochDayOf(startedAt) in _state.value.sickDays) repository.setIllnessRelation(id, draft.illnessRelation)
+            draft.duration?.let { repository.setDuration(id, it) }
             _state.update { it.copy(savedEntryId = id, favorites = favorites()) }
         }
     }

@@ -59,6 +59,7 @@ import com.nfar.allergydetective.ui.common.formatClock
 import com.nfar.allergydetective.ui.meal.ingredientName
 import com.nfar.allergydetective.ui.meal.mealSlotLabel
 import com.nfar.allergydetective.ui.sick.IllnessRelationChoice
+import com.nfar.allergydetective.ui.symptom.symptomDurationLabel
 import com.nfar.allergydetective.ui.theme.AppColors
 import org.jetbrains.compose.resources.stringResource
 
@@ -146,11 +147,20 @@ fun EntryRow(entry: HistoryEntry, clock: AppClock, onClick: () -> Unit) {
             circle = scheme.tertiaryContainer,
             tint = scheme.tertiary,
             title = displayName(NamePrefix.SYMPTOM, entry.symptomKey),
-            subtitle = timeOf(entry, clock) + " · " + stringResource(Res.string.history_intensity, entry.intensity),
+            subtitle = symptomSummary(entry, clock),
             onClick = onClick,
         )
     }
 }
+
+/** "14:00 · Stärke 3 · 1–3 Std.": the duration only when it was given. */
+@Composable
+private fun symptomSummary(entry: HistoryEntry.SymptomEntry, clock: AppClock): String =
+    listOfNotNull(
+        timeOf(entry, clock),
+        stringResource(Res.string.history_intensity, entry.intensity),
+        entry.duration?.let { symptomDurationLabel(it) },
+    ).joinToString(" · ")
 
 /** The day check as a row: wellbeing, sleep, stress, factors in one line; opens the day check when it can still be changed. */
 @Composable
@@ -211,7 +221,7 @@ fun EntrySheet(
                 is HistoryEntry.SymptomEntry -> {
                     Text(displayName(NamePrefix.SYMPTOM, entry.symptomKey), style = MaterialTheme.typography.titleLarge)
                     Text(
-                        timeOf(entry, clock) + " · " + stringResource(Res.string.history_intensity, entry.intensity),
+                        symptomSummary(entry, clock),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

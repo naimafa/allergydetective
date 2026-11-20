@@ -291,6 +291,7 @@ private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, day: Int, to
                     onQuickSelected = viewModel::onDayPartChange,
                     onExactSelected = viewModel::onExactTimeChange,
                 )
+                SymptomDurationChoice(draft.duration, viewModel::onDurationChange)
                 if (onSickDay) IllnessRelationChoice(draft.illnessRelation, viewModel::onIllnessRelationChange)
                 OutlinedTextField(
                     value = draft.note,
