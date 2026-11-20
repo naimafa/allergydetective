@@ -15,6 +15,28 @@ data class ReminderSettings(
 interface SettingsStore {
     fun reminder(): ReminderSettings
     fun saveReminder(settings: ReminderSettings)
+
+    /** Automatic, light or dark (feedback 19.11.). */
+    fun themeMode(): ThemeMode = ThemeMode.AUTO
+    fun saveThemeMode(mode: ThemeMode) = Unit
+}
+
+/**
+ * App look (feedback 19.11.): AUTO is dark in the evening and at night (20–7 h) and whenever the
+ * phone itself is dark, light otherwise; or always light / dark.
+ */
+enum class ThemeMode {
+    AUTO,
+    LIGHT,
+    DARK,
+    ;
+
+    companion object {
+        const val NIGHT_START_HOUR = 20
+        const val NIGHT_END_HOUR = 7
+
+        fun isNight(hour: Int): Boolean = hour >= NIGHT_START_HOUR || hour < NIGHT_END_HOUR
+    }
 }
 
 /** Platform adapter (ARCHITEKTUR): schedules the daily notification. */

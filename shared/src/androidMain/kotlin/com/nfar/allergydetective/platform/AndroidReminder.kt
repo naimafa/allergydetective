@@ -24,6 +24,7 @@ import com.nfar.allergydetective.domain.diary.DayCheckRepository
 import com.nfar.allergydetective.domain.reminder.ReminderScheduler
 import com.nfar.allergydetective.domain.reminder.ReminderSettings
 import com.nfar.allergydetective.domain.reminder.SettingsStore
+import com.nfar.allergydetective.domain.reminder.ThemeMode
 import com.nfar.allergydetective.domain.reminder.delayUntilNext
 import com.nfar.allergydetective.domain.time.AppClock
 import org.jetbrains.compose.resources.getString
@@ -52,7 +53,15 @@ class SharedPreferencesSettingsStore(context: Context) : SettingsStore {
             .apply()
     }
 
+    override fun themeMode(): ThemeMode =
+        prefs.getString(KEY_THEME, null)?.let { name -> ThemeMode.entries.firstOrNull { it.name == name } } ?: ThemeMode.AUTO
+
+    override fun saveThemeMode(mode: ThemeMode) {
+        prefs.edit().putString(KEY_THEME, mode.name).apply()
+    }
+
     private companion object {
+        const val KEY_THEME = "theme_mode"
         const val KEY_ENABLED = "reminder_enabled"
         const val KEY_HOUR = "reminder_hour"
         const val KEY_MINUTE = "reminder_minute"

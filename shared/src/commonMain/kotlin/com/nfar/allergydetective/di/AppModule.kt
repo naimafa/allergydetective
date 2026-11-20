@@ -46,6 +46,7 @@ import com.nfar.allergydetective.data.diary.RoomDayCheckRepository
 import com.nfar.allergydetective.domain.diary.DayCheckRepository
 import com.nfar.allergydetective.ui.daycheck.DayCheckViewModel
 import com.nfar.allergydetective.ui.home.HomeViewModel
+import com.nfar.allergydetective.ui.theme.ThemeController
 import com.nfar.allergydetective.data.analysis.RoomCandidateCatalog
 import com.nfar.allergydetective.domain.analysis.CandidateCatalog
 import com.nfar.allergydetective.ui.results.ResultsViewModel
@@ -143,4 +144,5 @@ val appModule = module {
     single { DuplicateIngredientMerger(dao = get(), names = get()) }
     single { AppStartup(seeder = get(), scope = get(AppScope), settings = get(), reminders = get(), duplicates = get()) }
     viewModelOf(::ReminderViewModel)
+    single { ThemeController(store = get()) }
 }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.nfar.allergydetective.domain.reminder.ReminderScheduler
 import com.nfar.allergydetective.domain.reminder.ReminderSettings
 import com.nfar.allergydetective.domain.reminder.SettingsStore
+import com.nfar.allergydetective.domain.reminder.ThemeMode
 import platform.Foundation.NSUserDefaults
 
 // Not built yet (no Mac). Local notifications (UNUserNotificationCenter) follow with the iOS build.
@@ -26,7 +27,15 @@ class UserDefaultsSettingsStore : SettingsStore {
         defaults.setInteger(settings.minute.toLong(), KEY_MINUTE)
     }
 
+    override fun themeMode(): ThemeMode =
+        defaults.stringForKey(KEY_THEME)?.let { name -> ThemeMode.entries.firstOrNull { it.name == name } } ?: ThemeMode.AUTO
+
+    override fun saveThemeMode(mode: ThemeMode) {
+        defaults.setObject(mode.name, KEY_THEME)
+    }
+
     private companion object {
+        const val KEY_THEME = "theme_mode"
         const val KEY_ENABLED = "reminder_enabled"
         const val KEY_HOUR = "reminder_hour"
         const val KEY_MINUTE = "reminder_minute"
