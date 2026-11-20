@@ -1,0 +1,563 @@
+<title>Allergy Detective Prototyp</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500&display=swap">
+<style>
+/*
+  Allergy Detective – klickbarer Prototyp (Stand 20.11.2026).
+  Layout: links kurze Erklärung + Sprung zu jedem Screen, rechts ein Handy (392 × 820 dp wie das Testgerät).
+  Farben 1:1 aus shared/.../ui/theme/Theme.kt (Material 3, Palette vom 19.11.):
+  60 % warmes Weiß, 25 % Pastell, 10 % Salbei, 5 % Waldgrün als einziger Akzent.
+  Essen = Salbei, Symptome = Apricot, Tagesabschluss = Lavendel, Muster = Graugrün.
+  Bearbeiten: Texte stehen direkt im HTML, Farben nur in den Tokens unten.
+*/
+:root {
+  --primary: #385B50; --on-primary: #FFFFFF;
+  --primary-container: #DCE8DF; --on-primary-container: #12271F;
+  --secondary-container: #E5EBE7; --on-secondary-container: #1E2B25;
+  --tertiary: #9A4A33; --tertiary-container: #F6E4DC; --on-tertiary-container: #3A160B;
+  --bg: #F6F7F3; --fg: #293831; --muted: #5F6A63;
+  --card: #FFFFFF; --container-low: #F0F2EC; --container: #EAEDE6; --container-high: #E4E8E0;
+  --outline: #737D75; --outline-variant: #C3CBC2;
+  --clues: #E8E2F0; --on-clues: #2B2238; --clues-accent: #5E4E86;
+  --digestive: #F8E8D2; --skin: #F6E4DC; --head: #E8E2F0; --airways: #DDEAEE; --other: #E5EBE7;
+  --red-flag: #FFCDC8; --info: #DDEAEE; --on-info: #24505C;
+  --page: #E9ECE6; --frame: #1F2622; --shadow: 0 30px 60px -30px rgba(30, 45, 38, .45);
+  --font: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Roboto Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --primary: #9CC7B6; --on-primary: #0B3328;
+    --primary-container: #2A4A3F; --on-primary-container: #DCE8DF;
+    --secondary-container: #34433C; --on-secondary-container: #E5EBE7;
+    --tertiary: #E6BFAE; --tertiary-container: #5A3B31; --on-tertiary-container: #F6E4DC;
+    --bg: #121512; --fg: #E2E4DE; --muted: #D2D8D1;
+    --card: #1A1D1A; --container-low: #1A1D1A; --container: #242924; --container-high: #282C28;
+    --outline: #8C948C; --outline-variant: #424A44;
+    --clues: #3A3349; --on-clues: #E8E2F0; --clues-accent: #CDBFE8;
+    --digestive: #4A3D28; --skin: #4A3830; --head: #3A3349; --airways: #2A3D44; --other: #34433C;
+    --red-flag: #7E2B25; --info: #2A3D44; --on-info: #CBE3EA;
+    --page: #0B0D0B; --frame: #000000; --shadow: 0 30px 60px -30px rgba(0, 0, 0, .8);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --primary: #9CC7B6; --on-primary: #0B3328;
+  --primary-container: #2A4A3F; --on-primary-container: #DCE8DF;
+  --secondary-container: #34433C; --on-secondary-container: #E5EBE7;
+  --tertiary: #E6BFAE; --tertiary-container: #5A3B31; --on-tertiary-container: #F6E4DC;
+  --bg: #121512; --fg: #E2E4DE; --muted: #D2D8D1;
+  --card: #1A1D1A; --container-low: #1A1D1A; --container: #242924; --container-high: #282C28;
+  --outline: #8C948C; --outline-variant: #424A44;
+  --clues: #3A3349; --on-clues: #E8E2F0; --clues-accent: #CDBFE8;
+  --digestive: #4A3D28; --skin: #4A3830; --head: #3A3349; --airways: #2A3D44; --other: #34433C;
+  --red-flag: #7E2B25; --info: #2A3D44; --on-info: #CBE3EA;
+  --page: #0B0D0B; --frame: #000000; --shadow: 0 30px 60px -30px rgba(0, 0, 0, .8);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--page); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, .tile:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.layout { display: flex; gap: 48px; align-items: flex-start; justify-content: center; flex-wrap: wrap; max-width: 1100px; margin: 0 auto; }
+.intro { flex: 1 1 300px; max-width: 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding-top: 24px; }
+.intro h1 { font-size: 30px; line-height: 1.15; margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+.intro p { margin: 0; color: var(--muted); max-width: 60ch; }
+.intro .eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--primary); }
+.jump { display: flex; flex-wrap: wrap; gap: 8px; }
+.jump button { border: 1px solid var(--outline-variant); background: var(--bg); border-radius: 999px; padding: 6px 14px; font-size: 14px; }
+.jump button[aria-current="true"] { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.legend { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; font-size: 13px; color: var(--muted); align-items: center; }
+.legend i { width: 18px; height: 18px; border-radius: 6px; display: block; border: 1px solid var(--outline-variant); }
+.theme-switch { align-self: flex-start; border: 1px solid var(--outline-variant); background: var(--bg); border-radius: 999px; padding: 6px 14px; font-size: 14px; }
+
+/* Phone */
+.phone { flex: 0 0 auto; width: 392px; max-width: 100%; height: 820px; border-radius: 44px; background: var(--frame); padding: 10px; box-shadow: var(--shadow); }
+.screen { position: relative; height: 100%; border-radius: 36px; overflow: hidden; background: var(--bg); display: flex; flex-direction: column; }
+.statusbar { display: flex; justify-content: space-between; padding: 12px 26px 4px; font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.view { flex: 1; overflow-y: auto; padding: 8px 16px 20px; display: none; flex-direction: column; gap: 14px; scrollbar-width: none; }
+.view::-webkit-scrollbar { display: none; }
+.view.active { display: flex; }
+.topbar { display: flex; align-items: center; gap: 8px; padding-top: 4px; }
+.topbar h2 { font-size: 22px; margin: 0; font-weight: 700; }
+.back { border: 0; background: transparent; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; margin-left: -8px; }
+.back:hover { background: var(--container); }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+h3 { font-size: 16px; font-weight: 500; margin: 0; }
+
+.card { background: var(--card); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.step { background: var(--card); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.step-head { display: flex; align-items: center; gap: 10px; }
+.step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--primary-container); color: var(--on-primary-container); display: grid; place-items: center; font-size: 13px; font-weight: 700; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips.scroll { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding-right: 16px; }
+.chip { border: 1px solid var(--outline-variant); background: transparent; border-radius: 10px; padding: 7px 14px; font-size: 14px; font-weight: 500; white-space: nowrap; display: inline-flex; gap: 6px; align-items: center; }
+.chip.on { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.scale .chip { justify-content: center; padding-inline: 0; }
+
+.btn { border: 0; border-radius: 999px; min-height: 52px; padding: 0 20px; font-weight: 500; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+.btn.primary { background: var(--primary); color: var(--on-primary); }
+.btn.outline { background: transparent; border: 1px solid var(--outline); color: var(--primary); min-height: 46px; }
+.btn.text { background: transparent; color: var(--primary); min-height: 40px; width: auto; padding: 0 8px; }
+.field { border: 1px solid var(--outline); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; color: var(--muted); background: transparent; }
+.field input, .field textarea { border: 0; background: transparent; flex: 1; font: inherit; color: var(--fg); outline: none; min-width: 0; resize: none; }
+
+/* Start */
+.hello h1 { font-size: 26px; margin: 4px 0 0; }
+.progress-bar { height: 8px; border-radius: 99px; background: var(--container-high); overflow: hidden; }
+.progress-bar span { display: block; height: 100%; width: 57%; background: var(--primary); border-radius: 99px; }
+.badge { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 999px; background: var(--info); color: var(--on-info); white-space: nowrap; }
+.badge.done { background: var(--primary-container); color: var(--on-primary-container); }
+.badge.open { background: var(--tertiary-container); color: var(--on-tertiary-container); }
+.today { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.today div { background: var(--container-low); border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 2px; }
+.today b { font-size: 20px; font-variant-numeric: tabular-nums; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tile { border: 0; border-radius: 22px; padding: 20px 16px; text-align: left; display: flex; flex-direction: column; gap: 10px; min-height: 132px; }
+.tile .ico { width: 34px; height: 34px; }
+.tile b { font-size: 18px; font-weight: 500; line-height: 1.2; }
+.tile span { font-size: 15px; opacity: .85; }
+.t-food { background: var(--primary-container); color: var(--on-primary-container); }
+.t-symptom { background: var(--tertiary-container); color: var(--on-tertiary-container); }
+.t-day { background: var(--clues); color: var(--on-clues); }
+.t-results { background: var(--secondary-container); color: var(--on-secondary-container); }
+
+/* Meals */
+.selected { display: flex; flex-direction: column; gap: 10px; }
+.sel-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sel-row .chips { flex-wrap: nowrap; }
+.timeline { display: flex; justify-content: space-between; align-items: center; background: var(--container-low); border-radius: 12px; padding: 8px 12px; font-variant-numeric: tabular-nums; }
+
+/* Symptoms */
+.sym-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.sym { border: 0; border-radius: 16px; padding: 12px 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 13px; font-weight: 500; text-align: center; color: var(--fg); }
+.sym .e { font-size: 24px; line-height: 1; }
+.g-digestive { background: var(--digestive); } .g-skin { background: var(--skin); } .g-head { background: var(--head); } .g-airways { background: var(--airways); } .g-other { background: var(--other); }
+.overlay { position: absolute; inset: 0; background: rgba(10, 16, 13, .45); display: none; align-items: flex-end; justify-content: center; padding: 16px; z-index: 5; }
+.overlay.open { display: flex; }
+.dialog { background: var(--container-high); border-radius: 28px; padding: 22px; width: 100%; max-height: 92%; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.dialog h2 { margin: 0 0 4px; font-size: 22px; font-weight: 500; }
+.dialog .actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 6px; }
+.dialog .actions .btn { width: auto; min-height: 42px; }
+.word { color: var(--primary); font-weight: 500; font-size: 14px; }
+
+/* Day check */
+.stepper { display: flex; align-items: center; gap: 10px; }
+.stepper button { width: 44px; height: 40px; border-radius: 999px; border: 1px solid var(--outline); background: transparent; font-size: 18px; }
+.stepper b { min-width: 64px; text-align: center; font-size: 18px; font-variant-numeric: tabular-nums; }
+
+/* Results */
+.result { border-radius: 20px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; background: var(--card); }
+.result .lvl { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.lvl.strong { color: var(--tertiary); } .lvl.susp { color: var(--clues-accent); } .lvl.trace { color: var(--muted); }
+.note { background: var(--info); color: var(--on-info); border-radius: 16px; padding: 12px 14px; font-size: 14px; }
+
+/* History */
+.day-head { font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; padding-top: 4px; }
+.row { background: var(--card); border-radius: 18px; padding: 12px; display: flex; align-items: center; gap: 12px; border: 0; text-align: left; width: 100%; }
+.circle { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; flex: 0 0 auto; }
+.circle svg { width: 22px; height: 22px; }
+.c-food { background: var(--primary-container); color: var(--primary); }
+.c-symptom { background: var(--tertiary-container); color: var(--tertiary); }
+.c-day { background: var(--clues); color: var(--clues-accent); }
+.row-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.row-text b { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row-text span { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Profile */
+.fold { background: var(--card); border-radius: 20px; overflow: hidden; }
+.fold-head { width: 100%; border: 0; background: transparent; display: flex; align-items: center; gap: 12px; padding: 16px; text-align: left; }
+.fold-head div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.fold-head svg { transition: transform .2s; }
+.fold.open .fold-head svg { transform: rotate(180deg); }
+.fold-body { display: none; padding: 0 16px 16px; flex-direction: column; gap: 12px; }
+.fold.open .fold-body { display: flex; }
+.switch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.switch { width: 52px; height: 32px; border-radius: 999px; border: 2px solid var(--outline); background: var(--container-high); position: relative; flex: 0 0 auto; }
+.switch::after { content: ""; position: absolute; top: 5px; left: 6px; width: 18px; height: 18px; border-radius: 50%; background: var(--outline); transition: all .2s; }
+.switch[aria-checked="true"] { background: var(--primary); border-color: var(--primary); }
+.switch[aria-checked="true"]::after { left: 24px; top: 2px; width: 24px; height: 24px; background: var(--on-primary); }
+
+/* Tab bar */
+.tabbar { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--container); padding: 10px 4px 18px; }
+.tabbar button { border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 13px; font-weight: 500; color: var(--muted); }
+.tabbar .pill { width: 60px; height: 32px; border-radius: 999px; display: grid; place-items: center; }
+.tabbar .pill svg { width: 22px; height: 22px; }
+.tabbar button.on { color: var(--fg); }
+.tabbar button.on .pill { background: var(--primary-container); color: var(--on-primary-container); }
+
+@media (max-width: 460px) {
+  body { padding-block: 16px; }
+  .phone { height: 760px; border-radius: 36px; padding: 6px; }
+  .screen { border-radius: 30px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-food" viewBox="0 0 24 24"><path fill="currentColor" d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path fill="currentColor" d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path fill="currentColor" d="M12.34 2.02C6.59 1.82 2 6.42 2 12c0 5.52 4.48 10 10 10 3.71 0 6.93-2.02 8.66-5.02-7.51-.25-12.09-8.43-8.32-14.96z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></symbol>
+  <symbol id="i-cup" viewBox="0 0 24 24"><path fill="currentColor" d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2a2 2 0 0 0 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3 2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24"><path fill="currentColor" d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" d="m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"/></symbol>
+  <symbol id="i-person" viewBox="0 0 24 24"><path fill="currentColor" d="M12 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4m0 9c2.7 0 5.8 1.29 6 2v1H6v-.99c.2-.72 3.3-2.01 6-2.01m0-11C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path fill="currentColor" d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><path fill="currentColor" d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V9h14v11z"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></symbol>
+  <symbol id="i-pdf" viewBox="0 0 24 24"><path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 13h8v2H8zm0 3h8v2H8zm0-6h3v2H8z"/></symbol>
+</svg>
+
+<div class="layout">
+  <section class="intro" aria-label="Über den Prototyp">
+    <span class="eyebrow">Prototyp · Stand 20.11.2026</span>
+    <h1>Allergy Detective</h1>
+    <p>Symptomtagebuch für Essen, Getränke und Beschwerden. Täglich eintragen, Muster erkennen und einen Bericht für den Arzt mitnehmen. Der Prototyp ist klickbar: Kacheln, Tabs, Chips, das Symptom-Fenster und die Allergien im Profil reagieren.</p>
+    <div class="jump" id="jump" aria-label="Screen wählen"></div>
+    <button class="theme-switch" id="themeSwitch" type="button">Hell / Dunkel wechseln</button>
+    <div class="legend" aria-label="Farbcode">
+      <i style="background:var(--primary-container)"></i><span>Essen und Getränke (Salbei)</span>
+      <i style="background:var(--tertiary-container)"></i><span>Symptome (Apricot)</span>
+      <i style="background:var(--clues)"></i><span>Tagesabschluss (Lavendel)</span>
+      <i style="background:var(--secondary-container)"></i><span>Muster (Graugrün)</span>
+      <i style="background:var(--primary)"></i><span>Waldgrün: einziger Akzent für Aktionen</span>
+    </div>
+    <p class="small">Selbstbeobachtung, keine Diagnose. Alle Daten bleiben verschlüsselt auf dem Handy.</p>
+  </section>
+
+  <div class="phone" aria-label="App-Vorschau">
+    <div class="screen">
+      <div class="statusbar"><span>11:02</span><span>5G · 82 %</span></div>
+
+      <!-- START -->
+      <main class="view active" id="v-start" data-title="Start" data-tab="start">
+        <div class="hello">
+          <span class="muted small">Freitag, 20. November</span>
+          <h1>Dein Allergie-Tagebuch</h1>
+        </div>
+        <div class="card">
+          <div class="sel-row"><h3>Dein Fortschritt</h3><span class="badge">Tag 4 / 7</span></div>
+          <div class="progress-bar"><span></span></div>
+          <span class="small muted">Noch 3 bestätigte Tage bis zur ersten Auswertung. Jeder Eintrag ist ein Puzzleteil.</span>
+        </div>
+        <div class="card">
+          <div class="sel-row"><h3>Dein heutiger Tag</h3><span class="badge open">Offen</span></div>
+          <div class="today">
+            <div><b>2</b><span class="small muted">Mahlzeiten</span></div>
+            <div><b>1</b><span class="small muted">Getränk</span></div>
+            <div><b>1</b><span class="small muted">Symptom</span></div>
+          </div>
+        </div>
+        <h3>Was möchtest du heute machen?</h3>
+        <div class="tiles">
+          <button class="tile t-food" data-go="meal"><svg class="ico"><use href="#i-food"/></svg><b>Essen erfassen</b><span>Mahlzeiten eintragen</span></button>
+          <button class="tile t-symptom" data-go="symptom"><svg class="ico"><use href="#i-bolt"/></svg><b>Symptome erfassen</b><span>Beschwerden erfassen</span></button>
+          <button class="tile t-day" data-go="day"><svg class="ico"><use href="#i-moon"/></svg><b>Tagesabschluss</b><span>Wie war dein Tag?</span></button>
+          <button class="tile t-results" data-go="results"><svg class="ico"><use href="#i-search"/></svg><b>Muster entdecken</b><span>Muster im Verlauf</span></button>
+        </div>
+      </main>
+
+      <!-- ESSEN -->
+      <main class="view" id="v-meal" data-title="Essen erfassen">
+        <div class="topbar"><button class="back" data-go="start" aria-label="Zurück"><svg width="24" height="24"><use href="#i-back"/></svg></button><h2>Essen erfassen</h2></div>
+        <section class="step">
+          <div class="step-head"><span class="step-num">1</span><h3>Wann hast du gegessen?</h3></div>
+          <div class="chips" data-single><button class="chip on">Heute</button><button class="chip">Gestern</button><button class="chip">Datum</button></div>
+          <div class="chips" data-single>
+            <button class="chip">Frühstück</button><button class="chip">Mittagessen</button><button class="chip">Abendessen</button>
+            <button class="chip">Snack</button><button class="chip on"><svg width="16" height="16"><use href="#i-cup"/></svg>Getränk</button>
+          </div>
+          <div class="timeline"><span>Heute · 11:00</span><button class="btn text">Andere Zeit …</button></div>
+          <span class="small muted">Nur Getränke ausgewählt: „Getränk“ ist vorausgewählt. Die Bezeichnung bleibt, auch wenn du die Uhrzeit änderst.</span>
+        </section>
+        <section class="step">
+          <div class="step-head"><span class="step-num">2</span><h3>Was hast du gegessen?</h3></div>
+          <label class="field" for="mealSearch"><svg width="20" height="20"><use href="#i-search"/></svg><input id="mealSearch" placeholder="Zutat suchen …"><svg width="20" height="20"><use href="#i-mic"/></svg></label>
+          <span class="small muted">Favoriten</span>
+          <div class="chips scroll"><button class="chip">Müsli</button><button class="chip">Linsensuppe</button><button class="chip">Pizza Margherita</button><button class="chip">Kaffee mit Milch</button></div>
+          <span class="small muted">Zuletzt</span>
+          <div class="chips" data-multi><button class="chip on">Kaffee</button><button class="chip">Kuhmilch</button><button class="chip">Weißbrot</button><button class="chip">Tomate</button><button class="chip">Hafer</button></div>
+        </section>
+        <section class="step">
+          <div class="step-head"><span class="step-num">3</span><h3>Wie viel?</h3></div>
+          <div class="selected">
+            <div class="sel-row"><span>Kaffee</span><div class="chips" data-single><button class="chip">S</button><button class="chip on">M</button><button class="chip">L</button></div></div>
+          </div>
+          <span class="small muted">S = ein paar Bissen oder ½ Glas · M = eine Faust oder 1 Glas · L = zwei Fäuste oder 2 Gläser</span>
+        </section>
+        <button class="btn primary" data-go="history">Speichern</button>
+      </main>
+
+      <!-- SYMPTOME -->
+      <main class="view" id="v-symptom" data-title="Symptome erfassen">
+        <div class="topbar"><button class="back" data-go="start" aria-label="Zurück"><svg width="24" height="24"><use href="#i-back"/></svg></button><h2>Symptome erfassen</h2></div>
+        <span class="small muted">Tippen für Details. Lange drücken speichert sofort (mittel, jetzt).</span>
+        <h3>Am häufigsten</h3>
+        <div class="sym-grid">
+          <button class="sym g-head" data-sym="🤯 Kopfschmerzen"><span class="e">🤯</span>Kopfschmerzen</button>
+          <button class="sym g-digestive" data-sym="🎈 Blähbauch"><span class="e">🎈</span>Blähbauch</button>
+          <button class="sym g-skin" data-sym="🐜 Juckreiz"><span class="e">🐜</span>Juckreiz</button>
+        </div>
+        <h3>Magen &amp; Darm</h3>
+        <div class="sym-grid">
+          <button class="sym g-digestive" data-sym="🤢 Übelkeit"><span class="e">🤢</span>Übelkeit</button>
+          <button class="sym g-digestive" data-sym="🎈 Blähbauch"><span class="e">🎈</span>Blähbauch</button>
+          <button class="sym g-digestive" data-sym="🔥 Sodbrennen"><span class="e">🔥</span>Sodbrennen</button>
+          <button class="sym g-digestive" data-sym="💩 Durchfall"><span class="e">💩</span>Durchfall</button>
+        </div>
+        <h3>Haut</h3>
+        <div class="sym-grid">
+          <button class="sym g-skin" data-sym="🔴 Rötung"><span class="e">🔴</span>Rötung</button>
+          <button class="sym g-skin" data-sym="🐜 Juckreiz"><span class="e">🐜</span>Juckreiz</button>
+          <button class="sym g-skin" data-sym="🖐️ Quaddeln"><span class="e">🖐️</span>Quaddeln</button>
+          <button class="sym g-skin" data-sym="💧 Schwellungen"><span class="e">💧</span>Schwellungen</button>
+        </div>
+        <h3>Kopf, Energie &amp; Kreislauf</h3>
+        <div class="sym-grid">
+          <button class="sym g-head" data-sym="🤯 Kopfschmerzen"><span class="e">🤯</span>Kopfschmerzen</button>
+          <button class="sym g-head" data-sym="🌀 Schwindel"><span class="e">🌀</span>Schwindel</button>
+          <button class="sym g-head" data-sym="💤 Müdigkeit"><span class="e">💤</span>Müdigkeit</button>
+          <button class="sym g-head" data-sym="🧠 Brain Fog"><span class="e">🧠</span>Brain Fog</button>
+        </div>
+        <h3>Atemwege, Augen &amp; Mund</h3>
+        <div class="sym-grid">
+          <button class="sym g-airways" data-sym="🤧 Niesen"><span class="e">🤧</span>Niesen</button>
+          <button class="sym g-airways" data-sym="👃 Schnupfen"><span class="e">👃</span>Schnupfen</button>
+          <button class="sym g-airways" data-sym="👁️ Augen jucken"><span class="e">👁️</span>Augen jucken</button>
+        </div>
+      </main>
+
+      <!-- TAGESABSCHLUSS -->
+      <main class="view" id="v-day" data-title="Tagesabschluss">
+        <div class="topbar"><button class="back" data-go="start" aria-label="Zurück"><svg width="24" height="24"><use href="#i-back"/></svg></button><h2>Tagesabschluss</h2></div>
+        <div class="chips" data-single><button class="chip on">Heute</button><button class="chip">Gestern ✓</button><button class="chip">Datum</button></div>
+        <section class="step">
+          <h3>Wie ging es dir an dem Tag?</h3>
+          <div class="scale" data-single><button class="chip">😣</button><button class="chip">🙁</button><button class="chip on">😐</button><button class="chip">🙂</button><button class="chip">😄</button></div>
+        </section>
+        <section class="step">
+          <h3>Schlaf letzte Nacht</h3>
+          <div class="stepper"><button type="button" data-step="-0.5" aria-label="Weniger">−</button><b id="sleepH">7,5 h</b><button type="button" data-step="0.5" aria-label="Mehr">+</button></div>
+          <span class="small">Schlafqualität</span>
+          <div class="scale" data-single><button class="chip">1 ★</button><button class="chip">2 ★</button><button class="chip">3 ★</button><button class="chip on">4 ★</button><button class="chip">5 ★</button></div>
+          <span class="small muted">1 = sehr schlecht · 5 = sehr gut</span>
+        </section>
+        <section class="step">
+          <h3>Stress an dem Tag</h3>
+          <div class="scale" data-single><button class="chip">1</button><button class="chip on">2</button><button class="chip">3</button><button class="chip">4</button><button class="chip">5</button></div>
+          <span class="small muted">1 = kaum · 5 = sehr stark</span>
+        </section>
+        <section class="step">
+          <h3>Besonderes? (optional)</h3>
+          <div class="chips" data-multi><button class="chip">Krank</button><button class="chip">Sport</button><button class="chip">Periode</button><button class="chip">Alkohol am Vorabend</button></div>
+          <button class="btn outline" type="button"><svg width="18" height="18"><use href="#i-cal"/></svg>Länger krank? Zeitraum eintragen</button>
+        </section>
+        <span class="small muted">Deine Angaben werden sofort gespeichert. Der Tag zählt für die Auswertung, sobald du ihn abschließt.</span>
+        <button class="btn primary" data-go="start">Tag abschließen</button>
+      </main>
+
+      <!-- MUSTER -->
+      <main class="view" id="v-results" data-title="Muster entdecken">
+        <div class="topbar"><button class="back" data-go="start" aria-label="Zurück"><svg width="24" height="24"><use href="#i-back"/></svg></button><h2>Muster entdecken</h2></div>
+        <div class="note">4 von 7 bestätigten Tagen. Aussagekräftig wird die Auswertung nach 7 Tagen, bis dahin ist alles hier vorläufig.</div>
+        <div class="result"><span class="lvl strong">Starker Verdacht</span><b>Kuhmilch</b><span class="small muted">Danach Beschwerden: 4 von 5 Mal, sonst 1 von 9</span></div>
+        <div class="result"><span class="lvl susp">Verdacht</span><b>Histamin</b><span class="small muted">Danach Beschwerden: 3 von 5 Mal, sonst 2 von 10</span></div>
+        <div class="result"><span class="lvl trace">Spur</span><b>Schlechter Schlaf</b><span class="small muted">Danach Beschwerden: 2 von 3 Mal, sonst 3 von 11</span></div>
+        <div class="card"><h3>Gut vertragen (6)</h3><span class="small muted">Reis · Kartoffel · Hafer · Apfel · Hähnchen · Zucchini</span></div>
+        <span class="small muted">Das sind Muster in deinen Einträgen, keine Diagnose. Bitte besprich Verdachtsfälle mit einer Ärztin oder einem Arzt.</span>
+        <span class="small muted">100 % lokal auf deinem Handy berechnet</span>
+      </main>
+
+      <!-- HISTORIE -->
+      <main class="view" id="v-history" data-title="Historie" data-tab="history">
+        <div class="topbar"><h2>Historie</h2></div>
+        <div class="chips scroll" data-single>
+          <button class="chip on">Alle</button>
+          <button class="chip"><svg width="16" height="16"><use href="#i-food"/></svg>Essen</button>
+          <button class="chip"><svg width="16" height="16"><use href="#i-bolt"/></svg>Symptome</button>
+          <button class="chip"><svg width="16" height="16"><use href="#i-moon"/></svg>Abschlüsse</button>
+        </div>
+        <span class="day-head">Heute · Fr 20.11.</span>
+        <button class="row"><span class="circle c-symptom"><svg><use href="#i-bolt"/></svg></span><span class="row-text"><b>Kopfschmerzen</b><span>13:00 · Stärke 3/5 · 1–3 Std.</span></span><svg width="20" height="20" class="muted" style="transform:rotate(-90deg)"><use href="#i-chevron"/></svg></button>
+        <button class="row"><span class="circle c-food"><svg><use href="#i-cup"/></svg></span><span class="row-text"><b>Getränk</b><span>11:00 · Kaffee</span></span><svg width="20" height="20" class="muted" style="transform:rotate(-90deg)"><use href="#i-chevron"/></svg></button>
+        <button class="row"><span class="circle c-food"><svg><use href="#i-food"/></svg></span><span class="row-text"><b>Frühstück · Müsli</b><span>08:00 · Hafer · Kuhmilch · Apfel</span></span><svg width="20" height="20" class="muted" style="transform:rotate(-90deg)"><use href="#i-chevron"/></svg></button>
+        <span class="day-head">Gestern · Do 19.11.</span>
+        <button class="row"><span class="circle c-day"><svg><use href="#i-moon"/></svg></span><span class="row-text"><b>Tagesabschluss</b><span>Wohlbefinden 4/5 · Schlaf 7 h · Stress 2/5</span></span><svg width="20" height="20" class="muted" style="transform:rotate(-90deg)"><use href="#i-chevron"/></svg></button>
+        <button class="row"><span class="circle c-food"><svg><use href="#i-food"/></svg></span><span class="row-text"><b>Abendessen · Linsensuppe</b><span>19:00 · Linsen · Karotte · Zwiebel</span></span><svg width="20" height="20" class="muted" style="transform:rotate(-90deg)"><use href="#i-chevron"/></svg></button>
+        <button class="row"><span class="circle c-symptom"><svg><use href="#i-bolt"/></svg></span><span class="row-text"><b>Blähbauch</b><span>16:00 · Stärke 2/5</span></span><svg width="20" height="20" class="muted" style="transform:rotate(-90deg)"><use href="#i-chevron"/></svg></button>
+      </main>
+
+      <!-- FAVORITEN -->
+      <main class="view" id="v-favorites" data-title="Favoriten" data-tab="favorites">
+        <div class="topbar"><h2>Favoriten</h2></div>
+        <div class="card"><div class="sel-row"><h3>Müsli</h3><button class="btn text" data-go="meal">Eintragen</button></div><span class="small muted">Hafer · Kuhmilch · Apfel</span></div>
+        <div class="card"><div class="sel-row"><h3>Linsensuppe</h3><button class="btn text" data-go="meal">Eintragen</button></div><span class="small muted">Linsen · Karotte · Zwiebel · Kreuzkümmel</span></div>
+        <div class="card"><div class="sel-row"><h3>Kaffee mit Milch</h3><button class="btn text" data-go="meal">Eintragen</button></div><span class="small muted">Kaffee · Kuhmilch</span></div>
+      </main>
+
+      <!-- PROFIL -->
+      <main class="view" id="v-profile" data-title="Profil" data-tab="profile">
+        <div class="topbar"><h2>Profil</h2></div>
+        <section class="card">
+          <h3>Bericht für den Arzt</h3>
+          <span class="small muted">Ein PDF mit Zeitraum, Häufigkeit und Stärke deiner Beschwerden, Tageszeiten, Dauer, Notizen und auffälligen Mustern.</span>
+          <div class="chips" data-single><button class="chip on">14 Tage</button><button class="chip">30 Tage</button><button class="chip">90 Tage</button></div>
+          <button class="btn primary"><svg width="18" height="18"><use href="#i-pdf"/></svg>PDF erstellen und teilen</button>
+        </section>
+        <section class="card">
+          <h3>Darstellung</h3>
+          <div class="chips" data-single><button class="chip on">Automatisch</button><button class="chip">Hell</button><button class="chip">Dunkel</button></div>
+        </section>
+        <section class="card">
+          <div class="switch-row"><div><h3>Abend-Erinnerung</h3><span class="small muted">20:30 Uhr, nur wenn der Tag noch offen ist</span></div><button class="switch" role="switch" aria-checked="true" aria-label="Abend-Erinnerung"></button></div>
+        </section>
+        <button class="btn outline">+ Krankheitszeit eintragen</button>
+        <button class="btn outline">Als JSON exportieren</button>
+        <div class="fold" id="allergies">
+          <button class="fold-head" aria-expanded="false" aria-controls="allergyBody"><div><h3>Bekannte Allergien</h3><span class="small muted" id="allergySummary">Erdnuss, Laktose</span></div><svg width="24" height="24"><use href="#i-chevron"/></svg></button>
+          <div class="fold-body" id="allergyBody">
+            <span class="small muted">Bekannte kommen nicht ins Ranking. Du bekommst nur einen Hinweis, wenn du sie isst.</span>
+            <div class="chips" data-multi id="allergyChips">
+              <button class="chip on">Erdnuss</button><button class="chip">Baumnüsse</button><button class="chip on">Laktose</button><button class="chip">Gluten</button>
+              <button class="chip">Ei</button><button class="chip">Fisch</button><button class="chip">Soja</button><button class="chip">Histamin</button><button class="chip">Fruktose</button>
+            </div>
+            <button class="btn primary">Speichern</button>
+          </div>
+        </div>
+        <h3>Was die App ist und was nicht</h3>
+        <span class="muted">Sie ist ein Tagebuch zur Selbstbeobachtung. Sie stellt keine Diagnosen und ersetzt keinen Arztbesuch. Alles bleibt auf deinem Handy.</span>
+      </main>
+
+      <!-- Symptom-Fenster -->
+      <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="symTitle">
+        <div class="dialog">
+          <h2 id="symTitle">🤯 Kopfschmerzen</h2>
+          <h3>Wie stark?</h3>
+          <div class="scale" data-single id="intensity"><button class="chip">1</button><button class="chip">2</button><button class="chip on">3</button><button class="chip">4</button><button class="chip">5</button></div>
+          <span class="word" id="intensityWord">3 = mittel</span>
+          <span class="small muted">1 = kaum spürbar · 5 = sehr stark</span>
+          <h3>Wann ging es los?</h3>
+          <div class="chips" data-single><button class="chip on">Heute</button><button class="chip">Gestern</button><button class="chip">Datum</button></div>
+          <div class="chips" data-single><button class="chip on">Jetzt</button><button class="chip">Morgens</button><button class="chip">Mittags</button><button class="chip">Nach dem Essen</button><button class="chip">Andere Zeit …</button></div>
+          <h3>Wie lange? (optional)</h3>
+          <div class="chips" data-toggle><button class="chip">unter 1 Std.</button><button class="chip on">1–3 Std.</button><button class="chip">3–12 Std.</button><button class="chip">länger</button></div>
+          <label class="field" for="symNote"><textarea id="symNote" rows="1" placeholder="Notiz (optional)"></textarea></label>
+          <div class="actions"><button class="btn text" data-close>Abbrechen</button><button class="btn primary" data-close>Speichern</button></div>
+        </div>
+      </div>
+
+      <nav class="tabbar" aria-label="Navigation">
+        <button data-go="start" data-tabbtn="start" class="on"><span class="pill"><svg><use href="#i-home"/></svg></span>Start</button>
+        <button data-go="history" data-tabbtn="history"><span class="pill"><svg><use href="#i-history"/></svg></span>Historie</button>
+        <button data-go="favorites" data-tabbtn="favorites"><span class="pill"><svg><use href="#i-star"/></svg></span>Favoriten</button>
+        <button data-go="profile" data-tabbtn="profile"><span class="pill"><svg><use href="#i-person"/></svg></span>Profil</button>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const views = [...document.querySelectorAll(".view")];
+  const jump = document.getElementById("jump");
+  // Screens per tab: sub-screens keep "Start" highlighted, like in the app.
+  const tabOf = { start: "start", meal: "start", symptom: "start", day: "start", results: "start", history: "history", favorites: "favorites", profile: "profile" };
+
+  views.forEach(v => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = v.dataset.title;
+    b.dataset.go = v.id.slice(2);
+    jump.appendChild(b);
+  });
+
+  function show(name) {
+    views.forEach(v => v.classList.toggle("active", v.id === "v-" + name));
+    document.querySelectorAll("[data-tabbtn]").forEach(b => b.classList.toggle("on", b.dataset.tabbtn === tabOf[name]));
+    jump.querySelectorAll("button").forEach(b => b.setAttribute("aria-current", String(b.dataset.go === name)));
+    const active = document.getElementById("v-" + name);
+    if (active) active.scrollTop = 0;
+    if (location.hash.slice(1) !== name) history.replaceState(null, "", "#" + name);
+  }
+
+  document.addEventListener("click", e => {
+    const go = e.target.closest("[data-go]");
+    if (go) { show(go.dataset.go); return; }
+
+    const chip = e.target.closest(".chip");
+    const group = chip && chip.parentElement;
+    if (chip && group) {
+      if (group.hasAttribute("data-single")) {
+        group.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c === chip));
+      } else if (group.hasAttribute("data-toggle")) {
+        // Optional choice: tapping the chosen chip again removes it.
+        const wasOn = chip.classList.contains("on");
+        group.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
+        if (!wasOn) chip.classList.add("on");
+      } else if (group.hasAttribute("data-multi")) {
+        chip.classList.toggle("on");
+      }
+      if (group.id === "intensity") updateIntensity();
+      if (group.id === "allergyChips") updateAllergies();
+    }
+
+    const sym = e.target.closest("[data-sym]");
+    if (sym) { document.getElementById("symTitle").textContent = sym.dataset.sym; overlay.classList.add("open"); }
+    if (e.target.closest("[data-close]") || e.target === overlay) overlay.classList.remove("open");
+
+    const fold = e.target.closest(".fold-head");
+    if (fold) {
+      const box = fold.parentElement;
+      box.classList.toggle("open");
+      fold.setAttribute("aria-expanded", String(box.classList.contains("open")));
+    }
+
+    const sw = e.target.closest(".switch");
+    if (sw) sw.setAttribute("aria-checked", String(sw.getAttribute("aria-checked") !== "true"));
+
+    const step = e.target.closest("[data-step]");
+    if (step) {
+      sleep = Math.min(14, Math.max(0, sleep + Number(step.dataset.step)));
+      document.getElementById("sleepH").textContent = sleep.toLocaleString("de-DE", { minimumFractionDigits: 1 }) + " h";
+    }
+  });
+
+  const overlay = document.getElementById("overlay");
+  let sleep = 7.5;
+  const words = ["kaum spürbar", "leicht", "mittel", "stark", "sehr stark"];
+  function updateIntensity() {
+    const chips = [...document.querySelectorAll("#intensity .chip")];
+    const i = chips.findIndex(c => c.classList.contains("on"));
+    document.getElementById("intensityWord").textContent = (i + 1) + " = " + words[i];
+  }
+  function updateAllergies() {
+    const on = [...document.querySelectorAll("#allergyChips .chip.on")].map(c => c.textContent);
+    document.getElementById("allergySummary").textContent = on.length ? on.join(", ") : "Keine angegeben · zum Ändern tippen";
+  }
+  document.addEventListener("keydown", e => { if (e.key === "Escape") overlay.classList.remove("open"); });
+
+  document.getElementById("themeSwitch").addEventListener("click", () => {
+    const root = document.documentElement;
+    const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+  });
+
+  const start = location.hash.slice(1);
+  show(tabOf[start] ? start : "start");
+  addEventListener("hashchange", () => { const n = location.hash.slice(1); if (tabOf[n]) show(n); });
+})();
+</script>
