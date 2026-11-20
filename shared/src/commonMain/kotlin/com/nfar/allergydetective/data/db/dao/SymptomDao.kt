@@ -25,6 +25,12 @@ interface SymptomDao {
     @Insert
     suspend fun insertEntry(entry: SymptomEntryEntity): Long
 
+    @Query("SELECT * FROM symptom_entries WHERE id = :entryId")
+    suspend fun entry(entryId: Long): SymptomEntryEntity?
+
+    @Query("UPDATE symptom_entries SET startedAt = :startedAt, tzOffsetMin = :tzOffsetMin, intensity = :intensity, note = :note WHERE id = :entryId")
+    suspend fun updateEntry(entryId: Long, startedAt: Long, tzOffsetMin: Int, intensity: Int, note: String?)
+
     @Query("SELECT MAX(eatenAt) FROM meals WHERE eatenAt <= :beforeMillis")
     suspend fun lastMealAt(beforeMillis: Long): Long?
 

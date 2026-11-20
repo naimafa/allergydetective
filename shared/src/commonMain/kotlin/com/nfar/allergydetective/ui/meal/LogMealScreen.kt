@@ -103,6 +103,8 @@ fun LogMealScreen(
     editMealId: Long? = null,
     /** A dish to start with ("Log" in the favourites). */
     favoriteId: Long? = null,
+    /** Add for an earlier day from the history (feedback 19.11.). */
+    daysAgo: Int? = null,
     viewModel: LogMealViewModel = koinViewModel(),
     customViewModel: CustomIngredientViewModel = koinViewModel(),
 ) {
@@ -111,6 +113,7 @@ fun LogMealScreen(
     var showCustomDialog by remember { mutableStateOf(false) }
     LaunchedEffect(editMealId) { editMealId?.let(viewModel::startEditing) }
     LaunchedEffect(favoriteId) { favoriteId?.let(viewModel::startWithFavorite) }
+    LaunchedEffect(daysAgo) { daysAgo?.let(viewModel::startForDay) }
     LaunchedEffect(state.finished) { if (state.finished) onBack() }
     SavedSnackbarEffect(state.savedMealId, snackbarHostState, viewModel::onUndo, viewModel::onSavedShown)
     state.addedTo?.let { slot ->

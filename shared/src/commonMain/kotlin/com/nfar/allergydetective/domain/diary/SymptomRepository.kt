@@ -29,6 +29,21 @@ interface SymptomRepository {
     /** On a sick day: does the complaint belong to the illness (self-test 19.11.)? Null = not answered. */
     suspend fun setIllnessRelation(entryId: Long, relation: IllnessRelation?) = Unit
 
+    /** A logged complaint, for correcting it from the history (feedback 19.11.). */
+    suspend fun entry(entryId: Long): LoggedSymptom? = null
+
+    /** Corrects time, intensity and note; the symptom itself stays. */
+    suspend fun updateEntry(entryId: Long, startedAt: Long, tzOffsetMin: Int, intensity: Int, note: String?) = Unit
+
     /** In a period of illness or marked as sick in the day check. */
     suspend fun isSickDay(epochDay: Long): Boolean = false
 }
+
+data class LoggedSymptom(
+    val id: Long,
+    val symptomId: Long,
+    val startedAt: Long,
+    val intensity: Int,
+    val note: String?,
+    val illnessRelation: IllnessRelation?,
+)

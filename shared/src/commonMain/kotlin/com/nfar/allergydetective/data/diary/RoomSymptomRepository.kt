@@ -1,9 +1,11 @@
 package com.nfar.allergydetective.data.diary
 
 import com.nfar.allergydetective.data.db.dao.SymptomDao
+import com.nfar.allergydetective.data.analysis.toDomain
 import com.nfar.allergydetective.data.analysis.toEntity
 import com.nfar.allergydetective.data.db.entity.SymptomEntryEntity
 import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
+import com.nfar.allergydetective.domain.diary.LoggedSymptom
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
 
@@ -33,4 +35,11 @@ class RoomSymptomRepository(private val dao: SymptomDao) : SymptomRepository {
         dao.setIllnessRelation(entryId, relation?.toEntity())
 
     override suspend fun isSickDay(epochDay: Long): Boolean = dao.isSickDay(epochDay)
+
+    override suspend fun entry(entryId: Long): LoggedSymptom? = dao.entry(entryId)?.let {
+        LoggedSymptom(it.id, it.symptomId, it.startedAt, it.intensity, it.note, it.illnessRelation?.toDomain())
+    }
+
+    override suspend fun updateEntry(entryId: Long, startedAt: Long, tzOffsetMin: Int, intensity: Int, note: String?) =
+        dao.updateEntry(entryId, startedAt, tzOffsetMin, intensity, note)
 }

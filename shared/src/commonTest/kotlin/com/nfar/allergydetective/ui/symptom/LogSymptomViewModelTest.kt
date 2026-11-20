@@ -1,6 +1,7 @@
 package com.nfar.allergydetective.ui.symptom
 
 import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
+import com.nfar.allergydetective.domain.diary.LoggedSymptom
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
 import com.nfar.allergydetective.domain.time.AppClock
@@ -56,6 +57,48 @@ class LogSymptomViewModelTest {
         override suspend fun setIllnessRelation(entryId: Long, relation: IllnessRelation?) {
             relations[entryId] = relation
         }
+
+        // Entry id = position in [saved] + 1.
+        override suspend fun entry(entryId: Long) = saved.getOrNull(entryId.toInt() - 1)?.let {
+            LoggedSymptom(entryId, it.symptomId, it.startedAt, it.intensity, it.note, relations[entryId])
+        }
+        override suspend fun updateEntry(entryId: Long, startedAt: Long, tzOffsetMin: Int, intensity: Int, note: String?) {
+            saved[entryId.toInt() - 1] = saved[entryId.toInt() - 1].copy(startedAt = startedAt, offset = tzOffsetMin, intensity = intensity, note = note)
+        }
+    }
+
+    @Test
+    fun loggedComplaintIsCorrectedInPlace() {
+        // Feedback 19.11.: complaints could only be deleted, not corrected.
+        val clock = AppClock(clock = object : Clock { override fun now() = now }, zone = { TimeZone.of("Europe/Berlin") })
+        repository.saved += Saved(headache.id, clock.millisAt(clock.today() - 1, 9, 0), 60, 2, "leicht")
+        val vm = viewModel()
+
+        vm.startEditing(1L)
+        assertEquals(ExactTime(1, 9, 0), vm.state.value.draft?.exactTime)
+        assertEquals(2, vm.state.value.draft?.intensity)
+        assertTrue(vm.dayParts().isEmpty())
+
+        vm.onIntensityChange(4)
+        vm.onExactTimeChange(ExactTime(1, 18, 30))
+        vm.onSaveDraft()
+
+        assertEquals(1, repository.saved.size)
+        assertEquals(Saved(headache.id, clock.millisAt(clock.today() - 1, 18, 30), 60, 4, "leicht"), repository.saved.single())
+        assertTrue(vm.state.value.finished)
+    }
+
+    @Test
+    fun complaintCanBeAddedForYesterdayFromTheHistory() {
+        val clock = AppClock(clock = object : Clock { override fun now() = now }, zone = { TimeZone.of("Europe/Berlin") })
+        val vm = viewModel()
+
+        vm.startForDay(1)
+        vm.onSymptomClick(bloating)
+        assertEquals(ExactTime(1, 12, 0), vm.state.value.draft?.exactTime)
+        vm.onSaveDraft()
+
+        assertEquals(clock.millisAt(clock.today() - 1, 12, 0), repository.saved.single().startedAt)
     }
 
     @Test

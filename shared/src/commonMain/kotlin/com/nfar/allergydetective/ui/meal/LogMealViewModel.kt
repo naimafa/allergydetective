@@ -18,6 +18,7 @@ import com.nfar.allergydetective.domain.time.MealSlot
 import com.nfar.allergydetective.domain.time.timeOf
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
 import com.nfar.allergydetective.ui.common.ExactTime
+import com.nfar.allergydetective.ui.common.MAX_DAYS_BACK
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.timeOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -103,6 +104,22 @@ class LogMealViewModel(
             loadJob.join()
             _state.value.favorites.firstOrNull { it.id == favoriteId }?.let(::onFavoriteClick)
         }
+    }
+
+    /** Earlier day chosen in the history; the next meal after saving starts there again. */
+    private var pastDaysAgo = 0
+
+    private fun pastDayTime(): ExactTime? = pastDaysAgo.takeIf { it > 0 }?.let { ExactTime(it, PAST_DAY_HOUR, 0) }
+
+    /**
+     * "+ Essen" on a day in the history (feedback 19.11.): the form starts on that day; choosing
+     * breakfast, lunch or dinner keeps the day (onSlotChange).
+     */
+    fun startForDay(daysAgo: Int) {
+        val day = daysAgo.coerceIn(0, MAX_DAYS_BACK)
+        if (day == 0) return
+        pastDaysAgo = day
+        _state.update { it.copy(exactTime = pastDayTime()) }
     }
 
     /** A custom ingredient was created: make it searchable and select it. */
@@ -290,7 +307,7 @@ class LogMealViewModel(
                 selected = emptyList(),
                 slot = null,
                 slotTime = null,
-                exactTime = null,
+                exactTime = pastDayTime(),
                 slotMissing = false,
                 favoriteId = null,
                 saveAsFavorite = false,
@@ -318,5 +335,8 @@ class LogMealViewModel(
 
     companion object {
         private const val RECENT_LIMIT = 12
+
+        /** Time of a meal added for an earlier day until a meal is chosen. */
+        private const val PAST_DAY_HOUR = 12
     }
 }

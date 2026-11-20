@@ -41,12 +41,19 @@ data class HomeRoute(
 data class LogMealRoute(
     /** A logged meal opened from the history for editing (self-test 19.11.). */
     val editMealId: Long? = null,
+    /** Add for an earlier day from the history (feedback 19.11.). */
+    val daysAgo: Int? = null,
     /** A dish from the favourites to log (self-test 19.11.). */
     val favoriteId: Long? = null,
 )
 
 @Serializable
-data object LogSymptomRoute
+data class LogSymptomRoute(
+    /** A complaint opened from the history for correcting it (feedback 19.11.). */
+    val editEntryId: Long? = null,
+    /** Add for an earlier day from the history. */
+    val daysAgo: Int? = null,
+)
 
 @Serializable
 data class DayCheckRoute(
@@ -96,10 +103,13 @@ fun AppNavHost(
                 onEditMeal = { navController.navigate(LogMealRoute(editMealId = it)) },
                 onLogDish = { navController.navigate(LogMealRoute(favoriteId = it)) },
                 onOpenDayCheck = { navController.navigate(DayCheckRoute(day = it)) },
+                onEditSymptom = { navController.navigate(LogSymptomRoute(editEntryId = it)) },
+                onAddMealForDay = { navController.navigate(LogMealRoute(daysAgo = it)) },
+                onAddSymptomForDay = { navController.navigate(LogSymptomRoute(daysAgo = it)) },
                 onHomeAction = { action ->
                     when (action) {
                         HomeAction.LOG_MEAL -> navController.navigate(LogMealRoute())
-                        HomeAction.LOG_SYMPTOM -> navController.navigate(LogSymptomRoute)
+                        HomeAction.LOG_SYMPTOM -> navController.navigate(LogSymptomRoute())
                         HomeAction.DAY_CHECK -> navController.navigate(DayCheckRoute())
                         HomeAction.RESULTS -> navController.navigate(ResultsRoute)
                     }
@@ -117,10 +127,12 @@ fun AppNavHost(
             )
         }
 composable<IntroRoute> {            OnboardingScreen(                replay = true,                onFinished = { openDishes ->                    if (openDishes) {                        navController.navigate(HomeRoute(openFavorites = true)) { popUpTo<HomeRoute> { inclusive = true } }                    } else {                        navController.popBackStack()                    }                },            )        }
-        composable<LogMealRoute> { entry -> entry.toRoute<LogMealRoute>().let { route -> LogMealScreen(onBack = back, editMealId = route.editMealId, favoriteId = route.favoriteId) } }
-        composable<LogSymptomRoute> { LogSymptomScreen(onBack = back) }
+        composable<LogMealRoute> { entry -> entry.toRoute<LogMealRoute>().let { route -> LogMealScreen(onBack = back, editMealId = route.editMealId, favoriteId = route.favoriteId, daysAgo = route.daysAgo) } }
+        composable<LogSymptomRoute> { entry ->
+            entry.toRoute<LogSymptomRoute>().let { route -> LogSymptomScreen(onBack = back, editEntryId = route.editEntryId, daysAgo = route.daysAgo) }
+        }
         composable<DayCheckRoute> { entry ->
-            DayCheckScreen(onDone = back, day = entry.toRoute<DayCheckRoute>().day, onLogSymptom = { navController.navigate(LogSymptomRoute) })
+            DayCheckScreen(onDone = back, day = entry.toRoute<DayCheckRoute>().day, onLogSymptom = { navController.navigate(LogSymptomRoute()) })
         }
         composable<ResultsRoute> { ResultsScreen(onBack = back) }
     }

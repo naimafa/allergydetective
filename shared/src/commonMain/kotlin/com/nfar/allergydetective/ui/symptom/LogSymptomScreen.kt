@@ -54,6 +54,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -71,6 +72,9 @@ import com.nfar.allergydetective.ui.common.SavedSnackbarEffect
 import com.nfar.allergydetective.ui.common.ScreenScaffold
 import com.nfar.allergydetective.ui.common.SectionTitle
 import com.nfar.allergydetective.ui.common.TimeChoiceRow
+import com.nfar.allergydetective.ui.common.dayLabel
+import allergydetective.shared.generated.resources.symptom_edit_title
+import allergydetective.shared.generated.resources.symptom_for_day
 import com.nfar.allergydetective.ui.common.ScaleChips
 import com.nfar.allergydetective.ui.sick.IllnessRelationChoice
 import com.nfar.allergydetective.ui.common.displayName
@@ -81,13 +85,27 @@ import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
-fun LogSymptomScreen(onBack: () -> Unit, viewModel: LogSymptomViewModel = koinViewModel()) {
+fun LogSymptomScreen(
+    onBack: () -> Unit,
+    /** A logged complaint to correct (from the history). */
+    editEntryId: Long? = null,
+    /** Add for an earlier day (from the history): 1 = yesterday, 2 = the day before. */
+    daysAgo: Int? = null,
+    viewModel: LogSymptomViewModel = koinViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     SavedSnackbarEffect(state.savedEntryId, snackbarHostState, viewModel::onUndo, viewModel::onSavedShown)
+    LaunchedEffect(editEntryId) { editEntryId?.let(viewModel::startEditing) }
+    LaunchedEffect(daysAgo) { daysAgo?.let(viewModel::startForDay) }
+    LaunchedEffect(state.finished) { if (state.finished) onBack() }
 
     ScreenScaffold(
-        title = stringResource(Res.string.home_log_symptom),
+        title = when {
+            editEntryId != null -> stringResource(Res.string.symptom_edit_title)
+            state.pastDaysAgo > 0 -> stringResource(Res.string.symptom_for_day, dayLabel(state.pastDaysAgo))
+            else -> stringResource(Res.string.home_log_symptom)
+        },
         onBack = onBack,
         snackbarHostState = snackbarHostState,
     ) { padding ->

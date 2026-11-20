@@ -23,6 +23,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AddCircleOutline
+import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.Restaurant
+import allergydetective.shared.generated.resources.history_add
+import allergydetective.shared.generated.resources.history_add_meal
+import allergydetective.shared.generated.resources.history_add_symptom
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -65,6 +77,10 @@ fun HistoryScreen(
     onEditMeal: (Long) -> Unit = {},
     /** Opens the day check for this day (only today and the two days before can be changed). */
     onOpenDayCheck: (Long) -> Unit = {},
+    /** Feedback 19.11.: correct a complaint, add food or a complaint for an earlier day (days ago). */
+    onEditSymptom: (Long) -> Unit = {},
+    onAddMealForDay: (Int) -> Unit = {},
+    onAddSymptomForDay: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: HistoryViewModel = koinViewModel(),
     sickViewModel: SickPeriodsViewModel = koinViewModel(),
@@ -109,7 +125,17 @@ fun HistoryScreen(
         visibleDays.forEach { day ->
             val period = sickState.periods.firstOrNull { it.contains(day.epochDay, sickState.today) }
             // Phone test 19.11.: with many entries the date stays visible at the top while scrolling the day.
-            stickyHeader(key = "date-${day.epochDay}") { DayHeader(day, clock, sick = isSick(day)) }
+            val daysAgo = (sickState.today - day.epochDay).toInt()
+            stickyHeader(key = "date-${day.epochDay}") {
+                DayHeader(
+                    day,
+                    clock,
+                    sick = isSick(day),
+                    // Today and the two days before can still be added to (like the day check).
+                    onAddMeal = if (daysAgo in 0..DayCheckViewModel.DAYS_BACK) ({ onAddMealForDay(daysAgo) }) else null,
+                    onAddSymptom = if (daysAgo in 0..DayCheckViewModel.DAYS_BACK) ({ onAddSymptomForDay(daysAgo) }) else null,
+                )
+            }
             item(key = "day-${day.epochDay}") {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     if ((period != null && day.epochDay in bandDays) || (period == null && isSick(day))) {
@@ -133,6 +159,10 @@ fun HistoryScreen(
             entry = entry,
             clock = clock,
             sickDay = day?.let(::isSick) == true,
+            onEditSymptom = {
+                opened = null
+                onEditSymptom(it)
+            },
             onEdit = {
                 opened = null
                 onEditMeal(it)
@@ -212,7 +242,13 @@ private fun ConfirmDelete(question: String, onConfirm: () -> Unit, onDone: () ->
 
 /** "Mi, 18.11.2026", "Krank" on ill days and done / open. Sticky above the day, on the screen background. */
 @Composable
-private fun DayHeader(day: HistoryDay, clock: AppClock, sick: Boolean) {
+private fun DayHeader(
+    day: HistoryDay,
+    clock: AppClock,
+    sick: Boolean,
+    onAddMeal: (() -> Unit)? = null,
+    onAddSymptom: (() -> Unit)? = null,
+) {
     val date = clock.localDate(day.epochDay)
     val weekday = stringArrayResource(Res.array.weekdays_short).getOrNull(date.dayOfWeek.ordinal).orEmpty()
     val confirmed = day.status == DayCheckStatus.NO_SYMPTOMS || day.status == DayCheckStatus.COMPLETE
@@ -243,5 +279,32 @@ private fun DayHeader(day: HistoryDay, clock: AppClock, sick: Boolean) {
             if (confirmed) "✓ " + stringResource(Res.string.history_day_confirmed) else stringResource(Res.string.history_day_open),
             if (confirmed) StatusKind.DONE else StatusKind.OPEN,
         )
+        // Feedback 19.11.: add food or a complaint for this day afterwards.
+        if (onAddMeal != null && onAddSymptom != null) {
+            var menuOpen by remember { mutableStateOf(false) }
+            Box {
+                IconButton(onClick = { menuOpen = true }) {
+                    Icon(Icons.Outlined.AddCircleOutline, contentDescription = stringResource(Res.string.history_add), tint = MaterialTheme.colorScheme.primary)
+                }
+                DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.history_add_meal)) },
+                        leadingIcon = { Icon(Icons.Outlined.Restaurant, contentDescription = null) },
+                        onClick = {
+                            menuOpen = false
+                            onAddMeal()
+                        },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.history_add_symptom)) },
+                        leadingIcon = { Icon(Icons.Outlined.Bolt, contentDescription = null) },
+                        onClick = {
+                            menuOpen = false
+                            onAddSymptom()
+                        },
+                    )
+                }
+            }
+        }
     }
 }
