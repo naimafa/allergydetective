@@ -232,6 +232,8 @@
     <string name="onboarding_dishes_later">Später</string>
     <string name="allergies_question">Kennst du schon Allergien oder Unverträglichkeiten?</string>
     <string name="allergies_hint">Bekannte kommen nicht ins Ranking. Du bekommst nur einen Hinweis, wenn du sie isst. Du kannst das später ändern.</string>
+    <string name="allergies_section_title">Bekannte Allergien</string>
+    <string name="allergies_none">Keine angegeben · zum Ändern tippen</string>
     <string name="time_other">Andere Zeit …</string>
     <string name="time_pick">Wann genau?</string>
     <string name="time_selected">%1$s, %2$s</string>
