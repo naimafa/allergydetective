@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.nfar.allergydetective.ui.common.MAX_DAYS_BACK
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -130,7 +131,8 @@ class DayCheckViewModel(
     }
 
     companion object {
-        const val DAYS_BACK = 2
+        /** Same range as the day row of the forms (feedback 19.11.: five days back). */
+        const val DAYS_BACK = MAX_DAYS_BACK
         const val DEFAULT_SLEEP_HOURS = 7f
         const val MAX_SLEEP_HOURS = 14f
         const val SLEEP_STEP_HOURS = 0.5f

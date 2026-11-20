@@ -76,6 +76,7 @@ import com.nfar.allergydetective.ui.common.dayLabel
 import allergydetective.shared.generated.resources.symptom_edit_title
 import allergydetective.shared.generated.resources.symptom_for_day
 import com.nfar.allergydetective.ui.common.ScaleChips
+import com.nfar.allergydetective.ui.common.DayPicker
 import com.nfar.allergydetective.ui.sick.IllnessRelationChoice
 import com.nfar.allergydetective.ui.common.displayName
 import com.nfar.allergydetective.ui.common.emergencyNumberFor
@@ -103,7 +104,7 @@ fun LogSymptomScreen(
     ScreenScaffold(
         title = when {
             editEntryId != null -> stringResource(Res.string.symptom_edit_title)
-            state.pastDaysAgo > 0 -> stringResource(Res.string.symptom_for_day, dayLabel(state.pastDaysAgo))
+            state.day > 0 -> stringResource(Res.string.symptom_for_day, dayLabel(state.day))
             else -> stringResource(Res.string.home_log_symptom)
         },
         onBack = onBack,
@@ -115,7 +116,7 @@ fun LogSymptomScreen(
     state.emergencyNoticeFor?.let {
         EmergencyNotice(onContinue = viewModel::onEmergencyNoticeContinue, onDismiss = viewModel::onEmergencyNoticeDismiss)
     }
-    state.draft?.let { SymptomOverlay(it, onSickDay = state.draftOnSickDay, viewModel = viewModel) }
+    state.draft?.let { SymptomOverlay(it, onSickDay = state.draftOnSickDay, day = state.day, today = state.today, viewModel = viewModel) }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -235,7 +236,7 @@ private fun EmergencyNotice(onContinue: () -> Unit, onDismiss: () -> Unit) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, viewModel: LogSymptomViewModel) {
+private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, day: Int, today: Long, viewModel: LogSymptomViewModel) {
     AlertDialog(
         onDismissRequest = viewModel::onDraftDismiss,
         title = { Text(symptomEmoji(draft.symptom.id) + " " + displayName(NamePrefix.SYMPTOM, draft.symptom.key)) },
@@ -248,6 +249,8 @@ private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, viewModel: L
                 ScaleChips(draft.intensity, viewModel::onIntensityChange, labels = (1..LogSymptomViewModel.MAX_INTENSITY).map { it.toString() })
                 Text(stringResource(Res.string.symptom_intensity_range), style = MaterialTheme.typography.bodySmall)
                 Text(stringResource(Res.string.symptom_when), style = MaterialTheme.typography.titleSmall)
+                // Feedback 19.11.: the same day row in every form.
+                DayPicker(day, today, viewModel::onDayChange)
                 TimeChoiceRow(
                     options = viewModel.dayParts(),
                     selected = draft.dayPart,

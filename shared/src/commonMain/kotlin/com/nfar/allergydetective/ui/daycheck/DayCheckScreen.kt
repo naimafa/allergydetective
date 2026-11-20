@@ -50,6 +50,7 @@ import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.ScreenScaffold
 import com.nfar.allergydetective.ui.common.StepCard
 import com.nfar.allergydetective.ui.common.ScaleChips
+import com.nfar.allergydetective.ui.common.DayPicker
 import com.nfar.allergydetective.ui.common.dayLabel
 import com.nfar.allergydetective.ui.common.displayName
 import com.nfar.allergydetective.ui.common.formatDate
@@ -131,16 +132,13 @@ private fun DayCheckContent(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                state.days.forEach { day ->
-                    val label = dayLabel((state.today - day).toInt())
-                    AppFilterChip(
-                        selected = check.epochDay == day,
-                        onClick = { viewModel.onDaySelected(day) },
-                        label = { Text(if (day in state.confirmedDays) stringResource(Res.string.day_confirmed_mark, label) else label) },
-                    )
-                }
-            }
+            // Feedback 19.11.: the same day row as in the forms; finished days carry a check mark.
+            DayPicker(
+                daysAgo = (state.today - check.epochDay).toInt(),
+                today = state.today,
+                onSelect = { viewModel.onDaySelected(state.today - it) },
+                marked = state.confirmedDays.map { (state.today - it).toInt() }.toSet(),
+            )
             // The date in full, so it is clear which day gets confirmed.
             Text(formatDate(LocalDate.fromEpochDays(check.epochDay), Locale.current.language), style = MaterialTheme.typography.titleLarge)
             val openPast = state.openPastDays.filter { it != check.epochDay }

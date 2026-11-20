@@ -31,6 +31,10 @@ data class LogMealState(
     val slot: MealSlot? = null,
     /** Default time of [slot]: its fixed time (never in the future), "now" for a snack. Shown below the chips. */
     val slotTime: ExactTime? = null,
+    /** Day of the meal from the day row: 0 = today, up to MAX_DAYS_BACK (feedback 19.11.). */
+    val day: Int = 0,
+    /** Local epoch day of today, for the date in the day row. */
+    val today: Long = 0,
     /** Time changed in the dialog ("Change"), replaces [slotTime]. */
     val exactTime: ExactTime? = null,
     /** Save was tapped without a [slot]: the "when" step is highlighted. */

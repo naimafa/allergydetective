@@ -47,8 +47,8 @@ import org.jetbrains.compose.resources.stringResource
 /** A time picked in the dialog: local day relative to today plus wall-clock time. */
 data class ExactTime(val daysAgo: Int, val hour: Int, val minute: Int)
 
-/** Days that can be picked: today and up to two days back, like the day check. */
-const val MAX_DAYS_BACK = 2
+/** Days that can be picked in every form and the day check: today and up to five days back (feedback 19.11.). */
+const val MAX_DAYS_BACK = 5
 
 /** Timestamp of the chosen time: the picked time (never in the future) or "now minus [minutesAgo]". */
 fun AppClock.timeOf(exact: ExactTime?, minutesAgo: Int): Long {
@@ -85,7 +85,7 @@ fun <T> TimeChoiceRow(
             onClick = { showDialog = true },
             label = {
                 Text(
-                    exact?.let { stringResource(Res.string.time_selected, dayLabel(it.daysAgo), formatClock(it.hour, it.minute)) }
+                    exact?.let { formatClock(it.hour, it.minute) }
                         ?: stringResource(Res.string.time_other),
                 )
             },
@@ -118,7 +118,7 @@ fun TimeLine(time: ExactTime, onChange: (ExactTime) -> Unit, modifier: Modifier 
         ) {
             Icon(Icons.Outlined.Schedule, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
             Text(
-                stringResource(Res.string.time_selected, dayLabel(time.daysAgo), formatClock(time.hour, time.minute)),
+                formatClock(time.hour, time.minute),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f),
@@ -141,20 +141,14 @@ fun TimeLine(time: ExactTime, onChange: (ExactTime) -> Unit, modifier: Modifier 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun ExactTimeDialog(initial: ExactTime?, onConfirm: (ExactTime) -> Unit, onDismiss: () -> Unit) {
-    var daysAgo by remember { mutableIntStateOf(initial?.daysAgo ?: 0) }
+    // The day comes from the day row of the form (DayPicker); the dialog only asks for the time.
+    val daysAgo = initial?.daysAgo ?: 0
     val timeState = rememberTimePickerState(initialHour = initial?.hour ?: 12, initialMinute = initial?.minute ?: 0, is24Hour = true)
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.time_pick)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    // An edited meal from the history can be older than the usual choice; its day stays selectable.
-                    val days = (0..MAX_DAYS_BACK) + listOfNotNull(initial?.daysAgo?.takeIf { it > MAX_DAYS_BACK })
-                    days.forEach { option ->
-                        AppFilterChip(selected = daysAgo == option, onClick = { daysAgo = option }, label = { Text(dayLabel(option)) })
-                    }
-                }
                 TimeInput(state = timeState)
             }
         },

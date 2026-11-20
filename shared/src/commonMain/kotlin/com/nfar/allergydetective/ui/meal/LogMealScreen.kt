@@ -87,6 +87,7 @@ import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.SavedSnackbarEffect
 import com.nfar.allergydetective.ui.common.ScreenScaffold
 import com.nfar.allergydetective.ui.common.StepCard
+import com.nfar.allergydetective.ui.common.DayPicker
 import com.nfar.allergydetective.ui.common.TimeLine
 import com.nfar.allergydetective.ui.common.displayName
 import org.jetbrains.compose.resources.stringResource
@@ -199,6 +200,8 @@ private fun LogMealContent(
 @Composable
 private fun WhenStep(state: LogMealState, viewModel: LogMealViewModel) {
     StepCard(number = 1, title = stringResource(Res.string.meal_step_when), highlighted = state.slotMissing) {
+        // Feedback 19.11.: the same day row in every form.
+        DayPicker(state.day, state.today, viewModel::onDayChange)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             MealSlot.entries.forEach { slot ->
                 AppFilterChip(

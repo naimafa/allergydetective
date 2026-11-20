@@ -60,6 +60,7 @@
     <string name="day_today">Today</string>
     <string name="day_yesterday">Yesterday</string>
     <string name="day_two_days_ago">2 days ago</string>
+    <string name="day_pick_date">Date</string>
     <plurals name="day_days_ago">
         <item quantity="one">%1$d day ago</item>
         <item quantity="other">%1$d days ago</item>

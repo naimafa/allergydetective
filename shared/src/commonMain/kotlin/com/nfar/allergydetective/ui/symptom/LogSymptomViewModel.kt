@@ -45,15 +45,15 @@ data class LogSymptomState(
     val today: Long = 0,
     /** Correcting a logged complaint from the history (feedback 19.11.): saving replaces it. */
     val editingEntryId: Long? = null,
-    /** Adding for an earlier day from the history: new drafts start on that day. */
-    val pastDaysAgo: Int = 0,
+    /** Day row: 0 = today, up to MAX_DAYS_BACK (feedback 19.11.). */
+    val day: Int = 0,
     /** Edit saved or dismissed: the screen closes. */
     val finished: Boolean = false,
     /** True when the notice was opened by a long press: continuing saves directly. */
     internal val quickLogAfterNotice: Boolean = false,
 ) {
     /** The draft lies on a sick day: the overlay asks whether it belongs to the illness. */
-    val draftOnSickDay: Boolean get() = draft?.let { (today - (it.exactTime?.daysAgo ?: 0)) in sickDays } == true
+    val draftOnSickDay: Boolean get() = draft != null && (today - day) in sickDays
 }
 
 /** Report a symptom (UX 3.3): grid, overlay with intensity and time, quick log, emergency notice. */
@@ -85,9 +85,24 @@ class LogSymptomViewModel(
     private suspend fun favorites(): List<SymptomInfo> =
         repository.mostUsedSymptomIds(FAVORITE_COUNT).mapNotNull { symptomsById[it] }
 
-    /** "+ Symptom" on a day in the history: every new draft starts on that day (feedback 19.11.). */
-    fun startForDay(daysAgo: Int) {
-        _state.update { it.copy(pastDaysAgo = daysAgo.coerceIn(0, MAX_DAYS_BACK)) }
+    /** "+ Symptom" on a day in the history: the day row starts on that day (feedback 19.11.). */
+    fun startForDay(daysAgo: Int) = onDayChange(daysAgo)
+
+    /**
+     * The day row (feedback 19.11.): today or up to five days back. Day parts like "morning" then mean
+     * that day; "now" and "after the meal" only exist for today.
+     */
+    fun onDayChange(daysAgo: Int) {
+        val day = daysAgo.coerceAtLeast(0)
+        _state.update { state ->
+            state.copy(
+                day = day,
+                draft = state.draft?.let { draft ->
+                    val part = if (day > 0 && draft.dayPart in TODAY_ONLY_PARTS) SymptomDayPart.MIDDAY else draft.dayPart
+                    draft.copy(dayPart = part, exactTime = draft.exactTime?.copy(daysAgo = day))
+                },
+            )
+        }
     }
 
     /** "Edit" on a complaint in the history: the overlay opens with its values. */
@@ -103,6 +118,7 @@ class LogSymptomViewModel(
             _state.update {
                 it.copy(
                     editingEntryId = entryId,
+                    day = (it.today - day).toInt(),
                     sickDays = if (sick) it.sickDays + day else it.sickDays,
                     draft = SymptomDraft(
                         symptom = symptom,
@@ -116,14 +132,9 @@ class LogSymptomViewModel(
         }
     }
 
-    /** A new draft: now, or noon of the day chosen in the history (changeable with "other time"). */
-    private fun newDraft(symptom: SymptomInfo): SymptomDraft {
-        val daysAgo = _state.value.pastDaysAgo
-        return SymptomDraft(symptom, exactTime = if (daysAgo > 0) ExactTime(daysAgo, PAST_DAY_HOUR, 0) else null)
-    }
-
-    /** Day parts like "morning" belong to today; for an earlier day or an edit only the exact time is offered. */
-    val offersDayParts: Boolean get() = _state.value.pastDaysAgo == 0 && _state.value.editingEntryId == null
+    /** A new draft: "now" today, "midday" on an earlier day of the day row. */
+    private fun newDraft(symptom: SymptomInfo): SymptomDraft =
+        SymptomDraft(symptom, dayPart = if (_state.value.day > 0) SymptomDayPart.MIDDAY else SymptomDayPart.NOW)
 
     /** Tap on a tile: overlay, or the emergency notice first. */
     fun onSymptomClick(symptom: SymptomInfo) {
@@ -158,11 +169,22 @@ class LogSymptomViewModel(
 
     fun onDayPartChange(part: SymptomDayPart) = updateDraft { it.copy(dayPart = part, exactTime = null) }
 
-    /** Day parts that can be chosen now: none in the future, "after the meal" only with a meal today. */
+    /**
+     * Today: day parts that have begun, "after the meal" only with a meal today.
+     * An earlier day: every part of the day except "now" and "after the meal".
+     */
     fun dayParts(): List<SymptomDayPart> =
-        if (offersDayParts) SymptomDayPart.entries.filter { clock.timeOf(it, _state.value.lastMealAt) != null } else emptyList()
+        if (_state.value.day == 0) {
+            SymptomDayPart.entries.filter { clock.timeOf(it, _state.value.lastMealAt) != null }
+        } else {
+            SymptomDayPart.entries - TODAY_ONLY_PARTS
+        }
 
-    fun onExactTimeChange(time: ExactTime) = updateDraft { it.copy(exactTime = time) }
+    /** The time dialog only changes the clock time; the day comes from the day row. */
+    fun onExactTimeChange(time: ExactTime) {
+        val day = _state.value.day
+        updateDraft { it.copy(exactTime = time.copy(daysAgo = day)) }
+    }
 
     fun onNoteChange(note: String) = updateDraft { it.copy(note = note) }
 
@@ -181,8 +203,13 @@ class LogSymptomViewModel(
 
     private fun save(draft: SymptomDraft) {
         viewModelScope.launch {
+            val day = _state.value.day
             val startedAt = draft.exactTime?.let { clock.timeOf(it, 0) }
-                ?: clock.timeOf(draft.dayPart, repository.lastMealAt(clock.nowMillis()))
+                ?: if (day > 0 && draft.dayPart !in TODAY_ONLY_PARTS) {
+                    clock.millisAt(clock.today() - day, draft.dayPart.hour, draft.dayPart.minute)
+                } else {
+                    clock.timeOf(draft.dayPart, repository.lastMealAt(clock.nowMillis()))
+                }
                 ?: clock.nowMillis()
             _state.value.editingEntryId?.let { entryId ->
                 repository.updateEntry(entryId, startedAt, clock.offsetMinAt(startedAt), draft.intensity, draft.note.trim().ifEmpty { null })
@@ -222,8 +249,9 @@ class LogSymptomViewModel(
     companion object {
         const val DEFAULT_INTENSITY = 3
 
-        /** Start time of a complaint added for an earlier day; changeable in the dialog. */
-        const val PAST_DAY_HOUR = 12
+
+        /** Only meaningful for today. */
+        val TODAY_ONLY_PARTS = setOf(SymptomDayPart.NOW, SymptomDayPart.AFTER_MEAL)
         const val MAX_INTENSITY = 5
         const val FAVORITE_COUNT = 3
         val GROUP_ORDER = listOf("digestive", "skin", "head", "airways", "other")
