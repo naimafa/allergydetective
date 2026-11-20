@@ -202,8 +202,11 @@ p, h1, h2, h3 { margin: 0; }
 .group i { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--outline-variant); }
 
 /* Dialog */
-.overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, .32); display: none; align-items: center; justify-content: center; padding: 24px 20px; z-index: 5; }
+/* Symptom dialog: screen width minus 16 dp per side (feedback 20.11.), so the day row stays in one line. */
+.overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, .32); display: none; align-items: center; justify-content: center; padding: 24px 16px; z-index: 5; }
 .overlay.open { display: flex; }
+/* Other dialogs keep the platform width (~270 dp + margins). */
+.overlay.narrow { padding-inline: 32px; }
 .dialog { background: var(--high); border-radius: 32px; padding: 24px; width: 100%; max-height: 100%; display: flex; flex-direction: column; gap: 16px; }
 .dialog .scrollpart { overflow-y: auto; display: flex; flex-direction: column; gap: 8px; scrollbar-width: none; }
 .dialog .actions { display: flex; justify-content: flex-end; gap: 8px; }
@@ -524,7 +527,7 @@ p, h1, h2, h3 { margin: 0; }
             <h3 class="t-tm">Tomatensauce</h3><p class="t-bl muted">Tomate · Karotte · Kartoffel · Zucchini</p><hr>
             <div class="acts"><button class="btn text">Bearbeiten</button><span class="grow"></span><button class="btn tonal" data-go="meal" style="padding:0 14px"><svg><use href="#i-add"/></svg>Erfassen</button><button class="iconbtn" aria-label="Weitere Aktionen"><svg><use href="#i-more"/></svg></button></div>
           </article>
-          <button class="btn tonal full tall">+ Neues Gericht</button>
+          <button class="btn tonal full tall" data-open="dishOverlay">+ Neues Gericht</button>
         </div>
       </section>
 
@@ -597,6 +600,19 @@ p, h1, h2, h3 { margin: 0; }
         </div>
       </div>
 
+      <!-- Neues Gericht (AlertDialog, Plattform-Breite) -->
+      <div class="overlay narrow" id="dishOverlay" role="dialog" aria-modal="true" aria-labelledby="dishTitle">
+        <div class="dialog">
+          <h2 class="t-title" style="font-weight:400" id="dishTitle">Neues Gericht</h2>
+          <div class="scrollpart" style="gap:12px">
+            <label class="field" for="dishName"><input id="dishName" placeholder="Name, z.B. Linsensuppe"></label>
+            <h3 class="t-ts">Zutaten</h3>
+            <label class="field" for="dishIngredient"><input id="dishIngredient" placeholder="Zutat suchen …"></label>
+          </div>
+          <div class="actions"><button class="btn text" data-close>Abbrechen</button><button class="btn filled" id="dishSave" disabled data-close>Speichern</button></div>
+        </div>
+      </div>
+
       <nav class="navbar" aria-label="Navigation">
         <button data-go="start" data-tabbtn="start" class="on"><span class="pill"><svg><use href="#i-home"/></svg></span>Start</button>
         <button data-go="history" data-tabbtn="history"><span class="pill"><svg><use href="#i-history"/></svg></span>Historie</button>
@@ -633,7 +649,7 @@ p, h1, h2, h3 { margin: 0; }
     jump.querySelectorAll("button").forEach(b => b.setAttribute("aria-current", String(b.dataset.go === name)));
     const body = document.querySelector("#v-" + name + " .body");
     if (body) body.scrollTop = 0;
-    overlay.classList.remove("open");
+    document.querySelectorAll(".overlay.open").forEach(o => o.classList.remove("open"));
     if (location.hash.slice(1) !== name) history.replaceState(null, "", "#" + name);
   }
 
@@ -669,7 +685,11 @@ p, h1, h2, h3 { margin: 0; }
 
     const sym = e.target.closest("[data-sym]");
     if (sym) { document.getElementById("symTitle").textContent = sym.dataset.sym; overlay.classList.add("open"); }
-    if (e.target.closest("[data-close]") || e.target === overlay) overlay.classList.remove("open");
+    const opener = e.target.closest("[data-open]");
+    if (opener) document.getElementById(opener.dataset.open).classList.add("open");
+    if (e.target.closest("[data-close]") || e.target.classList.contains("overlay")) {
+      document.querySelectorAll(".overlay.open").forEach(o => o.classList.remove("open"));
+    }
 
     const fold = e.target.closest(".fold-head");
     if (fold) {
@@ -687,7 +707,9 @@ p, h1, h2, h3 { margin: 0; }
       document.getElementById("sleepH").textContent = sleep.toLocaleString("de-DE") + " h";
     }
   });
-  document.addEventListener("keydown", e => { if (e.key === "Escape") overlay.classList.remove("open"); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") document.querySelectorAll(".overlay.open").forEach(o => o.classList.remove("open")); });
+  // "Speichern" stays grey until the dish has a name, like in the app.
+  document.getElementById("dishName").addEventListener("input", e => { document.getElementById("dishSave").disabled = !e.target.value.trim(); });
 
   const themeBtn = document.getElementById("themeBtn");
   const fontBtn = document.getElementById("fontBtn");
