@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.analysis.model.Preparation
+import com.nfar.allergydetective.domain.diary.BEVERAGES_CATEGORY_ID
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.IngredientSearch
@@ -84,7 +85,7 @@ class LogMealViewModel(
             _state.update { state ->
                 state.copy(
                     editingMealId = mealId,
-                    slot = MealSlot.at(hour, minute) ?: MealSlot.SNACK,
+                    slot = meal.slot ?: MealSlot.at(hour, minute) ?: MealSlot.SNACK,
                     slotTime = null,
                     exactTime = ExactTime(daysAgo, hour, minute),
                     day = daysAgo,
@@ -151,25 +152,44 @@ class LogMealViewModel(
         _state.value.slot?.let(::onSlotChange)
     }
 
-    /** Today: the slot's default time. An earlier day: the slot's fixed time on that day (snack keeps its clock time). */
+    /**
+     * Today: the slot's default time. An earlier day: the slot's fixed time on that day (snack and drink keep their clock time).
+     * The chosen slot is stored with the meal, so a later time change keeps it (feedback 20.11.).
+     */
     fun onSlotChange(slot: MealSlot) {
         val day = _state.value.day
         if (day == 0) {
-            _state.update { it.copy(slot = slot, slotTime = defaultTimeOf(slot), exactTime = null, slotMissing = false) }
+            _state.update { it.copy(slot = slot, slotTime = defaultTimeOf(slot), exactTime = null, slotMissing = false, slotSuggested = false) }
         } else {
             val shown = _state.value.shownTime
-            val time = if (slot == MealSlot.SNACK) {
+            val time = if (!slot.hasFixedTime) {
                 ExactTime(day, shown?.hour ?: PAST_DAY_HOUR, shown?.minute ?: 0)
             } else {
                 ExactTime(day, slot.hour, slot.minute)
             }
-            _state.update { it.copy(slot = slot, slotTime = null, exactTime = time, slotMissing = false) }
+            _state.update { it.copy(slot = slot, slotTime = null, exactTime = time, slotMissing = false, slotSuggested = false) }
         }
     }
 
     /** The time dialog only changes the clock time; the day comes from the day row. */
     fun onExactTimeChange(time: ExactTime) {
-        _state.update { it.copy(exactTime = time.copy(daysAgo = it.day)) }
+        _state.update { it.copy(exactTime = time.copy(daysAgo = it.day), slotSuggested = false) }
+    }
+
+    /**
+     * Feedback 20.11.: when only drinks are selected and nothing is chosen yet, "drink" is preselected.
+     * Adding food takes the suggestion back, unless the user has confirmed it (slot or time tapped).
+     */
+    private fun suggestDrink() {
+        val state = _state.value
+        if (state.editingMealId != null) return
+        val onlyDrinks = state.selected.isNotEmpty() && state.selected.all { it.ingredient.categoryId == BEVERAGES_CATEGORY_ID }
+        if (state.slot == null && onlyDrinks) {
+            onSlotChange(MealSlot.DRINK)
+            _state.update { it.copy(slotSuggested = true) }
+        } else if (state.slotSuggested && !onlyDrinks) {
+            _state.update { it.copy(slot = null, slotTime = null, exactTime = null, slotSuggested = false) }
+        }
     }
 
     /** Adds the ingredient, or removes it when it is already selected. Clears the search. */
@@ -188,6 +208,7 @@ class LogMealViewModel(
                 favoriteId = state.favoriteId.takeIf { selected.isNotEmpty() },
             )
         }
+        suggestDrink()
     }
 
     /**
@@ -215,6 +236,7 @@ class LogMealViewModel(
                 .mapNotNull { item -> ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation) } }
             state.copy(selected = state.selected + added, favoriteId = favorite.id, query = "", results = emptyList(), dishResults = emptyList())
         }
+        suggestDrink()
     }
 
     fun onPortionChange(ingredientId: Long, portion: Portion) {
@@ -253,7 +275,7 @@ class LogMealViewModel(
             val added = current.mealItems
             // An ingredient that is in both keeps the new portion.
             val merged = meal.items.filter { old -> added.none { it.ingredientId == old.ingredientId } } + added
-            repository.updateMeal(meal.id, meal.eatenAt, clock.offsetMinAt(meal.eatenAt), merged, meal.favoriteId)
+            repository.updateMeal(meal.id, meal.eatenAt, clock.offsetMinAt(meal.eatenAt), merged, meal.favoriteId, meal.slot ?: current.slot)
             if (current.saveAsFavorite) repository.saveFavorite(current.favoriteName.trim(), added)
             resetForm(savedMealId = null, addedTo = current.slot)
         }
@@ -282,12 +304,12 @@ class LogMealViewModel(
             val items = current.mealItems
             val eatenAt = current.exactTime?.let { clock.timeOf(it, 0) } ?: clock.timeOf(slot)
             current.editingMealId?.let { mealId ->
-                repository.updateMeal(mealId, eatenAt, clock.offsetMinAt(eatenAt), items, current.favoriteId)
+                repository.updateMeal(mealId, eatenAt, clock.offsetMinAt(eatenAt), items, current.favoriteId, slot)
                 _state.update { it.copy(saving = false, finished = true) }
                 return@launch
             }
             // Breakfast, lunch and dinner have a fixed time: the same slot on the same day is the same meal.
-            val existing = if (checkExisting && slot != MealSlot.SNACK) repository.mealIdAt(eatenAt) else null
+            val existing = if (checkExisting && slot.hasFixedTime) repository.mealIdAt(eatenAt, slot) else null
             if (existing != null) {
                 _state.update { it.copy(saving = false, existingMealId = existing) }
                 return@launch
@@ -297,7 +319,7 @@ class LogMealViewModel(
             } else {
                 current.favoriteId
             }
-            val mealId = repository.saveMeal(eatenAt = eatenAt, tzOffsetMin = clock.offsetMinAt(eatenAt), items = items, favoriteId = favoriteId)
+            val mealId = repository.saveMeal(eatenAt = eatenAt, tzOffsetMin = clock.offsetMinAt(eatenAt), items = items, favoriteId = favoriteId, slot = slot)
             resetForm(savedMealId = mealId)
         }
     }
@@ -316,6 +338,7 @@ class LogMealViewModel(
                 slotTime = null,
                 exactTime = null,
                 slotMissing = false,
+                slotSuggested = false,
                 favoriteId = null,
                 saveAsFavorite = false,
                 favoriteName = "",

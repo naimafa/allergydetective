@@ -39,6 +39,8 @@ data class LogMealState(
     val exactTime: ExactTime? = null,
     /** Save was tapped without a [slot]: the "when" step is highlighted. */
     val slotMissing: Boolean = false,
+    /** [slot] is the automatic "drink" for a drinks-only selection, not yet confirmed by the user (feedback 20.11.). */
+    val slotSuggested: Boolean = false,
     /** Favorite the selection came from, stored as origin of the meal (TRD 3.2). */
     val favoriteId: Long? = null,
     val saveAsFavorite: Boolean = false,

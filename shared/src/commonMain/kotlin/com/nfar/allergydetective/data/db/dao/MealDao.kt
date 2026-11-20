@@ -10,6 +10,7 @@ import com.nfar.allergydetective.data.db.entity.IngredientEntity
 import com.nfar.allergydetective.data.db.entity.IngredientSynonymEntity
 import com.nfar.allergydetective.data.db.entity.MealEntity
 import com.nfar.allergydetective.data.db.entity.MealIngredientEntity
+import com.nfar.allergydetective.data.db.model.MealKind
 
 @Dao
 interface MealDao {
@@ -120,16 +121,17 @@ interface MealDao {
     @Query("SELECT * FROM meal_ingredients WHERE mealId = :mealId")
     suspend fun mealIngredients(mealId: Long): List<MealIngredientEntity>
 
-    @Query("SELECT id FROM meals WHERE eatenAt = :eatenAt ORDER BY id LIMIT 1")
-    suspend fun mealIdAt(eatenAt: Long): Long?
+    /** The meal of [kind] at exactly [eatenAt]; rows without a kind (before version 8) count as well. */
+    @Query("SELECT id FROM meals WHERE eatenAt = :eatenAt AND (kind = :kind OR kind IS NULL) ORDER BY id LIMIT 1")
+    suspend fun mealIdAt(eatenAt: Long, kind: MealKind): Long?
 
-    @Query("UPDATE meals SET eatenAt = :eatenAt, tzOffsetMin = :tzOffsetMin, favoriteId = :favoriteId WHERE id = :mealId")
-    suspend fun updateMealRow(mealId: Long, eatenAt: Long, tzOffsetMin: Int, favoriteId: Long?)
+    @Query("UPDATE meals SET eatenAt = :eatenAt, tzOffsetMin = :tzOffsetMin, favoriteId = :favoriteId, kind = :kind WHERE id = :mealId")
+    suspend fun updateMealRow(mealId: Long, eatenAt: Long, tzOffsetMin: Int, favoriteId: Long?, kind: MealKind?)
 
-    /** Editing a logged meal: new time and items, same id. */
+    /** Editing a logged meal: new time, kind and items, same id. */
     @Transaction
-    suspend fun updateMealWithItems(mealId: Long, eatenAt: Long, tzOffsetMin: Int, favoriteId: Long?, items: List<MealIngredientEntity>) {
-        updateMealRow(mealId, eatenAt, tzOffsetMin, favoriteId)
+    suspend fun updateMealWithItems(mealId: Long, eatenAt: Long, tzOffsetMin: Int, favoriteId: Long?, kind: MealKind?, items: List<MealIngredientEntity>) {
+        updateMealRow(mealId, eatenAt, tzOffsetMin, favoriteId, kind)
         deleteMealIngredients(mealId)
         insertMealIngredients(items.map { it.copy(mealId = mealId) })
     }

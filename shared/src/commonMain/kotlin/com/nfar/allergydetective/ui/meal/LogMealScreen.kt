@@ -27,6 +27,7 @@ import allergydetective.shared.generated.resources.meal_save_slot
 import allergydetective.shared.generated.resources.meal_search
 import allergydetective.shared.generated.resources.meal_slot_breakfast
 import allergydetective.shared.generated.resources.meal_slot_dinner
+import allergydetective.shared.generated.resources.meal_slot_drink
 import allergydetective.shared.generated.resources.meal_slot_lunch
 import allergydetective.shared.generated.resources.meal_slot_missing
 import allergydetective.shared.generated.resources.meal_slot_snack
@@ -383,5 +384,6 @@ fun mealSlotLabel(slot: MealSlot): String = stringResource(
         MealSlot.LUNCH -> Res.string.meal_slot_lunch
         MealSlot.DINNER -> Res.string.meal_slot_dinner
         MealSlot.SNACK -> Res.string.meal_slot_snack
+        MealSlot.DRINK -> Res.string.meal_slot_drink
     },
 )

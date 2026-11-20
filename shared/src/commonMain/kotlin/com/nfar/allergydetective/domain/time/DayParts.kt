@@ -13,11 +13,20 @@ enum class MealSlot(val hour: Int, val minute: Int) {
 
     /** Snacks keep their clock time: "now" unless changed in the time dialog. */
     SNACK(-1, -1),
+
+    /** A drink such as coffee at 11:00 (feedback 20.11.): like a snack it keeps its clock time. */
+    DRINK(-1, -1),
     ;
 
+    /** Breakfast, lunch and dinner have a fixed time; snack and drink keep their clock time. */
+    val hasFixedTime: Boolean get() = hour >= 0
+
     companion object {
-        /** The meal logged at exactly [hour]:[minute] (e.g. 19:00 = dinner); null for any other time. */
-        fun at(hour: Int, minute: Int): MealSlot? = entries.firstOrNull { it != SNACK && it.hour == hour && it.minute == minute }
+        /**
+         * The meal logged at exactly [hour]:[minute] (e.g. 19:00 = dinner); null for any other time.
+         * Only a fallback for meals without a stored kind (before version 8).
+         */
+        fun at(hour: Int, minute: Int): MealSlot? = entries.firstOrNull { it.hasFixedTime && it.hour == hour && it.minute == minute }
     }
 }
 
@@ -41,10 +50,10 @@ enum class SymptomDayPart(val hour: Int, val minute: Int) {
     }
 }
 
-/** Today's timestamp of [slot], never in the future; a snack is "now". */
+/** Today's timestamp of [slot], never in the future; a snack or drink is "now". */
 fun AppClock.timeOf(slot: MealSlot): Long {
     val now = nowMillis()
-    if (slot == MealSlot.SNACK) return now
+    if (!slot.hasFixedTime) return now
     return millisAt(today(), slot.hour, slot.minute).coerceAtMost(now)
 }
 

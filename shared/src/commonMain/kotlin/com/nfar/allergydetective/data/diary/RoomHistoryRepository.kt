@@ -29,6 +29,7 @@ class RoomHistoryRepository(
                     item.preparation?.let { item.ingredientId to it.toDomain() }
                 }.toMap(),
                 dishName = meal.favoriteId?.let(dishNames::get),
+                slot = meal.kind?.toDomain(),
             )
         }
         val symptomKeys = symptomDao.symptoms().associate { it.id to it.key }

@@ -6,6 +6,7 @@ import androidx.room3.Index
 import androidx.room3.PrimaryKey
 import com.nfar.allergydetective.data.db.model.DayStatus
 import com.nfar.allergydetective.data.db.model.IllnessRelationKind
+import com.nfar.allergydetective.data.db.model.MealKind
 import com.nfar.allergydetective.data.db.model.PortionSize
 import com.nfar.allergydetective.data.db.model.PreparationKind
 
@@ -52,6 +53,8 @@ data class MealEntity(
     val eatenAt: Long,
     val tzOffsetMin: Int,
     val favoriteId: Long?,
+    /** Breakfast, lunch, dinner, snack or drink as chosen when logging; null only for rows from before version 8. */
+    val kind: MealKind? = null,
 )
 
 @Entity(

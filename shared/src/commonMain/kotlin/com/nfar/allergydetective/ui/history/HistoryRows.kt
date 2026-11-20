@@ -12,9 +12,6 @@ import allergydetective.shared.generated.resources.meal_portion_medium
 import allergydetective.shared.generated.resources.meal_portion_small
 import allergydetective.shared.generated.resources.meal_prep_cooked
 import allergydetective.shared.generated.resources.meal_prep_raw
-import allergydetective.shared.generated.resources.meal_slot_breakfast
-import allergydetective.shared.generated.resources.meal_slot_dinner
-import allergydetective.shared.generated.resources.meal_slot_lunch
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +28,7 @@ import androidx.compose.material.icons.outlined.Bedtime
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.LocalCafe
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -59,6 +57,7 @@ import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.displayName
 import com.nfar.allergydetective.ui.common.formatClock
 import com.nfar.allergydetective.ui.meal.ingredientName
+import com.nfar.allergydetective.ui.meal.mealSlotLabel
 import com.nfar.allergydetective.ui.sick.IllnessRelationChoice
 import com.nfar.allergydetective.ui.theme.AppColors
 import org.jetbrains.compose.resources.stringResource
@@ -111,20 +110,20 @@ fun HistoryRow(
     }
 }
 
-/** "Mittagessen · Linsensuppe", "Mahlzeit" for other times. */
+/** The stored kind (feedback 20.11.); meals without one fall back to their time. */
+private fun slotOf(entry: HistoryEntry.MealEntry, clock: AppClock): MealSlot? =
+    entry.slot ?: clock.localTime(entry.time).let { (hour, minute) -> MealSlot.at(hour, minute) }
+
+/** "Mittagessen · Linsensuppe", "Getränk", "Mahlzeit" when the kind is unknown. */
 @Composable
 fun mealTitle(entry: HistoryEntry.MealEntry, clock: AppClock): String {
-    val (hour, minute) = clock.localTime(entry.time)
-    val label = stringResource(
-        when (MealSlot.at(hour, minute)) {
-            MealSlot.BREAKFAST -> Res.string.meal_slot_breakfast
-            MealSlot.LUNCH -> Res.string.meal_slot_lunch
-            MealSlot.DINNER -> Res.string.meal_slot_dinner
-            else -> Res.string.history_meal
-        },
-    )
+    val label = slotOf(entry, clock)?.let { mealSlotLabel(it) } ?: stringResource(Res.string.history_meal)
     return listOfNotNull(label, entry.dishName).joinToString(" · ")
 }
+
+/** A cup for drinks, cutlery for everything else. */
+fun mealIcon(entry: HistoryEntry.MealEntry): ImageVector =
+    if (entry.slot == MealSlot.DRINK) Icons.Outlined.LocalCafe else Icons.Outlined.Restaurant
 
 private fun timeOf(entry: HistoryEntry, clock: AppClock): String =
     clock.localTime(entry.time).let { (hour, minute) -> formatClock(hour, minute) }
@@ -134,7 +133,7 @@ fun EntryRow(entry: HistoryEntry, clock: AppClock, onClick: () -> Unit) {
     val scheme = MaterialTheme.colorScheme
     when (entry) {
         is HistoryEntry.MealEntry -> HistoryRow(
-            icon = Icons.Outlined.Restaurant,
+            icon = mealIcon(entry),
             circle = scheme.primaryContainer,
             tint = scheme.primary,
             title = mealTitle(entry, clock),

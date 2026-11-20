@@ -7,7 +7,9 @@ import com.nfar.allergydetective.data.db.entity.FavoriteIngredientEntity
 import com.nfar.allergydetective.data.db.entity.MealEntity
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.data.db.entity.MealIngredientEntity
+import com.nfar.allergydetective.data.db.model.MealKind
 import com.nfar.allergydetective.data.db.model.PortionSize
+import com.nfar.allergydetective.domain.time.MealSlot
 import com.nfar.allergydetective.data.db.model.PreparationKind
 import com.nfar.allergydetective.domain.analysis.model.Preparation
 import com.nfar.allergydetective.domain.analysis.model.MealItem
@@ -19,7 +21,7 @@ import com.nfar.allergydetective.domain.diary.MealRepository
 class RoomMealRepository(private val dao: MealDao) : MealRepository {
 
     override suspend fun ingredients(): List<IngredientInfo> =
-        dao.ingredients().map { IngredientInfo(it.id, it.key, it.customName) }
+        dao.ingredients().map { IngredientInfo(it.id, it.key, it.customName, it.categoryId) }
 
     override suspend fun synonyms(language: String): Map<Long, List<String>> =
         dao.synonyms(language).groupBy({ it.ingredientId }, { it.synonym })
@@ -31,9 +33,9 @@ class RoomMealRepository(private val dao: MealDao) : MealRepository {
     override suspend fun ingredientIdsNeedingPreparation(): Set<Long> =
         dao.ingredientIdsWithProperties(HEAT_LABILE_PROPERTY_KEYS.toList()).toSet()
 
-    override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?): Long =
+    override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?): Long =
         dao.insertMealWithItems(
-            meal = MealEntity(eatenAt = eatenAt, tzOffsetMin = tzOffsetMin, favoriteId = favoriteId),
+            meal = MealEntity(eatenAt = eatenAt, tzOffsetMin = tzOffsetMin, favoriteId = favoriteId, kind = slot?.toEntity()),
             items = items.map { MealIngredientEntity(mealId = 0, ingredientId = it.ingredientId, portion = it.portion.toEntity(), preparation = it.preparation?.toEntity()) },
         )
 
@@ -63,19 +65,36 @@ class RoomMealRepository(private val dao: MealDao) : MealRepository {
     override suspend fun meal(mealId: Long): LoggedMeal? {
         val meal = dao.meal(mealId) ?: return null
         val items = dao.mealIngredients(mealId).map { MealItem(it.ingredientId, it.portion.toDomain(), it.preparation?.toDomain()) }
-        return LoggedMeal(meal.id, meal.eatenAt, items, meal.favoriteId, meal.tzOffsetMin)
+        return LoggedMeal(meal.id, meal.eatenAt, items, meal.favoriteId, meal.tzOffsetMin, meal.kind?.toDomain())
     }
 
-    override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?) =
+    override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?) =
         dao.updateMealWithItems(
             mealId = mealId,
             eatenAt = eatenAt,
             tzOffsetMin = tzOffsetMin,
             favoriteId = favoriteId,
+            kind = slot?.toEntity(),
             items = items.map { MealIngredientEntity(mealId = mealId, ingredientId = it.ingredientId, portion = it.portion.toEntity(), preparation = it.preparation?.toEntity()) },
         )
 
-    override suspend fun mealIdAt(eatenAt: Long): Long? = dao.mealIdAt(eatenAt)
+    override suspend fun mealIdAt(eatenAt: Long, slot: MealSlot): Long? = dao.mealIdAt(eatenAt, slot.toEntity())
+}
+
+internal fun MealKind.toDomain(): MealSlot = when (this) {
+    MealKind.BREAKFAST -> MealSlot.BREAKFAST
+    MealKind.LUNCH -> MealSlot.LUNCH
+    MealKind.DINNER -> MealSlot.DINNER
+    MealKind.SNACK -> MealSlot.SNACK
+    MealKind.DRINK -> MealSlot.DRINK
+}
+
+internal fun MealSlot.toEntity(): MealKind = when (this) {
+    MealSlot.BREAKFAST -> MealKind.BREAKFAST
+    MealSlot.LUNCH -> MealKind.LUNCH
+    MealSlot.DINNER -> MealKind.DINNER
+    MealSlot.SNACK -> MealKind.SNACK
+    MealSlot.DRINK -> MealKind.DRINK
 }
 
 internal fun PortionSize.toDomain(): Portion = when (this) {

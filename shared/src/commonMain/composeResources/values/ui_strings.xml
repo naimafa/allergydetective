@@ -222,6 +222,7 @@
     <string name="meal_slot_lunch">Lunch</string>
     <string name="meal_slot_dinner">Dinner</string>
     <string name="meal_slot_snack">Snack</string>
+    <string name="meal_slot_drink">Drink</string>
     <string name="meal_search">Search ingredient …</string>
     <string name="meal_no_results">Nothing found.</string>
     <string name="meal_portion_help">S = a few bites or half a glass · M = a fist or one glass · L = two fists or two glasses</string>

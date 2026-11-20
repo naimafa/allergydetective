@@ -1,13 +1,19 @@
 package com.nfar.allergydetective.domain.diary
 
 import com.nfar.allergydetective.domain.analysis.model.MealItem
+import com.nfar.allergydetective.domain.time.MealSlot
 
 /** An ingredient as the food log shows it. Predefined ones have a [key], custom ones a [customName]. */
 data class IngredientInfo(
     val id: Long,
     val key: String?,
     val customName: String?,
+    /** Category of the ingredient; only drinks ([BEVERAGES_CATEGORY_ID]) preselect "drink" when logging. */
+    val categoryId: Long? = null,
 )
+
+/** Seed category "beverages" (categories.json). */
+const val BEVERAGES_CATEGORY_ID = 11L
 
 /** A saved meal template, e.g. "Müsli" (UX 3.1). */
 data class FavoriteInfo(
@@ -36,7 +42,7 @@ interface MealRepository {
      * Saves the meal with its items in one transaction and returns its id.
      * [favoriteId] only records the origin, the items are always a snapshot (TRD 3.2).
      */
-    suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long? = null): Long
+    suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long? = null, slot: MealSlot? = null): Long
 
     /** Favorites with their default portions, sorted by name. */
     suspend fun favorites(): List<FavoriteInfo>
@@ -60,14 +66,14 @@ interface MealRepository {
     /** A logged meal with its items, for editing it from the history (self-test 19.11.). */
     suspend fun meal(mealId: Long): LoggedMeal? = null
 
-    /** Replaces time and items of a logged meal; the id stays. */
-    suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?) {
+    /** Replaces time, kind and items of a logged meal; the id stays. */
+    suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot? = null) {
         deleteMeal(mealId)
-        saveMeal(eatenAt, tzOffsetMin, items, favoriteId)
+        saveMeal(eatenAt, tzOffsetMin, items, favoriteId, slot)
     }
 
-    /** A meal logged at exactly [eatenAt], e.g. today's dinner at 19:00, or null. */
-    suspend fun mealIdAt(eatenAt: Long): Long? = null
+    /** A meal of [slot] logged at exactly [eatenAt], e.g. today's dinner at 19:00, or null. */
+    suspend fun mealIdAt(eatenAt: Long, slot: MealSlot): Long? = null
 }
 
 data class LoggedMeal(
@@ -76,6 +82,8 @@ data class LoggedMeal(
     val items: List<MealItem>,
     val favoriteId: Long?,
     val tzOffsetMin: Int = 0,
+    /** Stored kind (feedback 20.11.); null only for meals from before version 8. */
+    val slot: MealSlot? = null,
 )
 
 /** Current app language for the synonym search, e.g. "de". */
