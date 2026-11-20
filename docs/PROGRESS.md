@@ -54,6 +54,9 @@
 - [x] Erste Self-Test-Rückmeldungen (18.11.2026) umgesetzt: 14 Notizen plus Nachträge, Details in [OFFENE_PUNKTE.md](OFFENE_PUNKTE.md) „Self-Test-Feedback“ und [ENTSCHEIDUNGEN.md](ENTSCHEIDUNGEN.md)
 - [x] Datenbank bis Version 6 (Migrationen für bestehende Installationen, je im Emulator und auf dem Handy geprüft)
 - [x] APK für weitere Testgeräte unter `D:\workspace\allergydetective-apk`
+- [x] Rückmeldungen vom 20.11.2026 (PRs #27–#39 nach `develop`, Merge steht aus): Getränk als eigene Art, Dauer beim Symptom, Bericht für den Arzt als PDF, Datenbank verschlüsselt (Android), neues App-Icon und Name „Allergy Detective“, Allergien zuklappbar, Legenden der Skalen, Korrekturen bei Schriftgröße 125 %
+- [x] Datenbank bis Version 9 (8: Art der Mahlzeit, 9: Dauer); Umstellung auf Verschlüsselung auf dem Handy mit echten Daten geprüft
+- [x] Klickbarer HTML-Prototyp [docs/prototype](prototype/allergy-detective-prototype.html), Screen für Screen mit dem Handy abgeglichen
 - [ ] 7+ Tage selbst nutzen, Notizen führen (SELFTEST.md, Kapitel 3)
 - [ ] Export + Notizen auswerten, Schwellenwerte in `AnalysisConfig` kalibrieren
 
@@ -85,3 +88,4 @@
 | 17.11.2026 | Phase 4 vorbereitet: JSON-Export für die Kalibrierung (`feature/data-export`), Anleitung SELFTEST.md. Installation aufs Handy steht aus (Handy nicht verbunden) |
 | 18.11.2026 | Self-Test-Rückmeldungen auf `develop` (19 Branches): 4 Bugs (Speichern-Button, Export als Datei, Tages-Abschluss wählt heute, Dinkelvollkornbrot), Öle & Oliven, Mahlzeit und Tageszeit statt Uhrzeit, kranke Tage und Krankheitszeiträume, roh/gekocht als Pflicht, Gerichte anlegen/bearbeiten, neue Zutat nur „Was ist drin?“, Doppelt-Prüfung und Zusammenführen, Einführung (auch im Profil), Historie und Kacheln neu gestaltet. DB-Migrationen 1 → 6. 157 Unit-Tests grün, jeder Schritt im Emulator geprüft und aufs Handy installiert |
 | 18.11.2026 | PC-Absturz: Git-Metadaten repariert, nichts verloren. `gh` eingerichtet, `develop` per PR #5 nach `main` gemergt (erster PR seit Phase 1) |
+| 20.11.2026 | 13 PRs nach `develop` (#27–#39), je ein Branch, aufeinander aufbauend: Profil-Reihenfolge, Getränk (Migration 7 → 8), Icon, Dauer (8 → 9), Arzt-PDF, SQLCipher-Verschlüsselung mit Keystore, Icon aus dem Entwurf, zuklappbare Allergien, Skalen-Legenden, HTML-Prototyp, drei Korrekturen aus dem Handy-Abgleich. Tests grün, Stand auf dem Handy installiert; Verschlüsselung dort mit echten Daten geprüft |

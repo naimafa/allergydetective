@@ -15,10 +15,10 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 0.5 Setup | ca. 3:42 h | davon ca. 2:15 h Android Studio / KMP-Einrichtung, 30 min Git-Push mit Auth-Problem, 24 min App aufs Handy |
 | 1 Daten-Herz | ca. 1:16 h | Room-Schema v1, Seed-Daten, Analyse-Engine, Gruppierung, Koin/Seeder, Repository |
 | 2 Skelett | ca. 1:16 h | Alle Screens plus die offenen Punkte (Favoriten, Historie, Reminder, Spracheingabe …) |
-| 3 Design | ca. 0:16 h | Theme hell/dunkel, Icons, Dashboard, Symptom-Kacheln, Ergebnis-Karten |
-| 4 Self-Test | ca. 3:07 h | 17.11.: Vorbereitung (0:11). 18.11.: Rückmeldungen aus dem Self-Test umgesetzt, inkl. 0:07 Absturz-Reparatur (2:56); der 7-Tage-Test selbst läuft |
-| Doku / Organisation | ca. 0:26 h | OFFENE_PUNKTE, PROGRESS, Zeitprotokoll, 18.11. auch GitHub-PR (sonst meist in den Phasen enthalten) |
-| **Gesamt (erfasst)** | **ca. 10:03 h** | ohne Konzeptphase |
+| 3 Design | ca. 0:55 h | 17.11.: Theme hell/dunkel, Icons, Dashboard, Symptom-Kacheln, Ergebnis-Karten (0:16). 20.11.: App-Icon, HTML-Prototyp (0:39) |
+| 4 Self-Test | ca. 5:00 h | 17.11.: Vorbereitung (0:11). 18.11.: Rückmeldungen aus dem Self-Test umgesetzt, inkl. 0:07 Absturz-Reparatur (2:56). 20.11.: Getränk, Dauer, Arzt-PDF, Verschlüsselung, Feedback-Runde (1:53); der 7-Tage-Test selbst läuft |
+| Doku / Organisation | ca. 0:35 h | OFFENE_PUNKTE, PROGRESS, Zeitprotokoll, 18.11. auch GitHub-PR (sonst meist in den Phasen enthalten) |
+| **Gesamt (erfasst)** | **ca. 12:44 h** | ohne Konzeptphase; der 19.11. fehlt noch (andere Sitzung, bitte nachtragen) |
 
 ---
 
@@ -64,6 +64,20 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 18.11.2026 | 21:57–22:21 | 0:24 | 4 | Krankheitszeitraum (Migration 5 → 6), Historie aufgeräumt, Kachel-Design Start und Symptome; Installation | – |
 | 18.11.2026 | 22:21–22:33 | 0:12 | Doku | APK für andere Handys bereitgelegt, `gh` angemeldet, PR #5 `develop` → `main` gemergt | `gh auth login` hing im Terminal (Sprachausgabe-Modus) → Anmeldung per Gerätecode |
 | 18.11.2026 | 22:33–22:40 | 0:07 | Doku | Zeitprotokoll und PROGRESS nachgetragen | – |
+| 20.11.2026 | 20:47–20:52 | 0:05 | 4 | Neue Punkte gesichtet (Icon, Arzt-Export, Getränk, Verschlüsselung), Ursache „Getränk wird Mahlzeit“ gefunden, Stand Verschlüsselung geprüft | – |
+| 20.11.2026 | 20:52–20:58 | 0:06 | 4 | Profil: Einstellungen oben, bekannte Allergien unten (PR #27) | – |
+| 20.11.2026 | 20:58–21:07 | 0:09 | 4 | Getränk als eigene Art, Art wird gespeichert und bleibt bei geänderter Uhrzeit (Migration 7 → 8, PR #28) | Kein Python auf dem PC → Änderungen einzeln; SQLite-Test der Migration auf dem PC nicht möglich (native Bibliothek fehlt) |
+| 20.11.2026 | 21:07–21:10 | 0:03 | 3 | App-Icon als Vektor nachgebaut, Vorschau per Edge (PR #29) | Veralteter Build-Cache meldete fehlende Ressource |
+| 20.11.2026 | 21:10–21:15 | 0:05 | 4 | Dauer beim Symptom, optional (Migration 8 → 9, PR #30) | – |
+| 20.11.2026 | 21:15–21:20 | 0:05 | 4 | Bericht für den Arzt als PDF (14/30/90 Tage, PR #31) | – |
+| 20.11.2026 | 21:20–22:15 | 0:55 | 4 / 3 | Verschlüsselung recherchiert und gebaut: eigener Room-3-Treiber auf SQLCipher, Schlüssel im Android Keystore, einmalige Umstellung alter Daten (PR #32); Icon aus dem Bild zugeschnitten (PR #33) | Kein offizieller SQLCipher-Treiber für Room 3; Sitzung brach mitten im Build ab → beschädigte Gradle-Sperrdateien und KSP-Datei bereinigt |
+| 20.11.2026 | 22:15–22:27 | 0:12 | 4 | Installation aufs Handy: Umstellung auf Verschlüsselung stürzte ab (ATTACH ohne CREATE), behoben, zweiter Versuch erfolgreich (DB verschlüsselt, Migration 7 → 9) | Alte Daten blieben beim Absturz wie geplant unverändert |
+| 20.11.2026 | 22:27–22:35 | 0:08 | 3 | Flaches Icon aus dem neuen Bild, zentriert für alle Masken; Name „Allergy Detective“ mit Leerzeichen | – |
+| 20.11.2026 | 22:35–22:37 | 0:02 | 4 | Bekannte Allergien im Profil zuklappbar (PR #34) | – |
+| 20.11.2026 | 22:37–22:44 | 0:07 | 4 | Design-Feedback: Legenden für Schlafqualität und Stress, Stärke in Worten, „Schlaf letzte Nacht“, Krankheit als Knopf (PR #35) | – |
+| 20.11.2026 | 22:44–23:12 | 0:28 | 3 | Klickbarer HTML-Prototyp, nach Rückmeldung nach Code und Handy-Screenshots neu gebaut, Screen für Screen abgeglichen (PR #36) | Erste Version frei gestaltet, sah nicht aus wie die App; automatische Screenshot-Serie lieferte nur den Startbildschirm |
+| 20.11.2026 | 23:12–23:19 | 0:07 | 4 | Aus dem Abgleich: „Datum“ abgeschnitten (PR #37), Sterne der Schlafqualität abgeschnitten (PR #38), Symptom-Fenster breiter (PR #39); Dialog „Neues Gericht“ im Prototyp | – |
+| 20.11.2026 | 23:19–23:28 | 0:09 | Doku | Zeitprotokoll und PROGRESS nachgetragen | 19.11. fehlt im Protokoll |
 
 ---
 
@@ -75,3 +89,5 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 - **Zeiten ab dem 16.11. abends** stammen aus Git-Commits und dem Reflog; der Beginn eines Blocks ist daher der erste Git-Schritt, nicht die erste Nachricht.
 - **18.11. (Self-Test-Rückmeldungen) in ca. 2:56 h:** 14 Notizen plus 6 Nachträge aus dem Testen umgesetzt, 5 Datenbank-Migrationen, jede mit Upgrade-Test im Emulator. Kurze Runden "bauen → im Emulator prüfen → aufs Handy" haben Fehler früh gezeigt (z.B. Butter hinter der Tastatur).
 - **Absturz kostete nur ca. 7 min**, weil Git-Objekte heil blieben und nur die zuletzt geschriebenen Dateien betroffen waren. Lehre: vor riskanten Schritten an echten Daten immer zuerst sichern (so beim Zusammenführen der doppelten Zutaten gemacht).
+- **20.11. in ca. 2:41 h, 13 PRs:** Die Verschlüsselung war der größte Block (ca. 1:07 h inkl. Handy-Test), weil es für Room 3 keinen fertigen SQLCipher-Treiber gibt. Der Fehler bei der Umstellung zeigte sich erst auf dem echten Gerät; die Regel „alte Datei erst nach geprüfter Kopie löschen“ hat die Daten geschützt.
+- **Handy-Screenshots schlagen Annahmen:** Der Abgleich Screen für Screen hat zwei echte Fehler bei Schriftgröße 125 % gefunden (abgeschnittenes „Datum“, fehlende Sterne), die in Tests und Code-Review nicht auffallen.
