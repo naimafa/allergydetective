@@ -44,7 +44,7 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Sick
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
+import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -71,7 +71,7 @@ fun HistoryFilterRow(selected: HistoryFilter, onSelect: (HistoryFilter) -> Unit)
     // One line that can be swiped sideways: with a large system font the four chips do not fit (phone test 19.11.).
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) {
         HistoryFilter.entries.forEach { filter ->
-            FilterChip(
+            AppFilterChip(
                 selected = filter == selected,
                 onClick = { onSelect(filter) },
                 leadingIcon = {

@@ -22,7 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
+import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -94,7 +94,7 @@ fun CustomIngredientDialog(
                     Text(stringResource(Res.string.custom_category_fallback), style = MaterialTheme.typography.bodySmall)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         state.categories.forEach { category ->
-                            FilterChip(
+                            AppFilterChip(
                                 selected = state.chosenCategoryId == category.id,
                                 onClick = { viewModel.onCategoryChange(category.id) },
                                 label = { Text(displayName(NamePrefix.CATEGORY, category.key)) },

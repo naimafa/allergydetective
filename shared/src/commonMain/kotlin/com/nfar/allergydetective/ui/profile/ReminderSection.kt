@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.FilterChip
+import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -47,7 +47,7 @@ fun ReminderSection(viewModel: ReminderViewModel = koinViewModel()) {
         if (state.settings.enabled) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 ReminderViewModel.HOURS.forEach { hour ->
-                    FilterChip(
+                    AppFilterChip(
                         selected = state.settings.hour == hour && state.settings.minute == 0,
                         onClick = { viewModel.onTimeChange(hour, 0) },
                         label = { Text(formatClock(hour, 0)) },

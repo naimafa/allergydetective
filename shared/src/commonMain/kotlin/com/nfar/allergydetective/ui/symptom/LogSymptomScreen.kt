@@ -46,7 +46,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
+import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
@@ -71,6 +71,7 @@ import com.nfar.allergydetective.ui.common.SavedSnackbarEffect
 import com.nfar.allergydetective.ui.common.ScreenScaffold
 import com.nfar.allergydetective.ui.common.SectionTitle
 import com.nfar.allergydetective.ui.common.TimeChoiceRow
+import com.nfar.allergydetective.ui.common.ScaleChips
 import com.nfar.allergydetective.ui.sick.IllnessRelationChoice
 import com.nfar.allergydetective.ui.common.displayName
 import com.nfar.allergydetective.ui.common.emergencyNumberFor
@@ -226,15 +227,7 @@ private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, viewModel: L
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(stringResource(Res.string.symptom_how_strong), style = MaterialTheme.typography.titleSmall)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    (1..LogSymptomViewModel.MAX_INTENSITY).forEach { value ->
-                        FilterChip(
-                            selected = draft.intensity == value,
-                            onClick = { viewModel.onIntensityChange(value) },
-                            label = { Text(value.toString()) },
-                        )
-                    }
-                }
+                ScaleChips(draft.intensity, viewModel::onIntensityChange, labels = (1..LogSymptomViewModel.MAX_INTENSITY).map { it.toString() })
                 Text(stringResource(Res.string.symptom_intensity_range), style = MaterialTheme.typography.bodySmall)
                 Text(stringResource(Res.string.symptom_when), style = MaterialTheme.typography.titleSmall)
                 TimeChoiceRow(
