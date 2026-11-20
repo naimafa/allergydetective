@@ -41,6 +41,7 @@ class RoomHistoryRepository(
                 intensity = entry.intensity,
                 note = entry.note,
                 illnessRelation = entry.illnessRelation?.toDomain(),
+                duration = entry.duration?.toDomain(),
             )
         }
         return (meals + symptoms).sortedByDescending { it.time }

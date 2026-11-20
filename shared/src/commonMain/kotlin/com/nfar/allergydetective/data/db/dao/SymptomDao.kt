@@ -5,6 +5,7 @@ import androidx.room3.Insert
 import androidx.room3.Query
 import com.nfar.allergydetective.data.db.entity.SymptomEntity
 import com.nfar.allergydetective.data.db.entity.SymptomEntryEntity
+import com.nfar.allergydetective.data.db.model.DurationKind
 import com.nfar.allergydetective.data.db.model.IllnessRelationKind
 
 @Dao
@@ -36,6 +37,9 @@ interface SymptomDao {
 
     @Query("UPDATE symptom_entries SET illnessRelation = :relation WHERE id = :entryId")
     suspend fun setIllnessRelation(entryId: Long, relation: IllnessRelationKind?)
+
+    @Query("UPDATE symptom_entries SET duration = :duration WHERE id = :entryId")
+    suspend fun setDuration(entryId: Long, duration: DurationKind?)
 
     /** In a period of illness or marked as sick in the day check (factor key "sick"). */
     @Query(
