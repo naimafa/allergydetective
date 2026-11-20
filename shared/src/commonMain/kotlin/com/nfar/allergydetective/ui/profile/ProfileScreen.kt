@@ -26,7 +26,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * Tab "Profil": known allergies and the purpose notice. [extraContent] is filled by
+ * Tab "Profil": settings ([extraContent], e.g. reminder, theme, export) on top, then the
+ * known allergies and the purpose notice. [extraContent] is filled by
  * later features such as the reminder settings.
  */
 @Composable
@@ -47,13 +48,14 @@ fun ProfileScreen(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
+        // Settings first: the allergy list is long and hid everything below it (feedback 20.11.).
+        extraContent()
         KnownAllergiesContent(state, viewModel::onToggle)
         Button(
             onClick = viewModel::onSave,
             enabled = !state.loading,
             modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
         ) { Text(stringResource(Res.string.common_save)) }
-        extraContent()
         SectionTitle(stringResource(Res.string.onboarding_purpose_title))
         Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium)
     }
