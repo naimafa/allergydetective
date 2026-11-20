@@ -68,11 +68,14 @@ fun DayCheckScreen(
     onDone: () -> Unit,
     /** "I had some: log a symptom" from the no-complaints question. */
     onLogSymptom: () -> Unit = {},
+    /** Day to open, e.g. from the history; null = today. */
+    day: Long? = null,
     viewModel: DayCheckViewModel = koinViewModel(),
     sickViewModel: SickPeriodsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.saved) { if (state.saved) onDone() }
+    LaunchedEffect(day) { day?.let(viewModel::onDaySelected) }
     // Entering the screen again, e.g. after logging a symptom.
     LaunchedEffect(Unit) { viewModel.onResume() }
 

@@ -50,8 +50,8 @@ class DayCheckViewModel(
     private val saveLock = Mutex()
     val state: StateFlow<DayCheckState> = _state.asStateFlow()
 
-    init {
-        viewModelScope.launch {
+    /** Loads the days and today; a day chosen right away (from the history) waits for it. */
+    private val initJob = viewModelScope.launch {
             val today = clock.today()
             val days = (0..DAYS_BACK).map { today - it }
             val confirmed = repository.confirmedDays(days)
@@ -62,10 +62,12 @@ class DayCheckViewModel(
             }
             loadDay(today)
         }
-    }
 
     fun onDaySelected(epochDay: Long) {
-        viewModelScope.launch { loadDay(epochDay) }
+        viewModelScope.launch {
+            initJob.join()
+            loadDay(epochDay)
+        }
     }
 
     /** Back on the screen, e.g. after logging a symptom from the "no complaints?" question. */

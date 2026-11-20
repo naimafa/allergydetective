@@ -25,6 +25,8 @@ import allergydetective.shared.generated.resources.history_sick_marked
 import allergydetective.shared.generated.resources.history_sick_period
 import allergydetective.shared.generated.resources.sick_title
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -35,6 +37,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Bedtime
+import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Sick
 import androidx.compose.material3.AlertDialog
@@ -63,11 +68,24 @@ const val SICK_FACTOR_KEY = "sick"
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HistoryFilterRow(selected: HistoryFilter, onSelect: (HistoryFilter) -> Unit) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    // One line that can be swiped sideways: with a large system font the four chips do not fit (phone test 19.11.).
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) {
         HistoryFilter.entries.forEach { filter ->
             FilterChip(
                 selected = filter == selected,
                 onClick = { onSelect(filter) },
+                leadingIcon = {
+                    Icon(
+                        when (filter) {
+                            HistoryFilter.ALL -> Icons.Outlined.ViewAgenda
+                            HistoryFilter.FOOD -> Icons.Outlined.Restaurant
+                            HistoryFilter.SYMPTOMS -> Icons.Outlined.Bolt
+                            HistoryFilter.DAYS -> Icons.Outlined.Bedtime
+                        },
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                },
                 label = {
                     Text(
                         stringResource(
@@ -95,15 +113,15 @@ fun SickBand(period: SickPeriod?, onEdit: (SickPeriod) -> Unit) {
         ?: stringResource(Res.string.history_sick_marked)
     val clickable = if (period != null) Modifier.clickable { onEdit(period) } else Modifier
     Surface(
-        shape = MaterialTheme.shapes.small,
+        shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.tertiaryContainer,
         contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = clickable.padding(horizontal = 12.dp, vertical = 8.dp),
+            modifier = clickable.padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
             Icon(Icons.Outlined.Sick, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(text, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
@@ -112,30 +130,16 @@ fun SickBand(period: SickPeriod?, onEdit: (SickPeriod) -> Unit) {
     }
 }
 
-/** "Day check · Sleep 7 h · Stress 2/5 · Sport" in one row of the day card. */
+/** "Sleep 7 h · Wellbeing 3/5 · Stress 2/5 · Sport" for the day check row. */
 @Composable
-fun DayCheckRow(check: DayCheckData, factorKeys: Map<Long, String>) {
-    val parts = buildList {
-        check.wellbeing?.let { add(stringResource(Res.string.history_check_wellbeing, it)) }
-        check.sleepHours?.let { add(stringResource(Res.string.history_check_sleep, formatHours(it))) }
-        check.sleepQuality?.let { add(stringResource(Res.string.history_check_sleep_quality, it)) }
-        check.stress?.let { add(stringResource(Res.string.history_check_stress, it)) }
-        check.factorIds.sorted().mapNotNull(factorKeys::get).filter { it != SICK_FACTOR_KEY }
-            .forEach { add(displayName(NamePrefix.FACTOR, it)) }
-    }
-    Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
-        Icon(
-            Icons.Outlined.Bedtime,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(end = 12.dp, top = 2.dp).size(20.dp),
-        )
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(stringResource(Res.string.history_check_title), style = MaterialTheme.typography.titleSmall)
-            if (parts.isNotEmpty()) Text(parts.joinToString(" · "), style = MaterialTheme.typography.bodyMedium)
-        }
-    }
-}
+fun dayCheckSummary(check: DayCheckData, factorKeys: Map<Long, String>): String = buildList {
+    check.sleepHours?.let { add(stringResource(Res.string.history_check_sleep, formatHours(it))) }
+    check.wellbeing?.let { add(stringResource(Res.string.history_check_wellbeing, it)) }
+    check.stress?.let { add(stringResource(Res.string.history_check_stress, it)) }
+    check.sleepQuality?.let { add(stringResource(Res.string.history_check_sleep_quality, it)) }
+    check.factorIds.sorted().mapNotNull(factorKeys::get).filter { it != SICK_FACTOR_KEY }
+        .forEach { add(displayName(NamePrefix.FACTOR, it)) }
+}.joinToString(" · ")
 
 private fun formatHours(hours: Float): String =
     if (hours % 1f == 0f) hours.toInt().toString() else hours.toString()
