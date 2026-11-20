@@ -97,6 +97,7 @@ fun MainScreen(
                     modifier = modifier,
                     state = homeState,
                     onAction = onHomeAction,
+                    onOpenToday = { tab = MainTab.HISTORY },
                     banner = { sickState.ongoing?.let { SickBanner(it, sickViewModel::onRecovered) } },
                 )
             }

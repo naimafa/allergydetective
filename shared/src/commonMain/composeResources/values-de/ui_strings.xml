@@ -22,6 +22,18 @@
         <item quantity="other">Noch %1$d Tage bis zur ersten Auswertung.</item>
     </plurals>
     <string name="home_actions_title">Was möchtest du heute machen?</string>
+    <string name="today_title">Dein heutiger Tag</string>
+    <plurals name="today_meals">
+        <item quantity="one">%1$d Mahlzeit</item>
+        <item quantity="other">%1$d Mahlzeiten</item>
+    </plurals>
+    <plurals name="today_symptoms">
+        <item quantity="one">%1$d Symptom</item>
+        <item quantity="other">%1$d Symptome</item>
+    </plurals>
+    <string name="today_nothing_yet">Noch nichts eingetragen.</string>
+    <string name="today_open">Abends den Tag abschließen.</string>
+    <string name="today_done">Heute ist erledigt.</string>
     <string name="home_day_open">Offen</string>
     <string name="home_day_done">Erledigt</string>
     <string name="home_today_count">%1$d heute</string>
