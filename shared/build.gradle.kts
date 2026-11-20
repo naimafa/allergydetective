@@ -46,6 +46,9 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.androidx.work.runtime)
             implementation(libs.androidx.activity.compose)
+            // Encrypted database on Android (feedback 20.11.): SQLCipher + the SupportSQLite connection of androidx.sqlite.
+            implementation(libs.sqlcipher.android)
+            implementation(libs.sqlite.framework)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -57,13 +60,16 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.room3.runtime)
-            implementation(libs.sqlite.bundled)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.kotlinx.datetime)
             implementation(libs.navigation.compose)
             implementation(libs.compose.material.icons)
+        }
+        iosMain.dependencies {
+            // iOS keeps the bundled SQLite until its SQLCipher driver follows; Android uses SQLCipher.
+            implementation(libs.sqlite.bundled)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -148,7 +148,8 @@ Symptome mit `is_red_flag = true` (Atemnot, Schwellung) zeigen **vor** dem Speic
 * Vollständige lokale Datenhaltung, kein Tracking von Gesundheitsdaten.
 * Android Auto-Backup deaktivieren (`allowBackup="false"` / `dataExtractionRules`), damit keine Daten in die Google-Cloud gelangen.
 * In-App-Purchase über Google Play Billing, Prüfung lokal.
-* **Verschlüsselung (SQLCipher), verschlüsselter Export/Import und App-Sperre:** Entscheidung später (siehe [OFFENE_PUNKTE.md](OFFENE_PUNKTE.md)).
+* **Verschlüsselung (Android, 20.11.2026):** Die Datenbank ist mit SQLCipher verschlüsselt (`SqlCipherDriver`: SQLCipher-`SQLiteDatabase` direkt in androidx `SupportSQLiteConnection`, ohne Open-Helper, damit Room `user_version` selbst verwaltet). Passphrase: 256 Bit zufällig, mit AES-GCM-Schlüssel aus dem Android Keystore verpackt in SharedPreferences. Eine alte unverschlüsselte Datei (Header "SQLite format 3") wird beim ersten Öffnen per `sqlcipher_export` kopiert, geprüft und ersetzt. iOS nutzt vorerst den gebündelten Treiber.
+* **Verschlüsselter Export/Import und App-Sperre:** später (siehe [OFFENE_PUNKTE.md](OFFENE_PUNKTE.md)).
 
 ---
 

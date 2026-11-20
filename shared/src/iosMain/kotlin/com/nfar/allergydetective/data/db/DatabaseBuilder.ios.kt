@@ -2,6 +2,7 @@ package com.nfar.allergydetective.data.db
 
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -18,5 +19,6 @@ fun appDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
         error = null,
     )
     val dbPath = requireNotNull(documentDir?.path) + "/" + DATABASE_NAME
-    return Room.databaseBuilder<AppDatabase>(name = dbPath)
+    // Encryption on iOS (SQLCipher driver) follows with the iOS build; Android is encrypted since 20.11.
+    return Room.databaseBuilder<AppDatabase>(name = dbPath).setDriver(BundledSQLiteDriver())
 }
