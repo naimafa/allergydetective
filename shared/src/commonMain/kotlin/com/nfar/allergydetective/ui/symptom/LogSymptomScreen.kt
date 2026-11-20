@@ -58,6 +58,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -121,23 +127,47 @@ fun LogSymptomScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SymptomGrid(state: LogSymptomState, viewModel: LogSymptomViewModel, modifier: Modifier) {
+private fun SymptomGrid(state: LogSymptomState, viewModel: LogSymptomViewModel, modifier: Modifier) = BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    // Feedback 19.11.: compact tiles, names in one line. One text size for all tiles: the largest at
+    // which every name fits (text width = half the screen minus padding, emoji circle and gaps).
+    val textWidth = (maxWidth - 32.dp - TILE_GAP) / TILE_COLUMNS - 10.dp * 2 - EMOJI_SIZE - 8.dp - 4.dp
+    val names = state.groups.flatMap { it.second }.map { displayName(NamePrefix.SYMPTOM, it.key) + if (it.isRedFlag) " ⚠️" else "" }
+    val nameStyle = sharedNameStyle(names, textWidth)
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item { Text(stringResource(Res.string.symptom_long_press_hint), style = MaterialTheme.typography.bodySmall) }
         if (state.favorites.isNotEmpty()) {
             item { SectionTitle(stringResource(Res.string.symptom_favorites)) }
-            item { TileRow(state.favorites, viewModel) }
+            item { TileRow(state.favorites, viewModel, nameStyle) }
         }
         state.groups.forEach { (group, symptoms) ->
             item(key = group) { GroupTitle(group) }
-            item(key = "$group-tiles") { TileRow(symptoms, viewModel) }
+            item(key = "$group-tiles") { TileRow(symptoms, viewModel, nameStyle) }
         }
     }
 }
+
+/** bodyMedium (15 sp) down to 12 sp in steps of 0.5 sp: the largest size at which every name fits in one line. */
+@Composable
+private fun sharedNameStyle(names: List<String>, textWidth: Dp): TextStyle {
+    val measurer = rememberTextMeasurer()
+    val widthPx = with(LocalDensity.current) { textWidth.toPx() }
+    val base = MaterialTheme.typography.bodyMedium.copy(letterSpacing = 0.sp)
+    return remember(names, widthPx, base) {
+        var size = base.fontSize.value
+        while (size > MIN_NAME_SP) {
+            val candidate = base.copy(fontSize = size.sp)
+            if (names.all { measurer.measure(it, candidate, maxLines = 1, softWrap = false).size.width <= widthPx }) return@remember candidate
+            size -= 0.5f
+        }
+        base.copy(fontSize = MIN_NAME_SP.sp)
+    }
+}
+
+private const val MIN_NAME_SP = 12f
 
 /** Group name with a dot in the group colour, so tiles and heading belong together visibly. */
 @Composable
@@ -160,11 +190,11 @@ private fun GroupTitle(group: String) {
  * Now a fixed grid: two equal columns, all tiles the same height.
  */
 @Composable
-private fun TileRow(symptoms: List<SymptomInfo>, viewModel: LogSymptomViewModel) {
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+private fun TileRow(symptoms: List<SymptomInfo>, viewModel: LogSymptomViewModel, nameStyle: TextStyle) {
+    Column(verticalArrangement = Arrangement.spacedBy(TILE_GAP)) {
         symptoms.chunked(TILE_COLUMNS).forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                row.forEach { SymptomTile(it, viewModel, Modifier.weight(1f)) }
+            Row(horizontalArrangement = Arrangement.spacedBy(TILE_GAP)) {
+                row.forEach { SymptomTile(it, viewModel, nameStyle, Modifier.weight(1f)) }
                 repeat(TILE_COLUMNS - row.size) { Spacer(Modifier.weight(1f)) }
             }
         }
@@ -172,10 +202,12 @@ private fun TileRow(symptoms: List<SymptomInfo>, viewModel: LogSymptomViewModel)
 }
 
 private const val TILE_COLUMNS = 2
+private val TILE_GAP = 8.dp
+private val EMOJI_SIZE = 30.dp
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun SymptomTile(symptom: SymptomInfo, viewModel: LogSymptomViewModel, modifier: Modifier) {
+private fun SymptomTile(symptom: SymptomInfo, viewModel: LogSymptomViewModel, nameStyle: TextStyle, modifier: Modifier) {
     val haptics = LocalHapticFeedback.current
     Surface(
         color = symptomGroupColor(symptom.groupKey, symptom.isRedFlag),
@@ -183,7 +215,7 @@ private fun SymptomTile(symptom: SymptomInfo, viewModel: LogSymptomViewModel, mo
         shape = MaterialTheme.shapes.large,
         border = if (symptom.isRedFlag) BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary) else null,
         modifier = modifier
-            .height(80.dp)
+            .height(60.dp)
             .combinedClickable(
                 onClick = { viewModel.onSymptomClick(symptom) },
                 onLongClick = {
@@ -198,15 +230,15 @@ private fun SymptomTile(symptom: SymptomInfo, viewModel: LogSymptomViewModel, mo
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             // A light circle behind the emoji lifts it off the pastel surface.
-            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f), modifier = Modifier.size(38.dp)) {
+            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f), modifier = Modifier.size(EMOJI_SIZE)) {
                 Box(contentAlignment = Alignment.Center) {
-                    Text(symptomEmoji(symptom.id), style = MaterialTheme.typography.titleMedium)
+                    Text(symptomEmoji(symptom.id), style = MaterialTheme.typography.titleSmall)
                 }
             }
             Text(
                 displayName(NamePrefix.SYMPTOM, symptom.key) + if (symptom.isRedFlag) " ⚠️" else "",
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 3,
+                style = nameStyle,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
             )

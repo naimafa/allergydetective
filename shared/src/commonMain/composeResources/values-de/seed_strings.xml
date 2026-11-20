@@ -55,7 +55,7 @@
     <string name="symptom_itching">Juckreiz</string>
     <string name="symptom_hives">Quaddeln</string>
     <string name="symptom_swelling">Schwellungen</string>
-    <string name="symptom_eczema">Trockene Stellen / Ekzem</string>
+    <string name="symptom_eczema">Trockene Haut</string>
     <string name="symptom_headache">Kopfschmerzen</string>
     <string name="symptom_dizziness">Schwindel</string>
     <string name="symptom_migraine">Migräne</string>
@@ -66,8 +66,8 @@
     <string name="symptom_blocked_nose">Verstopfte Nase</string>
     <string name="symptom_dry_cough">Reizhusten</string>
     <string name="symptom_shortness_of_breath">Atemnot</string>
-    <string name="symptom_mouth_tingling">Kribbeln Mund / Lippen</string>
-    <string name="symptom_itchy_eyes">Augen jucken / tränen</string>
+    <string name="symptom_mouth_tingling">Kribbeln im Mund</string>
+    <string name="symptom_itchy_eyes">Juckende Augen</string>
     <string name="symptom_other">Sonstiges</string>
     <string name="ingredient_white_bread">Weißbrot / Weizenbrötchen</string>
     <string name="ingredient_wholemeal_wheat_bread">Vollkornbrot (Weizen)</string>
