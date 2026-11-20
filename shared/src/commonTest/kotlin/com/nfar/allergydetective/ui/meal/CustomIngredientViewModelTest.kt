@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.ui.meal
 
+import com.nfar.allergydetective.domain.time.MealSlot
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.diary.CategoryInfo
 import com.nfar.allergydetective.domain.diary.CustomIngredientRepository
@@ -45,7 +46,7 @@ class CustomIngredientViewModelTest {
         override suspend fun synonyms(language: String) = emptyMap<Long, List<String>>()
         override suspend fun recentIngredientIds(limit: Int) = emptyList<Long>()
         override suspend fun ingredientIdsWithKnownAllergy() = emptySet<Long>()
-        override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?) = 0L
+        override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?) = 0L
         override suspend fun deleteMeal(mealId: Long) = Unit
         override suspend fun favorites() = emptyList<FavoriteInfo>()
         override suspend fun saveFavorite(name: String, items: List<MealItem>) = 0L

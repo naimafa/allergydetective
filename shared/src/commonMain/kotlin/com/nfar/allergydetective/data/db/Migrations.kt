@@ -66,7 +66,22 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+    /**
+     * Feedback 20.11.: the kind of a meal (incl. the new "drink") is stored instead of being
+     * derived from the time. Existing rows get it from their local time once:
+     * 8:00 breakfast, 12:30 lunch, 19:00 dinner, any other time a snack.
+     */
+    val MIGRATION_7_8 = object : Migration(7, 8) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE meals ADD COLUMN kind TEXT")
+            connection.execSQL(
+                "UPDATE meals SET kind = CASE ((((eatenAt / 60000) + tzOffsetMin) % 1440) + 1440) % 1440 " +
+                    "WHEN 480 THEN 'BREAKFAST' WHEN 750 THEN 'LUNCH' WHEN 1140 THEN 'DINNER' ELSE 'SNACK' END",
+            )
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
 
     private const val OILS_CATEGORY = 13L
 

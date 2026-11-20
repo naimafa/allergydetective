@@ -3,6 +3,7 @@ package com.nfar.allergydetective.domain.diary
 import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
 import com.nfar.allergydetective.domain.analysis.model.Preparation
+import com.nfar.allergydetective.domain.time.MealSlot
 
 /** One line of the history (UX 6: tab "Historie"). */
 sealed interface HistoryEntry {
@@ -17,6 +18,8 @@ sealed interface HistoryEntry {
         val preparations: Map<Long, Preparation> = emptyMap(),
         /** Name of the dish (favorite) the meal was logged from, if any. */
         val dishName: String? = null,
+        /** Stored kind (feedback 20.11.); null only for meals from before version 8. */
+        val slot: MealSlot? = null,
     ) : HistoryEntry
 
     data class SymptomEntry(

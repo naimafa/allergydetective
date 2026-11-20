@@ -3,6 +3,7 @@ package com.nfar.allergydetective.ui.meal
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.analysis.model.Preparation
+import com.nfar.allergydetective.domain.diary.BEVERAGES_CATEGORY_ID
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.LoggedMeal
@@ -46,11 +47,13 @@ class LogMealViewModelTest {
         var preparationIds = emptySet<Long>()
         override suspend fun ingredientIdsNeedingPreparation() = preparationIds
         val mealFavoriteIds = mutableListOf<Long?>()
+        val slots = mutableListOf<MealSlot?>()
         val favorites = mutableListOf<FavoriteInfo>()
 
-        override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?): Long {
+        override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?): Long {
             saved += Triple(eatenAt, tzOffsetMin, items)
             mealFavoriteIds += favoriteId
+            slots += slot
             return saved.size.toLong()
         }
         override suspend fun deleteMeal(mealId: Long) {
@@ -68,12 +71,13 @@ class LogMealViewModelTest {
 
         // Meal id = position in [saved] + 1.
         override suspend fun meal(mealId: Long) =
-            saved.getOrNull(mealId.toInt() - 1)?.let { LoggedMeal(mealId, it.first, it.third, mealFavoriteIds[mealId.toInt() - 1]) }
-        override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?) {
+            saved.getOrNull(mealId.toInt() - 1)?.let { LoggedMeal(mealId, it.first, it.third, mealFavoriteIds[mealId.toInt() - 1], slot = slots.getOrNull(mealId.toInt() - 1)) }
+        override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?) {
             saved[mealId.toInt() - 1] = Triple(eatenAt, tzOffsetMin, items)
             mealFavoriteIds[mealId.toInt() - 1] = favoriteId
+            if (mealId.toInt() - 1 < slots.size) slots[mealId.toInt() - 1] = slot
         }
-        override suspend fun mealIdAt(eatenAt: Long) = saved.indexOfFirst { it.first == eatenAt }.takeIf { it >= 0 }?.let { it + 1L }
+        override suspend fun mealIdAt(eatenAt: Long, slot: MealSlot) = saved.indexOfFirst { it.first == eatenAt }.takeIf { it >= 0 }?.let { it + 1L }
     }
 
     @Test
@@ -128,14 +132,78 @@ class LogMealViewModelTest {
         assertNull(vm.state.value.favoriteId)
     }
 
-    private val repository = FakeRepository(listOf(bread, milk))
+    private val coffee = IngredientInfo(1101, "coffee", null, BEVERAGES_CATEGORY_ID)
+    private val repository = FakeRepository(listOf(bread, milk, coffee))
 
     private fun viewModel() = LogMealViewModel(
         repository = repository,
         clock = AppClock(clock = object : Clock { override fun now() = now }, zone = { TimeZone.of("Europe/Berlin") }),
-        names = { _, key -> if (key == "white_bread") "Weißbrot" else "Kuhmilch" },
+        names = { _, key ->
+            when (key) {
+                "white_bread" -> "Weißbrot"
+                "coffee" -> "Kaffee"
+                else -> "Kuhmilch"
+            }
+        },
         language = { "de" },
     )
+
+    @Test
+    fun drinkKeepsItsKindWhenTheTimeChanges() {
+        // Feedback 20.11.: coffee at 11:00 must not turn into "Mahlzeit".
+        val vm = viewModel()
+        vm.onToggleIngredient(coffee)
+        vm.onSlotChange(MealSlot.DRINK)
+        vm.onExactTimeChange(ExactTime(0, 11, 0))
+
+        vm.onSave()
+
+        assertEquals(MealSlot.DRINK, repository.slots.single())
+        // 11:00 in Berlin = 10:00 UTC
+        assertEquals(Instant.parse("2026-11-17T10:00:00Z").toEpochMilliseconds(), repository.saved.single().first)
+    }
+
+    @Test
+    fun breakfastKeepsItsKindWithAnotherTime() {
+        val vm = viewModel()
+        vm.onToggleIngredient(bread)
+        vm.onSlotChange(MealSlot.BREAKFAST)
+        vm.onExactTimeChange(ExactTime(0, 9, 30))
+
+        vm.onSave()
+
+        assertEquals(MealSlot.BREAKFAST, repository.slots.single())
+        vm.startEditing(1)
+        assertEquals(MealSlot.BREAKFAST, vm.state.value.slot)
+        assertEquals(ExactTime(0, 9, 30), vm.state.value.shownTime)
+    }
+
+    @Test
+    fun onlyDrinksPreselectDrinkAndFoodTakesItBack() {
+        val vm = viewModel()
+        vm.onToggleIngredient(coffee)
+        assertEquals(MealSlot.DRINK, vm.state.value.slot)
+        assertEquals(ExactTime(0, 13, 0), vm.state.value.shownTime)
+
+        vm.onToggleIngredient(bread)
+        assertNull(vm.state.value.slot)
+        assertNull(vm.state.value.shownTime)
+    }
+
+    @Test
+    fun aChosenSlotIsNotReplacedByTheDrinkSuggestion() {
+        val vm = viewModel()
+        vm.onSlotChange(MealSlot.BREAKFAST)
+        vm.onToggleIngredient(coffee)
+        assertEquals(MealSlot.BREAKFAST, vm.state.value.slot)
+
+        // A confirmed drink stays when food is added.
+        val other = viewModel()
+        other.onToggleIngredient(coffee)
+        other.onSlotChange(MealSlot.DRINK)
+        other.onToggleIngredient(bread)
+        assertEquals(MealSlot.DRINK, other.state.value.slot)
+    }
 
     @BeforeTest
     fun setUp() = Dispatchers.setMain(UnconfinedTestDispatcher())
