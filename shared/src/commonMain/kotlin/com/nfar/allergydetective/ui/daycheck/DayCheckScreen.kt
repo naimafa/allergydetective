@@ -162,7 +162,8 @@ private fun DayCheckContent(
                 OutlinedButton(onClick = { viewModel.onSleepHoursChange(DayCheckViewModel.SLEEP_STEP_HOURS) }) { Text("+") }
             }
             Text(stringResource(Res.string.day_sleep_quality), style = MaterialTheme.typography.bodyMedium)
-            ScaleRow(check.sleepQuality, viewModel::onSleepQualityChange, labels = (1..5).map { "$it ★" })
+            // Phone test 20.11.: "1 ★" did not fit at font scale 1.25 and the star was cut off; the legend below explains the scale.
+            ScaleRow(check.sleepQuality, viewModel::onSleepQualityChange)
             // Feedback 20.11.: everyone should read the scale the same way.
             Text(stringResource(Res.string.day_sleep_quality_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
