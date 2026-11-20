@@ -131,19 +131,19 @@ class HistoryViewModelTest {
         val vm = viewModel()
 
         vm.onFilterChange(HistoryFilter.FOOD)
-        assertEquals(listOf(today, today - 3), vm.state.value.visibleDays.map { it.epochDay })
-        assertEquals(listOf(3L, 1L), vm.state.value.visibleDays[0].entries.map { it.id })
+        assertEquals(listOf(today, today - 3), vm.state.value.visibleDays().map { it.epochDay })
+        assertEquals(listOf(3L, 1L), vm.state.value.visibleDays()[0].entries.map { it.id })
 
         vm.onFilterChange(HistoryFilter.SYMPTOMS)
-        assertEquals(listOf(today), vm.state.value.visibleDays.map { it.epochDay })
-        assertEquals(listOf(2L), vm.state.value.visibleDays[0].entries.map { it.id })
+        assertEquals(listOf(today), vm.state.value.visibleDays().map { it.epochDay })
+        assertEquals(listOf(2L), vm.state.value.visibleDays()[0].entries.map { it.id })
 
         vm.onFilterChange(HistoryFilter.DAYS)
-        assertEquals(listOf(today - 1), vm.state.value.visibleDays.map { it.epochDay })
-        assertEquals(false, vm.state.value.visibleDays.any { it.entries.isNotEmpty() })
+        assertEquals(listOf(today - 1), vm.state.value.visibleDays().map { it.epochDay })
+        assertEquals(false, vm.state.value.visibleDays().any { it.entries.isNotEmpty() })
 
         vm.onFilterChange(HistoryFilter.ALL)
-        assertEquals(3, vm.state.value.visibleDays.size)
+        assertEquals(3, vm.state.value.visibleDays().size)
     }
 
     @Test
@@ -155,6 +155,15 @@ class HistoryViewModelTest {
 
         assertEquals(listOf("Milchfrühstück" to listOf(MealItem(milk.id, Portion.MEDIUM))), savedFavorites)
         assertEquals<List<Pair<Long, Long?>>>(listOf(1L to 77L), linkedFavorites)
+    }
+
+    @Test
+    fun sickDayWithoutDayCheckIsShownUnderDays() {
+        // Phone test 19.11.: under "Days" one sick day was missing that "All" showed.
+        val vm = viewModel()
+        vm.onFilterChange(HistoryFilter.DAYS)
+
+        assertEquals(listOf(today, today - 1), vm.state.value.visibleDays(sickDays = setOf(today)).map { it.epochDay })
     }
 
     @Test

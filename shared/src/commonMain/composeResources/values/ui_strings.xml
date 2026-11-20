@@ -133,10 +133,11 @@
     <string name="history_filter_all">All</string>
     <string name="history_filter_food">Food</string>
     <string name="history_filter_symptoms">Symptoms</string>
-    <string name="history_filter_days">Days</string>
+    <string name="history_filter_days">Day checks</string>
     <string name="history_sick_add">Add a period of illness</string>
     <string name="history_sick_period">Ill: %1$s</string>
     <string name="history_sick_marked">Marked as ill in the day check</string>
+    <string name="history_sick_badge">Ill</string>
     <string name="history_sick_change">Change dates</string>
     <string name="history_check_title">Day check</string>
     <string name="history_check_sleep">Sleep %1$s h</string>
@@ -150,6 +151,8 @@
     <string name="illness_hint">Yes = does not count for the evaluation. No or don’t know = counts less, because you were ill.</string>
     <string name="illness_label">Part of the illness: %1$s</string>
     <string name="history_delete_question">Delete this entry? This cannot be undone.</string>
+    <string name="history_delete_sick_question">Delete this period of illness? The days then count normally for the evaluation again.</string>
+    <string name="favorites_delete_question">Delete the dish “%1$s”? Meals already logged stay.</string>
     <string name="favorites_empty">No dishes yet. Add the dishes you eat often with their ingredients, then daily logging takes one tap.</string>
     <string name="favorites_add">+ New dish</string>
     <plurals name="favorites_count">
