@@ -150,12 +150,12 @@ fun HeartPulseIcon(color: Color, modifier: Modifier) {
 fun MoonIcon(color: Color, modifier: Modifier) {
     Canvas(modifier) {
         val s = size.minDimension
-        val full = Path().apply { addOval(androidx.compose.ui.geometry.Rect(Offset(s * 0.42f, s * 0.56f), s * 0.38f)) }
-        val cut = Path().apply { addOval(androidx.compose.ui.geometry.Rect(Offset(s * 0.62f, s * 0.42f), s * 0.32f)) }
+        val full = Path().apply { addOval(androidx.compose.ui.geometry.Rect(Offset(s * 0.42f, s * 0.56f), s * 0.42f)) }
+        val cut = Path().apply { addOval(androidx.compose.ui.geometry.Rect(Offset(s * 0.66f, s * 0.4f), s * 0.33f)) }
         val moon = Path().apply { op(full, cut, PathOperation.Difference) }
         drawPath(moon, Brush.linearGradient(listOf(lerp(color, Color.White, 0.35f), color), start = Offset(s * 0.1f, s * 0.2f), end = Offset(s * 0.6f, s * 0.95f)))
-        star(Offset(s * 0.76f, s * 0.22f), s * 0.11f, color)
-        star(Offset(s * 0.9f, s * 0.42f), s * 0.065f, color)
+        star(Offset(s * 0.8f, s * 0.2f), s * 0.12f, color)
+        star(Offset(s * 0.93f, s * 0.42f), s * 0.07f, color)
     }
 }
 

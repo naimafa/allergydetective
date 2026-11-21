@@ -6,6 +6,9 @@ import allergydetective.shared.generated.resources.tab_favorites
 import allergydetective.shared.generated.resources.tab_history
 import allergydetective.shared.generated.resources.tab_home
 import allergydetective.shared.generated.resources.tab_profile
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -18,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.nfar.allergydetective.ui.theme.AppColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Schedule
@@ -106,6 +110,9 @@ fun MainScreen(
                 color = AppColors.extra.home.nav,
                 shadowElevation = 8.dp,
             ) {
+                // Picture of 21.11.2026: small labels; the system font scale is not applied to the four short names.
+                val density = LocalDensity.current
+                CompositionLocalProvider(LocalDensity provides Density(density.density, minOf(density.fontScale, 1f))) {
                 NavigationBar(containerColor = Color.Transparent, tonalElevation = 0.dp) {
                     MainTab.entries.forEach { entry ->
                         val selected = tab == entry
@@ -115,7 +122,7 @@ fun MainScreen(
                             icon = { Icon(if (selected) entry.selectedIcon else entry.icon, contentDescription = null) },
                             label = {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(stringResource(entry.label), fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal)
+                                    Text(stringResource(entry.label), fontSize = 12.sp, fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium)
                                     Box(
                                         Modifier.padding(top = 4.dp).size(width = 40.dp, height = 3.dp)
                                             .background(if (selected) ink else Color.Transparent, RoundedCornerShape(2.dp)),
@@ -131,6 +138,7 @@ fun MainScreen(
                             ),
                         )
                     }
+                }
                 }
             }
         },

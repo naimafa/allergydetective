@@ -127,7 +127,7 @@ fun HomeScreen(
             var topHeight by remember { mutableStateOf(0.dp) }
             val rowHeight = ((maxHeight - PAGE_PADDING * 2 - topHeight - SECTION_GAP - GRID) / 2).coerceAtLeast(MIN_TILE_HEIGHT)
             Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-                LeafBranch(modifier = Modifier.align(Alignment.TopEnd).size(200.dp))
+                LeafBranch(modifier = Modifier.align(Alignment.TopEnd).size(230.dp))
                 Column(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = PAGE_PADDING),
                     verticalArrangement = Arrangement.spacedBy(SECTION_GAP),
@@ -189,10 +189,10 @@ private fun Header(greeting: Greeting, showDot: Boolean, onBell: () -> Unit) {
     // Compact like the picture: logo row, greeting and tagline close together.
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            LeafLogo(Modifier.size(40.dp))
+            LeafLogo(Modifier.size(48.dp))
             Text(
                 stringResource(Res.string.home_brand),
-                style = MaterialTheme.typography.titleLarge.copy(fontFamily = AppFonts.playfair, fontWeight = FontWeight.Medium, fontSize = 17.sp),
+                style = MaterialTheme.typography.titleLarge.copy(fontFamily = AppFonts.playfair, fontWeight = FontWeight.SemiBold, fontSize = 18.sp),
                 color = home.ink,
                 modifier = Modifier.weight(1f),
             )
@@ -223,12 +223,12 @@ private fun Header(greeting: Greeting, showDot: Boolean, onBell: () -> Unit) {
                     Greeting.EVENING -> Res.string.home_greeting_evening
                 },
             ),
-            style = MaterialTheme.typography.headlineLarge.copy(fontFamily = AppFonts.playfair, fontWeight = FontWeight.Bold, fontSize = 32.sp, lineHeight = 38.sp),
+            style = MaterialTheme.typography.headlineLarge.copy(fontFamily = AppFonts.playfair, fontWeight = FontWeight.SemiBold, fontSize = 36.sp, lineHeight = 42.sp),
             color = home.ink,
         )
         Text(
             stringResource(Res.string.home_tagline),
-            style = MaterialTheme.typography.bodyLarge.copy(fontFamily = AppFonts.playfair, fontSize = 15.sp, lineHeight = 20.sp),
+            style = MaterialTheme.typography.bodyLarge.copy(fontFamily = AppFonts.playfair, fontSize = 17.sp, lineHeight = 22.sp),
             color = home.inkSoft,
         )
     }
@@ -247,7 +247,7 @@ private fun sharedTileStyles(textWidth: Dp): TileTextStyles {
     val safetyPx = with(LocalDensity.current) { SAFETY_MARGIN.toPx() }
     val titles = HomeAction.entries.map { stringResource(it.label) }
     val hints = HomeAction.entries.map { stringResource(it.hint) }
-    val title = MaterialTheme.typography.titleMedium.copy(fontSize = 17.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold)
+    val title = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp, lineHeight = 23.sp, fontWeight = FontWeight.SemiBold)
     val hint = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp, lineHeight = 17.sp, letterSpacing = 0.sp, fontWeight = FontWeight.Normal)
     return remember(titles, hints, widthPx, safetyPx, title, hint) {
         fun oneLineIn(width: Float, text: String, style: TextStyle) =

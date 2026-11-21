@@ -56,7 +56,7 @@ fun HomeToday(state: HomeState, onClick: () -> Unit) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(stringResource(Res.string.today_title), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(Res.string.today_title), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium, fontSize = 19.sp))
             // Top-aligned: at a large font "Einträge gesamt" wraps, the numbers still stay on one line.
             Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.Top) {
                 Stat({ Icon(Icons.Filled.Restaurant, contentDescription = null, tint = AppColors.extra.home.icon, modifier = it) }, state.mealsToday, pluralStringResource(Res.plurals.today_meals, state.mealsToday), Modifier.weight(1f))
@@ -81,16 +81,16 @@ private fun Separator() {
 private fun Stat(icon: @Composable (Modifier) -> Unit, count: Int, label: String, modifier: Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            icon(Modifier.size(26.dp))
+            icon(Modifier.size(32.dp))
             Text(
                 count.toString(),
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold, fontSize = 20.sp, lineHeight = 26.sp),
-                color = AppColors.extra.home.accent,
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Medium, fontSize = 27.sp, lineHeight = 32.sp),
+                color = AppColors.extra.home.ink,
             )
         }
         Text(
             label,
-            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, lineHeight = 15.sp, letterSpacing = 0.sp),
+            style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp, lineHeight = 16.sp, letterSpacing = 0.sp),
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
