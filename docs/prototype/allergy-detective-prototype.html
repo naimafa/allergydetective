@@ -208,6 +208,7 @@ p, h1, h2, h3 { margin: 0; }
 /* Phone test 21.11.: at 125 % "Symptome erfassen" does not fit in one line, so all titles may wrap at a word. */
 :root[data-font="125"] { --tile-shrink: 1; --hint-shrink: 1; }
 :root[data-font="125"] .tile b { white-space: normal; }
+:root[data-font="125"] .tile .now { white-space: normal; text-align: center; font-size: calc(13px * var(--fs)); line-height: 1.25; padding: 4px 10px; }
 .t-food { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--meal-tile)); --wave: var(--meal-wave); color: var(--on-primary-container); } .t-food svg { color: var(--primary); }
 .t-symptom { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--symptom-tile)); --wave: var(--symptom-wave); color: var(--on-warm-tile); } .t-symptom svg { color: var(--warm-accent); }
 .t-day { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--day-tile)); --wave: var(--day-wave); color: var(--on-warm-tile); } .t-day svg { color: var(--moon); }

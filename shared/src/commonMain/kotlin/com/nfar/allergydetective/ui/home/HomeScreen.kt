@@ -68,6 +68,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
@@ -205,13 +206,21 @@ private fun sharedTileStyles(textWidth: Dp): TileTextStyles {
     val hints = HomeAction.entries.map { stringResource(it.hint) }
     val title = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp, lineHeight = 24.sp, fontWeight = FontWeight.SemiBold)
     val hint = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp, lineHeight = 20.sp, letterSpacing = 0.sp, fontWeight = FontWeight.Normal)
-    return remember(titles, hints, widthPx, safetyPx, title, hint) {
-        fun oneLine(text: String, style: TextStyle) =
-            measurer.measure(text, style, maxLines = 1, softWrap = false).size.width <= widthPx
+    val buttonText = stringResource(Res.string.home_day_check_now)
+    val button = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp, lineHeight = 18.sp)
+    // Button label: tile text width (with the safety margin back) minus the button padding and the arrow.
+    val buttonWidthPx = with(LocalDensity.current) { (textWidth + SAFETY_MARGIN - BUTTON_PADDING * 2 - ARROW_SIZE - ARROW_GAP - SAFETY_MARGIN).toPx() }
+    return remember(titles, hints, buttonText, widthPx, safetyPx, buttonWidthPx, title, hint, button) {
+        fun oneLineIn(width: Float, text: String, style: TextStyle) =
+            measurer.measure(text, style, maxLines = 1, softWrap = false).size.width <= width
 
-        fun twoLines(text: String, style: TextStyle) =
-            text.split(' ').all { oneLine(it, style) } &&
-                !measurer.measure(text, style, maxLines = 2, constraints = Constraints(maxWidth = widthPx.toInt())).hasVisualOverflow
+        fun twoLinesIn(width: Float, text: String, style: TextStyle) =
+            text.split(' ').all { oneLineIn(width, it, style) } &&
+                !measurer.measure(text, style, maxLines = 2, constraints = Constraints(maxWidth = width.toInt())).hasVisualOverflow
+
+        fun oneLine(text: String, style: TextStyle) = oneLineIn(widthPx, text, style)
+
+        fun twoLines(text: String, style: TextStyle) = twoLinesIn(widthPx, text, style)
 
         fun sized(style: TextStyle, size: Float) =
             // Line height shrinks along with the font.
@@ -241,7 +250,11 @@ private fun sharedTileStyles(textWidth: Dp): TileTextStyles {
         // Two lines are only reserved when one of the four descriptions needs them.
         // Lines against the real text width (without the safety margin used for the size).
         val lines = hints.maxOf { measurer.measure(it, hintStyle, maxLines = 2, constraints = Constraints(maxWidth = (widthPx + safetyPx).toInt())).lineCount }
-        TileTextStyles(titleStyle, hintStyle, lines, titleLines)
+        // Phone test 21.11.: "Jetzt abschließen" was cut off at font scale 1.25. 14 → 11 sp in one line,
+        // otherwise wrapped at the word into two lines.
+        val oneLineButton = largestFitting(listOf(buttonText), button, 11f) { t, s -> oneLineIn(buttonWidthPx, t, s) }
+        val buttonStyle = oneLineButton ?: fitting(listOf(buttonText), button, 11f) { t, s -> twoLinesIn(buttonWidthPx, t, s) }
+        TileTextStyles(titleStyle, hintStyle, lines, titleLines, buttonStyle, if (oneLineButton != null) 1 else 2)
     }
 }
 
@@ -249,6 +262,9 @@ private val GRID = 12.dp
 private val MIN_TILE_HEIGHT = 150.dp
 private val TILE_PADDING = 16.dp
 private val SAFETY_MARGIN = 6.dp
+private val BUTTON_PADDING = 10.dp
+private val ARROW_SIZE = 16.dp
+private val ARROW_GAP = 4.dp
 
 /**
  * Design of 21.11.2026: soft gradient, large icon top left, a chevron top right, title and
@@ -303,30 +319,32 @@ private fun ActionTile(
             )
             if (action == HomeAction.DAY_CHECK && state.confirmedDays != null) {
                 Spacer(Modifier.height(10.dp))
-                if (state.todayOpen) FinishNowButton(onClick) else StatusBadge(stringResource(Res.string.home_day_done), StatusKind.DONE)
+                if (state.todayOpen) FinishNowButton(onClick, text) else StatusBadge(stringResource(Res.string.home_day_done), StatusKind.DONE)
             }
         }
     }
 }
 
 @Composable
-private fun FinishNowButton(onClick: () -> Unit) {
+private fun FinishNowButton(onClick: () -> Unit, text: TileTextStyles) {
     val extra = AppColors.extra
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(containerColor = extra.warmAccent, contentColor = extra.onWarmAccent),
-        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+        contentPadding = PaddingValues(horizontal = BUTTON_PADDING, vertical = 6.dp),
         modifier = Modifier.fillMaxWidth().heightIn(min = 40.dp),
     ) {
+        // Size and lines from sharedTileStyles, so the label is never cut off.
         Text(
             stringResource(Res.string.home_day_check_now),
-            style = MaterialTheme.typography.labelLarge,
-            maxLines = 1,
+            style = text.button,
+            textAlign = TextAlign.Center,
+            maxLines = text.buttonLines,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f, fill = false),
         )
-        Spacer(Modifier.size(6.dp))
-        Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(18.dp))
+        Spacer(Modifier.size(ARROW_GAP))
+        Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(ARROW_SIZE))
     }
 }
 
@@ -360,7 +378,14 @@ private fun DrawScope.drawTileBackground(gradient: TileGradient) {
 private class TileColors(val gradient: TileGradient, val content: Color, val accent: Color)
 
 /** Text sizes shared by the four tiles, and how many lines every description reserves. */
-private class TileTextStyles(val title: TextStyle, val hint: TextStyle, val hintLines: Int, val titleLines: Int)
+private class TileTextStyles(
+    val title: TextStyle,
+    val hint: TextStyle,
+    val hintLines: Int,
+    val titleLines: Int,
+    val button: TextStyle,
+    val buttonLines: Int,
+)
 
 /** Food and results = sage, symptoms and day check = apricot (design of 21.11.2026). */
 @Composable
