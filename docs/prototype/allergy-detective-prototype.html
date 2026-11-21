@@ -24,9 +24,9 @@
   --clues: #E8E2F0; --on-clues: #2B2238; --clues-accent: #5E4E86;
   --digestive: #F8E8D2; --skin: #F6E4DC; --head: #E8E2F0; --airways: #DDEAEE; --other: #E5EBE7;
   --info: #DDEAEE; --on-info: #24505C;
-  --meal-tile: #EDEEDC, #C2D2B2; --symptom-tile: #FFF1E2, #FDDFC6; --day-tile: #FFF1E2, #FDDFC6; --results-tile: #EDEEDC, #C2D2B2;
-  --meal-wave: #ADC39B; --symptom-wave: #F6C29C; --day-wave: #F6C29C; --results-wave: #A4BF98;
-  --page-tint: #F8E6D6; --ink: #053923; --accent: #184F34; --ink-soft: #184F34; --home-icon: #478661; --page-end: #F5EFE1; --nav: #FFF9EF; --nav-inactive: #416783; --card-border: #FFFFFF; --logo-dark: #3F7049; --logo-light: #6E9C72;
+  --meal-tile: #EAF0E1, #B9D0AE; --symptom-tile: #FFF0DE, #F9CDAE; --day-tile: #FFF0DE, #F9CDAE; --results-tile: #EAF0E1, #B9D0AE;
+  --meal-wave: #A6C29A; --symptom-wave: #F3B98F; --day-wave: #F3B98F; --results-wave: #9DBB90;
+  --page-tint: #F7EBDD; --ink: #053923; --accent: #184F34; --ink-soft: #184F34; --home-icon: #478661; --page-end: #F5EFE1; --nav: #FFF9EF; --nav-inactive: #416783; --card-border: #FFFFFF; --logo-dark: #3F7049; --logo-light: #6E9C72;
   --leaf: #93B288; --leaf-light: #DCE4CC; --progress-card: #FBF8EE; --track: #E0E3D0; --badge: #D6DEC6; --today-card: #EDEEDC;
   --on-sage-tile: #053923; --chevron-circle: rgba(255,255,255,.8); --heart: #D47636; --dot: #D9483B;
   --on-warm-tile: #5A301E; --warm-accent: #B15626; --on-warm-accent: #FFFFFF; --moon: #D47636;
@@ -190,10 +190,10 @@ p, h1, h2, h3 { margin: 0; }
 .bell { position: relative; border: 0; background: transparent; color: var(--ink); width: 48px; height: 48px; display: grid; place-items: center; }
 .bell svg { width: 28px; height: 28px; }
 .bell i { position: absolute; top: 9px; right: 10px; width: 9px; height: 9px; border-radius: 50%; background: var(--dot); }
-.greeting { font-family: "Playfair Display", Georgia, serif; font-weight: 600; font-size: calc(36px * var(--fs)); line-height: 1.17; color: var(--ink); margin: 12px 0 0; }
+.greeting { font-family: "Playfair Display", Georgia, serif; font-weight: 600; font-size: calc(36px * var(--fs)); line-height: 1.17; color: var(--ink); margin: 18px 0 0; }
 .tagline { font-family: "Playfair Display", Georgia, serif; font-size: calc(17px * var(--fs)); color: var(--ink-soft); margin: 0; }
 .branch { position: absolute; top: 0; right: 0; width: 230px; height: 230px; pointer-events: none; overflow: visible; }
-.v-start-body { position: relative; gap: 12px; padding-top: 12px; background: radial-gradient(circle at 105% 45%, var(--page-tint), transparent 55%), linear-gradient(var(--bg), var(--page-end)); }
+.v-start-body { position: relative; gap: 12px; padding-top: 12px; background: radial-gradient(circle at 105% 45%, var(--page-tint), transparent 45%), linear-gradient(var(--bg), var(--page-end)); }
 .v-start-body > :not(.branch) { position: relative; }
 .progress-card { background: var(--progress-card); color: var(--ink); border: 1px solid var(--card-border); box-shadow: 0 1px 3px rgba(0,0,0,.12); padding: 14px 16px; gap: 8px; }
 .progress-card .muted { color: var(--ink-soft); }

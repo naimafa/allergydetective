@@ -177,7 +177,7 @@ fun Modifier.homeBackground(): Modifier {
             Brush.radialGradient(
                 listOf(home.pageTint, Color.Transparent),
                 center = Offset(size.width * 1.05f, size.height * 0.45f),
-                radius = maxOf(size.width, size.height) * 0.55f,
+                radius = maxOf(size.width, size.height) * 0.45f,
             ),
         )
     }
@@ -214,7 +214,8 @@ private fun Header(greeting: Greeting, showDot: Boolean, onBell: () -> Unit) {
                 }
             }
         }
-        Spacer(Modifier.height(4.dp))
+        // More room between logo row and greeting, as in the picture.
+        Spacer(Modifier.height(12.dp))
         Text(
             stringResource(
                 when (greeting) {
