@@ -9,15 +9,29 @@ import java.io.File;
  * - leafness: how far a pixel is from the cream (the light picture's leaves are greener / darker than the cream)
  * - shade: brightness inside the leaf (light picture: darker = deeper green, lighter = tips and veins)
  * - sharpness: soft, out-of-focus leaves (few edges around them) stay dimmer, like in the dark picture
- * Args: lightOnCream.png out.jpg height fade quality
+ * Args: lightOnCream.png out.jpg height fade quality [softAlpha softMix saturation brightness]
+ * Used for home_background_dark.jpg (variant A of 21.11.2026, chosen by the user):
+ *   BgRecolor full.png home_background_dark.jpg 1100 200 0.86 0.08 0.2 0.85 0.92
+ * (full.png = the light source picture rendered on #FBF4EA at 1024 x 1536, e.g. with headless Edge)
  */
 public class BgRecolor {
     static final int BG = 0x062115, GLOW = 0x0F3A25;
-    static final int[] STOPS = {0x1F5A2F, 0x4E8F57, 0xADCF96};
+    static final int[] BASE = {0x1F5A2F, 0x4E8F57, 0xADCF96};
+    static final int[] STOPS = BASE.clone();
+
+    static int tone(int c, double sat, double bright) {
+        double r = c >> 16 & 255, g = c >> 8 & 255, b = c & 255, l = 0.299 * r + 0.587 * g + 0.114 * b;
+        r = (l + (r - l) * sat) * bright; g = (l + (g - l) * sat) * bright; b = (l + (b - l) * sat) * bright;
+        return ((int) Math.round(r) << 16) | ((int) Math.round(g) << 8) | (int) Math.round(b);
+    }
 
     public static void main(String[] a) throws Exception {
         BufferedImage src = ImageIO.read(new File(a[0]));
         int w = src.getWidth(), h = Integer.parseInt(a[2]), fade = Integer.parseInt(a[3]);
+        // Optional: how strong the soft leaves are, and saturation / brightness of the leaf greens.
+        double softAlpha = a.length > 5 ? Double.parseDouble(a[5]) : 0.45, softMix = a.length > 6 ? Double.parseDouble(a[6]) : 0.55;
+        double sat = a.length > 7 ? Double.parseDouble(a[7]) : 1, bright = a.length > 8 ? Double.parseDouble(a[8]) : 1;
+        for (int i = 0; i < 3; i++) STOPS[i] = tone(BASE[i], sat, bright);
         double[][] lum = new double[h][w], leaf = new double[h][w];
         for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++) {
@@ -32,7 +46,7 @@ public class BgRecolor {
         double[][] edge = new double[h][w];
         for (int y = 1; y < h - 1; y++)
             for (int x = 1; x < w - 1; x++)
-                edge[y][x] = Math.abs(leaf[y][x + 1] - leaf[y][x - 1]) + Math.abs(leaf[y + 1][x] - leaf[y - 1][x]) > 0.12 ? 1 : 0;
+                edge[y][x] = Math.abs(leaf[y][x + 1] - leaf[y][x - 1]) + Math.abs(leaf[y + 1][x] - leaf[y - 1][x]) > 0.3 ? 1 : 0;
         edge = box(box(edge, 40), 20);
         double[][] glow = box(m, 50);
 
@@ -41,14 +55,14 @@ public class BgRecolor {
             double t = y < h - fade ? 0 : (double) (y - (h - fade)) / fade;
             t = t * t * (3 - 2 * t);
             for (int x = 0; x < w; x++) {
-                double sharp = clamp(edge[y][x] / 0.05);
-                double alpha = m[y][x] * (0.45 + 0.55 * sharp) * (1 - t);
+                double sharp = clamp(edge[y][x] / 0.025);
+                double alpha = m[y][x] * (softAlpha + (1 - softAlpha) * sharp) * (1 - t);
                 // Soft leaves get an even mid shade (no light rim); crisp leaves keep their light and dark parts.
                 double f = clamp((lum[y][x] - 0.76) / 0.18) * sharp + 0.38 * (1 - sharp);
                 int leafColor = ramp(f);
                 int base = mix(BG, GLOW, clamp(glow[y][x] * 0.9) * (1 - t));
                 // Soft leaves also lose some brightness, like the out-of-focus leaves in the dark picture.
-                int dimmed = mix(mix(BG, leafColor, 0.55), leafColor, sharp);
+                int dimmed = mix(mix(BG, leafColor, softMix), leafColor, sharp);
                 o.setRGB(x, y, mix(base, dimmed, alpha));
             }
         }
