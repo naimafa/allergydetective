@@ -111,7 +111,7 @@ fun HomeScreen(
     /** The bell top right: opens the evening reminder in the profile. */
     onOpenReminders: () -> Unit = {},
 ) {
-    // The cream page with its peach tint is drawn behind the whole screen (homeBackground in MainScreen),
+    // The cream page is drawn behind the whole screen (homeBackground in MainScreen),
     // so it also runs under the status bar and the navigation without a hard edge.
     // Phone test 21.11.: the picture shows the whole start screen with all four tiles at once. The system
     // font scale is therefore not applied here (1.25 on the test phone pushed the tiles off the screen);
@@ -168,20 +168,9 @@ private const val MAX_FONT_SCALE = 1.0f
 private val PAGE_PADDING = 12.dp
 private val SECTION_GAP = 12.dp
 
-/** Design of 21.11.2026: cream page with a soft peach tint towards the right edge. */
+/** Design of 21.11.2026: one even cream page (the picture has no gradient or tint). */
 @Composable
-fun Modifier.homeBackground(): Modifier {
-    val home = AppColors.extra.home
-    return background(Brush.verticalGradient(listOf(home.page, home.pageEnd))).drawBehind {
-        drawRect(
-            Brush.radialGradient(
-                listOf(home.pageTint, Color.Transparent),
-                center = Offset(size.width * 1.05f, size.height * 0.45f),
-                radius = maxOf(size.width, size.height) * 0.45f,
-            ),
-        )
-    }
-}
+fun Modifier.homeBackground(): Modifier = background(AppColors.extra.home.page)
 
 @Composable
 private fun Header(greeting: Greeting, showDot: Boolean, onBell: () -> Unit) {

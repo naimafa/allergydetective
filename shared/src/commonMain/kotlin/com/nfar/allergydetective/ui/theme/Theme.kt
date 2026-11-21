@@ -122,11 +122,8 @@ data class ExtraColors(
  */
 @Immutable
 data class HomeColors(
-    /** Page: cream, with a peach tint towards the right edge. */
+    /** Page: one even cream, measured from the picture without the phone's reading mode. */
     val page: Color,
-    val pageTint: Color,
-    /** Bottom of the page gradient. */
-    val pageEnd: Color,
     /** Headings and titles. */
     val ink: Color,
     /** Progress bar, numbers, the active tab. */
@@ -179,9 +176,7 @@ private val LightExtra = ExtraColors(
     onInfo = Color(0xFF24505C),
     home = HomeColors(
         // Colour list of 21.11.2026 (picked by the user): three greens – headings, accent, icons.
-        page = Color(0xFFFBF5EA),
-        pageEnd = Color(0xFFF5EFE1),
-        pageTint = Color(0xFFF7EBDD),
+        page = Color(0xFFFBF4EA),
         ink = Color(0xFF053923),
         accent = Color(0xFF184F34),
         inkSoft = Color(0xFF184F34),
@@ -224,8 +219,6 @@ private val DarkExtra = ExtraColors(
     onInfo = Color(0xFFCBE3EA),
     home = HomeColors(
         page = Color(0xFF121512),
-        pageEnd = Color(0xFF101310),
-        pageTint = Color(0xFF1E1A15),
         ink = Color(0xFFB4DCC0),
         accent = Color(0xFF9CC7B6),
         inkSoft = Color(0xFFCAD6C6),
