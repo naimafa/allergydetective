@@ -34,9 +34,9 @@ public class IconRebuild {
         g.setColor(new Color(CREAM));
         g.fillRect(0, 0, n, n);
 
-        // 2. Bottom corner, larger on the user's wish: its edge runs through the upper end of the thick grip.
+        // 2. Bottom corner, larger on the user's wish: the whole thick grip lies on green, the edge meets the thin neck.
         Path2D wave = new Path2D.Double();
-        double left = a.length > 3 ? Double.parseDouble(a[3]) : 0.948, right = a.length > 4 ? Double.parseDouble(a[4]) : 0.448;
+        double left = a.length > 3 ? Double.parseDouble(a[3]) : 0.92, right = a.length > 4 ? Double.parseDouble(a[4]) : 0.40;
         wave.moveTo(0, n * left);
         wave.curveTo(n * 0.36, n * (left - (left - right) * 0.25), n * 0.72, n * (left - (left - right) * 0.5), n, n * right);
         wave.lineTo(n, n);
