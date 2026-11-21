@@ -20,10 +20,13 @@ public class AppIconFromPicture {
         int size = 432, inner = 256, off = (size - inner) / 2;
         BufferedImage scaled = scale(pic, inner);
 
+        // The picture's edge pixels are carried on to the edge of the layer, so the green corner and the
+        // cream run to the mask without a seam on launchers that show more than the picture.
         BufferedImage fg = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = fg.createGraphics();
-        g.drawImage(scaled, off, off, null);
-        g.dispose();
+        for (int y = 0; y < size; y++) for (int x = 0; x < size; x++) {
+            int sx = Math.max(0, Math.min(inner - 1, x - off)), sy = Math.max(0, Math.min(inner - 1, y - off));
+            fg.setRGB(x, y, scaled.getRGB(sx, sy) | 0xFF000000);
+        }
         ImageIO.write(fg, "png", new File(a[1]));
 
         BufferedImage mono = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);

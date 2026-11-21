@@ -12,7 +12,7 @@ import java.io.File;
  *  2. the bottom corner as a clean shape with the measured greens (lighter at the top edge, deeper at the bottom)
  *  3. the leaf: only its dark green pixels, so the light arcs next to it disappear
  *  4. the magnifier (lens content, ring, handle) cut out and scaled by [scale] around the lens centre
- * Args: in.png out.png [scale]
+ * Args: in.png out.png [scale] [green top edge at the left and right, as part of the height]
  */
 public class IconRebuild {
     static final int CREAM = 0xFBF4EA;
@@ -34,14 +34,15 @@ public class IconRebuild {
         g.setColor(new Color(CREAM));
         g.fillRect(0, 0, n, n);
 
-        // 2. Bottom corner: top edge measured along the picture (0,1150) -> (1138,600).
+        // 2. Bottom corner, larger on the user's wish: its edge runs through the upper end of the thick grip.
         Path2D wave = new Path2D.Double();
-        wave.moveTo(0, n * 1.012);
-        wave.curveTo(n * 0.36, n * 0.92, n * 0.75, n * 0.80, n, n * 0.53);
+        double left = a.length > 3 ? Double.parseDouble(a[3]) : 0.948, right = a.length > 4 ? Double.parseDouble(a[4]) : 0.448;
+        wave.moveTo(0, n * left);
+        wave.curveTo(n * 0.36, n * (left - (left - right) * 0.25), n * 0.72, n * (left - (left - right) * 0.5), n, n * right);
         wave.lineTo(n, n);
         wave.lineTo(0, n);
         wave.closePath();
-        g.setPaint(new LinearGradientPaint(new Point2D.Double(n * 0.55, n * 0.62), new Point2D.Double(n * 0.75, n),
+        g.setPaint(new LinearGradientPaint(new Point2D.Double(n * 0.5, n * 0.5), new Point2D.Double(n * 0.75, n),
                 new float[]{0f, 0.35f, 1f}, new Color[]{new Color(0xDCE5CD), new Color(0xC2D2B2), new Color(0xA8C29F)}));
         g.fill(wave);
 
