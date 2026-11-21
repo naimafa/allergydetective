@@ -11,7 +11,13 @@ import allergydetective.shared.generated.resources.home_log_symptom
 import allergydetective.shared.generated.resources.meal_now
 import allergydetective.shared.generated.resources.symptom_favorites
 import allergydetective.shared.generated.resources.symptom_how_strong
+import allergydetective.shared.generated.resources.symptom_intensity_1
+import allergydetective.shared.generated.resources.symptom_intensity_2
+import allergydetective.shared.generated.resources.symptom_intensity_3
+import allergydetective.shared.generated.resources.symptom_intensity_4
+import allergydetective.shared.generated.resources.symptom_intensity_5
 import allergydetective.shared.generated.resources.symptom_intensity_range
+import allergydetective.shared.generated.resources.symptom_intensity_selected
 import allergydetective.shared.generated.resources.symptom_long_press_hint
 import allergydetective.shared.generated.resources.symptom_note
 import allergydetective.shared.generated.resources.symptom_part_after_meal
@@ -39,6 +45,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -271,6 +278,10 @@ private fun EmergencyNotice(onContinue: () -> Unit, onDismiss: () -> Unit) {
 private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, day: Int, today: Long, viewModel: LogSymptomViewModel) {
     AlertDialog(
         onDismissRequest = viewModel::onDraftDismiss,
+        // Feedback 20.11.: the platform width (~270 dp) wrapped "Heute · Gestern · Datum" at font scale 1.25,
+        // which looked restless. The dialog now uses the screen width minus 16 dp on each side.
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         title = { Text(symptomEmoji(draft.symptom.id) + " " + displayName(NamePrefix.SYMPTOM, draft.symptom.key)) },
         text = {
             Column(
@@ -279,6 +290,12 @@ private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, day: Int, to
             ) {
                 Text(stringResource(Res.string.symptom_how_strong), style = MaterialTheme.typography.titleSmall)
                 ScaleChips(draft.intensity, viewModel::onIntensityChange, labels = (1..LogSymptomViewModel.MAX_INTENSITY).map { it.toString() })
+                // Feedback 20.11.: the chosen value in words, the range below.
+                Text(
+                    stringResource(Res.string.symptom_intensity_selected, draft.intensity, intensityWord(draft.intensity)),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
                 Text(stringResource(Res.string.symptom_intensity_range), style = MaterialTheme.typography.bodySmall)
                 Text(stringResource(Res.string.symptom_when), style = MaterialTheme.typography.titleSmall)
                 // Feedback 19.11.: the same day row in every form.
@@ -305,6 +322,18 @@ private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, day: Int, to
         dismissButton = { TextButton(onClick = viewModel::onDraftDismiss) { Text(stringResource(Res.string.common_cancel)) } },
     )
 }
+
+/** 1 = kaum spürbar … 5 = sehr stark. */
+@Composable
+fun intensityWord(intensity: Int): String = stringResource(
+    when (intensity) {
+        1 -> Res.string.symptom_intensity_1
+        2 -> Res.string.symptom_intensity_2
+        3 -> Res.string.symptom_intensity_3
+        4 -> Res.string.symptom_intensity_4
+        else -> Res.string.symptom_intensity_5
+    },
+)
 
 @Composable
 private fun dayPartLabel(part: SymptomDayPart): String = stringResource(
