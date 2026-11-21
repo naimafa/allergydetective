@@ -134,9 +134,6 @@ data class HomeColors(
     val inkSoft: Color,
     /** Icons on the sage cards. */
     val icon: Color,
-    /** Logo: dark and light leaf. */
-    val logoDark: Color,
-    val logoLight: Color,
     /** Branch top right: leaves and stem. */
     val leaf: Color,
     val leafLight: Color,
@@ -184,8 +181,6 @@ private val LightExtra = ExtraColors(
         accent = Color(0xFF184F34),
         inkSoft = Color(0xFF184F34),
         icon = Color(0xFF478661),
-        logoDark = Color(0xFF2F7A4A),
-        logoLight = Color(0xFF7DB57F),
         leaf = Color(0xFF94B585),
         leafLight = Color(0xFFD5E3C6),
         progressCard = Color(0xFFFBF8EE),
@@ -227,8 +222,6 @@ private val DarkExtra = ExtraColors(
         accent = Color(0xFF9CC7B6),
         inkSoft = Color(0xFFCAD6C6),
         icon = Color(0xFF9CC7A8),
-        logoDark = Color(0xFF6FA57A),
-        logoLight = Color(0xFF9CC7A0),
         leaf = Color(0xFF3F5A44),
         leafLight = Color(0xFF2E3F31),
         progressCard = Color(0xFF1C201C),

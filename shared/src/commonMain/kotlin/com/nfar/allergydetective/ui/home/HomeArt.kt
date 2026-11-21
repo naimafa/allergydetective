@@ -21,55 +21,13 @@ import androidx.compose.ui.graphics.drawscope.rotateRad
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.lerp
 import com.nfar.allergydetective.ui.theme.AppColors
-import kotlin.math.PI
 import kotlin.math.atan2
 
 /*
- * Drawings of the start screen after the design picture of 21.11.2026: the two-leaf logo, the
- * broad-leaved branch top right, and the tile icons (heart with pulse line, moon with stars,
+ * Drawings of the start screen after the design picture of 21.11.2026: the broad-leaved branch
+ * top right (dark mode; light mode uses the leaf picture) and the tile icons (heart with pulse line, moon with stars,
  * bars with a magnifier). Drawn in code, so they follow light and dark mode and stay sharp.
  */
-
-/** Leaf lying on the x axis from (0, 0) to (length, 0), broad in the first half, pointed at the tip. */
-private fun leafPath(length: Float, width: Float) = Path().apply {
-    moveTo(0f, 0f)
-    cubicTo(length * 0.18f, -width * 0.62f, length * 0.62f, -width * 0.6f, length, 0f)
-    cubicTo(length * 0.62f, width * 0.6f, length * 0.18f, width * 0.62f, 0f, 0f)
-    close()
-}
-
-private fun DrawScope.leaf(at: Offset, angle: Float, length: Float, width: Float, dark: Color, light: Color, alpha: Float) {
-    translate(at.x, at.y) {
-        rotateRad(angle, pivot = Offset.Zero) {
-            drawPath(
-                leafPath(length, width),
-                Brush.linearGradient(listOf(dark, light), start = Offset(0f, width / 2), end = Offset(length, -width / 2)),
-                alpha = alpha,
-            )
-            // Midrib and a few side veins, lighter than the leaf.
-            val vein = lerp(light, Color.White, 0.35f)
-            drawLine(vein, Offset(length * 0.04f, 0f), Offset(length * 0.9f, 0f), strokeWidth = width * 0.045f, cap = StrokeCap.Round, alpha = alpha * 0.8f)
-            for (k in 1..3) {
-                val x = length * (0.18f + k * 0.17f)
-                for (side in listOf(-1f, 1f)) {
-                    drawLine(vein, Offset(x, 0f), Offset(x + length * 0.12f, side * width * 0.28f), strokeWidth = width * 0.025f, cap = StrokeCap.Round, alpha = alpha * 0.5f)
-                }
-            }
-        }
-    }
-}
-
-/** Logo: a large dark leaf and a smaller light one growing from the same point, as in the picture. */
-@Composable
-fun LeafLogo(modifier: Modifier) {
-    val colors = AppColors.extra.home
-    Canvas(modifier) {
-        val s = size.minDimension
-        val root = Offset(s * 0.22f, s * 0.92f)
-        leaf(root, (-100f).toRad(), s * 0.7f, s * 0.42f, colors.logoLight, colors.logoLight, 1f)
-        leaf(root, (-38f).toRad(), s * 0.95f, s * 0.5f, colors.logoDark, colors.logoLight, 1f)
-    }
-}
 
 /**
  * Branch measured from the design picture (21.11.2026, compared side by side with the phone): a stem
@@ -205,5 +163,3 @@ fun PatternIcon(color: Color, background: Color, modifier: Modifier) {
         drawLine(color, Offset(c.x + r * 0.72f, c.y + r * 0.72f), Offset(s * 0.98f, s * 0.95f), strokeWidth = s * 0.09f, cap = StrokeCap.Round)
     }
 }
-
-private fun Float.toRad() = (this * PI / 180).toFloat()
