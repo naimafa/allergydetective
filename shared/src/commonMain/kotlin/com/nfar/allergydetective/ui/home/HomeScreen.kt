@@ -16,7 +16,12 @@ import allergydetective.shared.generated.resources.tile_day_check
 import allergydetective.shared.generated.resources.tile_meal
 import allergydetective.shared.generated.resources.tile_results
 import allergydetective.shared.generated.resources.tile_symptom
-import androidx.compose.foundation.background
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import com.nfar.allergydetective.ui.theme.TileGradient
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -188,7 +193,7 @@ private fun Leaves(modifier: Modifier) {
 /**
  * Phone test 19.11.: at font scale 1.25 the tiles shrank their texts one by one and looked uneven.
  * One size for all four titles and one for all four descriptions, the largest that fits:
- * titles 18 → 13 sp in one line (never wrapped), descriptions 15 → 11 sp in at most two lines
+ * titles 18 → 15 sp in one line, otherwise 18 → 13 sp in two lines; descriptions 15 → 11 sp in at most two lines
  * without breaking a word. Steps of 0.5 sp.
  */
 @Composable
@@ -208,24 +213,35 @@ private fun sharedTileStyles(textWidth: Dp): TileTextStyles {
             text.split(' ').all { oneLine(it, style) } &&
                 !measurer.measure(text, style, maxLines = 2, constraints = Constraints(maxWidth = widthPx.toInt())).hasVisualOverflow
 
-        fun fitting(texts: List<String>, style: TextStyle, minSize: Float, fits: (String, TextStyle) -> Boolean): TextStyle {
+        fun sized(style: TextStyle, size: Float) =
+            // Line height shrinks along with the font.
+            style.copy(fontSize = size.sp, lineHeight = (size * style.lineHeight.value / style.fontSize.value).sp)
+
+        fun largestFitting(texts: List<String>, style: TextStyle, minSize: Float, fits: (String, TextStyle) -> Boolean): TextStyle? {
             var size = style.fontSize.value
-            while (size > minSize) {
-                // Line height shrinks along with the font.
-                val candidate = style.copy(fontSize = size.sp, lineHeight = (size * style.lineHeight.value / style.fontSize.value).sp)
+            while (size >= minSize) {
+                val candidate = sized(style, size)
                 if (texts.all { fits(it, candidate) }) return candidate
                 size -= 0.5f
             }
-            return style.copy(fontSize = minSize.sp, lineHeight = (minSize * style.lineHeight.value / style.fontSize.value).sp)
+            return null
         }
-        val titleStyle = fitting(titles, title, 13f, ::oneLine)
+
+        fun fitting(texts: List<String>, style: TextStyle, minSize: Float, fits: (String, TextStyle) -> Boolean): TextStyle =
+            largestFitting(texts, style, minSize, fits) ?: sized(style, minSize)
+
+        // Phone test 21.11.: "Symptome erfassen" does not fit in one line at font scale 1.25, not even at 13 sp.
+        // Then every title may wrap at a word into two lines instead of being cut off.
+        val oneLineTitle = largestFitting(titles, title, 15f, ::oneLine)
+        val titleStyle = oneLineTitle ?: fitting(titles, title, 13f, ::twoLines)
+        val titleLines = if (oneLineTitle != null) 1 else 2
         // The description stays clearly smaller than the title (phone test 19.11.: 15 sp hint under a shrunk title).
         val hintStart = minOf(hint.fontSize.value, titleStyle.fontSize.value - 3f)
         val hintStyle = fitting(hints, hint.copy(fontSize = hintStart.sp, lineHeight = (hintStart * 4f / 3f).sp), 11f, ::twoLines)
         // Two lines are only reserved when one of the four descriptions needs them.
         // Lines against the real text width (without the safety margin used for the size).
         val lines = hints.maxOf { measurer.measure(it, hintStyle, maxLines = 2, constraints = Constraints(maxWidth = (widthPx + safetyPx).toInt())).lineCount }
-        TileTextStyles(titleStyle, hintStyle, lines)
+        TileTextStyles(titleStyle, hintStyle, lines, titleLines)
     }
 }
 
@@ -258,7 +274,8 @@ private fun ActionTile(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Brush.linearGradient(listOf(colors.gradient.first, colors.gradient.second)), shape)
+                .clip(shape)
+                .drawBehind { drawTileBackground(colors.gradient) }
                 .padding(TILE_PADDING),
         ) {
             Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
@@ -272,9 +289,9 @@ private fun ActionTile(
                 )
             }
             Spacer(Modifier.weight(1f).heightIn(min = 12.dp))
-            // Sizes shared by all four tiles (sharedTileStyles). The title never wraps; the description
-            // reserves the same number of lines everywhere, so every title sits on the same line.
-            Text(stringResource(action.label), style = text.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            // Sizes shared by all four tiles (sharedTileStyles). The title wraps only when one of them does not fit
+            // in one line; the description reserves the same number of lines everywhere.
+            Text(stringResource(action.label), style = text.title, maxLines = text.titleLines, overflow = TextOverflow.Ellipsis)
             Text(
                 stringResource(action.hint),
                 style = text.hint,
@@ -313,10 +330,37 @@ private fun FinishNowButton(onClick: () -> Unit) {
     }
 }
 
-private class TileColors(val gradient: Pair<Color, Color>, val content: Color, val accent: Color)
+/**
+ * Design of 21.11.2026 (user feedback: "not just one colour"): a clear diagonal gradient from a light
+ * corner top left to a deeper one bottom right, a soft light glow top left and a wave along the bottom.
+ */
+private fun DrawScope.drawTileBackground(gradient: TileGradient) {
+    drawRect(Brush.linearGradient(listOf(gradient.start, gradient.end), start = Offset.Zero, end = Offset(size.width, size.height)))
+    drawRect(
+        Brush.radialGradient(
+            listOf(Color.White.copy(alpha = 0.35f), Color.Transparent),
+            center = Offset(size.width * 0.15f, size.height * 0.1f),
+            radius = size.maxDimension * 0.75f,
+        ),
+    )
+    val wave = Path().apply {
+        moveTo(0f, size.height * 0.78f)
+        cubicTo(
+            size.width * 0.35f, size.height * 0.62f,
+            size.width * 0.65f, size.height * 0.98f,
+            size.width, size.height * 0.68f,
+        )
+        lineTo(size.width, size.height)
+        lineTo(0f, size.height)
+        close()
+    }
+    drawPath(wave, Brush.verticalGradient(listOf(gradient.wave.copy(alpha = 0.25f), gradient.wave.copy(alpha = 0.7f)), startY = size.height * 0.6f, endY = size.height))
+}
+
+private class TileColors(val gradient: TileGradient, val content: Color, val accent: Color)
 
 /** Text sizes shared by the four tiles, and how many lines every description reserves. */
-private class TileTextStyles(val title: TextStyle, val hint: TextStyle, val hintLines: Int)
+private class TileTextStyles(val title: TextStyle, val hint: TextStyle, val hintLines: Int, val titleLines: Int)
 
 /** Food and results = sage, symptoms and day check = apricot (design of 21.11.2026). */
 @Composable

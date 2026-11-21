@@ -52,7 +52,8 @@ fun HomeToday(state: HomeState, onClick: () -> Unit) {
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(stringResource(Res.string.today_title), style = MaterialTheme.typography.titleMedium)
-            Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
+            // Top-aligned: at a large font "Einträge gesamt" wraps, the numbers still stay on one line.
+            Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.Top) {
                 Stat(Icons.Filled.Restaurant, state.mealsToday, pluralStringResource(Res.plurals.today_meals, state.mealsToday), Modifier.weight(1f))
                 Separator()
                 Stat(Icons.Filled.MonitorHeart, state.symptomsToday, pluralStringResource(Res.plurals.today_symptoms, state.symptomsToday), Modifier.weight(1f))

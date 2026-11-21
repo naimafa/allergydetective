@@ -84,6 +84,10 @@ private val DarkColors = darkColorScheme(
     outlineVariant = Color(0xFF424A44),
 )
 
+/** A home tile: light corner top left, deeper corner bottom right, and the soft wave along the bottom. */
+@Immutable
+data class TileGradient(val start: Color, val end: Color, val wave: Color)
+
 /** Colors outside the Material roles, e.g. the four symptom groups (CONTENT_Symptome 1). */
 @Immutable
 data class ExtraColors(
@@ -102,11 +106,11 @@ data class ExtraColors(
     /** Soft blue for "new entries" badges (StatusBadge). */
     val info: Color,
     val onInfo: Color,
-    /** Home design of 21.11.2026: soft gradients of the four tiles (start, end). */
-    val mealTile: Pair<Color, Color>,
-    val symptomTile: Pair<Color, Color>,
-    val dayCheckTile: Pair<Color, Color>,
-    val resultsTile: Pair<Color, Color>,
+    /** Home design of 21.11.2026: gradients of the four tiles. */
+    val mealTile: TileGradient,
+    val symptomTile: TileGradient,
+    val dayCheckTile: TileGradient,
+    val resultsTile: TileGradient,
     /** Text on the two apricot tiles. */
     val onWarmTile: Color,
     /** Heart icon and the "finish now" button on the home tiles. */
@@ -128,10 +132,10 @@ private val LightExtra = ExtraColors(
     redFlag = Color(0xFFFFCDC8),
     info = Color(0xFFDDEAEE),
     onInfo = Color(0xFF24505C),
-    mealTile = Color(0xFFE6EEE2) to Color(0xFFD3E3D0),
-    symptomTile = Color(0xFFFCEBE0) to Color(0xFFF8D3BD),
-    dayCheckTile = Color(0xFFFDEEDC) to Color(0xFFF7D8BE),
-    resultsTile = Color(0xFFEBF0E7) to Color(0xFFD5E4D3),
+    mealTile = TileGradient(Color(0xFFEEF3EA), Color(0xFFCADDC5), Color(0xFFB3CDAC)),
+    symptomTile = TileGradient(Color(0xFFFDF1E8), Color(0xFFF6C6A8), Color(0xFFF0AE88)),
+    dayCheckTile = TileGradient(Color(0xFFFDF4E6), Color(0xFFF6CDA6), Color(0xFFEFB689)),
+    resultsTile = TileGradient(Color(0xFFF1F5ED), Color(0xFFC9DCC4), Color(0xFFB0CBAA)),
     onWarmTile = Color(0xFF3A160B),
     // White text on it reaches about 5 : 1.
     warmAccent = Color(0xFFAD521F),
@@ -151,10 +155,10 @@ private val DarkExtra = ExtraColors(
     redFlag = Color(0xFF7E2B25),
     info = Color(0xFF2A3D44),
     onInfo = Color(0xFFCBE3EA),
-    mealTile = Color(0xFF2E4B40) to Color(0xFF24392F),
-    symptomTile = Color(0xFF5A3D31) to Color(0xFF452D24),
-    dayCheckTile = Color(0xFF55402C) to Color(0xFF433122),
-    resultsTile = Color(0xFF34453D) to Color(0xFF28362F),
+    mealTile = TileGradient(Color(0xFF34544A), Color(0xFF22362D), Color(0xFF3E6254)),
+    symptomTile = TileGradient(Color(0xFF65453A), Color(0xFF402A21), Color(0xFF77503F)),
+    dayCheckTile = TileGradient(Color(0xFF5E4732), Color(0xFF3E2D1F), Color(0xFF725638)),
+    resultsTile = TileGradient(Color(0xFF3A4D44), Color(0xFF25332C), Color(0xFF465C51)),
     onWarmTile = Color(0xFFF6E4DC),
     warmAccent = Color(0xFFF0A27A),
     onWarmAccent = Color(0xFF4A1E08),

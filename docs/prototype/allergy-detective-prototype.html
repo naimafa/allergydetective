@@ -24,7 +24,8 @@
   --clues: #E8E2F0; --on-clues: #2B2238; --clues-accent: #5E4E86;
   --digestive: #F8E8D2; --skin: #F6E4DC; --head: #E8E2F0; --airways: #DDEAEE; --other: #E5EBE7;
   --info: #DDEAEE; --on-info: #24505C;
-  --meal-tile: #E6EEE2, #D3E3D0; --symptom-tile: #FCEBE0, #F8D3BD; --day-tile: #FDEEDC, #F7D8BE; --results-tile: #EBF0E7, #D5E4D3;
+  --meal-tile: #EEF3EA, #CADDC5; --symptom-tile: #FDF1E8, #F6C6A8; --day-tile: #FDF4E6, #F6CDA6; --results-tile: #F1F5ED, #C9DCC4;
+  --meal-wave: #B3CDAC; --symptom-wave: #F0AE88; --day-wave: #EFB689; --results-wave: #B0CBAA;
   --on-warm-tile: #3A160B; --warm-accent: #AD521F; --on-warm-accent: #FFFFFF; --moon: #D9893F;
   --emoji-bg: rgba(246, 247, 243, .7);
   --page: #E4E7E1; --page-fg: #293831; --page-muted: #5F6A63; --frame: #1C211E;
@@ -42,7 +43,8 @@
     --clues: #3A3349; --on-clues: #E8E2F0; --clues-accent: #CDBFE8;
     --digestive: #4A3D28; --skin: #4A3830; --head: #3A3349; --airways: #2A3D44; --other: #34433C;
     --info: #2A3D44; --on-info: #CBE3EA;
-  --meal-tile: #2E4B40, #24392F; --symptom-tile: #5A3D31, #452D24; --day-tile: #55402C, #433122; --results-tile: #34453D, #28362F;
+  --meal-tile: #34544A, #22362D; --symptom-tile: #65453A, #402A21; --day-tile: #5E4732, #3E2D1F; --results-tile: #3A4D44, #25332C;
+  --meal-wave: #3E6254; --symptom-wave: #77503F; --day-wave: #725638; --results-wave: #465C51;
   --on-warm-tile: #F6E4DC; --warm-accent: #F0A27A; --on-warm-accent: #4A1E08; --moon: #F2C083;
     --emoji-bg: rgba(18, 21, 18, .7);
     --page: #0A0C0A; --page-fg: #E2E4DE; --page-muted: #B9C0B8; --frame: #000000;
@@ -60,7 +62,8 @@
   --clues: #3A3349; --on-clues: #E8E2F0; --clues-accent: #CDBFE8;
   --digestive: #4A3D28; --skin: #4A3830; --head: #3A3349; --airways: #2A3D44; --other: #34433C;
   --info: #2A3D44; --on-info: #CBE3EA;
-  --meal-tile: #2E4B40, #24392F; --symptom-tile: #5A3D31, #452D24; --day-tile: #55402C, #433122; --results-tile: #34453D, #28362F;
+  --meal-tile: #34544A, #22362D; --symptom-tile: #65453A, #402A21; --day-tile: #5E4732, #3E2D1F; --results-tile: #3A4D44, #25332C;
+  --meal-wave: #3E6254; --symptom-wave: #77503F; --day-wave: #725638; --results-wave: #465C51;
   --on-warm-tile: #F6E4DC; --warm-accent: #F0A27A; --on-warm-accent: #4A1E08; --moon: #F2C083;
   --emoji-bg: rgba(18, 21, 18, .7);
   --page: #0A0C0A; --page-fg: #E2E4DE; --page-muted: #B9C0B8; --frame: #000000;
@@ -189,10 +192,12 @@ p, h1, h2, h3 { margin: 0; }
 .stat .n svg { width: 26px; height: 26px; }
 .stat small { font-size: calc(12px * var(--fs)); }
 .tiles { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
-.tile { min-width: 0; border: 0; border-radius: 22px; padding: 16px; text-align: left; display: flex; flex-direction: column; min-height: 150px; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.tile { position: relative; overflow: hidden; isolation: isolate; min-width: 0; border: 0; border-radius: 22px; padding: 16px; text-align: left; display: flex; flex-direction: column; min-height: 150px; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
 .tile .top { display: flex; justify-content: space-between; align-items: flex-start; }
 .tile .top svg { width: 44px; height: 44px; }
 .tile .top svg.chev { width: 24px; height: 24px; color: currentColor; opacity: .8; }
+/* Soft wave along the bottom, like drawTileBackground(). */
+.tile::after { content: ""; position: absolute; z-index: -1; left: -20%; right: -20%; bottom: -55%; height: 85%; border-radius: 50%; background: linear-gradient(to bottom, var(--wave), transparent 140%); opacity: .55; transform: rotate(-6deg); }
 .tile .grow { flex: 1; min-height: 12px; }
 .tile .now { margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; border-radius: 999px; background: var(--warm-accent); color: var(--on-warm-accent); font-size: calc(14px * var(--fs)); font-weight: 500; white-space: nowrap; }
 .tile .now svg { width: 18px; height: 18px; color: currentColor; }
@@ -200,11 +205,13 @@ p, h1, h2, h3 { margin: 0; }
 .tile span.hint { font-size: calc(15px * var(--fs) * var(--hint-shrink, 1)); line-height: 1.33; margin-top: 4px; opacity: .85; min-height: 2.66em; }
 /* Like sharedTileStyles(): all four titles shrink together until "Symptome erfassen" fits (about 15 sp), hints 3 sp smaller. */
 :root { --tile-shrink: .83; --hint-shrink: .8; }
-:root[data-font="125"] { --tile-shrink: .66; --hint-shrink: .58; }
-.t-food { background: linear-gradient(135deg, var(--meal-tile)); color: var(--on-primary-container); } .t-food svg { color: var(--primary); }
-.t-symptom { background: linear-gradient(135deg, var(--symptom-tile)); color: var(--on-warm-tile); } .t-symptom svg { color: var(--warm-accent); }
-.t-day { background: linear-gradient(135deg, var(--day-tile)); color: var(--on-warm-tile); } .t-day svg { color: var(--moon); }
-.t-results { background: linear-gradient(135deg, var(--results-tile)); color: var(--on-primary-container); } .t-results svg { color: var(--primary); }
+/* Phone test 21.11.: at 125 % "Symptome erfassen" does not fit in one line, so all titles may wrap at a word. */
+:root[data-font="125"] { --tile-shrink: 1; --hint-shrink: 1; }
+:root[data-font="125"] .tile b { white-space: normal; }
+.t-food { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--meal-tile)); --wave: var(--meal-wave); color: var(--on-primary-container); } .t-food svg { color: var(--primary); }
+.t-symptom { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--symptom-tile)); --wave: var(--symptom-wave); color: var(--on-warm-tile); } .t-symptom svg { color: var(--warm-accent); }
+.t-day { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--day-tile)); --wave: var(--day-wave); color: var(--on-warm-tile); } .t-day svg { color: var(--moon); }
+.t-results { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--results-tile)); --wave: var(--results-wave); color: var(--on-primary-container); } .t-results svg { color: var(--primary); }
 .progress { height: 10px; display: flex; gap: 4px; }
 .progress i { display: block; height: 10px; border-radius: 5px; background: var(--primary); }
 .progress i + i { background: var(--high); flex: 1; }
