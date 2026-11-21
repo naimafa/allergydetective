@@ -124,6 +124,8 @@ data class ExtraColors(
 data class HomeColors(
     /** Page: one even cream, measured from the picture without the phone's reading mode. */
     val page: Color,
+    /** Light mode: the leaf picture of 21.11.2026 behind the top of the start screen (dark mode: drawn branch). */
+    val leafPhoto: Boolean,
     /** Headings and titles. */
     val ink: Color,
     /** Progress bar, numbers, the active tab. */
@@ -177,6 +179,7 @@ private val LightExtra = ExtraColors(
     home = HomeColors(
         // Colour list of 21.11.2026 (picked by the user): three greens – headings, accent, icons.
         page = Color(0xFFFBF4EA),
+        leafPhoto = true,
         ink = Color(0xFF053923),
         accent = Color(0xFF184F34),
         inkSoft = Color(0xFF184F34),
@@ -219,6 +222,7 @@ private val DarkExtra = ExtraColors(
     onInfo = Color(0xFFCBE3EA),
     home = HomeColors(
         page = Color(0xFF121512),
+        leafPhoto = false,
         ink = Color(0xFFB4DCC0),
         accent = Color(0xFF9CC7B6),
         inkSoft = Color(0xFFCAD6C6),
