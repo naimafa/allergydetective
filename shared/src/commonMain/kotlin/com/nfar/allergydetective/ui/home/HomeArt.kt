@@ -1,8 +1,5 @@
 package com.nfar.allergydetective.ui.home
 
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.blur
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,71 +14,13 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.rotateRad
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.lerp
 import com.nfar.allergydetective.ui.theme.AppColors
-import kotlin.math.atan2
 
 /*
- * Drawings of the start screen after the design picture of 21.11.2026: the broad-leaved branch
- * top right (dark mode; light mode uses the leaf picture) and the tile icons (heart with pulse line, moon with stars,
+ * Drawings of the start screen after the design picture of 21.11.2026: the logo and the tile icons (heart with pulse line, moon with stars,
  * bars with a magnifier). Drawn in code, so they follow light and dark mode and stay sharp.
  */
-
-/**
- * Branch measured from the design picture (21.11.2026, compared side by side with the phone): a stem
- * coming in from the lower right edge below the bell, five broad, overlapping leaves – a large one up
- * to the left, a long one to the left just above the progress card, one in between, one up along the
- * right edge, a small one low. Pale sage, slightly out of focus like the picture, a faint midrib.
- * Coordinates in a 200 × 200 unit box at the top right of the content.
- */
-@Composable
-fun LeafBranch(modifier: Modifier) {
-    val colors = AppColors.extra.home
-    // Soft focus as in the picture (blur works from Android 12; older phones show the leaves sharp).
-    Canvas(modifier.blur(1.5.dp, BlurredEdgeTreatment.Unbounded)) {
-        val u = size.width / 200f
-        fun p(x: Float, y: Float) = Offset(x * u, y * u)
-        val stem = Path().apply {
-            moveTo(205 * u, 150 * u)
-            cubicTo(200 * u, 136 * u, 196 * u, 124 * u, 194 * u, 111 * u)
-        }
-        drawPath(stem, colors.leaf, style = Stroke(width = 2.2f * u, cap = StrokeCap.Round))
-        // Back to front: up the right edge, long one left, small one low, middle one, large one up left.
-        // Positions taken from the picture relative to the top of the progress card, so all leaves end above it.
-        broadLeaf(p(194f, 106f), p(200f, 38f), 0.46f, colors.leaf, colors.leafLight)
-        broadLeaf(p(194f, 127f), p(71f, 133f), 0.36f, colors.leaf, colors.leafLight)
-        broadLeaf(p(197f, 132f), p(166f, 141f), 0.5f, colors.leaf, colors.leafLight)
-        broadLeaf(p(188f, 119f), p(134f, 85f), 0.5f, colors.leaf, colors.leafLight)
-        broadLeaf(p(194f, 112f), p(98f, 49f), 0.46f, colors.leaf, colors.leafLight)
-    }
-}
-
-/** Smooth lanceolate leaf from [base] to [tip], widest at about 40 %, gently curved. */
-private fun DrawScope.broadLeaf(base: Offset, tip: Offset, widthRatio: Float, dark: Color, light: Color) {
-    val d = tip - base
-    val length = d.getDistance()
-    val w = length * widthRatio
-    translate(base.x, base.y) {
-        rotateRad(atan2(d.y, d.x), pivot = Offset.Zero) {
-            val shape = Path().apply {
-                moveTo(0f, 0f)
-                cubicTo(length * 0.22f, -w * 0.62f, length * 0.66f, -w * 0.66f, length, 0f)
-                cubicTo(length * 0.7f, w * 0.34f, length * 0.3f, w * 0.48f, 0f, 0f)
-                close()
-            }
-            drawPath(shape, Brush.horizontalGradient(listOf(dark, lerp(dark, light, 0.55f), light), startX = 0f, endX = length))
-            // Soft light along the upper half, as in the picture.
-            drawPath(shape, Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.22f), Color.Transparent), startY = -w * 0.5f, endY = w * 0.1f))
-            val rib = Path().apply {
-                moveTo(length * 0.03f, 0f)
-                quadraticTo(length * 0.5f, -w * 0.1f, length * 0.9f, -w * 0.02f)
-            }
-            drawPath(rib, Color.White.copy(alpha = 0.3f), style = Stroke(width = w * 0.03f, cap = StrokeCap.Round))
-        }
-    }
-}
 
 /**
  * Logo next to "Allergy Detective" (user's code of 21.11.2026 calls it; drawn after the user's logo

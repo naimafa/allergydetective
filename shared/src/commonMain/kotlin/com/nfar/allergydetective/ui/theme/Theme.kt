@@ -1,5 +1,8 @@
 package com.nfar.allergydetective.ui.theme
 
+import org.jetbrains.compose.resources.DrawableResource
+import allergydetective.shared.generated.resources.home_background_dark
+import allergydetective.shared.generated.resources.home_background
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.inter
 import allergydetective.shared.generated.resources.playfair_display
@@ -124,8 +127,8 @@ data class ExtraColors(
 data class HomeColors(
     /** Page: one even cream, measured from the picture without the phone's reading mode. */
     val page: Color,
-    /** Light mode: the leaf picture of 21.11.2026 behind the top of the start screen (dark mode: drawn branch). */
-    val leafPhoto: Boolean,
+    /** The leaf picture of 21.11.2026 behind the top of the start screen; dark mode uses a darkened copy (BgDark.java). */
+    val leafPicture: DrawableResource,
     /** Headings and titles. */
     val ink: Color,
     /** Progress bar, numbers, the active tab. */
@@ -134,9 +137,6 @@ data class HomeColors(
     val inkSoft: Color,
     /** Icons on the sage cards. */
     val icon: Color,
-    /** Branch top right: leaves and stem. */
-    val leaf: Color,
-    val leafLight: Color,
     val progressCard: Color,
     val progressTrack: Color,
     val badge: Color,
@@ -178,13 +178,11 @@ private val LightExtra = ExtraColors(
     home = HomeColors(
         // Colour list of 21.11.2026 (picked by the user): three greens – headings, accent, icons.
         page = Color(0xFFFBF4EA),
-        leafPhoto = true,
+        leafPicture = Res.drawable.home_background,
         ink = Color(0xFF053923),
         accent = Color(0xFF184F34),
         inkSoft = Color(0xFF184F34),
         icon = Color(0xFF478661),
-        leaf = Color(0xFF94B585),
-        leafLight = Color(0xFFD5E3C6),
         progressCard = Color(0xFFFBF8EE),
         progressTrack = Color(0xFFE0E3D0),
         badge = Color(0xFFD6DEC6),
@@ -220,13 +218,11 @@ private val DarkExtra = ExtraColors(
     onInfo = Color(0xFFCBE3EA),
     home = HomeColors(
         page = Color(0xFF121512),
-        leafPhoto = false,
+        leafPicture = Res.drawable.home_background_dark,
         ink = Color(0xFFB4DCC0),
         accent = Color(0xFF9CC7B6),
         inkSoft = Color(0xFFCAD6C6),
         icon = Color(0xFF9CC7A8),
-        leaf = Color(0xFF3F5A44),
-        leafLight = Color(0xFF2E3F31),
         progressCard = Color(0xFF1C201C),
         progressTrack = Color(0xFF333733),
         badge = Color(0xFF2A4A3F),

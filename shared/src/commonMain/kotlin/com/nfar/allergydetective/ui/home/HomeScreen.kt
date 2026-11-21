@@ -1,6 +1,5 @@
 package com.nfar.allergydetective.ui.home
 
-import allergydetective.shared.generated.resources.home_background
 import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.draw.paint
@@ -131,8 +130,6 @@ fun HomeScreen(
             var topHeight by remember { mutableStateOf(0.dp) }
             val rowHeight = ((maxHeight - PAGE_PADDING * 2 - topHeight - SECTION_GAP - GRID) / 2).coerceAtLeast(MIN_TILE_HEIGHT)
             Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-                // Dark mode: the drawn branch; light mode shows the leaf picture behind the page (homeBackground).
-                if (!AppColors.extra.home.leafPhoto) LeafBranch(modifier = Modifier.align(Alignment.TopEnd).size(230.dp))
                 Column(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = PAGE_PADDING),
                     verticalArrangement = Arrangement.spacedBy(SECTION_GAP),
@@ -174,16 +171,14 @@ private val PAGE_PADDING = 12.dp
 private val SECTION_GAP = 12.dp
 
 /**
- * Design of 21.11.2026: one even cream page. In light mode the leaf picture (docs/design, cut and
- * faded into the cream with BgCut.java) lies across the full width at the top, also under the status bar.
+ * Design of 21.11.2026: one even page colour with the leaf picture (docs/design, cut and faded into
+ * the page with BgCut.java, dark copy with BgDark.java) across the full width at the top, also under the status bar.
  */
 @Composable
 fun Modifier.homeBackground(): Modifier {
     val home = AppColors.extra.home
-    val page = background(home.page)
-    if (!home.leafPhoto) return page
-    return page.paint(
-        painterResource(Res.drawable.home_background),
+    return background(home.page).paint(
+        painterResource(home.leafPicture),
         sizeToIntrinsics = false,
         alignment = Alignment.TopCenter,
         contentScale = ContentScale.FillWidth,
