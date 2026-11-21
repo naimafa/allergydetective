@@ -1,5 +1,11 @@
 package com.nfar.allergydetective.ui.theme
 
+import org.jetbrains.compose.resources.DrawableResource
+import allergydetective.shared.generated.resources.home_background_dark
+import allergydetective.shared.generated.resources.home_background
+import allergydetective.shared.generated.resources.Res
+import allergydetective.shared.generated.resources.inter
+import allergydetective.shared.generated.resources.playfair_display
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -13,7 +19,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import org.jetbrains.compose.resources.Font
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -38,17 +46,18 @@ private val LightColors = lightColorScheme(
     onTertiary = Color.White,
     tertiaryContainer = Color(0xFFF6E4DC),
     onTertiaryContainer = Color(0xFF3A160B),
-    background = Color(0xFFF6F7F3),
+    // Design of 21.11.2026: warm cream instead of the cool grey, the neutrals below follow.
+    background = Color(0xFFF9F6E8),
     onBackground = Color(0xFF293831),
-    surface = Color(0xFFF6F7F3),
+    surface = Color(0xFFF9F6E8),
     onSurface = Color(0xFF293831),
     surfaceVariant = Color(0xFFDDE3DC),
     onSurfaceVariant = Color(0xFF5F6A63),
     surfaceContainerLowest = Color.White,
-    surfaceContainerLow = Color(0xFFF0F2EC),
-    surfaceContainer = Color(0xFFEAEDE6),
-    surfaceContainerHigh = Color(0xFFE4E8E0),
-    surfaceContainerHighest = Color(0xFFDEE3DA),
+    surfaceContainerLow = Color(0xFFF4F1E3),
+    surfaceContainer = Color(0xFFFBF8EC),
+    surfaceContainerHigh = Color(0xFFEAE7D8),
+    surfaceContainerHighest = Color(0xFFE3E0D0),
     outline = Color(0xFF737D75),
     outlineVariant = Color(0xFFC3CBC2),
 )
@@ -84,6 +93,10 @@ private val DarkColors = darkColorScheme(
     outlineVariant = Color(0xFF424A44),
 )
 
+/** A home tile: light corner top left, deeper corner bottom right, and the soft wave along the bottom. */
+@Immutable
+data class TileGradient(val start: Color, val end: Color, val wave: Color)
+
 /** Colors outside the Material roles, e.g. the four symptom groups (CONTENT_Symptome 1). */
 @Immutable
 data class ExtraColors(
@@ -102,6 +115,52 @@ data class ExtraColors(
     /** Soft blue for "new entries" badges (StatusBadge). */
     val info: Color,
     val onInfo: Color,
+    /** Start screen (design of 21.11.2026). */
+    val home: HomeColors,
+)
+
+/**
+ * Colours of the start screen, measured from the design picture of 21.11.2026: warm cream page,
+ * deep forest green for text, bar and icons, sage and apricot tiles.
+ */
+@Immutable
+data class HomeColors(
+    /** Page: one even cream, measured from the picture without the phone's reading mode. */
+    val page: Color,
+    /** The leaf picture of 21.11.2026 behind the top of the start screen; dark mode: the same branch recoloured (BgRecolor.java). */
+    val leafPicture: DrawableResource,
+    /** Headings and titles. */
+    val ink: Color,
+    /** Progress bar, numbers, the active tab. */
+    val accent: Color,
+    /** Tagline and secondary text. */
+    val inkSoft: Color,
+    /** Icons on the sage cards. */
+    val icon: Color,
+    val progressCard: Color,
+    val progressTrack: Color,
+    val badge: Color,
+    val todayCard: Color,
+    val mealTile: TileGradient,
+    val symptomTile: TileGradient,
+    val dayCheckTile: TileGradient,
+    val resultsTile: TileGradient,
+    /** Text on the sage and on the apricot tiles. */
+    val onSageTile: Color,
+    val onWarmTile: Color,
+    val heart: Color,
+    val moon: Color,
+    /** Red dot on the bell. */
+    val dot: Color,
+    /** White circle behind the chevron on the tiles. */
+    val chevronCircle: Color,
+    /** Light glow top left on the tiles: strong in light mode, faint in dark mode (dark test 21.11.: milky tiles). */
+    val tileGlow: Color,
+    /** Bottom bar and its inactive tabs. */
+    val nav: Color,
+    val navInactive: Color,
+    /** 1 dp border around the cards. */
+    val cardBorder: Color,
 )
 
 private val LightExtra = ExtraColors(
@@ -116,6 +175,33 @@ private val LightExtra = ExtraColors(
     redFlag = Color(0xFFFFCDC8),
     info = Color(0xFFDDEAEE),
     onInfo = Color(0xFF24505C),
+    home = HomeColors(
+        // Colour list of 21.11.2026 (picked by the user): three greens – headings, accent, icons.
+        page = Color(0xFFFBF4EA),
+        leafPicture = Res.drawable.home_background,
+        ink = Color(0xFF053923),
+        accent = Color(0xFF184F34),
+        inkSoft = Color(0xFF184F34),
+        icon = Color(0xFF478661),
+        progressCard = Color(0xFFFBF8EE),
+        progressTrack = Color(0xFFE0E3D0),
+        badge = Color(0xFFD6DEC6),
+        todayCard = Color(0xFFEDEEDC),
+        mealTile = TileGradient(Color(0xFFEAF0E1), Color(0xFFB9D0AE), Color(0xFFA6C29A)),
+        symptomTile = TileGradient(Color(0xFFFFF0DE), Color(0xFFF9CDAE), Color(0xFFF3B98F)),
+        dayCheckTile = TileGradient(Color(0xFFFFF0DE), Color(0xFFF9CDAE), Color(0xFFF3B98F)),
+        resultsTile = TileGradient(Color(0xFFEAF0E1), Color(0xFFB9D0AE), Color(0xFF9DBB90)),
+        onSageTile = Color(0xFF053923),
+        onWarmTile = Color(0xFF5A301E),
+        heart = Color(0xFFD47636),
+        moon = Color(0xFFD47636),
+        dot = Color(0xFFD9483B),
+        chevronCircle = Color(0xCCFFFFFF),
+        tileGlow = Color(0x59FFFFFF),
+        nav = Color(0xFFFFF9EF),
+        navInactive = Color(0xFF416783),
+        cardBorder = Color.White,
+    ),
 )
 
 private val DarkExtra = ExtraColors(
@@ -130,11 +216,38 @@ private val DarkExtra = ExtraColors(
     redFlag = Color(0xFF7E2B25),
     info = Color(0xFF2A3D44),
     onInfo = Color(0xFFCBE3EA),
+    home = HomeColors(
+        // Dark start screen: the light branch recoloured onto forest green #062115 (colours from the user's dark picture).
+        page = Color(0xFF062115),
+        leafPicture = Res.drawable.home_background_dark,
+        ink = Color(0xFFB4DCC0),
+        accent = Color(0xFF9CC7B6),
+        inkSoft = Color(0xFFCAD6C6),
+        icon = Color(0xFF9CC7A8),
+        progressCard = Color(0xFF0F2E21),
+        progressTrack = Color(0xFF23463A),
+        badge = Color(0xFF1F4A38),
+        todayCard = Color(0xFF143A2A),
+        mealTile = TileGradient(Color(0xFF2C473B), Color(0xFF1C2E25), Color(0xFF355A4A)),
+        symptomTile = TileGradient(Color(0xFF5A362A), Color(0xFF38211A), Color(0xFF6E4232)),
+        dayCheckTile = TileGradient(Color(0xFF573D29), Color(0xFF36261A), Color(0xFF6B4A30)),
+        resultsTile = TileGradient(Color(0xFF2E443A), Color(0xFF1D2B24), Color(0xFF3A5547)),
+        onSageTile = Color(0xFFDCE8DF),
+        onWarmTile = Color(0xFFF6E4DC),
+        heart = Color(0xFFF0A27A),
+        moon = Color(0xFFF2C083),
+        dot = Color(0xFFFF8A80),
+        chevronCircle = Color(0x26FFFFFF),
+        tileGlow = Color(0x0FFFFFFF),
+        nav = Color(0xFF0E2C1F),
+        navInactive = Color(0xFFD2D8D1),
+        cardBorder = Color(0x1AFFFFFF),
+    ),
 )
 
 val LocalExtraColors = staticCompositionLocalOf { LightExtra }
 
-/** Slightly larger and calmer than the Material defaults; system sans-serif (Inter would need a font file). */
+/** Slightly larger and calmer than the Material defaults. */
 private val AppTypography = Typography().run {
     copy(
         headlineMedium = headlineMedium.copy(fontWeight = FontWeight.Bold),
@@ -143,6 +256,47 @@ private val AppTypography = Typography().run {
         bodyLarge = TextStyle(fontSize = 17.sp, lineHeight = 24.sp),
         bodyMedium = TextStyle(fontSize = 15.sp, lineHeight = 21.sp),
     )
+}
+
+/** Every text style of [typography] in [family]. */
+private fun Typography.withFamily(family: FontFamily) = Typography(
+    displayLarge = displayLarge.copy(fontFamily = family),
+    displayMedium = displayMedium.copy(fontFamily = family),
+    displaySmall = displaySmall.copy(fontFamily = family),
+    headlineLarge = headlineLarge.copy(fontFamily = family),
+    headlineMedium = headlineMedium.copy(fontFamily = family),
+    headlineSmall = headlineSmall.copy(fontFamily = family),
+    titleLarge = titleLarge.copy(fontFamily = family),
+    titleMedium = titleMedium.copy(fontFamily = family),
+    titleSmall = titleSmall.copy(fontFamily = family),
+    bodyLarge = bodyLarge.copy(fontFamily = family),
+    bodyMedium = bodyMedium.copy(fontFamily = family),
+    bodySmall = bodySmall.copy(fontFamily = family),
+    labelLarge = labelLarge.copy(fontFamily = family),
+    labelMedium = labelMedium.copy(fontFamily = family),
+    labelSmall = labelSmall.copy(fontFamily = family),
+)
+
+/**
+ * Fonts of the design of 21.11.2026 (both SIL Open Font License, texts in docs/licenses):
+ * Inter for all text, Playfair Display for the name, greeting and tagline on the start screen.
+ * Both are variable fonts; each weight is a setting of the same file.
+ */
+object AppFonts {
+    val inter: FontFamily
+        @Composable get() = FontFamily(
+            Font(Res.font.inter, FontWeight.Normal),
+            Font(Res.font.inter, FontWeight.Medium),
+            Font(Res.font.inter, FontWeight.SemiBold),
+            Font(Res.font.inter, FontWeight.Bold),
+        )
+
+    val playfair: FontFamily
+        @Composable get() = FontFamily(
+            Font(Res.font.playfair_display, FontWeight.Normal),
+            Font(Res.font.playfair_display, FontWeight.Medium),
+            Font(Res.font.playfair_display, FontWeight.Bold),
+        )
 }
 
 private val AppShapes = Shapes(
@@ -158,7 +312,7 @@ fun AppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable ()
     CompositionLocalProvider(LocalExtraColors provides if (darkTheme) DarkExtra else LightExtra) {
         MaterialTheme(
             colorScheme = if (darkTheme) DarkColors else LightColors,
-            typography = AppTypography,
+            typography = AppTypography.withFamily(AppFonts.inter),
             shapes = AppShapes,
             content = content,
         )

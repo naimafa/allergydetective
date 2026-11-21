@@ -4,12 +4,11 @@ import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
 import allergydetective.shared.generated.resources.day_pick_date
 import allergydetective.shared.generated.resources.weekdays_short
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.CheckCircle
@@ -41,7 +40,7 @@ private const val DAY_MILLIS = 86_400_000L
  * The date chip opens a calendar for up to [MAX_DAYS_BACK] days back and then shows the chosen day,
  * e.g. "Mo, 16.11.". [marked] days (days ago) get a check mark, e.g. confirmed days in the day check.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun DayPicker(
     daysAgo: Int,
@@ -52,8 +51,13 @@ fun DayPicker(
 ) {
     var showCalendar by remember { mutableStateOf(false) }
     // Phone test 19.11.: in the symptom dialog "Datum" was cut to "Dat". No check mark (the green fill
-    // marks the day), small gaps, so all three chips fit also with a large system font.
-    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) {
+    // marks the day), small gaps. Phone test 20.11.: a scrolling row still cut "Datum" at the dialog edge
+    // at font scale 1.25, so the row wraps: when the date chip does not fit, it moves to the next line.
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier.fillMaxWidth(),
+    ) {
         (0..QUICK_DAYS).forEach { option ->
             AppFilterChip(
                 selected = daysAgo == option,
