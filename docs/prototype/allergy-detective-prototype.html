@@ -18,15 +18,18 @@
   --primary-container: #DCE8DF; --on-primary-container: #12271F;
   --secondary: #4A5F55; --secondary-container: #E5EBE7; --on-secondary-container: #1E2B25;
   --tertiary: #9A4A33; --tertiary-container: #F6E4DC; --on-tertiary-container: #3A160B;
-  --bg: #F6F7F3; --fg: #293831; --muted: #5F6A63;
-  --lowest: #FFFFFF; --low: #F0F2EC; --container: #EAEDE6; --high: #E4E8E0; --highest: #DEE3DA;
+  --bg: #F9F6E8; --fg: #293831; --muted: #5F6A63;
+  --lowest: #FFFFFF; --low: #F4F1E3; --container: #FBF8EC; --high: #EAE7D8; --highest: #E3E0D0;
   --outline: #737D75; --outline-variant: #C3CBC2; --error: #BA1A1A;
   --clues: #E8E2F0; --on-clues: #2B2238; --clues-accent: #5E4E86;
   --digestive: #F8E8D2; --skin: #F6E4DC; --head: #E8E2F0; --airways: #DDEAEE; --other: #E5EBE7;
   --info: #DDEAEE; --on-info: #24505C;
-  --meal-tile: #EEF3EA, #CADDC5; --symptom-tile: #FDF1E8, #F6C6A8; --day-tile: #FDF4E6, #F6CDA6; --results-tile: #F1F5ED, #C9DCC4;
-  --meal-wave: #B3CDAC; --symptom-wave: #F0AE88; --day-wave: #EFB689; --results-wave: #B0CBAA;
-  --on-warm-tile: #3A160B; --warm-accent: #AD521F; --on-warm-accent: #FFFFFF; --moon: #D9893F;
+  --meal-tile: #EDF0DF, #D9E2CA; --symptom-tile: #FCE7D3, #FBD5B6; --day-tile: #FBEFD9, #F8DCBA; --results-tile: #EDEEDE, #DAE3CC;
+  --meal-wave: #BDCFB0; --symptom-wave: #F8C298; --day-wave: #F4C493; --results-wave: #A4BF98;
+  --page-tint: #F8E6D6; --ink: #1B4B2E; --ink-soft: #36543C; --home-icon: #2E6140; --logo-dark: #3F7049; --logo-light: #6E9C72;
+  --leaf: #A8BF98; --leaf-light: #D3DDC4; --progress-card: #FDFCF5; --track: #E6E5D3; --badge: #E2E7D5; --today-card: #E4E9D6;
+  --on-sage-tile: #152812; --heart: #D16F2E; --dot: #D9483B;
+  --on-warm-tile: #361A04; --warm-accent: #B15626; --on-warm-accent: #FFFFFF; --moon: #E58A36;
   --emoji-bg: rgba(246, 247, 243, .7);
   --page: #E4E7E1; --page-fg: #293831; --page-muted: #5F6A63; --frame: #1C211E;
   --font: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -45,6 +48,9 @@
     --info: #2A3D44; --on-info: #CBE3EA;
   --meal-tile: #34544A, #22362D; --symptom-tile: #65453A, #402A21; --day-tile: #5E4732, #3E2D1F; --results-tile: #3A4D44, #25332C;
   --meal-wave: #3E6254; --symptom-wave: #77503F; --day-wave: #725638; --results-wave: #465C51;
+  --page-tint: #1E1A15; --ink: #B4DCC0; --ink-soft: #CAD6C6; --home-icon: #9CC7A8; --logo-dark: #6FA57A; --logo-light: #9CC7A0;
+  --leaf: #3F5A44; --leaf-light: #2E3F31; --progress-card: #1C201C; --track: #333733; --badge: #2A4A3F; --today-card: #243A2E;
+  --on-sage-tile: #DCE8DF; --heart: #F0A27A; --dot: #FF8A80;
   --on-warm-tile: #F6E4DC; --warm-accent: #F0A27A; --on-warm-accent: #4A1E08; --moon: #F2C083;
     --emoji-bg: rgba(18, 21, 18, .7);
     --page: #0A0C0A; --page-fg: #E2E4DE; --page-muted: #B9C0B8; --frame: #000000;
@@ -64,6 +70,9 @@
   --info: #2A3D44; --on-info: #CBE3EA;
   --meal-tile: #34544A, #22362D; --symptom-tile: #65453A, #402A21; --day-tile: #5E4732, #3E2D1F; --results-tile: #3A4D44, #25332C;
   --meal-wave: #3E6254; --symptom-wave: #77503F; --day-wave: #725638; --results-wave: #465C51;
+  --page-tint: #1E1A15; --ink: #B4DCC0; --ink-soft: #CAD6C6; --home-icon: #9CC7A8; --logo-dark: #6FA57A; --logo-light: #9CC7A0;
+  --leaf: #3F5A44; --leaf-light: #2E3F31; --progress-card: #1C201C; --track: #333733; --badge: #2A4A3F; --today-card: #243A2E;
+  --on-sage-tile: #DCE8DF; --heart: #F0A27A; --dot: #FF8A80;
   --on-warm-tile: #F6E4DC; --warm-accent: #F0A27A; --on-warm-accent: #4A1E08; --moon: #F2C083;
   --emoji-bg: rgba(18, 21, 18, .7);
   --page: #0A0C0A; --page-fg: #E2E4DE; --page-muted: #B9C0B8; --frame: #000000;
@@ -175,26 +184,31 @@ p, h1, h2, h3 { margin: 0; }
 /* Start */
 /* Home design of 21.11.2026: logo row, serif greeting, leaves top right, gradient tiles. */
 .home-head { position: relative; display: flex; flex-direction: column; gap: 4px; }
-.brand { display: flex; align-items: center; gap: 10px; color: var(--primary); font-family: Georgia, "Times New Roman", serif; font-size: calc(16px * var(--fs)); font-weight: 500; }
-.brand svg { width: 36px; height: 36px; }
-.greeting { font-family: Georgia, "Times New Roman", serif; font-weight: 700; font-size: calc(32px * var(--fs)); line-height: 1.25; color: var(--primary); margin: 8px 0 0; }
-.tagline { font-family: Georgia, "Times New Roman", serif; font-size: calc(17px * var(--fs)); color: var(--muted); margin: 0; }
-.leaves { position: absolute; top: 0; right: 0; width: 190px; height: 190px; overflow: hidden; pointer-events: none; color: var(--primary); opacity: .10; }
-.leaves svg { position: absolute; }
-.v-start-body { position: relative; }
-.v-start-body > :not(.leaves) { position: relative; }
-.progress-card { box-shadow: 0 1px 3px rgba(0,0,0,.12); padding: 14px 16px; gap: 8px; }
-.today { background: var(--primary-container); color: var(--on-primary-container); border: 0; text-align: left; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--ink); font-family: Georgia, "Times New Roman", serif; font-size: calc(22px * var(--fs)); font-weight: 500; }
+.brand > svg { width: 44px; height: 44px; flex: 0 0 auto; }
+.brand span { flex: 1; }
+.bell { position: relative; border: 0; background: transparent; color: var(--ink); width: 48px; height: 48px; display: grid; place-items: center; }
+.bell svg { width: 28px; height: 28px; }
+.bell i { position: absolute; top: 9px; right: 10px; width: 9px; height: 9px; border-radius: 50%; background: var(--dot); }
+.greeting { font-family: Georgia, "Times New Roman", serif; font-weight: 700; font-size: calc(36px * var(--fs)); line-height: 1.22; color: var(--ink); margin: 12px 0 0; }
+.tagline { font-family: Georgia, "Times New Roman", serif; font-size: calc(17px * var(--fs)); color: var(--ink-soft); margin: 0; }
+.branch { position: absolute; top: 0; right: 0; width: 200px; height: 230px; pointer-events: none; overflow: visible; }
+.v-start-body { position: relative; background: radial-gradient(circle at 105% 45%, var(--page-tint), transparent 55%), var(--bg); }
+.v-start-body > :not(.branch) { position: relative; }
+.progress-card { background: var(--progress-card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); padding: 14px 16px; gap: 8px; }
+.progress-card .muted { color: var(--ink-soft); }
+.progress-card .b-progress { background: var(--badge); color: var(--ink); }
+.today { background: var(--today-card); color: var(--on-sage-tile); border: 0; text-align: left; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; width: 100%; }
 .stats { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; }
 .stats .sep { width: 1px; align-self: stretch; margin: 4px 0; background: currentColor; opacity: .15; }
 .stat { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
-.stat .n { display: flex; align-items: center; gap: 8px; color: var(--primary); font-size: calc(24px * var(--fs)); font-weight: 600; line-height: 1.33; }
-.stat .n svg { width: 26px; height: 26px; }
+.stat .n { display: flex; align-items: center; gap: 8px; color: var(--ink); font-size: calc(24px * var(--fs)); font-weight: 600; line-height: 1.33; }
+.stat .n svg { width: 26px; height: 26px; color: var(--home-icon); }
 .stat small { font-size: calc(12px * var(--fs)); }
 .tiles { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
 .tile { position: relative; overflow: hidden; isolation: isolate; min-width: 0; border: 0; border-radius: 22px; padding: 16px; text-align: left; display: flex; flex-direction: column; min-height: 150px; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
 .tile .top { display: flex; justify-content: space-between; align-items: flex-start; }
-.tile .top svg { width: 44px; height: 44px; }
+.tile .top svg { width: 48px; height: 48px; }
 .tile .top svg.chev { width: 24px; height: 24px; color: currentColor; opacity: .8; }
 /* Soft wave along the bottom, like drawTileBackground(). */
 .tile::after { content: ""; position: absolute; z-index: -1; left: -20%; right: -20%; bottom: -55%; height: 85%; border-radius: 50%; background: linear-gradient(to bottom, var(--wave), transparent 140%); opacity: .55; transform: rotate(-6deg); }
@@ -209,13 +223,13 @@ p, h1, h2, h3 { margin: 0; }
 :root[data-font="125"] { --tile-shrink: 1; --hint-shrink: 1; }
 :root[data-font="125"] .tile b { white-space: normal; }
 :root[data-font="125"] .tile .now { white-space: normal; text-align: center; font-size: calc(13px * var(--fs)); line-height: 1.25; padding: 4px 10px; }
-.t-food { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--meal-tile)); --wave: var(--meal-wave); color: var(--on-primary-container); } .t-food svg { color: var(--primary); }
-.t-symptom { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--symptom-tile)); --wave: var(--symptom-wave); color: var(--on-warm-tile); } .t-symptom svg { color: var(--warm-accent); }
+.t-food { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--meal-tile)); --wave: var(--meal-wave); color: var(--on-sage-tile); } .t-food svg { color: var(--home-icon); }
+.t-symptom { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--symptom-tile)); --wave: var(--symptom-wave); color: var(--on-warm-tile); } .t-symptom svg { color: var(--heart); }
 .t-day { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--day-tile)); --wave: var(--day-wave); color: var(--on-warm-tile); } .t-day svg { color: var(--moon); }
-.t-results { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--results-tile)); --wave: var(--results-wave); color: var(--on-primary-container); } .t-results svg { color: var(--primary); }
+.t-results { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--results-tile)); --wave: var(--results-wave); color: var(--on-sage-tile); --tile-bg: #EDEEDE; } .t-results svg { color: var(--home-icon); }
 .progress { height: 10px; display: flex; gap: 4px; }
-.progress i { display: block; height: 10px; border-radius: 5px; background: var(--primary); }
-.progress i + i { background: var(--high); flex: 1; }
+.progress i { display: block; height: 10px; border-radius: 5px; background: var(--ink); }
+.progress i + i { background: var(--track); flex: 1; }
 .counts { display: flex; gap: 16px; flex-wrap: wrap; }
 .count { display: flex; align-items: center; gap: 6px; }
 .count svg { width: 18px; height: 18px; color: var(--primary); }
@@ -284,12 +298,14 @@ p, h1, h2, h3 { margin: 0; }
 .fold.open .fold-body { display: flex; }
 
 /* Tab-Leiste (NavigationBar) */
-.navbar { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--container); padding: 12px 0 16px; flex: 0 0 auto; }
+.navbar { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--container); padding: 12px 0 16px; flex: 0 0 auto; border-radius: 28px 28px 0 0; box-shadow: 0 -2px 10px rgba(0,0,0,.08); position: relative; z-index: 1; }
 .navbar button { border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: calc(12px * var(--fs)); font-weight: 500; color: var(--muted); }
 .navbar .pill { width: 64px; height: 32px; border-radius: 999px; display: grid; place-items: center; }
 .navbar .pill svg { width: 24px; height: 24px; }
-.navbar button.on { color: var(--fg); }
-.navbar button.on .pill { background: var(--secondary-container); color: var(--on-secondary-container); }
+.navbar button.on { color: var(--ink); font-weight: 600; }
+.navbar button::after { content: ""; width: 40px; height: 3px; border-radius: 2px; background: transparent; }
+.navbar button.on::after { background: var(--ink); }
+.navbar button.on .pill { color: var(--ink); }
 .bottombar { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 8px; background: var(--bg); flex: 0 0 auto; }
 
 @media (max-width: 460px) {
@@ -301,10 +317,22 @@ p, h1, h2, h3 { margin: 0; }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- Drawings of the start screen, same geometry as HomeArt.kt -->
+  <defs>
+    <linearGradient id="g-logo-dark" x1="0" y1="1" x2="1" y2="0"><stop offset="0" style="stop-color:var(--logo-dark)"/><stop offset="1" style="stop-color:var(--logo-light)"/></linearGradient>
+    <linearGradient id="g-leaf" x1="0" y1="1" x2="1" y2="0"><stop offset="0" style="stop-color:var(--leaf)"/><stop offset="1" style="stop-color:var(--leaf-light)"/></linearGradient>
+    <g id="leaf-dark"><path fill="url(#g-logo-dark)" d="M0 0C18 -31 62 -30 100 0C62 30 18 31 0 0Z"/><path stroke="#fff" stroke-opacity=".35" stroke-width="2.2" stroke-linecap="round" d="M4 0H90"/></g>
+    <g id="leaf-light"><path style="fill:var(--logo-light)" d="M0 0C18 -31 62 -30 100 0C62 30 18 31 0 0Z"/><path stroke="#fff" stroke-opacity=".35" stroke-width="2.2" stroke-linecap="round" d="M4 0H90"/></g>
+    <g id="leaf-branch"><path fill="url(#g-leaf)" d="M0 0C18 -31 62 -30 100 0C62 30 18 31 0 0Z"/><path stroke="#fff" stroke-opacity=".3" stroke-width="2.2" stroke-linecap="round" d="M4 0H90M35 0l12 -14M35 0l12 14M52 0l12 -14M52 0l12 14M69 0l12 -14M69 0l12 14"/></g>
+  </defs>
+  <symbol id="i-logo" viewBox="0 0 100 100"><use href="#leaf-light" transform="translate(22 92) rotate(-100) scale(.7)"/><use href="#leaf-dark" transform="translate(22 92) rotate(-38) scale(.95)"/></symbol>
+  <symbol id="i-heart-pulse" viewBox="0 0 100 100"><path fill="currentColor" d="M50 92C12 66 -2 42 8 24C18 6 42 4 50 24C58 4 82 6 92 24C102 42 88 66 50 92Z"/><polyline fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" points="10,48 34,48 42,32 53,66 61,42 67,48 90,48"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 100 100"><mask id="m-moon"><rect width="100" height="100" fill="#fff"/><circle cx="62" cy="42" r="32" fill="#000"/></mask><circle cx="42" cy="56" r="38" fill="currentColor" mask="url(#m-moon)"/><path fill="currentColor" d="M76 11Q76 22 87 22Q76 22 76 33Q76 22 65 22Q76 22 76 11ZM90 35.5Q90 42 96.5 42Q90 42 90 48.5Q90 42 83.5 42Q90 42 90 35.5Z"/></symbol>
+  <symbol id="i-bars" viewBox="0 0 100 100"><g fill="currentColor"><rect x="0" y="54" width="26" height="38" rx="3"/><rect x="32" y="34" width="26" height="58" rx="3"/><rect x="64" y="10" width="26" height="82" rx="3"/></g></symbol>
+  <symbol id="i-pattern" viewBox="0 0 100 100"><g fill="currentColor" fill-opacity=".85"><rect x="0" y="62" width="15" height="30" rx="3"/><rect x="21" y="46" width="15" height="46" rx="3"/><rect x="42" y="30" width="15" height="62" rx="3"/><rect x="63" y="6" width="15" height="86" rx="3"/></g><circle cx="70" cy="60" r="19" style="fill:var(--tile-bg, #EDEEDE)" stroke="currentColor" stroke-width="7"/><path stroke="currentColor" stroke-width="9" stroke-linecap="round" d="M83.7 73.7L98 95"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></symbol>
+  <symbol id="i-home-filled" viewBox="0 0 24 24"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></symbol>
   <symbol id="i-eco" viewBox="0 0 24 24"><path fill="currentColor" d="M6.05 8.05a7.007 7.007 0 0 0-.02 9.88c1.47-3.4 4.09-6.24 7.36-7.93-2.77 2.34-4.71 5.61-5.39 9.32 2.6 1.23 5.8.78 7.95-1.37C19.43 14.47 20 4 20 4S9.53 4.57 6.05 8.05z"/></symbol>
-  <symbol id="i-heart-pulse" viewBox="0 0 24 24"><path fill="currentColor" d="M15.11 12.45 14 10.24l-3.11 6.21c-.16.34-.51.55-.89.55s-.73-.21-.89-.55L7.38 13H2v5c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-5h-6c-.38 0-.73-.21-.89-.55zM20 4H4c-1.1 0-2 .9-2 2v5h6c.38 0 .73.21.89.55L10 13.76l3.11-6.21c.34-.68 1.45-.68 1.79 0L16.62 11H22V6c0-1.1-.9-2-2-2z"/></symbol>
-  <symbol id="i-moon" viewBox="0 0 24 24"><path fill="currentColor" d="M12.34 2.02C6.59 1.82 2 6.42 2 12c0 5.52 4.48 10 10 10 3.71 0 6.93-2.02 8.66-5.02-7.51-.25-12.09-8.43-8.32-14.96z"/></symbol>
-  <symbol id="i-bars" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9h4v11H4zm12 4h4v7h-4zm-6-9h4v16h-4z"/></symbol>
   <symbol id="i-forward" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></symbol>
   <symbol id="i-restaurant" viewBox="0 0 24 24"><path fill="currentColor" d="M16 6v8h3v8h2V2c-2.76 0-5 2.24-5 4zm-5 3H9V2H7v7H5V2H3v7c0 2.21 1.79 4 4 4v9h2v-9c2.21 0 4-1.79 4-4V2h-2v7z"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path fill="currentColor" d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></symbol>
@@ -356,12 +384,19 @@ p, h1, h2, h3 { margin: 0; }
       <!-- ===================== START ===================== -->
       <section class="view active" id="v-start" data-title="Start">
         <div class="body v-start-body">
-          <div class="leaves" aria-hidden="true">
-            <svg style="width:170px;height:170px;left:70px;top:10px;transform:rotate(-20deg)"><use href="#i-eco"/></svg>
-            <svg style="width:110px;height:110px;left:30px;top:90px;transform:rotate(35deg)"><use href="#i-eco"/></svg>
-          </div>
+          <svg class="branch" viewBox="0 0 200 230" aria-hidden="true">
+            <path d="M208 225.4C172 161 144 103.5 120 36.8" fill="none" style="stroke:var(--leaf)" stroke-width="3.2" stroke-linecap="round" opacity=".6"/>
+            <g opacity=".72">
+              <use href="#leaf-branch" transform="translate(189.3 191.2) rotate(-168) scale(1.24)"/>
+              <use href="#leaf-branch" transform="translate(177.7 168.9) rotate(-35) scale(.84)"/>
+              <use href="#leaf-branch" transform="translate(159.5 132) rotate(-150) scale(1.16)"/>
+              <use href="#leaf-branch" transform="translate(149.3 109.7) rotate(-60) scale(.8)"/>
+              <use href="#leaf-branch" transform="translate(133.4 72) rotate(-128) scale(1)"/>
+              <use href="#leaf-branch" transform="translate(120 36.8) rotate(-95) scale(.72)"/>
+            </g>
+          </svg>
           <div class="home-head">
-            <div class="brand"><svg><use href="#i-eco"/></svg>Allergy Detective</div>
+            <div class="brand"><svg><use href="#i-logo"/></svg><span>Allergy Detective</span><button class="bell" data-go="profile" aria-label="Erinnerungen"><svg><use href="#i-bell"/></svg><i></i></button></div>
             <h1 class="greeting">Guten Morgen!</h1>
             <p class="tagline">Dein Tag. Deine Gesundheit.</p>
           </div>
@@ -384,7 +419,7 @@ p, h1, h2, h3 { margin: 0; }
             <button class="tile t-food" data-go="meal"><span class="top"><svg><use href="#i-restaurant"/></svg><svg class="chev"><use href="#i-right"/></svg></span><span class="grow"></span><b>Essen erfassen</b><span class="hint">Mahlzeiten dokumentieren</span></button>
             <button class="tile t-symptom" data-go="symptom"><span class="top"><svg><use href="#i-heart-pulse"/></svg><svg class="chev"><use href="#i-right"/></svg></span><span class="grow"></span><b>Symptome erfassen</b><span class="hint">Beschwerden dokumentieren</span></button>
             <button class="tile t-day" data-go="day"><span class="top"><svg><use href="#i-moon"/></svg><svg class="chev"><use href="#i-right"/></svg></span><span class="grow"></span><b>Tagesabschluss</b><span class="hint">Wie war dein Tag?</span><span class="now">Jetzt abschließen<svg><use href="#i-forward"/></svg></span></button>
-            <button class="tile t-results" data-go="results"><span class="top"><svg><use href="#i-stats"/></svg><svg class="chev"><use href="#i-right"/></svg></span><span class="grow"></span><b>Muster entdecken</b><span class="hint">Zusammenhänge verstehen</span></button>
+            <button class="tile t-results" data-go="results"><span class="top"><svg><use href="#i-pattern"/></svg><svg class="chev"><use href="#i-right"/></svg></span><span class="grow"></span><b>Muster entdecken</b><span class="hint">Zusammenhänge verstehen</span></button>
           </div>
         </div>
       </section>
@@ -659,7 +694,7 @@ p, h1, h2, h3 { margin: 0; }
       </div>
 
       <nav class="navbar" aria-label="Navigation">
-        <button data-go="start" data-tabbtn="start" class="on"><span class="pill"><svg><use href="#i-home"/></svg></span>Start</button>
+        <button data-go="start" data-tabbtn="start" class="on"><span class="pill"><svg><use href="#i-home-filled"/></svg></span>Start</button>
         <button data-go="history" data-tabbtn="history"><span class="pill"><svg><use href="#i-history"/></svg></span>Historie</button>
         <button data-go="favorites" data-tabbtn="favorites"><span class="pill"><svg><use href="#i-star"/></svg></span>Favoriten</button>
         <button data-go="profile" data-tabbtn="profile"><span class="pill"><svg><use href="#i-person"/></svg></span>Profil</button>
