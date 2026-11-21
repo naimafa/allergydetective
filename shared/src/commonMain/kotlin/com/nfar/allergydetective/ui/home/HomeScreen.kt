@@ -1,5 +1,12 @@
 package com.nfar.allergydetective.ui.home
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.Density
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.CompositionLocalProvider
 import allergydetective.shared.generated.resources.home_reminders
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.outlined.Notifications
@@ -82,6 +89,7 @@ import androidx.compose.ui.unit.sp
 import com.nfar.allergydetective.ui.common.StatusBadge
 import com.nfar.allergydetective.ui.common.StatusKind
 import com.nfar.allergydetective.ui.theme.AppColors
+import com.nfar.allergydetective.ui.theme.AppFonts
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -111,34 +119,49 @@ fun HomeScreen(
 ) {
     // The cream page with its peach tint is drawn behind the whole screen (homeBackground in MainScreen),
     // so it also runs under the status bar and the navigation without a hard edge.
-    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-        // Text width inside a tile: screen padding 2 × 16, gap, tile padding on both sides, a small safety margin.
-        val textWidth = (maxWidth - 32.dp - GRID) / 2 - TILE_PADDING * 2 - SAFETY_MARGIN
-        val tileText = sharedTileStyles(textWidth)
-        Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-            LeafBranch(modifier = Modifier.align(Alignment.TopEnd).size(width = 200.dp, height = 230.dp))
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                Header(state.greeting, showDot = state.confirmedDays != null && state.todayOpen, onBell = onOpenReminders)
-                banner()
-                state.confirmedDays?.let {
-                    HomeProgress(it)
-                    HomeToday(state, onClick = onOpenToday)
-                }
-                Column(verticalArrangement = Arrangement.spacedBy(GRID)) {
-                    HomeAction.entries.chunked(2).forEach { row ->
-                        // Both tiles of a row get the height of the taller one (the button on the day check tile).
-                        Row(horizontalArrangement = Arrangement.spacedBy(GRID), modifier = Modifier.height(IntrinsicSize.Min)) {
-                            row.forEach { action ->
-                                ActionTile(
-                                    action,
-                                    state = state,
-                                    onClick = { onAction(action) },
-                                    modifier = Modifier.weight(1f).fillMaxHeight().heightIn(min = MIN_TILE_HEIGHT),
-                                    text = tileText,
-                                )
+    // Phone test 21.11.: the picture shows the whole start screen with all four tiles at once. The system
+    // font scale is therefore not applied here (1.25 on the test phone pushed the tiles off the screen);
+    // the sizes follow the picture.
+    val density = LocalDensity.current
+    CompositionLocalProvider(LocalDensity provides Density(density.density, minOf(density.fontScale, MAX_FONT_SCALE))) {
+        BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+            // Text width inside a tile: screen padding 2 × 16, gap, tile padding on both sides, a small safety margin.
+            val textWidth = (maxWidth - 32.dp - GRID) / 2 - TILE_PADDING * 2 - SAFETY_MARGIN
+            val tileText = sharedTileStyles(textWidth)
+            // The tiles share the height left below the cards, so nothing has to be scrolled. Only if a
+            // banner or a very small screen leaves too little room the page scrolls as before.
+            var topHeight by remember { mutableStateOf(0.dp) }
+            val rowHeight = ((maxHeight - PAGE_PADDING * 2 - topHeight - SECTION_GAP - GRID) / 2).coerceAtLeast(MIN_TILE_HEIGHT)
+            Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                LeafBranch(modifier = Modifier.align(Alignment.TopEnd).size(200.dp))
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = PAGE_PADDING),
+                    verticalArrangement = Arrangement.spacedBy(SECTION_GAP),
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(SECTION_GAP),
+                        modifier = Modifier.onSizeChanged { topHeight = with(density) { it.height.toDp() } },
+                    ) {
+                        Header(state.greeting, showDot = state.confirmedDays != null && state.todayOpen, onBell = onOpenReminders)
+                        banner()
+                        state.confirmedDays?.let {
+                            HomeProgress(it)
+                            HomeToday(state, onClick = onOpenToday)
+                        }
+                    }
+                    Column(verticalArrangement = Arrangement.spacedBy(GRID)) {
+                        HomeAction.entries.chunked(2).forEach { row ->
+                            // Both tiles of a row get the height of the taller one (the button on the day check tile).
+                            Row(horizontalArrangement = Arrangement.spacedBy(GRID), modifier = Modifier.height(IntrinsicSize.Min)) {
+                                row.forEach { action ->
+                                    ActionTile(
+                                        action,
+                                        state = state,
+                                        onClick = { onAction(action) },
+                                        modifier = Modifier.weight(1f).fillMaxHeight().heightIn(min = rowHeight),
+                                        text = tileText,
+                                    )
+                                }
                             }
                         }
                     }
@@ -148,11 +171,15 @@ fun HomeScreen(
     }
 }
 
+private const val MAX_FONT_SCALE = 1.0f
+private val PAGE_PADDING = 12.dp
+private val SECTION_GAP = 12.dp
+
 /** Design of 21.11.2026: cream page with a soft peach tint towards the right edge. */
 @Composable
 fun Modifier.homeBackground(): Modifier {
     val home = AppColors.extra.home
-    return background(home.page).drawBehind {
+    return background(Brush.verticalGradient(listOf(home.page, home.pageEnd))).drawBehind {
         drawRect(
             Brush.radialGradient(
                 listOf(home.pageTint, Color.Transparent),
@@ -166,12 +193,13 @@ fun Modifier.homeBackground(): Modifier {
 @Composable
 private fun Header(greeting: Greeting, showDot: Boolean, onBell: () -> Unit) {
     val home = AppColors.extra.home
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    // Compact like the picture: logo row, greeting and tagline close together.
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            LeafLogo(Modifier.size(44.dp))
+            LeafLogo(Modifier.size(40.dp))
             Text(
                 stringResource(Res.string.home_brand),
-                style = MaterialTheme.typography.titleLarge.copy(fontFamily = FontFamily.Serif, fontWeight = FontWeight.Medium),
+                style = MaterialTheme.typography.titleLarge.copy(fontFamily = AppFonts.playfair, fontWeight = FontWeight.Medium, fontSize = 17.sp),
                 color = home.ink,
                 modifier = Modifier.weight(1f),
             )
@@ -193,7 +221,7 @@ private fun Header(greeting: Greeting, showDot: Boolean, onBell: () -> Unit) {
                 }
             }
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(4.dp))
         Text(
             stringResource(
                 when (greeting) {
@@ -202,12 +230,12 @@ private fun Header(greeting: Greeting, showDot: Boolean, onBell: () -> Unit) {
                     Greeting.EVENING -> Res.string.home_greeting_evening
                 },
             ),
-            style = MaterialTheme.typography.headlineLarge.copy(fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold, fontSize = 36.sp, lineHeight = 44.sp),
+            style = MaterialTheme.typography.headlineLarge.copy(fontFamily = AppFonts.playfair, fontWeight = FontWeight.Bold, fontSize = 32.sp, lineHeight = 38.sp),
             color = home.ink,
         )
         Text(
             stringResource(Res.string.home_tagline),
-            style = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Serif),
+            style = MaterialTheme.typography.bodyLarge.copy(fontFamily = AppFonts.playfair, fontSize = 15.sp, lineHeight = 20.sp),
             color = home.inkSoft,
         )
     }
@@ -226,8 +254,8 @@ private fun sharedTileStyles(textWidth: Dp): TileTextStyles {
     val safetyPx = with(LocalDensity.current) { SAFETY_MARGIN.toPx() }
     val titles = HomeAction.entries.map { stringResource(it.label) }
     val hints = HomeAction.entries.map { stringResource(it.hint) }
-    val title = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp, lineHeight = 24.sp, fontWeight = FontWeight.SemiBold)
-    val hint = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp, lineHeight = 20.sp, letterSpacing = 0.sp, fontWeight = FontWeight.Normal)
+    val title = MaterialTheme.typography.titleMedium.copy(fontSize = 17.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold)
+    val hint = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp, lineHeight = 17.sp, letterSpacing = 0.sp, fontWeight = FontWeight.Normal)
     val buttonText = stringResource(Res.string.home_day_check_now)
     val button = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp, lineHeight = 18.sp)
     // Button label: tile text width (with the safety margin back) minus the button padding and the arrow.
@@ -263,12 +291,15 @@ private fun sharedTileStyles(textWidth: Dp): TileTextStyles {
 
         // Phone test 21.11.: "Symptome erfassen" does not fit in one line at font scale 1.25, not even at 13 sp.
         // Then every title may wrap at a word into two lines instead of being cut off.
-        val oneLineTitle = largestFitting(titles, title, 15f, ::oneLine)
+        // Second phone test 21.11.: like the picture, titles and descriptions in one line where possible
+        // (down to 13 / 11 sp), so all four tiles fit on the screen.
+        val oneLineTitle = largestFitting(titles, title, 13f, ::oneLine)
         val titleStyle = oneLineTitle ?: fitting(titles, title, 13f, ::twoLines)
         val titleLines = if (oneLineTitle != null) 1 else 2
         // The description stays clearly smaller than the title (phone test 19.11.: 15 sp hint under a shrunk title).
         val hintStart = minOf(hint.fontSize.value, titleStyle.fontSize.value - 3f)
-        val hintStyle = fitting(hints, hint.copy(fontSize = hintStart.sp, lineHeight = (hintStart * 4f / 3f).sp), 11f, ::twoLines)
+        val hintBase = hint.copy(fontSize = hintStart.sp, lineHeight = (hintStart * 4f / 3f).sp)
+        val hintStyle = largestFitting(hints, hintBase, 11f, ::oneLine) ?: fitting(hints, hintBase, 11f, ::twoLines)
         // Two lines are only reserved when one of the four descriptions needs them.
         // Lines against the real text width (without the safety margin used for the size).
         val lines = hints.maxOf { measurer.measure(it, hintStyle, maxLines = 2, constraints = Constraints(maxWidth = (widthPx + safetyPx).toInt())).lineCount }
@@ -281,8 +312,8 @@ private fun sharedTileStyles(textWidth: Dp): TileTextStyles {
 }
 
 private val GRID = 12.dp
-private val MIN_TILE_HEIGHT = 150.dp
-private val TILE_PADDING = 16.dp
+private val MIN_TILE_HEIGHT = 112.dp
+private val TILE_PADDING = 14.dp
 private val SAFETY_MARGIN = 6.dp
 private val BUTTON_PADDING = 10.dp
 private val ARROW_SIZE = 16.dp
@@ -307,6 +338,7 @@ private fun ActionTile(
         shape = shape,
         color = Color.Transparent,
         contentColor = colors.content,
+        border = BorderStroke(1.dp, AppColors.extra.home.cardBorder),
         modifier = modifier.shadow(elevation = 2.dp, shape = shape, clip = false),
     ) {
         Column(
@@ -317,7 +349,7 @@ private fun ActionTile(
                 .padding(TILE_PADDING),
         ) {
             Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
-                TileIcon(action, colors, Modifier.size(48.dp))
+                TileIcon(action, colors, Modifier.size(40.dp))
                 Spacer(Modifier.weight(1f))
                 Icon(
                     Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -326,7 +358,7 @@ private fun ActionTile(
                     modifier = Modifier.size(24.dp),
                 )
             }
-            Spacer(Modifier.weight(1f).heightIn(min = 12.dp))
+            Spacer(Modifier.weight(1f).heightIn(min = 6.dp))
             // Sizes shared by all four tiles (sharedTileStyles). The title wraps only when one of them does not fit
             // in one line; the description reserves the same number of lines everywhere.
             Text(stringResource(action.label), style = text.title, maxLines = text.titleLines, overflow = TextOverflow.Ellipsis)
@@ -340,7 +372,7 @@ private fun ActionTile(
                 modifier = Modifier.padding(top = 2.dp),
             )
             if (action == HomeAction.DAY_CHECK && state.confirmedDays != null) {
-                Spacer(Modifier.height(10.dp))
+                Spacer(Modifier.height(8.dp))
                 if (state.todayOpen) FinishNowButton(onClick, text) else StatusBadge(stringResource(Res.string.home_day_done), StatusKind.DONE)
             }
         }
@@ -354,7 +386,7 @@ private fun FinishNowButton(onClick: () -> Unit, text: TileTextStyles) {
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(containerColor = home.button, contentColor = home.onButton),
         contentPadding = PaddingValues(horizontal = BUTTON_PADDING, vertical = 6.dp),
-        modifier = Modifier.fillMaxWidth().heightIn(min = 40.dp),
+        modifier = Modifier.fillMaxWidth().heightIn(min = 34.dp),
     ) {
         // Size and lines from sharedTileStyles, so the label is never cut off.
         Text(

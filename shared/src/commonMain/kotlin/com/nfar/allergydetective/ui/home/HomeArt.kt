@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.lerp
 import com.nfar.allergydetective.ui.theme.AppColors
 import kotlin.math.PI
+import kotlin.math.atan2
 
 /*
  * Drawings of the start screen after the design picture of 21.11.2026: the two-leaf logo, the
@@ -68,41 +69,51 @@ fun LeafLogo(modifier: Modifier) {
 }
 
 /**
- * Branch coming in from the right edge (picture: broad leaves behind the greeting, reaching up and
- * to the left). Soft, so the text in front stays readable.
+ * Branch measured from the design picture (21.11.2026, second phone test): a stem coming in from the
+ * lower right edge and four broad, smooth leaves – a large one up to the left, a long one to the left
+ * just above the progress card, two up to the right edge. Darker at the stem, pale at the tips, a fine
+ * light midrib, no side veins. Coordinates in a 200 × 200 dp box at the top right of the content.
  */
 @Composable
 fun LeafBranch(modifier: Modifier) {
     val colors = AppColors.extra.home
     Canvas(modifier) {
-        val w = size.width
-        val h = size.height
-        // Stem from the lower right edge, bending up to the upper middle.
-        val p0 = Offset(w * 1.04f, h * 0.98f)
-        val p1 = Offset(w * 0.86f, h * 0.7f)
-        val p2 = Offset(w * 0.72f, h * 0.45f)
-        val p3 = Offset(w * 0.6f, h * 0.16f)
-        fun point(t: Float): Offset {
-            val u = 1 - t
-            return p0 * (u * u * u) + p1 * (3 * u * u * t) + p2 * (3 * u * t * t) + p3 * (t * t * t)
-        }
+        val u = size.width / 200f
+        fun p(x: Float, y: Float) = Offset(x * u, y * u)
         val stem = Path().apply {
-            moveTo(p0.x, p0.y)
-            cubicTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
+            moveTo(205 * u, 200 * u)
+            cubicTo(192 * u, 186 * u, 178 * u, 160 * u, 164 * u, 122 * u)
         }
-        drawPath(stem, colors.leaf, style = Stroke(width = w * 0.016f, cap = StrokeCap.Round), alpha = 0.6f)
-        // (position on the stem, angle in degrees, length as part of the width)
-        val leaves = listOf(
-            Triple(0.18f, -168f, 0.62f), // long leaf to the left, lowest
-            Triple(0.3f, -35f, 0.42f), // up to the right edge
-            Triple(0.5f, -150f, 0.58f), // left, a little up
-            Triple(0.62f, -60f, 0.4f), // up
-            Triple(0.82f, -128f, 0.5f), // up-left
-            Triple(1f, -95f, 0.36f), // tip
-        )
-        for ((t, deg, len) in leaves) {
-            val length = w * len
-            leaf(point(t), deg.toRad(), length, length * 0.5f, colors.leaf, colors.leafLight, 0.72f)
+        drawPath(stem, colors.leaf, style = Stroke(width = 2.2f * u, cap = StrokeCap.Round))
+        // Back to front: long leaf left, right edge, up right, large leaf up left.
+        broadLeaf(p(175f, 158f), p(33f, 169f), 0.32f, colors.leaf, colors.leafLight)
+        broadLeaf(p(183f, 147f), p(232f, 78f), 0.38f, colors.leaf, colors.leafLight)
+        broadLeaf(p(168f, 125f), p(206f, 28f), 0.36f, colors.leaf, colors.leafLight)
+        broadLeaf(p(164f, 122f), p(67f, 57f), 0.42f, colors.leaf, colors.leafLight)
+    }
+}
+
+/** Smooth lanceolate leaf from [base] to [tip], widest at about 40 %, gently curved. */
+private fun DrawScope.broadLeaf(base: Offset, tip: Offset, widthRatio: Float, dark: Color, light: Color) {
+    val d = tip - base
+    val length = d.getDistance()
+    val w = length * widthRatio
+    translate(base.x, base.y) {
+        rotateRad(atan2(d.y, d.x), pivot = Offset.Zero) {
+            val shape = Path().apply {
+                moveTo(0f, 0f)
+                cubicTo(length * 0.22f, -w * 0.62f, length * 0.66f, -w * 0.66f, length, 0f)
+                cubicTo(length * 0.7f, w * 0.34f, length * 0.3f, w * 0.48f, 0f, 0f)
+                close()
+            }
+            drawPath(shape, Brush.horizontalGradient(listOf(dark, lerp(dark, light, 0.55f), light), startX = 0f, endX = length), alpha = 0.92f)
+            // Soft light along the upper half, as in the picture.
+            drawPath(shape, Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.22f), Color.Transparent), startY = -w * 0.5f, endY = w * 0.1f))
+            val rib = Path().apply {
+                moveTo(length * 0.03f, 0f)
+                quadraticTo(length * 0.5f, -w * 0.1f, length * 0.9f, -w * 0.02f)
+            }
+            drawPath(rib, Color.White.copy(alpha = 0.45f), style = Stroke(width = w * 0.035f, cap = StrokeCap.Round))
         }
     }
 }

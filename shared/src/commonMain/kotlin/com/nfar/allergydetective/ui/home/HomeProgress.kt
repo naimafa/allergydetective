@@ -5,6 +5,7 @@ import allergydetective.shared.generated.resources.home_progress_badge
 import allergydetective.shared.generated.resources.home_progress_ready
 import allergydetective.shared.generated.resources.home_progress_remaining
 import allergydetective.shared.generated.resources.home_progress_title
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.nfar.allergydetective.ui.theme.AppColors
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -41,11 +43,12 @@ fun HomeProgress(confirmedDays: Int) {
         colors = CardDefaults.cardColors(containerColor = home.progressCard, contentColor = home.ink),
         // Home design of 21.11.2026: white card with a soft shadow, thicker bar.
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, home.cardBorder),
         shape = MaterialTheme.shapes.large,
         modifier = Modifier.fillMaxWidth(),
     ) {
         // Design of 19.11.: compact; title row, bar, then the two short lines close together.
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     stringResource(Res.string.home_progress_title),
@@ -77,7 +80,7 @@ fun HomeProgress(confirmedDays: Int) {
                 } else {
                     pluralStringResource(Res.plurals.home_progress_remaining, total - confirmedDays, total - confirmedDays)
                 },
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp, lineHeight = 17.sp),
                 color = home.inkSoft,
             )
         }

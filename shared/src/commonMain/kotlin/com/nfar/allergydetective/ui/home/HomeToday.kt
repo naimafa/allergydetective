@@ -5,6 +5,7 @@ import allergydetective.shared.generated.resources.today_entries
 import allergydetective.shared.generated.resources.today_meals
 import allergydetective.shared.generated.resources.today_symptoms
 import allergydetective.shared.generated.resources.today_title
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.nfar.allergydetective.ui.theme.AppColors
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -49,9 +51,10 @@ fun HomeToday(state: HomeState, onClick: () -> Unit) {
         onClick = onClick,
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = home.todayCard, contentColor = home.onSageTile),
+        border = BorderStroke(1.dp, home.cardBorder),
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(stringResource(Res.string.today_title), style = MaterialTheme.typography.titleMedium)
             // Top-aligned: at a large font "Einträge gesamt" wraps, the numbers still stay on one line.
             Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.Top) {
@@ -80,17 +83,17 @@ private fun Stat(icon: @Composable (Modifier) -> Unit, count: Int, label: String
             icon(Modifier.size(26.dp))
             Text(
                 count.toString(),
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold, fontSize = 20.sp, lineHeight = 26.sp),
                 color = AppColors.extra.home.ink,
             )
         }
         Text(
             label,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, lineHeight = 15.sp, letterSpacing = 0.sp),
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(horizontal = 4.dp),
+
         )
     }
 }

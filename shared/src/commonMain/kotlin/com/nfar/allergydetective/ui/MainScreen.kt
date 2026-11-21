@@ -103,7 +103,7 @@ fun MainScreen(
             val ink = AppColors.extra.home.ink
             Surface(
                 shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-                color = MaterialTheme.colorScheme.surfaceContainer,
+                color = AppColors.extra.home.nav,
                 shadowElevation = 8.dp,
             ) {
                 NavigationBar(containerColor = Color.Transparent, tonalElevation = 0.dp) {
@@ -126,8 +126,8 @@ fun MainScreen(
                                 indicatorColor = Color.Transparent,
                                 selectedIconColor = ink,
                                 selectedTextColor = ink,
-                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedIconColor = AppColors.extra.home.navInactive,
+                                unselectedTextColor = AppColors.extra.home.navInactive,
                             ),
                         )
                     }
