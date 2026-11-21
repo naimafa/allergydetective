@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 /**
- * Simplified app icon (user's wish of 21.11.2026): keep the light green area in the bottom corner, drop the
+ * Simplified app icon (user's wishes of 21.11.2026): keep the light green area in the bottom corner, drop the
  * other light green arcs and the bars, make the magnifier bigger.
  * Rebuilt in layers from app-icon-magnifier.png (1138 px, start screen colours):
  *  1. cream #FBF4EA
@@ -57,12 +57,78 @@ public class IconRebuild {
             double d = Math.hypot(x - CX, y - CY);
             int p = src.getRGB(x, y);
             double m;
-            if (d <= R_IN) m = 1; // lens content: fork, divider, bolt, cream
+            if (d <= R_IN) {
+                m = 1; // lens: cream with the light rim of the ring
+                // Fork (352,321 - 490,639), divider (x 527-547) and bolt (571,321 - 741,639) are cleared and drawn
+                // again below: fork and heart the same height, divider as long as both (user's wish of 21.11.2026).
+                if (x >= 340 && x <= 755 && y >= 305 && y <= 655 && d < R_IN - 18) p = CREAM;
+            }
             else if (d <= R_OUT + 6) m = keep(p); // ring
             else if (x >= 690 && y >= 630 && x < 1065 && y < 975) m = keep(p); // handle
             else m = 0;
             if (m > 0) mag.setRGB(x, y, ((int) Math.round(m * 255) << 24) | (p & 0xFFFFFF));
         }
+        // Heart with pulse line in place of the bolt (user's wish of 21.11.2026): the same shape and orange as the
+        // symptom icon on the start screen (HeartPulseIcon in HomeArt.kt, 100 x 100 units).
+        Graphics2D gm = mag.createGraphics();
+        gm.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        gm.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        gm.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        // Row in the middle of the lens: fork | gap | heart, both ROW_H high around ROW_Y. No divider, and the fork
+        // 1.5 times as wide as in the picture, so it weighs as much as the heart (user's wish of 21.11.2026).
+        // The fork is drawn again as a clean shape (stretching the picture made it squat): three round tines, a
+        // bowl and a round handle, 0.6 times as wide as high, in the greens of the picture's fork.
+        // Phone test 21.11.: as large as the lens allows (the row just fits inside the ring at its top edge).
+        final double ROW_H = 245 / scale, ROW_Y = CY, HEART_W = 245 / scale * 100 / 88.0, GAP = 32 / scale;
+        double forkW = ROW_H * 0.52;
+        double rowW = forkW + GAP + HEART_W, rowX = CX - rowW / 2;
+        Graphics2D gf = (Graphics2D) gm.create();
+        gf.translate(rowX, ROW_Y - ROW_H / 2);
+        gf.scale(forkW / 60.0 * 1.0, ROW_H / 100.0);
+        Area forkShape = new Area();
+        double tine = 16, gapT = (60 - 3 * tine) / 2;
+        for (int k = 0; k < 3; k++)
+            forkShape.add(new Area(new RoundRectangle2D.Double(k * (tine + gapT), 0, tine, 46, tine, tine)));
+        Path2D bowl = new Path2D.Double();
+        bowl.moveTo(0, 34);
+        bowl.lineTo(60, 34);
+        bowl.lineTo(60, 40);
+        bowl.curveTo(60, 52, 48, 59, 37, 61);
+        bowl.lineTo(23, 61);
+        bowl.curveTo(12, 59, 0, 52, 0, 40);
+        bowl.closePath();
+        forkShape.add(new Area(bowl));
+        forkShape.add(new Area(new RoundRectangle2D.Double(20, 52, 20, 48, 20, 14)));
+        gf.setPaint(new GradientPaint(0, 0, new Color(0x2A6A47), 0, 100, new Color(0x184F34)));
+        gf.fill(forkShape);
+        gf.dispose();
+        double heartX = rowX + forkW + GAP;
+        double hs = ROW_H / 88.0; // heart is 88 units high (4..92)
+        double hx = heartX + HEART_W / 2 - 50 * hs;
+        double hy = ROW_Y - ROW_H / 2 - 4 * hs;
+        gm.translate(hx, hy);
+        gm.scale(hs, hs);
+        Path2D heart = new Path2D.Double();
+        heart.moveTo(50, 92);
+        heart.curveTo(12, 66, -2, 42, 8, 24);
+        heart.curveTo(18, 6, 42, 4, 50, 24);
+        heart.curveTo(58, 4, 82, 6, 92, 24);
+        heart.curveTo(102, 42, 88, 66, 50, 92);
+        heart.closePath();
+        gm.setPaint(new GradientPaint(0, 4, new Color(0xDC8C58), 0, 92, new Color(0xD47636)));
+        gm.fill(heart);
+        Path2D pulse = new Path2D.Double();
+        pulse.moveTo(10, 48);
+        pulse.lineTo(34, 48);
+        pulse.lineTo(42, 32);
+        pulse.lineTo(53, 66);
+        pulse.lineTo(61, 42);
+        pulse.lineTo(67, 48);
+        pulse.lineTo(90, 48);
+        gm.setColor(new Color(CREAM));
+        gm.setStroke(new BasicStroke(6.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        gm.draw(pulse);
+        gm.dispose();
         AffineTransform t = new AffineTransform();
         t.translate(ncx, ncy);
         t.scale(scale, scale);
