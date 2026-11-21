@@ -35,7 +35,7 @@ class DayCheckViewModelTest {
         val symptomTimes = mutableListOf<Long>()
 
         override suspend fun load(epochDay: Long) = checks[epochDay]
-        override suspend fun lifestyleFactors() = listOf(FactorInfo(1, "sport"), FactorInfo(3, "medication"))
+        override suspend fun lifestyleFactors() = listOf(FactorInfo(1, "sport"), FactorInfo(3, "medication"), FactorInfo(5, "sick"))
         override suspend fun symptomCount(fromMillis: Long, toMillis: Long) = symptomTimes.count { it in fromMillis until toMillis }
         override suspend fun save(check: DayCheckData) {
             checks[check.epochDay] = check
@@ -103,6 +103,22 @@ class DayCheckViewModelTest {
         assertFalse(vm.state.value.askNoSymptoms)
         assertEquals(DayCheckStatus.COMPLETE, repository.checks[today]?.status)
         assertTrue(vm.state.value.saved)
+    }
+
+    @Test
+    fun sickDayFinishesWithoutAskingAndOpensTheSymptoms() {
+        // User note 21.11.2026: after finishing a sick day the symptom form opens.
+        confirm(today - 1)
+        confirm(today - 2)
+        val vm = viewModel()
+        vm.onFactorToggle(5)
+
+        vm.onFinish()
+
+        assertFalse(vm.state.value.askNoSymptoms)
+        assertEquals(DayCheckStatus.COMPLETE, repository.checks[today]?.status)
+        assertTrue(vm.state.value.saved)
+        assertTrue(vm.state.value.openSymptoms)
     }
 
     @Test

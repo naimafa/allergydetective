@@ -136,7 +136,15 @@ composable<IntroRoute> {            OnboardingScreen(                replay = tr
             entry.toRoute<LogSymptomRoute>().let { route -> LogSymptomScreen(onBack = back, editEntryId = route.editEntryId, daysAgo = route.daysAgo) }
         }
         composable<DayCheckRoute> { entry ->
-            DayCheckScreen(onDone = back, day = entry.toRoute<DayCheckRoute>().day, onLogSymptom = { navController.navigate(LogSymptomRoute()) })
+            DayCheckScreen(
+                onDone = back,
+                day = entry.toRoute<DayCheckRoute>().day,
+                onLogSymptom = { navController.navigate(LogSymptomRoute()) },
+                // User note 21.11.2026: after finishing a sick day go straight to the symptom form for that day.
+                onSickDayFinished = { daysAgo ->
+                    navController.navigate(LogSymptomRoute(daysAgo = daysAgo)) { popUpTo<DayCheckRoute> { inclusive = true } }
+                },
+            )
         }
         composable<ResultsRoute> { ResultsScreen(onBack = back) }
     }
