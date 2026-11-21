@@ -127,7 +127,7 @@ data class ExtraColors(
 data class HomeColors(
     /** Page: one even cream, measured from the picture without the phone's reading mode. */
     val page: Color,
-    /** The leaf picture of 21.11.2026 behind the top of the start screen; dark mode uses a darkened copy (BgDark.java). */
+    /** The leaf picture of 21.11.2026 behind the top of the start screen (dark mode: the user's dark leaf picture). */
     val leafPicture: DrawableResource,
     /** Headings and titles. */
     val ink: Color,
@@ -217,16 +217,17 @@ private val DarkExtra = ExtraColors(
     info = Color(0xFF2A3D44),
     onInfo = Color(0xFFCBE3EA),
     home = HomeColors(
-        page = Color(0xFF121512),
+        // Dark leaf picture of 21.11.2026: its forest green is the page colour, bar and cards in matching greens.
+        page = Color(0xFF062115),
         leafPicture = Res.drawable.home_background_dark,
         ink = Color(0xFFB4DCC0),
         accent = Color(0xFF9CC7B6),
         inkSoft = Color(0xFFCAD6C6),
         icon = Color(0xFF9CC7A8),
-        progressCard = Color(0xFF1C201C),
-        progressTrack = Color(0xFF333733),
-        badge = Color(0xFF2A4A3F),
-        todayCard = Color(0xFF243A2E),
+        progressCard = Color(0xFF0F2E21),
+        progressTrack = Color(0xFF23463A),
+        badge = Color(0xFF1F4A38),
+        todayCard = Color(0xFF143A2A),
         mealTile = TileGradient(Color(0xFF2C473B), Color(0xFF1C2E25), Color(0xFF355A4A)),
         symptomTile = TileGradient(Color(0xFF5A362A), Color(0xFF38211A), Color(0xFF6E4232)),
         dayCheckTile = TileGradient(Color(0xFF573D29), Color(0xFF36261A), Color(0xFF6B4A30)),
@@ -238,9 +239,9 @@ private val DarkExtra = ExtraColors(
         dot = Color(0xFFFF8A80),
         chevronCircle = Color(0x26FFFFFF),
         tileGlow = Color(0x0FFFFFFF),
-        nav = Color(0xFF242924),
+        nav = Color(0xFF0E2C1F),
         navInactive = Color(0xFFD2D8D1),
-        cardBorder = Color(0x14FFFFFF),
+        cardBorder = Color(0x1AFFFFFF),
     ),
 )
 
