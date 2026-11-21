@@ -127,7 +127,7 @@ data class ExtraColors(
 data class HomeColors(
     /** Page: one even cream, measured from the picture without the phone's reading mode. */
     val page: Color,
-    /** The leaf picture of 21.11.2026 behind the top of the start screen (dark mode: the user's dark leaf picture). */
+    /** The leaf picture of 21.11.2026 behind the top of the start screen; dark mode: the same branch recoloured (BgRecolor.java). */
     val leafPicture: DrawableResource,
     /** Headings and titles. */
     val ink: Color,
@@ -217,7 +217,7 @@ private val DarkExtra = ExtraColors(
     info = Color(0xFF2A3D44),
     onInfo = Color(0xFFCBE3EA),
     home = HomeColors(
-        // Dark leaf picture of 21.11.2026: its forest green is the page colour, bar and cards in matching greens.
+        // Dark start screen: the light branch recoloured onto forest green #062115 (colours from the user's dark picture).
         page = Color(0xFF062115),
         leafPicture = Res.drawable.home_background_dark,
         ink = Color(0xFFB4DCC0),

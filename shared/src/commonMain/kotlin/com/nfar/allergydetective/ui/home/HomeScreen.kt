@@ -172,7 +172,8 @@ private val SECTION_GAP = 12.dp
 
 /**
  * Design of 21.11.2026: one even page colour with the leaf picture (docs/design, cut and faded into
- * the page with BgCut.java; the dark picture placed with BgShift.java) across the full width at the top, also under the status bar.
+ * the page with BgCut.java; dark mode: the same branch recoloured with BgRecolor.java) across the full width
+ * at the top, also under the status bar.
  */
 @Composable
 fun Modifier.homeBackground(): Modifier {
