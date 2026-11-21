@@ -38,17 +38,18 @@ private val LightColors = lightColorScheme(
     onTertiary = Color.White,
     tertiaryContainer = Color(0xFFF6E4DC),
     onTertiaryContainer = Color(0xFF3A160B),
-    background = Color(0xFFF6F7F3),
+    // Design of 21.11.2026: warm cream instead of the cool grey, the neutrals below follow.
+    background = Color(0xFFF9F6E8),
     onBackground = Color(0xFF293831),
-    surface = Color(0xFFF6F7F3),
+    surface = Color(0xFFF9F6E8),
     onSurface = Color(0xFF293831),
     surfaceVariant = Color(0xFFDDE3DC),
     onSurfaceVariant = Color(0xFF5F6A63),
     surfaceContainerLowest = Color.White,
-    surfaceContainerLow = Color(0xFFF0F2EC),
-    surfaceContainer = Color(0xFFEAEDE6),
-    surfaceContainerHigh = Color(0xFFE4E8E0),
-    surfaceContainerHighest = Color(0xFFDEE3DA),
+    surfaceContainerLow = Color(0xFFF4F1E3),
+    surfaceContainer = Color(0xFFFBF8EC),
+    surfaceContainerHigh = Color(0xFFEAE7D8),
+    surfaceContainerHighest = Color(0xFFE3E0D0),
     outline = Color(0xFF737D75),
     outlineVariant = Color(0xFFC3CBC2),
 )
@@ -106,18 +107,49 @@ data class ExtraColors(
     /** Soft blue for "new entries" badges (StatusBadge). */
     val info: Color,
     val onInfo: Color,
-    /** Home design of 21.11.2026: gradients of the four tiles. */
+    /** Start screen (design of 21.11.2026). */
+    val home: HomeColors,
+)
+
+/**
+ * Colours of the start screen, measured from the design picture of 21.11.2026: warm cream page,
+ * deep forest green for text, bar and icons, sage and apricot tiles.
+ */
+@Immutable
+data class HomeColors(
+    /** Page: cream, with a peach tint towards the right edge. */
+    val page: Color,
+    val pageTint: Color,
+    /** Headings, numbers, the progress bar. */
+    val ink: Color,
+    /** Tagline and secondary text. */
+    val inkSoft: Color,
+    /** Icons on the sage cards. */
+    val icon: Color,
+    /** Logo: dark and light leaf. */
+    val logoDark: Color,
+    val logoLight: Color,
+    /** Branch top right: leaves and stem. */
+    val leaf: Color,
+    val leafLight: Color,
+    val progressCard: Color,
+    val progressTrack: Color,
+    val badge: Color,
+    val todayCard: Color,
     val mealTile: TileGradient,
     val symptomTile: TileGradient,
     val dayCheckTile: TileGradient,
     val resultsTile: TileGradient,
-    /** Text on the two apricot tiles. */
+    /** Text on the sage and on the apricot tiles. */
+    val onSageTile: Color,
     val onWarmTile: Color,
-    /** Heart icon and the "finish now" button on the home tiles. */
-    val warmAccent: Color,
-    val onWarmAccent: Color,
-    /** Moon on the day check tile. */
+    val heart: Color,
     val moon: Color,
+    /** "Jetzt abschließen". */
+    val button: Color,
+    val onButton: Color,
+    /** Red dot on the bell. */
+    val dot: Color,
 )
 
 private val LightExtra = ExtraColors(
@@ -132,15 +164,33 @@ private val LightExtra = ExtraColors(
     redFlag = Color(0xFFFFCDC8),
     info = Color(0xFFDDEAEE),
     onInfo = Color(0xFF24505C),
-    mealTile = TileGradient(Color(0xFFEEF3EA), Color(0xFFCADDC5), Color(0xFFB3CDAC)),
-    symptomTile = TileGradient(Color(0xFFFDF1E8), Color(0xFFF6C6A8), Color(0xFFF0AE88)),
-    dayCheckTile = TileGradient(Color(0xFFFDF4E6), Color(0xFFF6CDA6), Color(0xFFEFB689)),
-    resultsTile = TileGradient(Color(0xFFF1F5ED), Color(0xFFC9DCC4), Color(0xFFB0CBAA)),
-    onWarmTile = Color(0xFF3A160B),
-    // White text on it reaches about 5 : 1.
-    warmAccent = Color(0xFFAD521F),
-    onWarmAccent = Color.White,
-    moon = Color(0xFFD9893F),
+    home = HomeColors(
+        page = Color(0xFFF9F6E8),
+        pageTint = Color(0xFFF8E6D6),
+        ink = Color(0xFF1B4B2E),
+        inkSoft = Color(0xFF36543C),
+        icon = Color(0xFF2E6140),
+        logoDark = Color(0xFF3F7049),
+        logoLight = Color(0xFF6E9C72),
+        leaf = Color(0xFFA8BF98),
+        leafLight = Color(0xFFD3DDC4),
+        progressCard = Color(0xFFFDFCF5),
+        progressTrack = Color(0xFFE6E5D3),
+        badge = Color(0xFFE2E7D5),
+        todayCard = Color(0xFFE4E9D6),
+        mealTile = TileGradient(Color(0xFFEDF0DF), Color(0xFFD9E2CA), Color(0xFFBDCFB0)),
+        symptomTile = TileGradient(Color(0xFFFCE7D3), Color(0xFFFBD5B6), Color(0xFFF8C298)),
+        dayCheckTile = TileGradient(Color(0xFFFBEFD9), Color(0xFFF8DCBA), Color(0xFFF4C493)),
+        resultsTile = TileGradient(Color(0xFFEDEEDE), Color(0xFFDAE3CC), Color(0xFFA4BF98)),
+        onSageTile = Color(0xFF152812),
+        onWarmTile = Color(0xFF361A04),
+        heart = Color(0xFFD16F2E),
+        moon = Color(0xFFE58A36),
+        // White text on it reaches about 4.7 : 1.
+        button = Color(0xFFB15626),
+        onButton = Color.White,
+        dot = Color(0xFFD9483B),
+    ),
 )
 
 private val DarkExtra = ExtraColors(
@@ -155,14 +205,32 @@ private val DarkExtra = ExtraColors(
     redFlag = Color(0xFF7E2B25),
     info = Color(0xFF2A3D44),
     onInfo = Color(0xFFCBE3EA),
-    mealTile = TileGradient(Color(0xFF34544A), Color(0xFF22362D), Color(0xFF3E6254)),
-    symptomTile = TileGradient(Color(0xFF65453A), Color(0xFF402A21), Color(0xFF77503F)),
-    dayCheckTile = TileGradient(Color(0xFF5E4732), Color(0xFF3E2D1F), Color(0xFF725638)),
-    resultsTile = TileGradient(Color(0xFF3A4D44), Color(0xFF25332C), Color(0xFF465C51)),
-    onWarmTile = Color(0xFFF6E4DC),
-    warmAccent = Color(0xFFF0A27A),
-    onWarmAccent = Color(0xFF4A1E08),
-    moon = Color(0xFFF2C083),
+    home = HomeColors(
+        page = Color(0xFF121512),
+        pageTint = Color(0xFF1E1A15),
+        ink = Color(0xFFB4DCC0),
+        inkSoft = Color(0xFFCAD6C6),
+        icon = Color(0xFF9CC7A8),
+        logoDark = Color(0xFF6FA57A),
+        logoLight = Color(0xFF9CC7A0),
+        leaf = Color(0xFF3F5A44),
+        leafLight = Color(0xFF2E3F31),
+        progressCard = Color(0xFF1C201C),
+        progressTrack = Color(0xFF333733),
+        badge = Color(0xFF2A4A3F),
+        todayCard = Color(0xFF243A2E),
+        mealTile = TileGradient(Color(0xFF34544A), Color(0xFF22362D), Color(0xFF3E6254)),
+        symptomTile = TileGradient(Color(0xFF65453A), Color(0xFF402A21), Color(0xFF77503F)),
+        dayCheckTile = TileGradient(Color(0xFF5E4732), Color(0xFF3E2D1F), Color(0xFF725638)),
+        resultsTile = TileGradient(Color(0xFF3A4D44), Color(0xFF25332C), Color(0xFF465C51)),
+        onSageTile = Color(0xFFDCE8DF),
+        onWarmTile = Color(0xFFF6E4DC),
+        heart = Color(0xFFF0A27A),
+        moon = Color(0xFFF2C083),
+        button = Color(0xFFF0A27A),
+        onButton = Color(0xFF4A1E08),
+        dot = Color(0xFFFF8A80),
+    ),
 )
 
 val LocalExtraColors = staticCompositionLocalOf { LightExtra }

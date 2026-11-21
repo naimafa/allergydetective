@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.nfar.allergydetective.ui.theme.AppColors
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -42,23 +43,23 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun HomeToday(state: HomeState, onClick: () -> Unit) {
-    val scheme = MaterialTheme.colorScheme
+    val home = AppColors.extra.home
     val total = state.mealsToday + state.symptomsToday
     Card(
         onClick = onClick,
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = scheme.primaryContainer, contentColor = scheme.onPrimaryContainer),
+        colors = CardDefaults.cardColors(containerColor = home.todayCard, contentColor = home.onSageTile),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(stringResource(Res.string.today_title), style = MaterialTheme.typography.titleMedium)
             // Top-aligned: at a large font "Einträge gesamt" wraps, the numbers still stay on one line.
             Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.Top) {
-                Stat(Icons.Filled.Restaurant, state.mealsToday, pluralStringResource(Res.plurals.today_meals, state.mealsToday), Modifier.weight(1f))
+                Stat({ Icon(Icons.Filled.Restaurant, contentDescription = null, tint = AppColors.extra.home.icon, modifier = it) }, state.mealsToday, pluralStringResource(Res.plurals.today_meals, state.mealsToday), Modifier.weight(1f))
                 Separator()
-                Stat(Icons.Filled.MonitorHeart, state.symptomsToday, pluralStringResource(Res.plurals.today_symptoms, state.symptomsToday), Modifier.weight(1f))
+                Stat({ HeartPulseIcon(AppColors.extra.home.icon, it) }, state.symptomsToday, pluralStringResource(Res.plurals.today_symptoms, state.symptomsToday), Modifier.weight(1f))
                 Separator()
-                Stat(Icons.Filled.BarChart, total, pluralStringResource(Res.plurals.today_entries, total), Modifier.weight(1f))
+                Stat({ BarsIcon(AppColors.extra.home.icon, it) }, total, pluralStringResource(Res.plurals.today_entries, total), Modifier.weight(1f))
             }
         }
     }
@@ -67,20 +68,20 @@ fun HomeToday(state: HomeState, onClick: () -> Unit) {
 @Composable
 private fun Separator() {
     VerticalDivider(
-        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f),
+        color = AppColors.extra.home.onSageTile.copy(alpha = 0.15f),
         modifier = Modifier.fillMaxHeight().width(1.dp).padding(vertical = 4.dp),
     )
 }
 
 @Composable
-private fun Stat(icon: ImageVector, count: Int, label: String, modifier: Modifier) {
+private fun Stat(icon: @Composable (Modifier) -> Unit, count: Int, label: String, modifier: Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(26.dp))
+            icon(Modifier.size(26.dp))
             Text(
                 count.toString(),
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
-                color = MaterialTheme.colorScheme.primary,
+                color = AppColors.extra.home.ink,
             )
         }
         Text(

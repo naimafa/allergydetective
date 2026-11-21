@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
+import com.nfar.allergydetective.ui.theme.AppColors
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -35,8 +36,9 @@ fun HomeProgress(confirmedDays: Int) {
     val total = HomeViewModel.COLLECTION_DAYS
     val ready = confirmedDays >= total
     val scheme = MaterialTheme.colorScheme
+    val home = AppColors.extra.home
     Card(
-        colors = CardDefaults.cardColors(containerColor = scheme.surfaceContainerLowest),
+        colors = CardDefaults.cardColors(containerColor = home.progressCard, contentColor = home.ink),
         // Home design of 21.11.2026: white card with a soft shadow, thicker bar.
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = MaterialTheme.shapes.large,
@@ -51,7 +53,7 @@ fun HomeProgress(confirmedDays: Int) {
                     modifier = Modifier.weight(1f),
                 )
                 if (!ready) {
-                    Surface(shape = CircleShape, color = scheme.primaryContainer, contentColor = scheme.primary) {
+                    Surface(shape = CircleShape, color = home.badge, contentColor = home.ink) {
                         Text(
                             stringResource(Res.string.home_progress_badge, confirmedDays, total),
                             style = MaterialTheme.typography.labelLarge,
@@ -63,8 +65,8 @@ fun HomeProgress(confirmedDays: Int) {
             LinearProgressIndicator(
                 progress = { (confirmedDays.toFloat() / total).coerceAtMost(1f) },
                 modifier = Modifier.fillMaxWidth().height(10.dp),
-                color = scheme.primary,
-                trackColor = scheme.surfaceContainerHigh,
+                color = home.ink,
+                trackColor = home.progressTrack,
                 strokeCap = StrokeCap.Round,
                 drawStopIndicator = {},
             )
@@ -76,7 +78,7 @@ fun HomeProgress(confirmedDays: Int) {
                     pluralStringResource(Res.plurals.home_progress_remaining, total - confirmedDays, total - confirmedDays)
                 },
                 style = MaterialTheme.typography.bodyMedium,
-                color = scheme.onSurfaceVariant,
+                color = home.inkSoft,
             )
         }
     }

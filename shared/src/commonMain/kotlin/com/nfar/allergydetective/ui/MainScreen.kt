@@ -6,7 +6,19 @@ import allergydetective.shared.generated.resources.tab_favorites
 import allergydetective.shared.generated.resources.tab_history
 import allergydetective.shared.generated.resources.tab_home
 import allergydetective.shared.generated.resources.tab_profile
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.nfar.allergydetective.ui.theme.AppColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Home
@@ -39,6 +51,7 @@ import com.nfar.allergydetective.ui.favorites.FavoritesScreen
 import com.nfar.allergydetective.ui.history.HistoryScreen
 import com.nfar.allergydetective.ui.home.HomeAction
 import com.nfar.allergydetective.ui.home.HomeScreen
+import com.nfar.allergydetective.ui.home.homeBackground
 import com.nfar.allergydetective.ui.home.HomeViewModel
 import com.nfar.allergydetective.ui.sick.SickBanner
 import com.nfar.allergydetective.ui.sick.SickPeriodsViewModel
@@ -50,8 +63,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /** Bottom tabs (UX 6). */
-enum class MainTab(val icon: ImageVector, val label: StringResource) {
-    HOME(Icons.Outlined.Home, Res.string.tab_home),
+enum class MainTab(val icon: ImageVector, val label: StringResource, val selectedIcon: ImageVector = icon) {
+    HOME(Icons.Outlined.Home, Res.string.tab_home, Icons.Filled.Home),
     HISTORY(Icons.Outlined.History, Res.string.tab_history),
     FAVORITES(Icons.Outlined.StarOutline, Res.string.tab_favorites),
     PROFILE(Icons.Outlined.Person, Res.string.tab_profile),
@@ -78,19 +91,44 @@ fun MainScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     Scaffold(
+        // Start screen: its cream page with the peach tint fills the whole screen.
+        modifier = if (tab == MainTab.HOME) Modifier.homeBackground() else Modifier,
+        containerColor = if (tab == MainTab.HOME) Color.Transparent else MaterialTheme.colorScheme.background,
         topBar = { if (tab != MainTab.HOME) TopAppBar(title = { Text(stringResource(tab.label)) }) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            // Dark mode feedback 19.11.: a fine line sets the navigation off from the page.
-            Column {
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
+            // Design of 21.11.2026: a cream bar, rounded on top with a soft shadow; the active tab in
+            // forest green with a short line under its name instead of the pill.
+            // (Dark mode feedback 19.11.: the bar stays clearly lighter than the page.)
+            val ink = AppColors.extra.home.ink
+            Surface(
+                shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                shadowElevation = 8.dp,
+            ) {
+                NavigationBar(containerColor = Color.Transparent, tonalElevation = 0.dp) {
                     MainTab.entries.forEach { entry ->
+                        val selected = tab == entry
                         NavigationBarItem(
-                            selected = tab == entry,
+                            selected = selected,
                             onClick = { tab = entry },
-                            icon = { Icon(entry.icon, contentDescription = null) },
-                            label = { Text(stringResource(entry.label)) },
+                            icon = { Icon(if (selected) entry.selectedIcon else entry.icon, contentDescription = null) },
+                            label = {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(stringResource(entry.label), fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal)
+                                    Box(
+                                        Modifier.padding(top = 4.dp).size(width = 40.dp, height = 3.dp)
+                                            .background(if (selected) ink else Color.Transparent, RoundedCornerShape(2.dp)),
+                                    )
+                                }
+                            },
+                            colors = NavigationBarItemDefaults.colors(
+                                indicatorColor = Color.Transparent,
+                                selectedIconColor = ink,
+                                selectedTextColor = ink,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            ),
                         )
                     }
                 }
@@ -111,6 +149,7 @@ fun MainScreen(
                     state = homeState,
                     onAction = onHomeAction,
                     onOpenToday = { tab = MainTab.HISTORY },
+                    onOpenReminders = { tab = MainTab.PROFILE },
                     banner = { sickState.ongoing?.let { SickBanner(it, sickViewModel::onRecovered) } },
                 )
             }

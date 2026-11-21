@@ -1,5 +1,9 @@
 package com.nfar.allergydetective.ui.home
 
+import allergydetective.shared.generated.resources.home_reminders
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.IconButton
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.home_brand
 import allergydetective.shared.generated.resources.home_day_check_hint
@@ -22,6 +26,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.nfar.allergydetective.ui.theme.TileGradient
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -101,18 +106,22 @@ fun HomeScreen(
     state: HomeState = HomeState(),
     /** Optional card on top, e.g. "ill since ..." (self-test 18.11.). */
     banner: @Composable () -> Unit = {},
+    /** The bell top right: opens the evening reminder in the profile. */
+    onOpenReminders: () -> Unit = {},
 ) {
+    // The cream page with its peach tint is drawn behind the whole screen (homeBackground in MainScreen),
+    // so it also runs under the status bar and the navigation without a hard edge.
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         // Text width inside a tile: screen padding 2 × 16, gap, tile padding on both sides, a small safety margin.
         val textWidth = (maxWidth - 32.dp - GRID) / 2 - TILE_PADDING * 2 - SAFETY_MARGIN
         val tileText = sharedTileStyles(textWidth)
         Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-            Leaves(modifier = Modifier.align(Alignment.TopEnd))
+            LeafBranch(modifier = Modifier.align(Alignment.TopEnd).size(width = 200.dp, height = 230.dp))
             Column(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Header(state.greeting)
+                Header(state.greeting, showDot = state.confirmedDays != null && state.todayOpen, onBell = onOpenReminders)
                 banner()
                 state.confirmedDays?.let {
                     HomeProgress(it)
@@ -139,17 +148,50 @@ fun HomeScreen(
     }
 }
 
+/** Design of 21.11.2026: cream page with a soft peach tint towards the right edge. */
 @Composable
-private fun Header(greeting: Greeting) {
-    val scheme = MaterialTheme.colorScheme
+fun Modifier.homeBackground(): Modifier {
+    val home = AppColors.extra.home
+    return background(home.page).drawBehind {
+        drawRect(
+            Brush.radialGradient(
+                listOf(home.pageTint, Color.Transparent),
+                center = Offset(size.width * 1.05f, size.height * 0.45f),
+                radius = maxOf(size.width, size.height) * 0.55f,
+            ),
+        )
+    }
+}
+
+@Composable
+private fun Header(greeting: Greeting, showDot: Boolean, onBell: () -> Unit) {
+    val home = AppColors.extra.home
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Icon(Icons.Filled.Eco, contentDescription = null, tint = scheme.primary, modifier = Modifier.size(36.dp))
+            LeafLogo(Modifier.size(44.dp))
             Text(
                 stringResource(Res.string.home_brand),
-                style = MaterialTheme.typography.titleMedium.copy(fontFamily = FontFamily.Serif, fontWeight = FontWeight.Medium),
-                color = scheme.primary,
+                style = MaterialTheme.typography.titleLarge.copy(fontFamily = FontFamily.Serif, fontWeight = FontWeight.Medium),
+                color = home.ink,
+                modifier = Modifier.weight(1f),
             )
+            // Bell with a red dot while today is still open; opens the evening reminder.
+            IconButton(onClick = onBell) {
+                Box {
+                    Icon(
+                        Icons.Outlined.Notifications,
+                        contentDescription = stringResource(Res.string.home_reminders),
+                        tint = home.ink,
+                        modifier = Modifier.size(28.dp),
+                    )
+                    if (showDot) {
+                        Box(
+                            Modifier.align(Alignment.TopEnd).offset(x = 1.dp, y = (-1).dp).size(9.dp)
+                                .background(home.dot, CircleShape),
+                        )
+                    }
+                }
+            }
         }
         Spacer(Modifier.height(8.dp))
         Text(
@@ -160,33 +202,13 @@ private fun Header(greeting: Greeting) {
                     Greeting.EVENING -> Res.string.home_greeting_evening
                 },
             ),
-            style = MaterialTheme.typography.headlineLarge.copy(fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold),
-            color = scheme.primary,
+            style = MaterialTheme.typography.headlineLarge.copy(fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold, fontSize = 36.sp, lineHeight = 44.sp),
+            color = home.ink,
         )
         Text(
             stringResource(Res.string.home_tagline),
             style = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Serif),
-            color = scheme.onSurfaceVariant,
-        )
-    }
-}
-
-/** Soft leaves top right behind the greeting, only decoration. */
-@Composable
-private fun Leaves(modifier: Modifier) {
-    val tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
-    Box(modifier = modifier.size(190.dp)) {
-        Icon(
-            Icons.Filled.Eco,
-            contentDescription = null,
-            tint = tint,
-            modifier = Modifier.size(170.dp).offset(x = 50.dp, y = 10.dp).rotate(-20f),
-        )
-        Icon(
-            Icons.Filled.Eco,
-            contentDescription = null,
-            tint = tint,
-            modifier = Modifier.size(110.dp).offset(x = 10.dp, y = 90.dp).rotate(35f),
+            color = home.inkSoft,
         )
     }
 }
@@ -295,7 +317,7 @@ private fun ActionTile(
                 .padding(TILE_PADDING),
         ) {
             Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
-                Icon(action.icon, contentDescription = null, tint = colors.accent, modifier = Modifier.size(44.dp))
+                TileIcon(action, colors, Modifier.size(48.dp))
                 Spacer(Modifier.weight(1f))
                 Icon(
                     Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -327,10 +349,10 @@ private fun ActionTile(
 
 @Composable
 private fun FinishNowButton(onClick: () -> Unit, text: TileTextStyles) {
-    val extra = AppColors.extra
+    val home = AppColors.extra.home
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = extra.warmAccent, contentColor = extra.onWarmAccent),
+        colors = ButtonDefaults.buttonColors(containerColor = home.button, contentColor = home.onButton),
         contentPadding = PaddingValues(horizontal = BUTTON_PADDING, vertical = 6.dp),
         modifier = Modifier.fillMaxWidth().heightIn(min = 40.dp),
     ) {
@@ -353,7 +375,8 @@ private fun FinishNowButton(onClick: () -> Unit, text: TileTextStyles) {
  * corner top left to a deeper one bottom right, a soft light glow top left and a wave along the bottom.
  */
 private fun DrawScope.drawTileBackground(gradient: TileGradient) {
-    drawRect(Brush.linearGradient(listOf(gradient.start, gradient.end), start = Offset.Zero, end = Offset(size.width, size.height)))
+    // Mostly top to bottom like the picture, slightly diagonal.
+    drawRect(Brush.linearGradient(listOf(gradient.start, gradient.end), start = Offset(size.width * 0.2f, 0f), end = Offset(size.width * 0.8f, size.height)))
     drawRect(
         Brush.radialGradient(
             listOf(Color.White.copy(alpha = 0.35f), Color.Transparent),
@@ -377,6 +400,17 @@ private fun DrawScope.drawTileBackground(gradient: TileGradient) {
 
 private class TileColors(val gradient: TileGradient, val content: Color, val accent: Color)
 
+/** Icons as in the design picture: fork and knife, heart with pulse, moon with stars, bars with magnifier. */
+@Composable
+private fun TileIcon(action: HomeAction, colors: TileColors, modifier: Modifier) {
+    when (action) {
+        HomeAction.LOG_MEAL -> Icon(action.icon, contentDescription = null, tint = colors.accent, modifier = modifier)
+        HomeAction.LOG_SYMPTOM -> HeartPulseIcon(colors.accent, modifier)
+        HomeAction.DAY_CHECK -> MoonIcon(colors.accent, modifier)
+        HomeAction.RESULTS -> PatternIcon(colors.accent, colors.gradient.start, modifier)
+    }
+}
+
 /** Text sizes shared by the four tiles, and how many lines every description reserves. */
 private class TileTextStyles(
     val title: TextStyle,
@@ -390,12 +424,11 @@ private class TileTextStyles(
 /** Food and results = sage, symptoms and day check = apricot (design of 21.11.2026). */
 @Composable
 private fun tileColors(action: HomeAction): TileColors {
-    val scheme = MaterialTheme.colorScheme
-    val extra = AppColors.extra
+    val home = AppColors.extra.home
     return when (action) {
-        HomeAction.LOG_MEAL -> TileColors(extra.mealTile, scheme.onPrimaryContainer, scheme.primary)
-        HomeAction.LOG_SYMPTOM -> TileColors(extra.symptomTile, extra.onWarmTile, extra.warmAccent)
-        HomeAction.DAY_CHECK -> TileColors(extra.dayCheckTile, extra.onWarmTile, extra.moon)
-        HomeAction.RESULTS -> TileColors(extra.resultsTile, scheme.onPrimaryContainer, scheme.primary)
+        HomeAction.LOG_MEAL -> TileColors(home.mealTile, home.onSageTile, home.icon)
+        HomeAction.LOG_SYMPTOM -> TileColors(home.symptomTile, home.onWarmTile, home.heart)
+        HomeAction.DAY_CHECK -> TileColors(home.dayCheckTile, home.onWarmTile, home.moon)
+        HomeAction.RESULTS -> TileColors(home.resultsTile, home.onSageTile, home.icon)
     }
 }
