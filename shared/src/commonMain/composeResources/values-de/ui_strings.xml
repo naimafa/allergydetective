@@ -318,7 +318,8 @@
     <string name="custom_similar_question">Meintest du „%1$s“? Doppelte Zutaten verteilen deine Einträge und schwächen die Auswertung.</string>
     <string name="custom_use_existing">Diese Zutat nehmen</string>
     <string name="meal_favorites">Favoriten</string>
-    <string name="meal_save_as_favorite">Als Favorit speichern</string>
+    <string name="meal_save_as_favorite">Ganze Mahlzeit als Gericht in den Favoriten speichern</string>
+    <string name="meal_save_as_favorite_hint">Alle Zutaten oben werden zusammen gespeichert. Beim nächsten Mal fügt ein Tipp sie alle auf einmal hinzu.</string>
     <string name="meal_favorite_name">Name, z.B. Müsli mit Milch</string>
     <string name="meal_allergy_hint">Diese Mahlzeit enthält etwas, das du als bekannte Allergie hinterlegt hast.</string>
 </resources>

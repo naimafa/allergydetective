@@ -318,7 +318,8 @@
     <string name="custom_similar_question">Did you mean “%1$s”? Duplicate ingredients split your entries and weaken the results.</string>
     <string name="custom_use_existing">Use this ingredient</string>
     <string name="meal_favorites">Favourites</string>
-    <string name="meal_save_as_favorite">Save as favourite</string>
+    <string name="meal_save_as_favorite">Save the whole meal as a dish in favourites</string>
+    <string name="meal_save_as_favorite_hint">All ingredients above are saved together. Next time one tap adds them all at once.</string>
     <string name="meal_favorite_name">Name, e.g. muesli with milk</string>
     <string name="meal_allergy_hint">This meal contains something you marked as a known allergy.</string>
 </resources>
