@@ -24,7 +24,7 @@
   --clues: #E8E2F0; --on-clues: #2B2238; --clues-accent: #5E4E86;
   --digestive: #F8E8D2; --skin: #F6E4DC; --head: #E8E2F0; --airways: #DDEAEE; --other: #E5EBE7;
   --info: #DDEAEE; --on-info: #24505C;
-  --meal-tile: #EAF0E1, #B9D0AE; --symptom-tile: #FFF0DE, #F9CDAE; --day-tile: #FFF0DE, #F9CDAE; --results-tile: #EAF0E1, #B9D0AE;
+  --meal-tile: #EAF0E1, #B9D0AE; --symptom-tile: #FFF0DE, #F9CDAE; --day-tile: #FFF0DE, #F9CDAE; --results-tile: #EAF0E1, #B9D0AE; --tile-glow: rgba(255,255,255,.35);
   --meal-wave: #A6C29A; --symptom-wave: #F3B98F; --day-wave: #F3B98F; --results-wave: #9DBB90;
   --page-tint: #F7EBDD; --ink: #053923; --accent: #184F34; --ink-soft: #184F34; --home-icon: #478661; --page-end: #F5EFE1; --nav: #FFF9EF; --nav-inactive: #416783; --card-border: #FFFFFF; --logo-dark: #3F7049; --logo-light: #6E9C72;
   --leaf: #94B585; --leaf-light: #D5E3C6; --progress-card: #FBF8EE; --track: #E0E3D0; --badge: #D6DEC6; --today-card: #EDEEDC;
@@ -47,8 +47,8 @@
     --clues: #3A3349; --on-clues: #E8E2F0; --clues-accent: #CDBFE8;
     --digestive: #4A3D28; --skin: #4A3830; --head: #3A3349; --airways: #2A3D44; --other: #34433C;
     --info: #2A3D44; --on-info: #CBE3EA;
-  --meal-tile: #34544A, #22362D; --symptom-tile: #65453A, #402A21; --day-tile: #5E4732, #3E2D1F; --results-tile: #3A4D44, #25332C;
-  --meal-wave: #3E6254; --symptom-wave: #77503F; --day-wave: #725638; --results-wave: #465C51;
+  --meal-tile: #2C473B, #1C2E25; --symptom-tile: #5A362A, #38211A; --day-tile: #573D29, #36261A; --results-tile: #2E443A, #1D2B24; --tile-glow: rgba(255,255,255,.06);
+  --meal-wave: #355A4A; --symptom-wave: #6E4232; --day-wave: #6B4A30; --results-wave: #3A5547;
   --page-tint: #1E1A15; --ink: #B4DCC0; --accent: #9CC7B6; --ink-soft: #CAD6C6; --home-icon: #9CC7A8; --page-end: #101310; --nav: #242924; --nav-inactive: #D2D8D1; --card-border: rgba(255,255,255,.08); --logo-dark: #6FA57A; --logo-light: #9CC7A0;
   --leaf: #3F5A44; --leaf-light: #2E3F31; --progress-card: #1C201C; --track: #333733; --badge: #2A4A3F; --today-card: #243A2E;
   --on-sage-tile: #DCE8DF; --chevron-circle: rgba(255,255,255,.15); --heart: #F0A27A; --dot: #FF8A80;
@@ -70,8 +70,8 @@
   --clues: #3A3349; --on-clues: #E8E2F0; --clues-accent: #CDBFE8;
   --digestive: #4A3D28; --skin: #4A3830; --head: #3A3349; --airways: #2A3D44; --other: #34433C;
   --info: #2A3D44; --on-info: #CBE3EA;
-  --meal-tile: #34544A, #22362D; --symptom-tile: #65453A, #402A21; --day-tile: #5E4732, #3E2D1F; --results-tile: #3A4D44, #25332C;
-  --meal-wave: #3E6254; --symptom-wave: #77503F; --day-wave: #725638; --results-wave: #465C51;
+  --meal-tile: #2C473B, #1C2E25; --symptom-tile: #5A362A, #38211A; --day-tile: #573D29, #36261A; --results-tile: #2E443A, #1D2B24; --tile-glow: rgba(255,255,255,.06);
+  --meal-wave: #355A4A; --symptom-wave: #6E4232; --day-wave: #6B4A30; --results-wave: #3A5547;
   --page-tint: #1E1A15; --ink: #B4DCC0; --accent: #9CC7B6; --ink-soft: #CAD6C6; --home-icon: #9CC7A8; --page-end: #101310; --nav: #242924; --nav-inactive: #D2D8D1; --card-border: rgba(255,255,255,.08); --logo-dark: #6FA57A; --logo-light: #9CC7A0;
   --leaf: #3F5A44; --leaf-light: #2E3F31; --progress-card: #1C201C; --track: #333733; --badge: #2A4A3F; --today-card: #243A2E;
   --on-sage-tile: #DCE8DF; --chevron-circle: rgba(255,255,255,.15); --heart: #F0A27A; --dot: #FF8A80;
@@ -229,10 +229,10 @@ p, h1, h2, h3 { margin: 0; }
 :root[data-font="125"] { --tile-shrink: 1; --hint-shrink: 1; }
 :root[data-font="125"] .tile b { white-space: normal; }
 :root[data-font="125"] .tile .now { white-space: normal; text-align: center; font-size: calc(13px * var(--fs)); line-height: 1.25; padding: 4px 10px; }
-.t-food { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--meal-tile)); --wave: var(--meal-wave); color: var(--on-sage-tile); } .t-food svg { color: var(--home-icon); }
-.t-symptom { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--symptom-tile)); --wave: var(--symptom-wave); color: var(--on-warm-tile); } .t-symptom svg { color: var(--heart); }
-.t-day { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--day-tile)); --wave: var(--day-wave); color: var(--on-warm-tile); } .t-day svg { color: var(--moon); }
-.t-results { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--results-tile)); --wave: var(--results-wave); color: var(--on-sage-tile); --tile-bg: #EDEEDE; } .t-results svg { color: var(--home-icon); }
+.t-food { background: radial-gradient(circle at 15% 10%, var(--tile-glow), transparent 75%), linear-gradient(135deg, var(--meal-tile)); --wave: var(--meal-wave); color: var(--on-sage-tile); } .t-food svg { color: var(--home-icon); }
+.t-symptom { background: radial-gradient(circle at 15% 10%, var(--tile-glow), transparent 75%), linear-gradient(135deg, var(--symptom-tile)); --wave: var(--symptom-wave); color: var(--on-warm-tile); } .t-symptom svg { color: var(--heart); }
+.t-day { background: radial-gradient(circle at 15% 10%, var(--tile-glow), transparent 75%), linear-gradient(135deg, var(--day-tile)); --wave: var(--day-wave); color: var(--on-warm-tile); } .t-day svg { color: var(--moon); }
+.t-results { background: radial-gradient(circle at 15% 10%, var(--tile-glow), transparent 75%), linear-gradient(135deg, var(--results-tile)); --wave: var(--results-wave); color: var(--on-sage-tile); --tile-bg: #EDEEDE; } .t-results svg { color: var(--home-icon); }
 .progress { height: 12px; display: flex; gap: 0; background: var(--track); border-radius: 6px; }
 .progress i { display: block; height: 12px; border-radius: 6px; background: var(--accent); }
 .progress i + i { background: var(--track); flex: 1; }

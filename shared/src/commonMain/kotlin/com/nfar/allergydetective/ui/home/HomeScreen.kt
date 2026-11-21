@@ -324,6 +324,7 @@ private fun ActionTile(
     text: TileTextStyles,
 ) {
     val colors = tileColors(action)
+    val glow = AppColors.extra.home.tileGlow
     val shape = MaterialTheme.shapes.large
     Surface(
         onClick = onClick,
@@ -337,7 +338,7 @@ private fun ActionTile(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(shape)
-                .drawBehind { drawTileBackground(colors.gradient) }
+                .drawBehind { drawTileBackground(colors.gradient, glow) }
                 .padding(TILE_PADDING),
         ) {
             Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
@@ -377,12 +378,12 @@ private fun ActionTile(
  * Design of 21.11.2026 (user feedback: "not just one colour"): a clear diagonal gradient from a light
  * corner top left to a deeper one bottom right, a soft light glow top left and a wave along the bottom.
  */
-private fun DrawScope.drawTileBackground(gradient: TileGradient) {
+private fun DrawScope.drawTileBackground(gradient: TileGradient, glow: Color) {
     // Mostly top to bottom like the picture, slightly diagonal.
     drawRect(Brush.linearGradient(listOf(gradient.start, gradient.end), start = Offset(size.width * 0.2f, 0f), end = Offset(size.width * 0.8f, size.height)))
     drawRect(
         Brush.radialGradient(
-            listOf(Color.White.copy(alpha = 0.35f), Color.Transparent),
+            listOf(glow, Color.Transparent),
             center = Offset(size.width * 0.15f, size.height * 0.1f),
             radius = size.maxDimension * 0.75f,
         ),
