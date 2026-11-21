@@ -35,6 +35,11 @@ import allergydetective.shared.generated.resources.meal_step_amount
 import allergydetective.shared.generated.resources.meal_step_what
 import allergydetective.shared.generated.resources.meal_step_when
 import allergydetective.shared.generated.resources.meal_voice
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -151,14 +156,15 @@ fun LogMealScreen(
             Button(
                 onClick = viewModel::onSave,
                 enabled = state.canSave,
-                modifier = Modifier.navigationBarsPadding().fillMaxWidth().padding(16.dp).heightIn(min = 56.dp),
+                // Phone test 21.11.: the keyboard covered the button; it now sits right above the keyboard.
+                modifier = Modifier.navigationBarsPadding().imePadding().fillMaxWidth().padding(16.dp).heightIn(min = 56.dp),
             ) {
                 Text(state.slot?.let { stringResource(Res.string.meal_save_slot, mealSlotLabel(it)) } ?: stringResource(Res.string.common_save))
             }
         },
     ) { padding ->
-        // Keyboard open: the list ends above it, so every selected item can be scrolled into view.
-        LogMealContent(state, viewModel, openCustomDialog, Modifier.padding(padding).consumeWindowInsets(padding).imePadding())
+        // The bottom bar moves up with the keyboard, so the list already ends above it.
+        LogMealContent(state, viewModel, openCustomDialog, Modifier.padding(padding).consumeWindowInsets(padding))
     }
 }
 
@@ -225,6 +231,10 @@ private fun WhatStep(state: LogMealState, viewModel: LogMealViewModel, onCreateI
     val selectedIds = state.selected.map { it.ingredient.id }.toSet()
     val keyboard = LocalSoftwareKeyboardController.current
     val voiceLabel = stringResource(Res.string.meal_voice)
+    // Phone test 21.11.: favourites and quick picks filled the screen, the search results disappeared below them.
+    // While the search field is in use only the results show; otherwise each shortcut group is one scrollable row.
+    var searchFocused by remember { mutableStateOf(false) }
+    val searching = searchFocused || state.query.isNotBlank()
     StepCard(number = 2, title = stringResource(Res.string.meal_step_what)) {
         val speech = rememberSpeechInput(Locale.current.toLanguageTag()) { text -> text?.let(viewModel::onVoiceResult) }
         OutlinedTextField(
@@ -237,7 +247,7 @@ private fun WhatStep(state: LogMealState, viewModel: LogMealViewModel, onCreateI
                     IconButton(onClick = start) { Icon(Icons.Outlined.Mic, contentDescription = voiceLabel) }
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().onFocusChanged { searchFocused = it.isFocused },
         )
         if (state.dishResults.isNotEmpty()) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -272,26 +282,27 @@ private fun WhatStep(state: LogMealState, viewModel: LogMealViewModel, onCreateI
                 Text(stringResource(Res.string.custom_create_named, state.query.trim()))
             }
         }
-        if (state.favorites.isNotEmpty()) {
+        if (!searching && state.favorites.isNotEmpty()) {
             ChipGroupTitle(stringResource(Res.string.meal_favorites), stringResource(Res.string.meal_favorites_hint))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                state.favorites.forEach { favorite ->
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(state.favorites, key = { it.id }) { favorite ->
                     AppFilterChip(
                         selected = state.favoriteId == favorite.id,
                         onClick = { viewModel.onFavoriteClick(favorite) },
-                        label = { Text(favorite.name) },
+                        label = { Text(favorite.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp)) },
+                        leadingIcon = { Icon(Icons.Outlined.StarOutline, contentDescription = null, modifier = Modifier.size(18.dp)) },
                     )
                 }
             }
         }
-        if (state.recent.isNotEmpty()) {
+        if (!searching && state.recent.isNotEmpty()) {
             ChipGroupTitle(stringResource(Res.string.meal_quick), stringResource(Res.string.meal_quick_hint))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                state.recent.forEach { ingredient ->
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(state.recent, key = { it.id }) { ingredient ->
                     AppFilterChip(
                         selected = ingredient.id in selectedIds,
                         onClick = { viewModel.onToggleIngredient(ingredient) },
-                        label = { Text(ingredientName(ingredient)) },
+                        label = { Text(ingredientName(ingredient), maxLines = 1) },
                     )
                 }
             }

@@ -278,7 +278,7 @@
     <string name="meal_slot_dinner">Dinner</string>
     <string name="meal_slot_snack">Snack</string>
     <string name="meal_slot_drink">Drink</string>
-    <string name="meal_search">Search ingredient …</string>
+    <string name="meal_search">Search ingredient or dish …</string>
     <string name="meal_no_results">Nothing found.</string>
     <string name="meal_portion_help">S = a few bites or half a glass · M = a fist or one glass · L = two fists or two glasses</string>
     <string name="meal_portion_small">S</string>
@@ -293,8 +293,8 @@
     <string name="meal_step_what">What did you eat?</string>
     <string name="meal_step_amount">How much?</string>
     <string name="meal_quick">Quick pick</string>
-    <string name="meal_quick_hint">Recently eaten – a tap adds it</string>
-    <string name="meal_favorites_hint">Your saved meals – a tap adds all their ingredients</string>
+    <string name="meal_quick_hint">Single ingredients you ate recently</string>
+    <string name="meal_favorites_hint">Saved dishes – a tap adds all their ingredients</string>
     <string name="meal_slot_missing">Please choose first when you ate.</string>
     <string name="meal_amount_empty">Search above or tap a quick pick. What you choose appears here.</string>
     <string name="meal_save_slot">Save %1$s</string>
