@@ -4,8 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 /**
- * Builds the adaptive launcher icon layers from the icon picture (docs/design/app-icon-magnifier.png:
- * the user's picture of 21.11.2026 without its frame, in the start screen colours).
+ * Builds the adaptive launcher icon layers from the icon picture (docs/design/app-icon-simple.png, made with
+ * IconRebuild.java from app-icon-magnifier.png: the user's picture of 21.11.2026 without frame, arcs and bars,
+ * in the start screen colours, with a bigger magnifier).
  * Adaptive icons are 108 dp; launchers show about the middle 66–72 dp. The picture is placed at 64 dp in
  * the middle (phone test 21.11.: at 76 dp the Xiaomi launcher cut the bars, the leaf and the handle);
  * the cream background fills the rest.
