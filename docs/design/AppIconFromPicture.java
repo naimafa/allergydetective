@@ -6,9 +6,9 @@ import java.io.File;
 /**
  * Builds the adaptive launcher icon layers from the icon picture (docs/design/app-icon-magnifier.png:
  * the user's picture of 21.11.2026 without its frame, in the start screen colours).
- * Adaptive icons are 108 dp; launchers show about the middle 72 dp. The picture is placed at 76 dp in
- * the middle, so it fills the visible area of every mask without being cut, the cream background fills
- * the rest.
+ * Adaptive icons are 108 dp; launchers show about the middle 66–72 dp. The picture is placed at 64 dp in
+ * the middle (phone test 21.11.: at 76 dp the Xiaomi launcher cut the bars, the leaf and the handle);
+ * the cream background fills the rest.
  *  - foreground: the picture, 432 px (108 dp at 4x), transparent outside the picture
  *  - monochrome (themed icons, Android 13+): the dark shapes (magnifier, fork, bolt, bars, leaf) as alpha
  * Args: picture.png foreground.png monochrome.png
@@ -16,7 +16,7 @@ import java.io.File;
 public class AppIconFromPicture {
     public static void main(String[] a) throws Exception {
         BufferedImage pic = ImageIO.read(new File(a[0]));
-        int size = 432, inner = 304, off = (size - inner) / 2;
+        int size = 432, inner = 256, off = (size - inner) / 2;
         BufferedImage scaled = scale(pic, inner);
 
         BufferedImage fg = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
