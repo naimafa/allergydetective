@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.nfar.allergydetective.ui.theme.AppColors
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.StarOutline
@@ -65,7 +65,7 @@ import org.koin.compose.viewmodel.koinViewModel
 /** Bottom tabs (UX 6). */
 enum class MainTab(val icon: ImageVector, val label: StringResource, val selectedIcon: ImageVector = icon) {
     HOME(Icons.Outlined.Home, Res.string.tab_home, Icons.Filled.Home),
-    HISTORY(Icons.Outlined.History, Res.string.tab_history),
+    HISTORY(Icons.Outlined.Schedule, Res.string.tab_history),
     FAVORITES(Icons.Outlined.StarOutline, Res.string.tab_favorites),
     PROFILE(Icons.Outlined.Person, Res.string.tab_profile),
 }

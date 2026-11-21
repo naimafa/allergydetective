@@ -28,7 +28,7 @@
   --meal-wave: #BDCFB0; --symptom-wave: #F8C298; --day-wave: #F4C493; --results-wave: #A4BF98;
   --page-tint: #F8E6D6; --ink: #164D39; --ink-soft: #315343; --home-icon: #164D39; --page-end: #F3EEDF; --nav: #FFF9EF; --nav-inactive: #416783; --card-border: #FFFFFF; --logo-dark: #3F7049; --logo-light: #6E9C72;
   --leaf: #93B288; --leaf-light: #DCE4CC; --progress-card: #FFF9EF; --track: #E6E5D3; --badge: #E2E7D5; --today-card: #E6EDDA;
-  --on-sage-tile: #164D39; --heart: #D16F2E; --dot: #D9483B;
+  --on-sage-tile: #164D39; --chevron-circle: rgba(255,255,255,.8); --heart: #D16F2E; --dot: #D9483B;
   --on-warm-tile: #59351F; --warm-accent: #B15626; --on-warm-accent: #FFFFFF; --moon: #E98A42;
   --emoji-bg: rgba(246, 247, 243, .7);
   --page: #E4E7E1; --page-fg: #293831; --page-muted: #5F6A63; --frame: #1C211E;
@@ -50,7 +50,7 @@
   --meal-wave: #3E6254; --symptom-wave: #77503F; --day-wave: #725638; --results-wave: #465C51;
   --page-tint: #1E1A15; --ink: #B4DCC0; --ink-soft: #CAD6C6; --home-icon: #9CC7A8; --page-end: #101310; --nav: #242924; --nav-inactive: #D2D8D1; --card-border: rgba(255,255,255,.08); --logo-dark: #6FA57A; --logo-light: #9CC7A0;
   --leaf: #3F5A44; --leaf-light: #2E3F31; --progress-card: #1C201C; --track: #333733; --badge: #2A4A3F; --today-card: #243A2E;
-  --on-sage-tile: #DCE8DF; --heart: #F0A27A; --dot: #FF8A80;
+  --on-sage-tile: #DCE8DF; --chevron-circle: rgba(255,255,255,.15); --heart: #F0A27A; --dot: #FF8A80;
   --on-warm-tile: #F6E4DC; --warm-accent: #F0A27A; --on-warm-accent: #4A1E08; --moon: #F2C083;
     --emoji-bg: rgba(18, 21, 18, .7);
     --page: #0A0C0A; --page-fg: #E2E4DE; --page-muted: #B9C0B8; --frame: #000000;
@@ -72,7 +72,7 @@
   --meal-wave: #3E6254; --symptom-wave: #77503F; --day-wave: #725638; --results-wave: #465C51;
   --page-tint: #1E1A15; --ink: #B4DCC0; --ink-soft: #CAD6C6; --home-icon: #9CC7A8; --page-end: #101310; --nav: #242924; --nav-inactive: #D2D8D1; --card-border: rgba(255,255,255,.08); --logo-dark: #6FA57A; --logo-light: #9CC7A0;
   --leaf: #3F5A44; --leaf-light: #2E3F31; --progress-card: #1C201C; --track: #333733; --badge: #2A4A3F; --today-card: #243A2E;
-  --on-sage-tile: #DCE8DF; --heart: #F0A27A; --dot: #FF8A80;
+  --on-sage-tile: #DCE8DF; --chevron-circle: rgba(255,255,255,.15); --heart: #F0A27A; --dot: #FF8A80;
   --on-warm-tile: #F6E4DC; --warm-accent: #F0A27A; --on-warm-accent: #4A1E08; --moon: #F2C083;
   --emoji-bg: rgba(18, 21, 18, .7);
   --page: #0A0C0A; --page-fg: #E2E4DE; --page-muted: #B9C0B8; --frame: #000000;
@@ -208,8 +208,9 @@ p, h1, h2, h3 { margin: 0; }
 .tiles { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
 .tile { position: relative; overflow: hidden; isolation: isolate; min-width: 0; border: 0; border-radius: 22px; padding: 16px; text-align: left; display: flex; flex-direction: column; min-height: 150px; box-shadow: 0 1px 3px rgba(0,0,0,.12); border: 1px solid var(--card-border); }
 .tile .top { display: flex; justify-content: space-between; align-items: flex-start; }
-.tile .top svg { width: 48px; height: 48px; }
-.tile .top svg.chev { width: 24px; height: 24px; color: currentColor; opacity: .8; }
+.tile .top > svg { width: 52px; height: 52px; }
+.tile .top .chev { width: 30px; height: 30px; border-radius: 50%; background: var(--chevron-circle); display: grid; place-items: center; }
+.tile .top .chev svg { width: 22px; height: 22px; color: currentColor; }
 /* Soft wave along the bottom, like drawTileBackground(). */
 .tile::after { content: ""; position: absolute; z-index: -1; left: -20%; right: -20%; bottom: -55%; height: 85%; border-radius: 50%; background: linear-gradient(to bottom, var(--wave), transparent 140%); opacity: .55; transform: rotate(-6deg); }
 .tile .grow { flex: 1; min-height: 12px; }
@@ -218,7 +219,7 @@ p, h1, h2, h3 { margin: 0; }
 .tile b { font-size: calc(18px * var(--fs) * var(--tile-shrink, 1)); font-weight: 600; line-height: 1.33; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tile span.hint { font-size: calc(15px * var(--fs) * var(--hint-shrink, 1)); line-height: 1.33; margin-top: 4px; opacity: .85; min-height: 2.66em; }
 /* Like sharedTileStyles(): all four titles shrink together until "Symptome erfassen" fits (about 15 sp), hints 3 sp smaller. */
-:root { --tile-shrink: .83; --hint-shrink: .8; }
+:root { --tile-shrink: .76; --hint-shrink: .78; }
 /* Phone test 21.11.: at 125 % "Symptome erfassen" does not fit in one line, so all titles may wrap at a word. */
 :root[data-font="125"] { --tile-shrink: 1; --hint-shrink: 1; }
 :root[data-font="125"] .tile b { white-space: normal; }
@@ -330,6 +331,8 @@ p, h1, h2, h3 { margin: 0; }
   <symbol id="i-moon" viewBox="0 0 100 100"><mask id="m-moon"><rect width="100" height="100" fill="#fff"/><circle cx="62" cy="42" r="32" fill="#000"/></mask><circle cx="42" cy="56" r="38" fill="currentColor" mask="url(#m-moon)"/><path fill="currentColor" d="M76 11Q76 22 87 22Q76 22 76 33Q76 22 65 22Q76 22 76 11ZM90 35.5Q90 42 96.5 42Q90 42 90 48.5Q90 42 83.5 42Q90 42 90 35.5Z"/></symbol>
   <symbol id="i-bars" viewBox="0 0 100 100"><g fill="currentColor"><rect x="0" y="54" width="26" height="38" rx="3"/><rect x="32" y="34" width="26" height="58" rx="3"/><rect x="64" y="10" width="26" height="82" rx="3"/></g></symbol>
   <symbol id="i-pattern" viewBox="0 0 100 100"><g fill="currentColor" fill-opacity=".85"><rect x="0" y="62" width="15" height="30" rx="3"/><rect x="21" y="46" width="15" height="46" rx="3"/><rect x="42" y="30" width="15" height="62" rx="3"/><rect x="63" y="6" width="15" height="86" rx="3"/></g><circle cx="70" cy="60" r="19" style="fill:var(--tile-bg, #EDEEDE)" stroke="currentColor" stroke-width="7"/><path stroke="currentColor" stroke-width="9" stroke-linecap="round" d="M83.7 73.7L98 95"/></symbol>
+  <symbol id="i-checklist" viewBox="0 0 24 24"><path fill="currentColor" d="M22 7h-9v2h9V7zm0 8h-9v2h9v-2zM5.54 11 2 7.46l1.41-1.41 2.12 2.12 4.24-4.24 1.41 1.41L5.54 11zm0 8L2 15.46l1.41-1.41 2.12 2.12 4.24-4.24 1.41 1.41L5.54 19z"/></symbol>
+  <symbol id="i-schedule" viewBox="0 0 24 24"><path fill="currentColor" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></symbol>
   <symbol id="i-bell" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></symbol>
   <symbol id="i-home-filled" viewBox="0 0 24 24"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></symbol>
   <symbol id="i-eco" viewBox="0 0 24 24"><path fill="currentColor" d="M6.05 8.05a7.007 7.007 0 0 0-.02 9.88c1.47-3.4 4.09-6.24 7.36-7.93-2.77 2.34-4.71 5.61-5.39 9.32 2.6 1.23 5.8.78 7.95-1.37C19.43 14.47 20 4 20 4S9.53 4.57 6.05 8.05z"/></symbol>
@@ -409,14 +412,14 @@ p, h1, h2, h3 { margin: 0; }
               <span class="sep"></span>
               <span class="stat"><span class="n"><svg><use href="#i-heart-pulse"/></svg>1</span><small>Symptom</small></span>
               <span class="sep"></span>
-              <span class="stat"><span class="n"><svg><use href="#i-bars"/></svg>3</span><small>Einträge gesamt</small></span>
+              <span class="stat"><span class="n"><svg><use href="#i-checklist"/></svg>3</span><small>Einträge gesamt</small></span>
             </div>
           </button>
           <div class="tiles">
-            <button class="tile t-food" data-go="meal"><span class="top"><svg><use href="#i-restaurant"/></svg><svg class="chev"><use href="#i-right"/></svg></span><span class="grow"></span><b>Essen erfassen</b><span class="hint">Mahlzeiten dokumentieren</span></button>
-            <button class="tile t-symptom" data-go="symptom"><span class="top"><svg><use href="#i-heart-pulse"/></svg><svg class="chev"><use href="#i-right"/></svg></span><span class="grow"></span><b>Symptome erfassen</b><span class="hint">Beschwerden dokumentieren</span></button>
-            <button class="tile t-day" data-go="day"><span class="top"><svg><use href="#i-moon"/></svg><svg class="chev"><use href="#i-right"/></svg></span><span class="grow"></span><b>Tagesabschluss</b><span class="hint">Wie war dein Tag?</span><span class="now">Jetzt abschließen<svg><use href="#i-forward"/></svg></span></button>
-            <button class="tile t-results" data-go="results"><span class="top"><svg><use href="#i-pattern"/></svg><svg class="chev"><use href="#i-right"/></svg></span><span class="grow"></span><b>Muster entdecken</b><span class="hint">Zusammenhänge verstehen</span></button>
+            <button class="tile t-food" data-go="meal"><span class="top"><svg><use href="#i-restaurant"/></svg><span class="chev"><svg><use href="#i-right"/></svg></span></span><span class="grow"></span><b>Essen erfassen</b><span class="hint">Mahlzeiten dokumentieren</span></button>
+            <button class="tile t-symptom" data-go="symptom"><span class="top"><svg><use href="#i-heart-pulse"/></svg><span class="chev"><svg><use href="#i-right"/></svg></span></span><span class="grow"></span><b>Symptome erfassen</b><span class="hint">Beschwerden dokumentieren</span></button>
+            <button class="tile t-day" data-go="day"><span class="top"><svg><use href="#i-moon"/></svg><span class="chev"><svg><use href="#i-right"/></svg></span></span><span class="grow"></span><b>Tagesabschluss</b><span class="hint">Wie war dein Tag?</span></button>
+            <button class="tile t-results" data-go="results"><span class="top"><svg><use href="#i-pattern"/></svg><span class="chev"><svg><use href="#i-right"/></svg></span></span><span class="grow"></span><b>Muster entdecken</b><span class="hint">Zusammenhänge verstehen</span></button>
           </div>
         </div>
       </section>
@@ -566,8 +569,8 @@ p, h1, h2, h3 { margin: 0; }
       </section>
 
       <!-- ===================== HISTORIE ===================== -->
-      <section class="view" id="v-history" data-title="Historie">
-        <header class="appbar notback"><h2 class="t-title">Historie</h2></header>
+      <section class="view" id="v-history" data-title="Verlauf">
+        <header class="appbar notback"><h2 class="t-title">Verlauf</h2></header>
         <div class="body tight" style="padding-top:0">
           <div class="chips scroll" data-single>
             <button class="chip on hasicon"><svg><use href="#i-agenda"/></svg>Alle</button>
@@ -692,7 +695,7 @@ p, h1, h2, h3 { margin: 0; }
 
       <nav class="navbar" aria-label="Navigation">
         <button data-go="start" data-tabbtn="start" class="on"><span class="pill"><svg><use href="#i-home-filled"/></svg></span>Start</button>
-        <button data-go="history" data-tabbtn="history"><span class="pill"><svg><use href="#i-history"/></svg></span>Historie</button>
+        <button data-go="history" data-tabbtn="history"><span class="pill"><svg><use href="#i-schedule"/></svg></span>Verlauf</button>
         <button data-go="favorites" data-tabbtn="favorites"><span class="pill"><svg><use href="#i-star"/></svg></span>Favoriten</button>
         <button data-go="profile" data-tabbtn="profile"><span class="pill"><svg><use href="#i-person"/></svg></span>Profil</button>
       </nav>

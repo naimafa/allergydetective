@@ -19,7 +19,6 @@
     <string name="home_greeting_day">Guten Tag!</string>
     <string name="home_greeting_evening">Guten Abend!</string>
     <string name="home_tagline">Dein Tag. Deine Gesundheit.</string>
-    <string name="home_day_check_now">Jetzt abschließen</string>
     <string name="home_reminders">Erinnerungen</string>
     <string name="home_progress_title">Dein Fortschritt</string>
     <string name="home_progress_badge">Tag %1$d / %2$d</string>
@@ -155,7 +154,7 @@
     <string name="reminder_title">Detektiv-Stunde 🕵️</string>
     <string name="reminder_text">Wie war dein Tag? In wenigen Sekunden bestätigt.</string>
     <string name="tab_home">Start</string>
-    <string name="tab_history">Historie</string>
+    <string name="tab_history">Verlauf</string>
     <string name="tab_favorites">Favoriten</string>
     <string name="tab_profile">Profil</string>
     <string name="history_empty">Keine Einträge in den letzten 14 Tagen.</string>

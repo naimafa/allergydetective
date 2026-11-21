@@ -14,8 +14,6 @@ import androidx.compose.material3.IconButton
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.home_brand
 import allergydetective.shared.generated.resources.home_day_check_hint
-import allergydetective.shared.generated.resources.home_day_check_now
-import allergydetective.shared.generated.resources.home_day_done
 import allergydetective.shared.generated.resources.home_greeting_day
 import allergydetective.shared.generated.resources.home_greeting_evening
 import allergydetective.shared.generated.resources.home_greeting_morning
@@ -60,8 +58,6 @@ import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.filled.QueryStats
 import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -86,8 +82,6 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nfar.allergydetective.ui.common.StatusBadge
-import com.nfar.allergydetective.ui.common.StatusKind
 import com.nfar.allergydetective.ui.theme.AppColors
 import com.nfar.allergydetective.ui.theme.AppFonts
 import org.jetbrains.compose.resources.StringResource
@@ -103,7 +97,7 @@ enum class HomeAction(val label: StringResource, val hint: StringResource, val i
 /**
  * Dashboard, home design of 21.11.2026: logo and name, a greeting by time of day with the tagline,
  * the progress card, "your day today" with three numbers and the four tiles with soft gradients.
- * The day check tile carries a "finish now" button while today is open.
+ * The bell shows a red dot while today is still open.
  */
 @Composable
 fun HomeScreen(
@@ -151,12 +145,11 @@ fun HomeScreen(
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(GRID)) {
                         HomeAction.entries.chunked(2).forEach { row ->
-                            // Both tiles of a row get the height of the taller one (the button on the day check tile).
+                            // Both tiles of a row get the same height.
                             Row(horizontalArrangement = Arrangement.spacedBy(GRID), modifier = Modifier.height(IntrinsicSize.Min)) {
                                 row.forEach { action ->
                                     ActionTile(
                                         action,
-                                        state = state,
                                         onClick = { onAction(action) },
                                         modifier = Modifier.weight(1f).fillMaxHeight().heightIn(min = rowHeight),
                                         text = tileText,
@@ -256,11 +249,7 @@ private fun sharedTileStyles(textWidth: Dp): TileTextStyles {
     val hints = HomeAction.entries.map { stringResource(it.hint) }
     val title = MaterialTheme.typography.titleMedium.copy(fontSize = 17.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold)
     val hint = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp, lineHeight = 17.sp, letterSpacing = 0.sp, fontWeight = FontWeight.Normal)
-    val buttonText = stringResource(Res.string.home_day_check_now)
-    val button = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp, lineHeight = 18.sp)
-    // Button label: tile text width (with the safety margin back) minus the button padding and the arrow.
-    val buttonWidthPx = with(LocalDensity.current) { (textWidth + SAFETY_MARGIN - BUTTON_PADDING * 2 - ARROW_SIZE - ARROW_GAP - SAFETY_MARGIN).toPx() }
-    return remember(titles, hints, buttonText, widthPx, safetyPx, buttonWidthPx, title, hint, button) {
+    return remember(titles, hints, widthPx, safetyPx, title, hint) {
         fun oneLineIn(width: Float, text: String, style: TextStyle) =
             measurer.measure(text, style, maxLines = 1, softWrap = false).size.width <= width
 
@@ -303,11 +292,7 @@ private fun sharedTileStyles(textWidth: Dp): TileTextStyles {
         // Two lines are only reserved when one of the four descriptions needs them.
         // Lines against the real text width (without the safety margin used for the size).
         val lines = hints.maxOf { measurer.measure(it, hintStyle, maxLines = 2, constraints = Constraints(maxWidth = (widthPx + safetyPx).toInt())).lineCount }
-        // Phone test 21.11.: "Jetzt abschließen" was cut off at font scale 1.25. 14 → 11 sp in one line,
-        // otherwise wrapped at the word into two lines.
-        val oneLineButton = largestFitting(listOf(buttonText), button, 11f) { t, s -> oneLineIn(buttonWidthPx, t, s) }
-        val buttonStyle = oneLineButton ?: fitting(listOf(buttonText), button, 11f) { t, s -> twoLinesIn(buttonWidthPx, t, s) }
-        TileTextStyles(titleStyle, hintStyle, lines, titleLines, buttonStyle, if (oneLineButton != null) 1 else 2)
+        TileTextStyles(titleStyle, hintStyle, lines, titleLines)
     }
 }
 
@@ -315,18 +300,15 @@ private val GRID = 12.dp
 private val MIN_TILE_HEIGHT = 112.dp
 private val TILE_PADDING = 14.dp
 private val SAFETY_MARGIN = 6.dp
-private val BUTTON_PADDING = 10.dp
-private val ARROW_SIZE = 16.dp
-private val ARROW_GAP = 4.dp
 
 /**
- * Design of 21.11.2026: soft gradient, large icon top left, a chevron top right, title and
- * description at the bottom. The day check tile adds "finish now" while today is open, "done" after.
+ * Design of 21.11.2026: soft gradient, large icon top left, a chevron in a white circle top right,
+ * title and description at the bottom. All four tiles alike (second picture: no button on the day
+ * check tile; whether today is still open shows as the red dot on the bell).
  */
 @Composable
 private fun ActionTile(
     action: HomeAction,
-    state: HomeState,
     onClick: () -> Unit,
     modifier: Modifier,
     text: TileTextStyles,
@@ -349,14 +331,20 @@ private fun ActionTile(
                 .padding(TILE_PADDING),
         ) {
             Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
-                TileIcon(action, colors, Modifier.size(40.dp))
+                TileIcon(action, colors, Modifier.size(52.dp))
                 Spacer(Modifier.weight(1f))
-                Icon(
-                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = colors.content.copy(alpha = 0.8f),
-                    modifier = Modifier.size(24.dp),
-                )
+                // Picture of 21.11.2026 (second version): the chevron sits in a small white circle.
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.size(30.dp).background(AppColors.extra.home.chevronCircle, CircleShape),
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = colors.content,
+                        modifier = Modifier.size(22.dp),
+                    )
+                }
             }
             Spacer(Modifier.weight(1f).heightIn(min = 6.dp))
             // Sizes shared by all four tiles (sharedTileStyles). The title wraps only when one of them does not fit
@@ -371,34 +359,7 @@ private fun ActionTile(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(top = 2.dp),
             )
-            if (action == HomeAction.DAY_CHECK && state.confirmedDays != null) {
-                Spacer(Modifier.height(8.dp))
-                if (state.todayOpen) FinishNowButton(onClick, text) else StatusBadge(stringResource(Res.string.home_day_done), StatusKind.DONE)
-            }
         }
-    }
-}
-
-@Composable
-private fun FinishNowButton(onClick: () -> Unit, text: TileTextStyles) {
-    val home = AppColors.extra.home
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = home.button, contentColor = home.onButton),
-        contentPadding = PaddingValues(horizontal = BUTTON_PADDING, vertical = 6.dp),
-        modifier = Modifier.fillMaxWidth().heightIn(min = 34.dp),
-    ) {
-        // Size and lines from sharedTileStyles, so the label is never cut off.
-        Text(
-            stringResource(Res.string.home_day_check_now),
-            style = text.button,
-            textAlign = TextAlign.Center,
-            maxLines = text.buttonLines,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f, fill = false),
-        )
-        Spacer(Modifier.size(ARROW_GAP))
-        Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(ARROW_SIZE))
     }
 }
 
@@ -449,8 +410,6 @@ private class TileTextStyles(
     val hint: TextStyle,
     val hintLines: Int,
     val titleLines: Int,
-    val button: TextStyle,
-    val buttonLines: Int,
 )
 
 /** Food and results = sage, symptoms and day check = apricot (design of 21.11.2026). */

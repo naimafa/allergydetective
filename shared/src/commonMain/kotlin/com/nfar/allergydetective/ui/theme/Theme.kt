@@ -152,11 +152,10 @@ data class HomeColors(
     val onWarmTile: Color,
     val heart: Color,
     val moon: Color,
-    /** "Jetzt abschließen". */
-    val button: Color,
-    val onButton: Color,
     /** Red dot on the bell. */
     val dot: Color,
+    /** White circle behind the chevron on the tiles. */
+    val chevronCircle: Color,
     /** Bottom bar and its inactive tabs. */
     val nav: Color,
     val navInactive: Color,
@@ -200,10 +199,8 @@ private val LightExtra = ExtraColors(
         onWarmTile = Color(0xFF59351F),
         heart = Color(0xFFD16F2E),
         moon = Color(0xFFE98A42),
-        // White text on it reaches about 4.7 : 1.
-        button = Color(0xFFB15626),
-        onButton = Color.White,
         dot = Color(0xFFD9483B),
+        chevronCircle = Color(0xCCFFFFFF),
         nav = Color(0xFFFFF9EF),
         navInactive = Color(0xFF416783),
         cardBorder = Color.White,
@@ -245,9 +242,8 @@ private val DarkExtra = ExtraColors(
         onWarmTile = Color(0xFFF6E4DC),
         heart = Color(0xFFF0A27A),
         moon = Color(0xFFF2C083),
-        button = Color(0xFFF0A27A),
-        onButton = Color(0xFF4A1E08),
         dot = Color(0xFFFF8A80),
+        chevronCircle = Color(0x26FFFFFF),
         nav = Color(0xFF242924),
         navInactive = Color(0xFFD2D8D1),
         cardBorder = Color(0x14FFFFFF),

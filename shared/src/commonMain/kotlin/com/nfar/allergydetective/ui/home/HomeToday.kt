@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.filled.Restaurant
@@ -62,7 +63,7 @@ fun HomeToday(state: HomeState, onClick: () -> Unit) {
                 Separator()
                 Stat({ HeartPulseIcon(AppColors.extra.home.icon, it) }, state.symptomsToday, pluralStringResource(Res.plurals.today_symptoms, state.symptomsToday), Modifier.weight(1f))
                 Separator()
-                Stat({ BarsIcon(AppColors.extra.home.icon, it) }, total, pluralStringResource(Res.plurals.today_entries, total), Modifier.weight(1f))
+                Stat({ Icon(Icons.Outlined.Checklist, contentDescription = null, tint = AppColors.extra.home.icon, modifier = it) }, total, pluralStringResource(Res.plurals.today_entries, total), Modifier.weight(1f))
             }
         }
     }
