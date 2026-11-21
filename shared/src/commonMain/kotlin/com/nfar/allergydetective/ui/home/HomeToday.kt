@@ -85,7 +85,7 @@ private fun Stat(icon: @Composable (Modifier) -> Unit, count: Int, label: String
             Text(
                 count.toString(),
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold, fontSize = 20.sp, lineHeight = 26.sp),
-                color = AppColors.extra.home.ink,
+                color = AppColors.extra.home.accent,
             )
         }
         Text(

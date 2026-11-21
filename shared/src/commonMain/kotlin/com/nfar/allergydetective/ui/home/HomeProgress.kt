@@ -56,7 +56,7 @@ fun HomeProgress(confirmedDays: Int) {
                     modifier = Modifier.weight(1f),
                 )
                 if (!ready) {
-                    Surface(shape = CircleShape, color = home.badge, contentColor = home.ink) {
+                    Surface(shape = CircleShape, color = home.badge, contentColor = home.accent) {
                         Text(
                             stringResource(Res.string.home_progress_badge, confirmedDays, total),
                             style = MaterialTheme.typography.labelLarge,
@@ -68,7 +68,7 @@ fun HomeProgress(confirmedDays: Int) {
             LinearProgressIndicator(
                 progress = { (confirmedDays.toFloat() / total).coerceAtMost(1f) },
                 modifier = Modifier.fillMaxWidth().height(10.dp),
-                color = home.ink,
+                color = home.accent,
                 trackColor = home.progressTrack,
                 strokeCap = StrokeCap.Round,
                 drawStopIndicator = {},

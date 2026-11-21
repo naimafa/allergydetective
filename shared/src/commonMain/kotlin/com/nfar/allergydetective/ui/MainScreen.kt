@@ -100,7 +100,7 @@ fun MainScreen(
             // Design of 21.11.2026: a cream bar, rounded on top with a soft shadow; the active tab in
             // forest green with a short line under its name instead of the pill.
             // (Dark mode feedback 19.11.: the bar stays clearly lighter than the page.)
-            val ink = AppColors.extra.home.ink
+            val ink = AppColors.extra.home.accent
             Surface(
                 shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
                 color = AppColors.extra.home.nav,
