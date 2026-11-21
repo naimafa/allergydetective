@@ -92,6 +92,24 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun localHourPicksTheGreeting() {
+        // 19:00 UTC is 20:00 in Berlin.
+        assertEquals(20, refreshedState().hour)
+        assertEquals(Greeting.EVENING, refreshedState().greeting)
+    }
+
+    @Test
+    fun greetingBoundaries() {
+        assertEquals(Greeting.EVENING, HomeViewModel.greeting(4))
+        assertEquals(Greeting.MORNING, HomeViewModel.greeting(5))
+        assertEquals(Greeting.MORNING, HomeViewModel.greeting(10))
+        assertEquals(Greeting.DAY, HomeViewModel.greeting(11))
+        assertEquals(Greeting.DAY, HomeViewModel.greeting(17))
+        assertEquals(Greeting.EVENING, HomeViewModel.greeting(18))
+        assertEquals(Greeting.EVENING, HomeViewModel.greeting(0))
+    }
+
+    @Test
     fun quoteChangesDailyAndRepeatsAfterThePool() {
         assertEquals(0, HomeViewModel.quoteIndex(20_400, 40))
         assertEquals(1, HomeViewModel.quoteIndex(20_401, 40))

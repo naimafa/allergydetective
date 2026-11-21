@@ -5,6 +5,7 @@ import allergydetective.shared.generated.resources.home_progress_badge
 import allergydetective.shared.generated.resources.home_progress_ready
 import allergydetective.shared.generated.resources.home_progress_remaining
 import allergydetective.shared.generated.resources.home_progress_title
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.nfar.allergydetective.ui.theme.AppColors
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -35,8 +39,12 @@ fun HomeProgress(confirmedDays: Int) {
     val total = HomeViewModel.COLLECTION_DAYS
     val ready = confirmedDays >= total
     val scheme = MaterialTheme.colorScheme
+    val home = AppColors.extra.home
     Card(
-        colors = CardDefaults.cardColors(containerColor = scheme.surfaceContainerLowest),
+        colors = CardDefaults.cardColors(containerColor = home.progressCard, contentColor = home.ink),
+        // Home design of 21.11.2026: white card with a soft shadow, thicker bar.
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, home.cardBorder),
         shape = MaterialTheme.shapes.large,
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -45,14 +53,14 @@ fun HomeProgress(confirmedDays: Int) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     stringResource(Res.string.home_progress_title),
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium, fontSize = 18.sp),
                     modifier = Modifier.weight(1f),
                 )
                 if (!ready) {
-                    Surface(shape = CircleShape, color = scheme.primaryContainer, contentColor = scheme.primary) {
+                    Surface(shape = CircleShape, color = home.badge, contentColor = home.accent) {
                         Text(
                             stringResource(Res.string.home_progress_badge, confirmedDays, total),
-                            style = MaterialTheme.typography.labelLarge,
+                            style = MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp, fontWeight = FontWeight.Medium),
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                         )
                     }
@@ -60,11 +68,13 @@ fun HomeProgress(confirmedDays: Int) {
             }
             LinearProgressIndicator(
                 progress = { (confirmedDays.toFloat() / total).coerceAtMost(1f) },
-                modifier = Modifier.fillMaxWidth().height(6.dp),
-                color = scheme.primary,
-                trackColor = scheme.surfaceContainerHigh,
+                modifier = Modifier.fillMaxWidth().height(12.dp),
+                color = home.accent,
+                trackColor = home.progressTrack,
                 strokeCap = StrokeCap.Round,
                 drawStopIndicator = {},
+                // Picture: the bar runs straight into the track, without a gap.
+                gapSize = 0.dp,
             )
             // Compact design of 19.11.: one short line below the bar.
             Text(
@@ -73,8 +83,8 @@ fun HomeProgress(confirmedDays: Int) {
                 } else {
                     pluralStringResource(Res.plurals.home_progress_remaining, total - confirmedDays, total - confirmedDays)
                 },
-                style = MaterialTheme.typography.bodySmall,
-                color = scheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp, lineHeight = 19.sp),
+                color = home.ink,
             )
         }
     }

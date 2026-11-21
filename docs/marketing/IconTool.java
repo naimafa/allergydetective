@@ -1,112 +1,106 @@
-// App icon from the artwork (feedback 20.11.). Run with any JDK 11+ from the repo root:
-//   java docs/marketing/IconTool.java make docs/marketing/app-icon-source.jpg <outDir> 100 55 1760 971 837 62
-// then copy icon-1024.png to iosApp/.../AppIcon.appiconset/app-icon-1024.png, icon-512.png to docs/marketing/app-icon-512.png,
-// ic_launcher_foreground.png to androidApp/src/main/res/drawable-nodpi/. The monochrome (themed) icon stays the vector
-// from docs/marketing/app-icon.svg.
+// App icon from the flat artwork (feedback 20.11.). Run with any JDK 11+ from the repo root:
+//   java docs/marketing/IconTool.java docs/marketing/app-icon-source.jpg <outDir>
+// then copy icon-1024.png to iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/app-icon-1024.png,
+// icon-512.png to docs/marketing/app-icon-512.png and ic_launcher_foreground.png to
+// androidApp/src/main/res/drawable-nodpi/; the printed background colour goes into
+// androidApp/src/main/res/drawable/ic_launcher_background.xml. The themed (monochrome) icon stays the
+// vector from docs/marketing/app-icon.svg.
+//
+// The motif is found by its difference to the background, centred and scaled so that its farthest
+// pixel stays inside the area the system masks never cut: 47 % of the size for iOS and the Play Store,
+// 34 dp of 108 dp for the Android adaptive icon.
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-/**
- * probe <src>                         prints colours along the middle row/column and at some points
- * make <src> <outDir> x y size cx cy  crops the square (x, y, size) and writes the icons;
- *                                     (cx, cy) = motif centre inside the crop
- */
 public class IconTool {
+    static final int BG_DISTANCE = 60;
+
     public static void main(String[] a) throws Exception {
-        BufferedImage src = ImageIO.read(new File(a[1]));
-        if (a[0].equals("probe")) probe(src); else make(src, a);
-    }
+        BufferedImage src = ImageIO.read(new File(a[0]));
+        File out = new File(a[1]);
+        out.mkdirs();
+        int w = src.getWidth(), h = src.getHeight();
 
-    static String c(int rgb) { return String.format("#%06X", rgb & 0xFFFFFF); }
+        int bg = average(src, new int[][]{{20, 20}, {w - 21, 20}, {20, h - 21}, {w - 21, h - 21}, {w / 2, 20}, {20, h / 2}});
+        System.out.printf("background #%06X%n", bg & 0xFFFFFF);
 
-    static int lum(int rgb) { return ((rgb >> 16 & 255) * 3 + (rgb >> 8 & 255) * 6 + (rgb & 255)) / 10; }
-
-    static void probe(BufferedImage s) {
-        int w = s.getWidth(), h = s.getHeight();
-        System.out.println("size " + w + "x" + h);
-        StringBuilder row = new StringBuilder("row y=1000: ");
-        for (int x = 0; x < 260; x += 10) row.append(x).append(':').append(lum(s.getRGB(x, 1000))).append(' ');
-        for (int x = w - 260; x < w; x += 10) row.append(x).append(':').append(lum(s.getRGB(x, 1000))).append(' ');
-        System.out.println(row);
-        StringBuilder col = new StringBuilder("col x=300: ");
-        for (int y = 0; y < 200; y += 10) col.append(y).append(':').append(lum(s.getRGB(300, y))).append(' ');
-        for (int y = h - 260; y < h; y += 10) col.append(y).append(':').append(lum(s.getRGB(300, y))).append(' ');
-        System.out.println(col);
-        int[][] pts = {{250, 1000}, {1000, 1700}, {250, 250}, {1750, 250}, {250, 1750}, {1000, 100}, {1850, 1000}};
-        for (int[] p : pts) System.out.println("at " + p[0] + "," + p[1] + " " + c(s.getRGB(p[0], p[1])));
-    }
-
-    static BufferedImage scale(BufferedImage img, int size, int type) {
-        BufferedImage out = new BufferedImage(size, size, type);
-        Graphics2D g = out.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        // Step down in halves for a smooth result.
-        BufferedImage cur = img;
-        int w = img.getWidth();
-        while (w / 2 >= size) {
-            w /= 2;
-            BufferedImage half = new BufferedImage(w, w, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D hg = half.createGraphics();
-            hg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            hg.drawImage(cur, 0, 0, w, w, null);
-            hg.dispose();
-            cur = half;
+        // Motif = pixels clearly different from the background.
+        int minX = w, minY = h, maxX = 0, maxY = 0;
+        for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) {
+            if (distance(src.getRGB(x, y), bg) > BG_DISTANCE) {
+                minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+                minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+            }
         }
-        g.drawImage(cur, 0, 0, size, size, null);
+        double cx = (minX + maxX) / 2.0, cy = (minY + maxY) / 2.0;
+        double radius = 0;
+        for (int y = minY; y <= maxY; y++) for (int x = minX; x <= maxX; x++) {
+            if (distance(src.getRGB(x, y), bg) > BG_DISTANCE) radius = Math.max(radius, Math.hypot(x - cx, y - cy));
+        }
+        System.out.printf("motif %d..%d x %d..%d, centre %.0f/%.0f, radius %.0f%n", minX, maxX, minY, maxY, cx, cy, radius);
+
+        write(compose(src, bg, cx, cy, radius, 1024, 0.47 * 1024, false), BufferedImage.TYPE_INT_RGB, new File(out, "icon-1024.png"));
+        write(compose(src, bg, cx, cy, radius, 512, 0.47 * 512, false), BufferedImage.TYPE_INT_RGB, new File(out, "icon-512.png"));
+        // 432 px = 108 dp at xxxhdpi; transparent outside the motif, the background layer has the cream colour.
+        write(compose(src, bg, cx, cy, radius, 432, 34.0 / 108 * 432, true), BufferedImage.TYPE_INT_ARGB, new File(out, "ic_launcher_foreground.png"));
+    }
+
+    /** The motif centred on a [size] square, its farthest pixel at [target] px from the centre. */
+    static BufferedImage compose(BufferedImage src, int bg, double cx, double cy, double radius, int size, double target, boolean transparent) {
+        double scale = target / radius;
+        BufferedImage out = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = out.createGraphics();
+        if (!transparent) {
+            g.setColor(new Color(bg));
+            g.fillRect(0, 0, size, size);
+        }
+        // Inverse mapping with bilinear sampling of an area average: each output pixel averages the
+        // source pixels it covers, which keeps edges smooth when shrinking 2000 px to 432 px.
+        int step = Math.max(1, (int) Math.floor(1 / scale));
+        for (int y = 0; y < size; y++) for (int x = 0; x < size; x++) {
+            double sx = cx + (x + 0.5 - size / 2.0) / scale, sy = cy + (y + 0.5 - size / 2.0) / scale;
+            long r = 0, gr = 0, b = 0, n = 0;
+            for (int dy = 0; dy < step; dy++) for (int dx = 0; dx < step; dx++) {
+                int px = (int) Math.round(sx - step / 2.0 + dx), py = (int) Math.round(sy - step / 2.0 + dy);
+                int rgb = (px >= 0 && py >= 0 && px < src.getWidth() && py < src.getHeight()) ? src.getRGB(px, py) : bg;
+                r += rgb >> 16 & 255; gr += rgb >> 8 & 255; b += rgb & 255; n++;
+            }
+            int rgb = (int) (r / n) << 16 | (int) (gr / n) << 8 | (int) (b / n);
+            int alpha = 255;
+            if (transparent) {
+                // Background becomes transparent, anti-aliased edges keep a partial alpha.
+                double d = distance(rgb, bg);
+                alpha = (int) Math.max(0, Math.min(255, (d - 12) * 255 / 48));
+                if (alpha == 0) continue;
+            }
+            out.setRGB(x, y, alpha << 24 | rgb);
+        }
         g.dispose();
         return out;
     }
 
-    static void make(BufferedImage s, String[] a) throws Exception {
-        File out = new File(a[2]);
-        out.mkdirs();
-        int x = Integer.parseInt(a[3]), y = Integer.parseInt(a[4]), size = Integer.parseInt(a[5]);
-        int cx = Integer.parseInt(a[6]), cy = Integer.parseInt(a[7]);
-        BufferedImage crop = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = crop.createGraphics();
-        g.drawImage(s, -x, -y, null);
+    static void write(BufferedImage img, int type, File file) throws Exception {
+        BufferedImage out = new BufferedImage(img.getWidth(), img.getHeight(), type);
+        Graphics2D g = out.createGraphics();
+        g.drawImage(img, 0, 0, null);
         g.dispose();
+        ImageIO.write(out, "png", file);
+    }
 
-        // Full-bleed square for iOS and the Play Store: the system mask cuts the corners.
-        ImageIO.write(scale(crop, 1024, BufferedImage.TYPE_INT_RGB), "png", new File(out, "icon-1024.png"));
-        ImageIO.write(scale(crop, 512, BufferedImage.TYPE_INT_RGB), "png", new File(out, "icon-512.png"));
-
-        // Background colour = average of the crop border (flat cream).
-        long r = 0, gg = 0, b = 0, n = 0;
-        for (int i = 0; i < size; i += 4) {
-            for (int[] p : new int[][]{{i, 8}, {i, size - 9}, {8, i}, {size - 9, i}}) {
-                int rgb = crop.getRGB(p[0], p[1]);
-                r += rgb >> 16 & 255; gg += rgb >> 8 & 255; b += rgb & 255; n++;
-            }
+    static int average(BufferedImage s, int[][] points) {
+        long r = 0, g = 0, b = 0, n = 0;
+        for (int[] p : points) for (int dy = -8; dy <= 8; dy++) for (int dx = -8; dx <= 8; dx++) {
+            int rgb = s.getRGB(p[0] + dx, p[1] + dy);
+            r += rgb >> 16 & 255; g += rgb >> 8 & 255; b += rgb & 255; n++;
         }
-        System.out.printf("background #%02X%02X%02X%n", r / n, gg / n, b / n);
+        return (int) (r / n) << 16 | (int) (g / n) << 8 | (int) (b / n);
+    }
 
-        // Android adaptive foreground (432 px = 108 dp at xxxhdpi): the crop scaled so that the
-        // motif fits the safe zone, centred on the motif, edges faded out into the background.
-        double dp = Double.parseDouble(a[8]); // size of the crop in dp
-        int fg = 432;
-        int drawn = (int) Math.round(dp * 4);
-        BufferedImage scaled = scale(crop, drawn, BufferedImage.TYPE_INT_ARGB);
-        double k = drawn / (double) size;
-        int fade = Math.max(1, (int) Math.round(drawn * 0.04));
-        for (int py = 0; py < drawn; py++) {
-            for (int px = 0; px < drawn; px++) {
-                int edge = Math.min(Math.min(px, py), Math.min(drawn - 1 - px, drawn - 1 - py));
-                if (edge < fade) {
-                    int rgb = scaled.getRGB(px, py);
-                    int alpha = (int) Math.round(255.0 * edge / fade);
-                    scaled.setRGB(px, py, (alpha << 24) | (rgb & 0xFFFFFF));
-                }
-            }
-        }
-        BufferedImage fgImg = new BufferedImage(fg, fg, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D fgG = fgImg.createGraphics();
-        fgG.drawImage(scaled, (int) Math.round(fg / 2.0 - cx * k), (int) Math.round(fg / 2.0 - cy * k), null);
-        fgG.dispose();
-        ImageIO.write(fgImg, "png", new File(out, "ic_launcher_foreground.png"));
+    static double distance(int a, int b) {
+        int dr = (a >> 16 & 255) - (b >> 16 & 255), dg = (a >> 8 & 255) - (b >> 8 & 255), db = (a & 255) - (b & 255);
+        return Math.sqrt(dr * dr + dg * dg + db * db);
     }
 }

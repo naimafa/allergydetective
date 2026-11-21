@@ -21,7 +21,13 @@ data class HomeState(
     val symptomsToday: Int = 0,
     /** Today is not confirmed yet: the day check tile shows "open" (self-test 18.11.). */
     val todayOpen: Boolean = false,
-)
+    /** Local hour, picks "good morning / day / evening" (home design of 21.11.2026). */
+    val hour: Int = 12,
+) {
+    val greeting: Greeting get() = HomeViewModel.greeting(hour)
+}
+
+enum class Greeting { MORNING, DAY, EVENING }
 
 /** Home dashboard (UX 2): detective progress from confirmed days and the quote of the day. */
 class HomeViewModel(
@@ -44,6 +50,7 @@ class HomeViewModel(
                 todayOpen = dayChecks.load(today)?.isConfirmed != true,
                 mealsToday = entries.count { it is HistoryEntry.MealEntry },
                 symptomsToday = entries.count { it is HistoryEntry.SymptomEntry },
+                hour = clock.localTime(clock.nowMillis()).first,
             )
         }
     }
@@ -53,6 +60,13 @@ class HomeViewModel(
         const val COLLECTION_DAYS = 7
 
         /** Same quote all day, a different one tomorrow; the pool repeats after [size] days. */
+        /** Morning from 5 to 10, day from 11 to 17, evening (and night) from 18 to 4. */
+        fun greeting(hour: Int): Greeting = when (hour) {
+            in 5..10 -> Greeting.MORNING
+            in 11..17 -> Greeting.DAY
+            else -> Greeting.EVENING
+        }
+
         fun quoteIndex(epochDay: Long, size: Int): Int = if (size == 0) 0 else epochDay.mod(size)
     }
 }
