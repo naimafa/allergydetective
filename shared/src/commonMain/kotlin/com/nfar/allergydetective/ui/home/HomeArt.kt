@@ -1,5 +1,8 @@
 package com.nfar.allergydetective.ui.home
 
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -69,27 +72,31 @@ fun LeafLogo(modifier: Modifier) {
 }
 
 /**
- * Branch measured from the design picture (21.11.2026, second phone test): a stem coming in from the
- * lower right edge and four broad, smooth leaves – a large one up to the left, a long one to the left
- * just above the progress card, two up to the right edge. Darker at the stem, pale at the tips, a fine
- * light midrib, no side veins. Coordinates in a 200 × 200 dp box at the top right of the content.
+ * Branch measured from the design picture (21.11.2026, compared side by side with the phone): a stem
+ * coming in from the lower right edge below the bell, five broad, overlapping leaves – a large one up
+ * to the left, a long one to the left just above the progress card, one in between, one up along the
+ * right edge, a small one low. Pale sage, slightly out of focus like the picture, a faint midrib.
+ * Coordinates in a 200 × 200 unit box at the top right of the content.
  */
 @Composable
 fun LeafBranch(modifier: Modifier) {
     val colors = AppColors.extra.home
-    Canvas(modifier) {
+    // Soft focus as in the picture (blur works from Android 12; older phones show the leaves sharp).
+    Canvas(modifier.blur(1.5.dp, BlurredEdgeTreatment.Unbounded)) {
         val u = size.width / 200f
         fun p(x: Float, y: Float) = Offset(x * u, y * u)
         val stem = Path().apply {
-            moveTo(205 * u, 200 * u)
-            cubicTo(192 * u, 186 * u, 178 * u, 160 * u, 164 * u, 122 * u)
+            moveTo(205 * u, 150 * u)
+            cubicTo(200 * u, 136 * u, 196 * u, 124 * u, 194 * u, 111 * u)
         }
         drawPath(stem, colors.leaf, style = Stroke(width = 2.2f * u, cap = StrokeCap.Round))
-        // Back to front: long leaf left, right edge, up right, large leaf up left.
-        broadLeaf(p(175f, 158f), p(33f, 169f), 0.32f, colors.leaf, colors.leafLight)
-        broadLeaf(p(183f, 147f), p(232f, 78f), 0.38f, colors.leaf, colors.leafLight)
-        broadLeaf(p(168f, 125f), p(206f, 28f), 0.36f, colors.leaf, colors.leafLight)
-        broadLeaf(p(164f, 122f), p(67f, 57f), 0.42f, colors.leaf, colors.leafLight)
+        // Back to front: up the right edge, long one left, small one low, middle one, large one up left.
+        // Positions taken from the picture relative to the top of the progress card, so all leaves end above it.
+        broadLeaf(p(194f, 106f), p(200f, 38f), 0.46f, colors.leaf, colors.leafLight)
+        broadLeaf(p(194f, 127f), p(71f, 133f), 0.36f, colors.leaf, colors.leafLight)
+        broadLeaf(p(197f, 132f), p(166f, 141f), 0.5f, colors.leaf, colors.leafLight)
+        broadLeaf(p(188f, 119f), p(134f, 85f), 0.5f, colors.leaf, colors.leafLight)
+        broadLeaf(p(194f, 112f), p(98f, 49f), 0.46f, colors.leaf, colors.leafLight)
     }
 }
 
@@ -106,14 +113,14 @@ private fun DrawScope.broadLeaf(base: Offset, tip: Offset, widthRatio: Float, da
                 cubicTo(length * 0.7f, w * 0.34f, length * 0.3f, w * 0.48f, 0f, 0f)
                 close()
             }
-            drawPath(shape, Brush.horizontalGradient(listOf(dark, lerp(dark, light, 0.55f), light), startX = 0f, endX = length), alpha = 0.92f)
+            drawPath(shape, Brush.horizontalGradient(listOf(dark, lerp(dark, light, 0.55f), light), startX = 0f, endX = length))
             // Soft light along the upper half, as in the picture.
             drawPath(shape, Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.22f), Color.Transparent), startY = -w * 0.5f, endY = w * 0.1f))
             val rib = Path().apply {
                 moveTo(length * 0.03f, 0f)
                 quadraticTo(length * 0.5f, -w * 0.1f, length * 0.9f, -w * 0.02f)
             }
-            drawPath(rib, Color.White.copy(alpha = 0.45f), style = Stroke(width = w * 0.035f, cap = StrokeCap.Round))
+            drawPath(rib, Color.White.copy(alpha = 0.3f), style = Stroke(width = w * 0.03f, cap = StrokeCap.Round))
         }
     }
 }

@@ -27,7 +27,7 @@
   --meal-tile: #EAF0E1, #B9D0AE; --symptom-tile: #FFF0DE, #F9CDAE; --day-tile: #FFF0DE, #F9CDAE; --results-tile: #EAF0E1, #B9D0AE;
   --meal-wave: #A6C29A; --symptom-wave: #F3B98F; --day-wave: #F3B98F; --results-wave: #9DBB90;
   --page-tint: #F7EBDD; --ink: #053923; --accent: #184F34; --ink-soft: #184F34; --home-icon: #478661; --page-end: #F5EFE1; --nav: #FFF9EF; --nav-inactive: #416783; --card-border: #FFFFFF; --logo-dark: #3F7049; --logo-light: #6E9C72;
-  --leaf: #93B288; --leaf-light: #DCE4CC; --progress-card: #FBF8EE; --track: #E0E3D0; --badge: #D6DEC6; --today-card: #EDEEDC;
+  --leaf: #94B585; --leaf-light: #D5E3C6; --progress-card: #FBF8EE; --track: #E0E3D0; --badge: #D6DEC6; --today-card: #EDEEDC;
   --on-sage-tile: #053923; --chevron-circle: rgba(255,255,255,.8); --heart: #D47636; --dot: #D9483B;
   --on-warm-tile: #5A301E; --warm-accent: #B15626; --on-warm-accent: #FFFFFF; --moon: #D47636;
   --emoji-bg: rgba(246, 247, 243, .7);
@@ -192,7 +192,7 @@ p, h1, h2, h3 { margin: 0; }
 .bell i { position: absolute; top: 9px; right: 10px; width: 9px; height: 9px; border-radius: 50%; background: var(--dot); }
 .greeting { font-family: "Playfair Display", Georgia, serif; font-weight: 600; font-size: calc(36px * var(--fs)); line-height: 1.17; color: var(--ink); margin: 18px 0 0; }
 .tagline { font-family: "Playfair Display", Georgia, serif; font-size: calc(17px * var(--fs)); color: var(--ink-soft); margin: 0; }
-.branch { position: absolute; top: 0; right: 0; width: 230px; height: 230px; pointer-events: none; overflow: visible; }
+.branch { position: absolute; top: 0; right: 0; width: 230px; height: 230px; pointer-events: none; overflow: visible; filter: blur(1.5px); }
 .v-start-body { position: relative; gap: 12px; padding-top: 12px; background: #FBF4EA; }
 .v-start-body > :not(.branch) { position: relative; }
 .progress-card { background: var(--progress-card); color: var(--ink); border: 1px solid var(--card-border); box-shadow: 0 1px 3px rgba(0,0,0,.12); padding: 14px 16px; gap: 8px; }
@@ -389,11 +389,12 @@ p, h1, h2, h3 { margin: 0; }
         <div class="body v-start-body">
           <svg class="branch" viewBox="0 0 200 200" aria-hidden="true">
             <defs><linearGradient id="g-broad"><stop offset="0" style="stop-color:var(--leaf)"/><stop offset=".55" style="stop-color:color-mix(in srgb, var(--leaf) 45%, var(--leaf-light))"/><stop offset="1" style="stop-color:var(--leaf-light)"/></linearGradient></defs>
-            <path d="M205 200C192 186 178 160 164 122" fill="none" style="stroke:var(--leaf)" stroke-width="2.2" stroke-linecap="round"/>
-            <g transform="translate(175 158) rotate(175.6)"><path fill="url(#g-broad)" opacity=".92" d="M0 0C31.3 -28.3 94 -30.1 142.4 0C99.7 15.5 42.7 21.9 0 0Z"/><path d="M4.3 0Q71.2 -4.6 128.2 -.9" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.6" stroke-linecap="round"/></g>
-            <g transform="translate(183 147) rotate(-54.6)"><path fill="url(#g-broad)" opacity=".92" d="M0 0C18.6 -20 55.8 -21.3 84.6 0C59.2 10.9 25.4 15.5 0 0Z"/><path d="M2.5 0Q42.3 -3.2 76.1 -.6" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.2" stroke-linecap="round"/></g>
-            <g transform="translate(168 125) rotate(-68.6)"><path fill="url(#g-broad)" opacity=".92" d="M0 0C22.9 -23.3 68.8 -24.8 104.2 0C72.9 12.8 31.3 18 0 0Z"/><path d="M3.1 0Q52.1 -3.8 93.8 -.8" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.3" stroke-linecap="round"/></g>
-            <g transform="translate(164 122) rotate(-146.2)"><path fill="url(#g-broad)" opacity=".92" d="M0 0C25.7 -30.4 77.1 -32.3 116.8 0C81.8 16.7 35 23.5 0 0Z"/><path d="M3.5 0Q58.4 -4.9 105.1 -1" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.7" stroke-linecap="round"/></g>
+            <path d="M205 150C200 136 196 124 194 111" fill="none" style="stroke:var(--leaf)" stroke-width="2.2" stroke-linecap="round"/>
+            <g transform="translate(194.0 106.0) rotate(-85.0)"><path fill="url(#g-broad)" d="M0 0C15.0 -19.5 45.1 -20.7 68.3 0C47.8 10.7 20.5 15.1 0 0Z"/><path d="M2.0 0Q34.1 -3.1 61.4 -0.6" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="0.9" stroke-linecap="round"/></g>
+            <g transform="translate(194.0 127.0) rotate(177.2)"><path fill="url(#g-broad)" d="M0 0C27.1 -27.5 81.3 -29.3 123.1 0C86.2 15.1 36.9 21.3 0 0Z"/><path d="M3.7 0Q61.6 -4.4 110.8 -0.9" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="1.3" stroke-linecap="round"/></g>
+            <g transform="translate(197.0 132.0) rotate(163.8)"><path fill="url(#g-broad)" d="M0 0C7.1 -10.0 21.3 -10.7 32.3 0C22.6 5.5 9.7 7.7 0 0Z"/><path d="M1.0 0Q16.1 -1.6 29.1 -0.3" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="0.5" stroke-linecap="round"/></g>
+            <g transform="translate(188.0 119.0) rotate(-147.8)"><path fill="url(#g-broad)" d="M0 0C14.0 -19.8 42.1 -21.1 63.8 0C44.7 10.8 19.1 15.3 0 0Z"/><path d="M1.9 0Q31.9 -3.2 57.4 -0.6" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="1.0" stroke-linecap="round"/></g>
+            <g transform="translate(194.0 112.0) rotate(-146.7)"><path fill="url(#g-broad)" d="M0 0C25.3 -32.7 75.8 -34.9 114.8 0C80.4 18.0 34.4 25.4 0 0Z"/><path d="M3.4 0Q57.4 -5.3 103.3 -1.1" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="1.6" stroke-linecap="round"/></g>
           </svg>
           <div class="home-head">
             <div class="brand"><svg><use href="#i-logo"/></svg><span>Allergy Detective</span><button class="bell" data-go="profile" aria-label="Erinnerungen"><svg><use href="#i-bell"/></svg><i></i></button></div>
