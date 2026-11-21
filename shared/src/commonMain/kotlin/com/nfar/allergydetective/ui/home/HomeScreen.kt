@@ -202,7 +202,8 @@ private fun Header(greeting: Greeting, showDot: Boolean, onBell: () -> Unit) {
             Image(painterResource(Res.drawable.home_logo), contentDescription = null, modifier = Modifier.size(52.dp))
             Text(
                 stringResource(Res.string.home_brand),
-                style = MaterialTheme.typography.titleLarge.copy(fontFamily = AppFonts.playfair, fontWeight = FontWeight.SemiBold, fontSize = 18.sp),
+                // User code of 21.11.2026: bold in the app font (Inter), 18 sp next to the 52 dp logo.
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
                 color = home.ink,
                 modifier = Modifier.weight(1f),
             )
