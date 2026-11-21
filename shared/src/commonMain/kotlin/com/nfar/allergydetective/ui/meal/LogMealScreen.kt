@@ -322,7 +322,14 @@ private fun WhatStep(
         }
         if (!searching && state.favorites.isNotEmpty()) {
             ChipGroupTitle(stringResource(Res.string.meal_favorites), stringResource(Res.string.meal_favorites_hint))
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // User note 21.11.2026: coming from the favourites tab, the chosen dish could sit far right, out of view.
+            // The row scrolls to it.
+            val favoritesRow = rememberLazyListState()
+            LaunchedEffect(state.favoriteId) {
+                val index = state.favorites.indexOfFirst { it.id == state.favoriteId }
+                if (index >= 0) favoritesRow.animateScrollToItem(index)
+            }
+            LazyRow(state = favoritesRow, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(state.favorites, key = { it.id }) { favorite ->
                     AppFilterChip(
                         selected = state.favoriteId == favorite.id,
