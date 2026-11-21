@@ -206,7 +206,7 @@ p, h1, h2, h3 { margin: 0; }
 .stat .n svg { width: 32px; height: 32px; color: var(--home-icon); }
 .stat small { font-size: calc(13px * var(--fs)); }
 .tiles { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
-.tile { position: relative; overflow: hidden; isolation: isolate; min-width: 0; border: 0; border-radius: 22px; padding: 16px; text-align: left; display: flex; flex-direction: column; min-height: 150px; box-shadow: 0 1px 3px rgba(0,0,0,.12); border: 1px solid var(--card-border); }
+.tile { position: relative; overflow: hidden; isolation: isolate; min-width: 0; border: 0; border-radius: 22px; padding: 12px; text-align: left; display: flex; flex-direction: column; min-height: 150px; box-shadow: 0 1px 3px rgba(0,0,0,.12); border: 1px solid var(--card-border); }
 .tile .top { display: flex; justify-content: space-between; align-items: flex-start; }
 .tile .top > svg { width: 52px; height: 52px; }
 .tile .top .chev { width: 30px; height: 30px; border-radius: 50%; background: var(--chevron-circle); display: grid; place-items: center; }
@@ -217,7 +217,7 @@ p, h1, h2, h3 { margin: 0; }
 .tile .now { margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; border-radius: 999px; background: var(--warm-accent); color: var(--on-warm-accent); font-size: calc(14px * var(--fs)); font-weight: 500; white-space: nowrap; }
 .tile .now svg { width: 18px; height: 18px; color: currentColor; }
 .tile b { font-size: calc(18px * var(--fs) * var(--tile-shrink, 1)); font-weight: 600; line-height: 1.33; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tile span.hint { font-size: calc(15px * var(--fs) * var(--hint-shrink, 1)); line-height: 1.33; margin-top: 4px; opacity: .85; min-height: 2.66em; }
+.tile span.hint { font-size: calc(15px * var(--fs) * var(--hint-shrink, 1)); line-height: 1.33; margin-top: 4px; opacity: .85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* Like sharedTileStyles(): all four titles shrink together until "Symptome erfassen" fits (about 15 sp), hints 3 sp smaller. */
 :root { --tile-shrink: .76; --hint-shrink: .78; }
 /* Phone test 21.11.: at 125 % "Symptome erfassen" does not fit in one line, so all titles may wrap at a word. */

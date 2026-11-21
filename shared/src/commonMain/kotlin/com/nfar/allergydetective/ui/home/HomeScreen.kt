@@ -247,7 +247,7 @@ private fun sharedTileStyles(textWidth: Dp): TileTextStyles {
     val safetyPx = with(LocalDensity.current) { SAFETY_MARGIN.toPx() }
     val titles = HomeAction.entries.map { stringResource(it.label) }
     val hints = HomeAction.entries.map { stringResource(it.hint) }
-    val title = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp, lineHeight = 23.sp, fontWeight = FontWeight.SemiBold)
+    val title = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp, lineHeight = 23.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.sp)
     val hint = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp, lineHeight = 17.sp, letterSpacing = 0.sp, fontWeight = FontWeight.Normal)
     return remember(titles, hints, widthPx, safetyPx, title, hint) {
         fun oneLineIn(width: Float, text: String, style: TextStyle) =
@@ -288,7 +288,7 @@ private fun sharedTileStyles(textWidth: Dp): TileTextStyles {
         // The description stays clearly smaller than the title (phone test 19.11.: 15 sp hint under a shrunk title).
         val hintStart = minOf(hint.fontSize.value, titleStyle.fontSize.value - 3f)
         val hintBase = hint.copy(fontSize = hintStart.sp, lineHeight = (hintStart * 4f / 3f).sp)
-        val hintStyle = largestFitting(hints, hintBase, 11f, ::oneLine) ?: fitting(hints, hintBase, 11f, ::twoLines)
+        val hintStyle = largestFitting(hints, hintBase, 10.5f, ::oneLine) ?: fitting(hints, hintBase, 11f, ::twoLines)
         // Two lines are only reserved when one of the four descriptions needs them.
         // Lines against the real text width (without the safety margin used for the size).
         val lines = hints.maxOf { measurer.measure(it, hintStyle, maxLines = 2, constraints = Constraints(maxWidth = (widthPx + safetyPx).toInt())).lineCount }
@@ -298,8 +298,8 @@ private fun sharedTileStyles(textWidth: Dp): TileTextStyles {
 
 private val GRID = 12.dp
 private val MIN_TILE_HEIGHT = 112.dp
-private val TILE_PADDING = 14.dp
-private val SAFETY_MARGIN = 6.dp
+private val TILE_PADDING = 12.dp
+private val SAFETY_MARGIN = 4.dp
 
 /**
  * Design of 21.11.2026: soft gradient, large icon top left, a chevron in a white circle top right,
