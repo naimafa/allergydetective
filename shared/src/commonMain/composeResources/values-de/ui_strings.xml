@@ -6,37 +6,41 @@
     <string name="home_log_symptom">Symptome erfassen</string>
     <string name="home_day_check">Tagesabschluss</string>
     <string name="home_results">Muster entdecken</string>
-    <string name="home_log_meal_hint">Mahlzeiten eintragen</string>
-    <string name="home_log_symptom_hint">Beschwerden erfassen</string>
+    <string name="home_log_meal_hint">Mahlzeiten dokumentieren</string>
+    <string name="home_log_symptom_hint">Beschwerden dokumentieren</string>
     <string name="home_day_check_hint">Wie war dein Tag?</string>
-    <string name="home_results_hint">Muster im Verlauf</string>
+    <string name="home_results_hint">Zusammenhänge verstehen</string>
     <string name="tile_meal">Essen erfassen</string>
-    <string name="tile_symptom">Symptome</string>
+    <string name="tile_symptom">Symptome erfassen</string>
     <string name="tile_day_check">Tagesabschluss</string>
-    <string name="tile_results">Muster ansehen</string>
-    <string name="home_heading">Dein Allergie-Tagebuch</string>
+    <string name="tile_results">Muster entdecken</string>
+    <string name="home_brand">Allergy Detective</string>
+    <string name="home_greeting_morning">Guten Morgen!</string>
+    <string name="home_greeting_day">Guten Tag!</string>
+    <string name="home_greeting_evening">Guten Abend!</string>
+    <string name="home_tagline">Dein Tag. Deine Gesundheit.</string>
+    <string name="home_day_check_now">Jetzt abschließen</string>
     <string name="home_progress_title">Dein Fortschritt</string>
     <string name="home_progress_badge">Tag %1$d / %2$d</string>
     <plurals name="home_progress_remaining">
         <item quantity="one">Noch %1$d Tag bis zur ersten Auswertung.</item>
         <item quantity="other">Noch %1$d Tage bis zur ersten Auswertung.</item>
     </plurals>
-    <string name="home_actions_title">Was möchtest du heute machen?</string>
     <string name="today_title">Dein heutiger Tag</string>
     <plurals name="today_meals">
-        <item quantity="one">%1$d Mahlzeit</item>
-        <item quantity="other">%1$d Mahlzeiten</item>
+        <item quantity="one">Mahlzeit</item>
+        <item quantity="other">Mahlzeiten</item>
     </plurals>
     <plurals name="today_symptoms">
-        <item quantity="one">%1$d Symptom</item>
-        <item quantity="other">%1$d Symptome</item>
+        <item quantity="one">Symptom</item>
+        <item quantity="other">Symptome</item>
     </plurals>
-    <string name="today_nothing_yet">Noch nichts eingetragen.</string>
-    <string name="today_open">Abends den Tag abschließen.</string>
-    <string name="today_done">Heute ist erledigt.</string>
+    <plurals name="today_entries">
+        <item quantity="one">Eintrag gesamt</item>
+        <item quantity="other">Einträge gesamt</item>
+    </plurals>
     <string name="home_day_open">Offen</string>
     <string name="home_day_done">Erledigt</string>
-    <string name="home_today_count">%1$d heute</string>
     <plurals name="home_progress_ready">
         <item quantity="one">%1$d bestätigter Tag – deine erste Auswertung ist bereit</item>
         <item quantity="other">%1$d bestätigte Tage – deine Auswertung ist bereit</item>

@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap">
 <style>
 /*
-  Allergy Detective – klickbarer Prototyp, nachgebaut nach dem Code der App (Stand 20.11.2026).
+  Allergy Detective – klickbarer Prototyp, nachgebaut nach dem Code der App (Stand 21.11.2026).
   Layout: links Erklärung und Sprung zu jedem Screen, rechts ein Handy mit 392 dp Breite wie das Testgerät.
   Maße wie in Compose: Karten-Radius 22 (shapes.large), Chips 32 hoch mit Radius 12 (shapes.small) und
   Häkchen wenn gewählt, Textfelder Radius 8, Kacheln-Gitter 12, Seitenrand 16.
@@ -24,6 +24,8 @@
   --clues: #E8E2F0; --on-clues: #2B2238; --clues-accent: #5E4E86;
   --digestive: #F8E8D2; --skin: #F6E4DC; --head: #E8E2F0; --airways: #DDEAEE; --other: #E5EBE7;
   --info: #DDEAEE; --on-info: #24505C;
+  --meal-tile: #E6EEE2, #D3E3D0; --symptom-tile: #FCEBE0, #F8D3BD; --day-tile: #FDEEDC, #F7D8BE; --results-tile: #EBF0E7, #D5E4D3;
+  --on-warm-tile: #3A160B; --warm-accent: #AD521F; --on-warm-accent: #FFFFFF; --moon: #D9893F;
   --emoji-bg: rgba(246, 247, 243, .7);
   --page: #E4E7E1; --page-fg: #293831; --page-muted: #5F6A63; --frame: #1C211E;
   --font: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -40,6 +42,8 @@
     --clues: #3A3349; --on-clues: #E8E2F0; --clues-accent: #CDBFE8;
     --digestive: #4A3D28; --skin: #4A3830; --head: #3A3349; --airways: #2A3D44; --other: #34433C;
     --info: #2A3D44; --on-info: #CBE3EA;
+  --meal-tile: #2E4B40, #24392F; --symptom-tile: #5A3D31, #452D24; --day-tile: #55402C, #433122; --results-tile: #34453D, #28362F;
+  --on-warm-tile: #F6E4DC; --warm-accent: #F0A27A; --on-warm-accent: #4A1E08; --moon: #F2C083;
     --emoji-bg: rgba(18, 21, 18, .7);
     --page: #0A0C0A; --page-fg: #E2E4DE; --page-muted: #B9C0B8; --frame: #000000;
     color-scheme: dark;
@@ -56,6 +60,8 @@
   --clues: #3A3349; --on-clues: #E8E2F0; --clues-accent: #CDBFE8;
   --digestive: #4A3D28; --skin: #4A3830; --head: #3A3349; --airways: #2A3D44; --other: #34433C;
   --info: #2A3D44; --on-info: #CBE3EA;
+  --meal-tile: #2E4B40, #24392F; --symptom-tile: #5A3D31, #452D24; --day-tile: #55402C, #433122; --results-tile: #34453D, #28362F;
+  --on-warm-tile: #F6E4DC; --warm-accent: #F0A27A; --on-warm-accent: #4A1E08; --moon: #F2C083;
   --emoji-bg: rgba(18, 21, 18, .7);
   --page: #0A0C0A; --page-fg: #E2E4DE; --page-muted: #B9C0B8; --frame: #000000;
   color-scheme: dark;
@@ -164,21 +170,43 @@ p, h1, h2, h3 { margin: 0; }
 .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
 
 /* Start */
-.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.tile { border: 0; border-radius: 22px; padding: 18px; text-align: left; display: flex; flex-direction: column; height: 156px; }
+/* Home design of 21.11.2026: logo row, serif greeting, leaves top right, gradient tiles. */
+.home-head { position: relative; display: flex; flex-direction: column; gap: 4px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--primary); font-family: Georgia, "Times New Roman", serif; font-size: calc(16px * var(--fs)); font-weight: 500; }
+.brand svg { width: 36px; height: 36px; }
+.greeting { font-family: Georgia, "Times New Roman", serif; font-weight: 700; font-size: calc(32px * var(--fs)); line-height: 1.25; color: var(--primary); margin: 8px 0 0; }
+.tagline { font-family: Georgia, "Times New Roman", serif; font-size: calc(17px * var(--fs)); color: var(--muted); margin: 0; }
+.leaves { position: absolute; top: 0; right: 0; width: 190px; height: 190px; overflow: hidden; pointer-events: none; color: var(--primary); opacity: .10; }
+.leaves svg { position: absolute; }
+.v-start-body { position: relative; }
+.v-start-body > :not(.leaves) { position: relative; }
+.progress-card { box-shadow: 0 1px 3px rgba(0,0,0,.12); padding: 14px 16px; gap: 8px; }
+.today { background: var(--primary-container); color: var(--on-primary-container); border: 0; text-align: left; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.stats { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; }
+.stats .sep { width: 1px; align-self: stretch; margin: 4px 0; background: currentColor; opacity: .15; }
+.stat { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+.stat .n { display: flex; align-items: center; gap: 8px; color: var(--primary); font-size: calc(24px * var(--fs)); font-weight: 600; line-height: 1.33; }
+.stat .n svg { width: 26px; height: 26px; }
+.stat small { font-size: calc(12px * var(--fs)); }
+.tiles { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.tile { min-width: 0; border: 0; border-radius: 22px; padding: 16px; text-align: left; display: flex; flex-direction: column; min-height: 150px; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
 .tile .top { display: flex; justify-content: space-between; align-items: flex-start; }
-.tile .top svg { width: 32px; height: 32px; }
-.tile .grow { flex: 1; }
+.tile .top svg { width: 44px; height: 44px; }
+.tile .top svg.chev { width: 24px; height: 24px; color: currentColor; opacity: .8; }
+.tile .grow { flex: 1; min-height: 12px; }
+.tile .now { margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; border-radius: 999px; background: var(--warm-accent); color: var(--on-warm-accent); font-size: calc(14px * var(--fs)); font-weight: 500; white-space: nowrap; }
+.tile .now svg { width: 18px; height: 18px; color: currentColor; }
 .tile b { font-size: calc(18px * var(--fs) * var(--tile-shrink, 1)); font-weight: 600; line-height: 1.33; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tile span.hint { font-size: calc(15px * var(--fs) * var(--hint-shrink, 1)); line-height: 1.33; margin-top: 4px; opacity: .85; }
-/* Like sharedTileStyles(): at a large system font all four tiles shrink together, hints in one line. */
-:root[data-font="125"] { --tile-shrink: .8; --hint-shrink: .66; }
-.t-food { background: var(--primary-container); color: var(--on-primary-container); } .t-food svg { color: var(--primary); }
-.t-symptom { background: var(--tertiary-container); color: var(--on-tertiary-container); } .t-symptom svg { color: var(--tertiary); }
-.t-day { background: var(--clues); color: var(--on-clues); } .t-day svg { color: var(--clues-accent); }
-.t-results { background: var(--secondary-container); color: var(--on-secondary-container); } .t-results svg { color: var(--secondary); }
-.progress { height: 6px; display: flex; gap: 4px; }
-.progress i { display: block; height: 6px; border-radius: 3px; background: var(--primary); }
+.tile span.hint { font-size: calc(15px * var(--fs) * var(--hint-shrink, 1)); line-height: 1.33; margin-top: 4px; opacity: .85; min-height: 2.66em; }
+/* Like sharedTileStyles(): all four titles shrink together until "Symptome erfassen" fits (about 15 sp), hints 3 sp smaller. */
+:root { --tile-shrink: .83; --hint-shrink: .8; }
+:root[data-font="125"] { --tile-shrink: .66; --hint-shrink: .58; }
+.t-food { background: linear-gradient(135deg, var(--meal-tile)); color: var(--on-primary-container); } .t-food svg { color: var(--primary); }
+.t-symptom { background: linear-gradient(135deg, var(--symptom-tile)); color: var(--on-warm-tile); } .t-symptom svg { color: var(--warm-accent); }
+.t-day { background: linear-gradient(135deg, var(--day-tile)); color: var(--on-warm-tile); } .t-day svg { color: var(--moon); }
+.t-results { background: linear-gradient(135deg, var(--results-tile)); color: var(--on-primary-container); } .t-results svg { color: var(--primary); }
+.progress { height: 10px; display: flex; gap: 4px; }
+.progress i { display: block; height: 10px; border-radius: 5px; background: var(--primary); }
 .progress i + i { background: var(--high); flex: 1; }
 .counts { display: flex; gap: 16px; flex-wrap: wrap; }
 .count { display: flex; align-items: center; gap: 6px; }
@@ -265,6 +293,11 @@ p, h1, h2, h3 { margin: 0; }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-eco" viewBox="0 0 24 24"><path fill="currentColor" d="M6.05 8.05a7.007 7.007 0 0 0-.02 9.88c1.47-3.4 4.09-6.24 7.36-7.93-2.77 2.34-4.71 5.61-5.39 9.32 2.6 1.23 5.8.78 7.95-1.37C19.43 14.47 20 4 20 4S9.53 4.57 6.05 8.05z"/></symbol>
+  <symbol id="i-heart-pulse" viewBox="0 0 24 24"><path fill="currentColor" d="M15.11 12.45 14 10.24l-3.11 6.21c-.16.34-.51.55-.89.55s-.73-.21-.89-.55L7.38 13H2v5c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-5h-6c-.38 0-.73-.21-.89-.55zM20 4H4c-1.1 0-2 .9-2 2v5h6c.38 0 .73.21.89.55L10 13.76l3.11-6.21c.34-.68 1.45-.68 1.79 0L16.62 11H22V6c0-1.1-.9-2-2-2z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path fill="currentColor" d="M12.34 2.02C6.59 1.82 2 6.42 2 12c0 5.52 4.48 10 10 10 3.71 0 6.93-2.02 8.66-5.02-7.51-.25-12.09-8.43-8.32-14.96z"/></symbol>
+  <symbol id="i-bars" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9h4v11H4zm12 4h4v7h-4zm-6-9h4v16h-4z"/></symbol>
+  <symbol id="i-forward" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></symbol>
   <symbol id="i-restaurant" viewBox="0 0 24 24"><path fill="currentColor" d="M16 6v8h3v8h2V2c-2.76 0-5 2.24-5 4zm-5 3H9V2H7v7H5V2H3v7c0 2.21 1.79 4 4 4v9h2v-9c2.21 0 4-1.79 4-4V2h-2v7z"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path fill="currentColor" d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></symbol>
   <symbol id="i-bedtime" viewBox="0 0 24 24"><path fill="currentColor" d="M9.27 4.49c-1.63 7.54 3.75 12.41 7.66 13.8A7.947 7.947 0 0 1 12.36 20c-4.41 0-8-3.59-8-8 0-3.45 2.2-6.4 4.91-7.51m2.98-2.48C6.71 2.4 2.36 6.71 2.36 12c0 5.52 4.48 10 10 10 3.71 0 6.93-2.02 8.66-5.02-7.51-.25-12.09-8.43-8.77-14.97z"/></symbol>
@@ -290,7 +323,7 @@ p, h1, h2, h3 { margin: 0; }
 
 <div class="layout">
   <section class="intro" aria-label="Über den Prototyp">
-    <span class="eyebrow">Prototyp · Stand 20.11.2026</span>
+    <span class="eyebrow">Prototyp · Stand 21.11.2026</span>
     <h1>Allergy Detective</h1>
     <p>Symptomtagebuch für Essen, Getränke und Beschwerden: täglich eintragen, Muster erkennen und einen Bericht für den Arzt mitnehmen. Nachgebaut nach dem Code der App, mit denselben Farben, Texten und Maßen. Klickbar sind Kacheln, Tabs, Zurück-Pfeile, Chips, das Symptom-Fenster und die Allergien im Profil.</p>
     <div class="jump" id="jump" aria-label="Screen wählen"></div>
@@ -301,7 +334,7 @@ p, h1, h2, h3 { margin: 0; }
     <div class="legend" aria-label="Farbcode">
       <i style="background:var(--primary-container)"></i><span>Essen und Getränke (Salbei)</span>
       <i style="background:var(--tertiary-container)"></i><span>Symptome (Apricot)</span>
-      <i style="background:var(--clues)"></i><span>Tagesabschluss (Lavendel)</span>
+      <i style="background:var(--clues)"></i><span>Tagesabschluss (Lavendel, auf der Startseite Pfirsich)</span>
       <i style="background:var(--secondary-container)"></i><span>Muster (Graugrün)</span>
       <i style="background:var(--primary)"></i><span>Waldgrün: einziger Akzent für Aktionen</span>
     </div>
@@ -314,32 +347,36 @@ p, h1, h2, h3 { margin: 0; }
 
       <!-- ===================== START ===================== -->
       <section class="view active" id="v-start" data-title="Start">
-        <div class="body">
-          <div style="display:flex;flex-direction:column;gap:2px">
-            <h1 class="t-headline">Dein Allergie-Tagebuch</h1>
-            <p class="t-body muted">Eine Mahlzeit nach der anderen.</p>
+        <div class="body v-start-body">
+          <div class="leaves" aria-hidden="true">
+            <svg style="width:170px;height:170px;left:70px;top:10px;transform:rotate(-20deg)"><use href="#i-eco"/></svg>
+            <svg style="width:110px;height:110px;left:30px;top:90px;transform:rotate(35deg)"><use href="#i-eco"/></svg>
           </div>
-          <div class="card white">
+          <div class="home-head">
+            <div class="brand"><svg><use href="#i-eco"/></svg>Allergy Detective</div>
+            <h1 class="greeting">Guten Morgen!</h1>
+            <p class="tagline">Dein Tag. Deine Gesundheit.</p>
+          </div>
+          <div class="card white progress-card">
             <div class="row-between"><h3 class="t-tm">Dein Fortschritt</h3><span class="badge b-progress">Tag 4 / 7</span></div>
             <div class="progress"><i style="width:57%"></i><i></i></div>
-            <p class="t-small muted">Noch 3 Tage bis zur ersten Auswertung.</p>
+            <p class="t-body muted">Noch 3 Tage bis zur ersten Auswertung.</p>
           </div>
-          <button class="card" data-go="history" style="background:var(--secondary-container);color:var(--on-secondary-container);border:0;text-align:left">
-            <div class="row-between" style="width:100%"><h3 class="t-tm">Dein heutiger Tag</h3><span class="t-small muted">Fr, 20.11.2026</span></div>
-            <div class="counts t-small">
-              <span class="count"><svg><use href="#i-restaurant"/></svg>2 Mahlzeiten</span>
-              <span class="count"><svg><use href="#i-bolt"/></svg>1 Symptom</span>
+          <button class="today" data-go="history">
+            <h3 class="t-tm">Dein heutiger Tag</h3>
+            <div class="stats">
+              <span class="stat"><span class="n"><svg><use href="#i-restaurant"/></svg>2</span><small>Mahlzeiten</small></span>
+              <span class="sep"></span>
+              <span class="stat"><span class="n"><svg><use href="#i-heart-pulse"/></svg>1</span><small>Symptom</small></span>
+              <span class="sep"></span>
+              <span class="stat"><span class="n"><svg><use href="#i-bars"/></svg>3</span><small>Einträge gesamt</small></span>
             </div>
-            <span class="count t-small muted"><svg><use href="#i-info"/></svg>Abends den Tag abschließen.</span>
           </button>
-          <div style="display:flex;flex-direction:column;gap:12px;padding-top:8px">
-            <h3 class="t-tm">Was möchtest du heute machen?</h3>
-            <div class="tiles">
-              <button class="tile t-food" data-go="meal"><span class="top"><svg><use href="#i-restaurant"/></svg></span><span class="grow"></span><b>Essen erfassen</b><span class="hint">Mahlzeiten eintragen</span></button>
-              <button class="tile t-symptom" data-go="symptom"><span class="top"><svg><use href="#i-bolt"/></svg></span><span class="grow"></span><b>Symptome</b><span class="hint">Beschwerden erfassen</span></button>
-              <button class="tile t-day" data-go="day"><span class="top"><svg><use href="#i-bedtime"/></svg><span class="badge b-open">Offen</span></span><span class="grow"></span><b>Tagesabschluss</b><span class="hint">Wie war dein Tag?</span></button>
-              <button class="tile t-results" data-go="results"><span class="top"><svg><use href="#i-stats"/></svg></span><span class="grow"></span><b>Muster ansehen</b><span class="hint">Muster im Verlauf</span></button>
-            </div>
+          <div class="tiles">
+            <button class="tile t-food" data-go="meal"><span class="top"><svg><use href="#i-restaurant"/></svg><svg class="chev"><use href="#i-right"/></svg></span><span class="grow"></span><b>Essen erfassen</b><span class="hint">Mahlzeiten dokumentieren</span></button>
+            <button class="tile t-symptom" data-go="symptom"><span class="top"><svg><use href="#i-heart-pulse"/></svg><svg class="chev"><use href="#i-right"/></svg></span><span class="grow"></span><b>Symptome erfassen</b><span class="hint">Beschwerden dokumentieren</span></button>
+            <button class="tile t-day" data-go="day"><span class="top"><svg><use href="#i-moon"/></svg><svg class="chev"><use href="#i-right"/></svg></span><span class="grow"></span><b>Tagesabschluss</b><span class="hint">Wie war dein Tag?</span><span class="now">Jetzt abschließen<svg><use href="#i-forward"/></svg></span></button>
+            <button class="tile t-results" data-go="results"><span class="top"><svg><use href="#i-stats"/></svg><svg class="chev"><use href="#i-right"/></svg></span><span class="grow"></span><b>Muster entdecken</b><span class="hint">Zusammenhänge verstehen</span></button>
           </div>
         </div>
       </section>

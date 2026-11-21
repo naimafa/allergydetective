@@ -37,11 +37,13 @@ fun HomeProgress(confirmedDays: Int) {
     val scheme = MaterialTheme.colorScheme
     Card(
         colors = CardDefaults.cardColors(containerColor = scheme.surfaceContainerLowest),
+        // Home design of 21.11.2026: white card with a soft shadow, thicker bar.
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = MaterialTheme.shapes.large,
         modifier = Modifier.fillMaxWidth(),
     ) {
         // Design of 19.11.: compact; title row, bar, then the two short lines close together.
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     stringResource(Res.string.home_progress_title),
@@ -60,7 +62,7 @@ fun HomeProgress(confirmedDays: Int) {
             }
             LinearProgressIndicator(
                 progress = { (confirmedDays.toFloat() / total).coerceAtMost(1f) },
-                modifier = Modifier.fillMaxWidth().height(6.dp),
+                modifier = Modifier.fillMaxWidth().height(10.dp),
                 color = scheme.primary,
                 trackColor = scheme.surfaceContainerHigh,
                 strokeCap = StrokeCap.Round,
@@ -73,7 +75,7 @@ fun HomeProgress(confirmedDays: Int) {
                 } else {
                     pluralStringResource(Res.plurals.home_progress_remaining, total - confirmedDays, total - confirmedDays)
                 },
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = scheme.onSurfaceVariant,
             )
         }

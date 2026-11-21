@@ -102,6 +102,18 @@ data class ExtraColors(
     /** Soft blue for "new entries" badges (StatusBadge). */
     val info: Color,
     val onInfo: Color,
+    /** Home design of 21.11.2026: soft gradients of the four tiles (start, end). */
+    val mealTile: Pair<Color, Color>,
+    val symptomTile: Pair<Color, Color>,
+    val dayCheckTile: Pair<Color, Color>,
+    val resultsTile: Pair<Color, Color>,
+    /** Text on the two apricot tiles. */
+    val onWarmTile: Color,
+    /** Heart icon and the "finish now" button on the home tiles. */
+    val warmAccent: Color,
+    val onWarmAccent: Color,
+    /** Moon on the day check tile. */
+    val moon: Color,
 )
 
 private val LightExtra = ExtraColors(
@@ -116,6 +128,15 @@ private val LightExtra = ExtraColors(
     redFlag = Color(0xFFFFCDC8),
     info = Color(0xFFDDEAEE),
     onInfo = Color(0xFF24505C),
+    mealTile = Color(0xFFE6EEE2) to Color(0xFFD3E3D0),
+    symptomTile = Color(0xFFFCEBE0) to Color(0xFFF8D3BD),
+    dayCheckTile = Color(0xFFFDEEDC) to Color(0xFFF7D8BE),
+    resultsTile = Color(0xFFEBF0E7) to Color(0xFFD5E4D3),
+    onWarmTile = Color(0xFF3A160B),
+    // White text on it reaches about 5 : 1.
+    warmAccent = Color(0xFFAD521F),
+    onWarmAccent = Color.White,
+    moon = Color(0xFFD9893F),
 )
 
 private val DarkExtra = ExtraColors(
@@ -130,6 +151,14 @@ private val DarkExtra = ExtraColors(
     redFlag = Color(0xFF7E2B25),
     info = Color(0xFF2A3D44),
     onInfo = Color(0xFFCBE3EA),
+    mealTile = Color(0xFF2E4B40) to Color(0xFF24392F),
+    symptomTile = Color(0xFF5A3D31) to Color(0xFF452D24),
+    dayCheckTile = Color(0xFF55402C) to Color(0xFF433122),
+    resultsTile = Color(0xFF34453D) to Color(0xFF28362F),
+    onWarmTile = Color(0xFFF6E4DC),
+    warmAccent = Color(0xFFF0A27A),
+    onWarmAccent = Color(0xFF4A1E08),
+    moon = Color(0xFFF2C083),
 )
 
 val LocalExtraColors = staticCompositionLocalOf { LightExtra }
