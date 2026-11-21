@@ -42,13 +42,15 @@ fun ProfileScreen(
     }
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         // Settings first: the allergy list is long and hid everything below it (feedback 20.11.).
         extraContent()
         // Folded by default (feedback 20.11.): one line with the selection, the list opens on tap.
-        KnownAllergiesSection(state, viewModel::onToggle, viewModel::onSave)
-        SectionTitle(stringResource(Res.string.onboarding_purpose_title))
-        Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium)
+        ProfileCard { KnownAllergiesSection(state, viewModel::onToggle, viewModel::onSave) }
+        ProfileCard {
+            SectionTitle(stringResource(Res.string.onboarding_purpose_title))
+            Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium)
+        }
     }
 }

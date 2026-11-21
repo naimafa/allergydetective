@@ -3,6 +3,7 @@ package com.nfar.allergydetective.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.nfar.allergydetective.ui.profile.ProfileCard
 import com.nfar.allergydetective.ui.daycheck.DayCheckScreen
 import com.nfar.allergydetective.ui.results.ResultsScreen
 import org.koin.compose.viewmodel.koinViewModel
@@ -115,12 +116,13 @@ fun AppNavHost(
                         HomeAction.RESULTS -> navController.navigate(ResultsRoute)
                     }
                 },
+                // User note 21.11.2026: each area in its own card.
                 profileExtra = {
-                    DoctorReportSection()
-                    ThemeSection()
-                    ReminderSection()
-                    SickPeriodSection(koinViewModel())
-                    ExportSection()
+                    ProfileCard { DoctorReportSection() }
+                    ProfileCard { ThemeSection() }
+                    ProfileCard { ReminderSection() }
+                    ProfileCard { SickPeriodSection(koinViewModel()) }
+                    ProfileCard { ExportSection() }
                     OutlinedButton(
                         onClick = { navController.navigate(IntroRoute) },
                         modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
