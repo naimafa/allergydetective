@@ -6,37 +6,41 @@
     <string name="home_log_symptom">Symptome erfassen</string>
     <string name="home_day_check">Tagesabschluss</string>
     <string name="home_results">Muster entdecken</string>
-    <string name="home_log_meal_hint">Mahlzeiten eintragen</string>
-    <string name="home_log_symptom_hint">Beschwerden erfassen</string>
+    <string name="home_log_meal_hint">Mahlzeiten dokumentieren</string>
+    <string name="home_log_symptom_hint">Beschwerden dokumentieren</string>
     <string name="home_day_check_hint">Wie war dein Tag?</string>
-    <string name="home_results_hint">Muster im Verlauf</string>
+    <string name="home_results_hint">Zusammenhänge verstehen</string>
     <string name="tile_meal">Essen erfassen</string>
-    <string name="tile_symptom">Symptome</string>
+    <string name="tile_symptom">Symptome erfassen</string>
     <string name="tile_day_check">Tagesabschluss</string>
-    <string name="tile_results">Muster ansehen</string>
-    <string name="home_heading">Dein Allergie-Tagebuch</string>
+    <string name="tile_results">Muster entdecken</string>
+    <string name="home_brand">Allergy Detective</string>
+    <string name="home_greeting_morning">Guten Morgen!</string>
+    <string name="home_greeting_day">Guten Tag!</string>
+    <string name="home_greeting_evening">Guten Abend!</string>
+    <string name="home_tagline">Dein Tag. Deine Gesundheit.</string>
+    <string name="home_reminders">Erinnerungen</string>
     <string name="home_progress_title">Dein Fortschritt</string>
     <string name="home_progress_badge">Tag %1$d / %2$d</string>
     <plurals name="home_progress_remaining">
         <item quantity="one">Noch %1$d Tag bis zur ersten Auswertung.</item>
         <item quantity="other">Noch %1$d Tage bis zur ersten Auswertung.</item>
     </plurals>
-    <string name="home_actions_title">Was möchtest du heute machen?</string>
     <string name="today_title">Dein heutiger Tag</string>
     <plurals name="today_meals">
-        <item quantity="one">%1$d Mahlzeit</item>
-        <item quantity="other">%1$d Mahlzeiten</item>
+        <item quantity="one">Mahlzeit</item>
+        <item quantity="other">Mahlzeiten</item>
     </plurals>
     <plurals name="today_symptoms">
-        <item quantity="one">%1$d Symptom</item>
-        <item quantity="other">%1$d Symptome</item>
+        <item quantity="one">Symptom</item>
+        <item quantity="other">Symptome</item>
     </plurals>
-    <string name="today_nothing_yet">Noch nichts eingetragen.</string>
-    <string name="today_open">Abends den Tag abschließen.</string>
-    <string name="today_done">Heute ist erledigt.</string>
+    <plurals name="today_entries">
+        <item quantity="one">Eintrag gesamt</item>
+        <item quantity="other">Einträge gesamt</item>
+    </plurals>
     <string name="home_day_open">Offen</string>
     <string name="home_day_done">Erledigt</string>
-    <string name="home_today_count">%1$d heute</string>
     <plurals name="home_progress_ready">
         <item quantity="one">%1$d bestätigter Tag – deine erste Auswertung ist bereit</item>
         <item quantity="other">%1$d bestätigte Tage – deine Auswertung ist bereit</item>
@@ -68,11 +72,12 @@
     <string name="day_confirmed_mark">%1$s ✓</string>
     <string name="day_open_past_hint">Noch nicht abgeschlossen: %1$s. Oben antippen, um nachzutragen.</string>
     <string name="day_wellbeing">Wie ging es dir an dem Tag?</string>
-    <string name="day_sleep">Schlaf in der Nacht davor</string>
+    <string name="day_sleep">Schlaf letzte Nacht</string>
     <string name="day_hours">%1$s h</string>
     <string name="day_sleep_quality">Schlafqualität</string>
     <string name="day_stress">Stress an dem Tag</string>
-    <string name="day_scale_hint">1 = wenig · 5 = viel</string>
+    <string name="day_scale_hint">1 = kaum · 5 = sehr stark</string>
+    <string name="day_sleep_quality_hint">1 = sehr schlecht · 5 = sehr gut</string>
     <string name="day_factors">Besonderes? (optional)</string>
     <string name="day_sick_hint">Krankheitstage zählen schwächer. Bei jedem Symptom fragt die App, ob es zur Krankheit gehört – dann zählt es nicht. So werden z.B. Beschwerden einer Erkältung nicht dem Essen zugeschrieben.</string>
     <string name="sick_title">Krankheitszeiten</string>
@@ -149,7 +154,7 @@
     <string name="reminder_title">Detektiv-Stunde 🕵️</string>
     <string name="reminder_text">Wie war dein Tag? In wenigen Sekunden bestätigt.</string>
     <string name="tab_home">Start</string>
-    <string name="tab_history">Historie</string>
+    <string name="tab_history">Verlauf</string>
     <string name="tab_favorites">Favoriten</string>
     <string name="tab_profile">Profil</string>
     <string name="history_empty">Keine Einträge in den letzten 14 Tagen.</string>
@@ -232,6 +237,8 @@
     <string name="onboarding_dishes_later">Später</string>
     <string name="allergies_question">Kennst du schon Allergien oder Unverträglichkeiten?</string>
     <string name="allergies_hint">Bekannte kommen nicht ins Ranking. Du bekommst nur einen Hinweis, wenn du sie isst. Du kannst das später ändern.</string>
+    <string name="allergies_section_title">Bekannte Allergien</string>
+    <string name="allergies_none">Keine angegeben · zum Ändern tippen</string>
     <string name="time_other">Andere Zeit …</string>
     <string name="time_pick">Wann genau?</string>
     <string name="time_selected">%1$s, %2$s</string>
@@ -240,7 +247,13 @@
     <string name="symptom_long_press_hint">Tippen für Details. Lange drücken speichert sofort (mittel, jetzt).</string>
     <string name="symptom_favorites">Am häufigsten</string>
     <string name="symptom_how_strong">Wie stark?</string>
-    <string name="symptom_intensity_range">1 = leicht · 5 = stark</string>
+    <string name="symptom_intensity_range">1 = kaum spürbar · 5 = sehr stark</string>
+    <string name="symptom_intensity_1">kaum spürbar</string>
+    <string name="symptom_intensity_2">leicht</string>
+    <string name="symptom_intensity_3">mittel</string>
+    <string name="symptom_intensity_4">stark</string>
+    <string name="symptom_intensity_5">sehr stark</string>
+    <string name="symptom_intensity_selected">%1$d = %2$s</string>
     <string name="symptom_when">Wann ging es los?</string>
     <string name="symptom_part_morning">Morgens</string>
     <string name="symptom_part_midday">Mittags</string>
@@ -265,7 +278,8 @@
     <string name="meal_slot_dinner">Abendessen</string>
     <string name="meal_slot_snack">Snack</string>
     <string name="meal_slot_drink">Getränk</string>
-    <string name="meal_search">Zutat suchen …</string>
+    <string name="meal_search">Zutat oder Gericht suchen …</string>
+    <string name="meal_dish_contains">enthält %1$s</string>
     <string name="meal_no_results">Nichts gefunden.</string>
     <string name="meal_portion_help">S = ein paar Bissen oder ½ Glas · M = eine Faust oder 1 Glas · L = zwei Fäuste oder 2 Gläser</string>
     <string name="meal_portion_small">S</string>
@@ -280,8 +294,8 @@
     <string name="meal_step_what">Was hast du gegessen?</string>
     <string name="meal_step_amount">Wie viel?</string>
     <string name="meal_quick">Schnellauswahl</string>
-    <string name="meal_quick_hint">Zuletzt gegessen – ein Tipp fügt es hinzu</string>
-    <string name="meal_favorites_hint">Deine gespeicherten Mahlzeiten – ein Tipp fügt alle Zutaten hinzu</string>
+    <string name="meal_quick_hint">Einzelne Zutaten, die du zuletzt gegessen hast</string>
+    <string name="meal_favorites_hint">Gespeicherte Gerichte – ein Tipp fügt alle Zutaten hinzu</string>
     <string name="meal_slot_missing">Bitte wähle zuerst, wann du gegessen hast.</string>
     <string name="meal_amount_empty">Suche oben oder tippe auf die Schnellauswahl. Deine Auswahl erscheint dann hier.</string>
     <string name="meal_save_slot">%1$s speichern</string>

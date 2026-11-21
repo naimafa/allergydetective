@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.ui.meal
 
+import com.nfar.allergydetective.domain.diary.matchingIngredient
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nfar.allergydetective.domain.analysis.model.Portion
@@ -131,6 +132,9 @@ class LogMealViewModel(
         repository.recentIngredientIds(RECENT_LIMIT).mapNotNull { ingredientsById[it] }
             // Self-test 18.11.: a custom and a seed ingredient can share a name; show it once.
             .distinctBy { normalizeForSearch(displayName(it)) }
+
+    /** Ingredient through which a saved dish was found, shown as "contains …". */
+    fun dishReason(dish: com.nfar.allergydetective.domain.diary.FavoriteInfo, query: String): String? = dish.matchingIngredient(query, ingredientNames)
 
     fun onQueryChange(query: String) {
         _state.update {
