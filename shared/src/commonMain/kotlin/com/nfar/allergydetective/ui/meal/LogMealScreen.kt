@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.ui.meal
 
+import allergydetective.shared.generated.resources.meal_dish_contains
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_save
 import allergydetective.shared.generated.resources.custom_create_named
@@ -281,7 +282,12 @@ private fun WhatStep(
                         .padding(vertical = 10.dp),
                 ) {
                     Icon(Icons.Outlined.StarOutline, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-                    Text(dish.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 10.dp))
+                    Column(modifier = Modifier.padding(start = 10.dp)) {
+                        Text(dish.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        viewModel.dishReason(dish, state.query)?.let { reason ->
+                            Text(stringResource(Res.string.meal_dish_contains, reason), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+                        }
+                    }
                 }
             }
         }
