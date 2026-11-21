@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.ui.meal
 
+import allergydetective.shared.generated.resources.meal_also_called
 import allergydetective.shared.generated.resources.meal_dish_contains
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_save
@@ -292,8 +293,8 @@ private fun WhatStep(
             }
         }
         state.results.forEach { ingredient ->
-            Text(
-                text = ingredientName(ingredient),
+            Column(
+                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 48.dp)
@@ -302,8 +303,14 @@ private fun WhatStep(
                         // Search is done; without the keyboard the choice is visible right away (self-test 18.11.).
                         keyboard?.hide()
                     }
-                    .padding(vertical = 12.dp),
-            )
+                    .padding(vertical = 10.dp),
+            ) {
+                Text(ingredientName(ingredient))
+                // Found through another name (e.g. "Topfen" for Quark): say so, like "contains …" for dishes.
+                viewModel.synonymReason(ingredient.id, state.query)?.let { synonym ->
+                    Text(stringResource(Res.string.meal_also_called, synonym), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
         }
         if (state.query.isNotBlank() && state.results.isEmpty()) {
             Text(stringResource(Res.string.meal_no_results), style = MaterialTheme.typography.bodyMedium)

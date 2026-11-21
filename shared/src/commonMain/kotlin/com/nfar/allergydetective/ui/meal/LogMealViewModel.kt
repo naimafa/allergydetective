@@ -133,6 +133,9 @@ class LogMealViewModel(
             // Self-test 18.11.: a custom and a seed ingredient can share a name; show it once.
             .distinctBy { normalizeForSearch(displayName(it)) }
 
+    /** Other name through which an ingredient was found, shown as "also: …" (e.g. Quark – auch: Topfen). */
+    fun synonymReason(ingredientId: Long, query: String): String? = search.matchedSynonym(ingredientId, query)
+
     /** Ingredient through which a saved dish was found, shown as "contains …". */
     fun dishReason(dish: com.nfar.allergydetective.domain.diary.FavoriteInfo, query: String): String? = dish.matchingIngredient(query, ingredientNames)
 

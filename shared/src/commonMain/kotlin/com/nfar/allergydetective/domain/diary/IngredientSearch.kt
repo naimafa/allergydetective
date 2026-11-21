@@ -13,10 +13,23 @@ data class SearchEntry(
  */
 class IngredientSearch(entries: List<SearchEntry>) {
 
-    private class Indexed(val id: Long, val name: String, val terms: List<String>)
+    private class Indexed(val id: Long, val name: String, val terms: List<String>, val synonyms: List<String>)
 
     private val index = entries.map { entry ->
-        Indexed(entry.ingredientId, entry.name, (listOf(entry.name) + entry.synonyms).map(::normalizeForSearch))
+        Indexed(entry.ingredientId, entry.name, (listOf(entry.name) + entry.synonyms).map(::normalizeForSearch), entry.synonyms)
+    }
+
+    private val byId = index.associateBy { it.id }
+
+    /**
+     * The synonym through which [id] matched [query], or null when its name matches too (user feedback
+     * 21.11.2026: "Quark" appeared for "to" because of its other name "Topfen", without a visible reason).
+     */
+    fun matchedSynonym(id: Long, query: String): String? {
+        val q = normalizeForSearch(query)
+        val entry = byId[id] ?: return null
+        if (q.isEmpty() || score(q, entry.terms.first()) != null) return null
+        return entry.synonyms.firstOrNull { score(q, normalizeForSearch(it)) != null }
     }
 
     /** Ingredient ids, best match first. */
