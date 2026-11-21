@@ -73,6 +73,8 @@ fun HomeProgress(confirmedDays: Int) {
                 trackColor = home.progressTrack,
                 strokeCap = StrokeCap.Round,
                 drawStopIndicator = {},
+                // Picture: the bar runs straight into the track, without a gap.
+                gapSize = 0.dp,
             )
             // Compact design of 19.11.: one short line below the bar.
             Text(

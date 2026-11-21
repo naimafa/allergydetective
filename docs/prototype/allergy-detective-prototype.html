@@ -27,7 +27,7 @@
   --meal-tile: #EDEEDC, #C2D2B2; --symptom-tile: #FFF1E2, #FDDFC6; --day-tile: #FFF1E2, #FDDFC6; --results-tile: #EDEEDC, #C2D2B2;
   --meal-wave: #ADC39B; --symptom-wave: #F6C29C; --day-wave: #F6C29C; --results-wave: #A4BF98;
   --page-tint: #F8E6D6; --ink: #053923; --accent: #184F34; --ink-soft: #184F34; --home-icon: #478661; --page-end: #F5EFE1; --nav: #FFF9EF; --nav-inactive: #416783; --card-border: #FFFFFF; --logo-dark: #3F7049; --logo-light: #6E9C72;
-  --leaf: #93B288; --leaf-light: #DCE4CC; --progress-card: #FFF9EF; --track: #E6E5D3; --badge: #EDEEDC; --today-card: #EDEEDC;
+  --leaf: #93B288; --leaf-light: #DCE4CC; --progress-card: #FBF8EE; --track: #E0E3D0; --badge: #D6DEC6; --today-card: #EDEEDC;
   --on-sage-tile: #053923; --chevron-circle: rgba(255,255,255,.8); --heart: #D47636; --dot: #D9483B;
   --on-warm-tile: #5A301E; --warm-accent: #B15626; --on-warm-accent: #FFFFFF; --moon: #D47636;
   --emoji-bg: rgba(246, 247, 243, .7);
@@ -228,7 +228,7 @@ p, h1, h2, h3 { margin: 0; }
 .t-symptom { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--symptom-tile)); --wave: var(--symptom-wave); color: var(--on-warm-tile); } .t-symptom svg { color: var(--heart); }
 .t-day { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--day-tile)); --wave: var(--day-wave); color: var(--on-warm-tile); } .t-day svg { color: var(--moon); }
 .t-results { background: radial-gradient(circle at 15% 10%, rgba(255,255,255,.35), transparent 75%), linear-gradient(135deg, var(--results-tile)); --wave: var(--results-wave); color: var(--on-sage-tile); --tile-bg: #EDEEDE; } .t-results svg { color: var(--home-icon); }
-.progress { height: 12px; display: flex; gap: 4px; }
+.progress { height: 12px; display: flex; gap: 0; background: var(--track); border-radius: 6px; }
 .progress i { display: block; height: 12px; border-radius: 6px; background: var(--accent); }
 .progress i + i { background: var(--track); flex: 1; }
 .counts { display: flex; gap: 16px; flex-wrap: wrap; }
