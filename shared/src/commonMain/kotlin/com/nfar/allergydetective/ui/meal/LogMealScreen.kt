@@ -35,6 +35,8 @@ import allergydetective.shared.generated.resources.meal_step_amount
 import allergydetective.shared.generated.resources.meal_step_what
 import allergydetective.shared.generated.resources.meal_step_when
 import allergydetective.shared.generated.resources.meal_voice
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.foundation.layout.widthIn
@@ -187,6 +189,13 @@ private fun LogMealContent(
     modifier: Modifier,
 ) {
     val listState = rememberLazyListState()
+    var searchFocused by remember { mutableStateOf(false) }
+    val searchActive = searchFocused || state.query.isNotBlank()
+    // Phone test 21.11.: with the keyboard open the search field sat at the bottom and the results had no room.
+    // Starting a search scrolls step 2 to the top (the spacer below makes that possible).
+    LaunchedEffect(searchFocused) {
+        if (searchFocused) listState.animateScrollToItem(1)
+    }
     // Save without a meal: show the "when" step with its hint.
     LaunchedEffect(state.slotMissing) {
         if (state.slotMissing) listState.animateScrollToItem(0)
@@ -198,8 +207,10 @@ private fun LogMealContent(
         contentPadding = PaddingValues(16.dp),
     ) {
         item { WhenStep(state, viewModel) }
-        item { WhatStep(state, viewModel, onCreateIngredient) }
+        item { WhatStep(state, viewModel, onCreateIngredient, searchActive, onSearchFocus = { searchFocused = it }) }
         item { AmountStep(state, viewModel) }
+        // Room below the last step, so starting a search can scroll the search field to the top.
+        if (searchActive) item { Spacer(Modifier.height(480.dp)) }
     }
 }
 
@@ -227,14 +238,19 @@ private fun WhenStep(state: LogMealState, viewModel: LogMealViewModel) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun WhatStep(state: LogMealState, viewModel: LogMealViewModel, onCreateIngredient: () -> Unit) {
+private fun WhatStep(
+    state: LogMealState,
+    viewModel: LogMealViewModel,
+    onCreateIngredient: () -> Unit,
+    /** Search field in use: favourites and quick picks are hidden, only the results show. */
+    searching: Boolean,
+    onSearchFocus: (Boolean) -> Unit,
+) {
     val selectedIds = state.selected.map { it.ingredient.id }.toSet()
     val keyboard = LocalSoftwareKeyboardController.current
     val voiceLabel = stringResource(Res.string.meal_voice)
     // Phone test 21.11.: favourites and quick picks filled the screen, the search results disappeared below them.
-    // While the search field is in use only the results show; otherwise each shortcut group is one scrollable row.
-    var searchFocused by remember { mutableStateOf(false) }
-    val searching = searchFocused || state.query.isNotBlank()
+    // While searching only the results show; otherwise each shortcut group is one scrollable row.
     StepCard(number = 2, title = stringResource(Res.string.meal_step_what)) {
         val speech = rememberSpeechInput(Locale.current.toLanguageTag()) { text -> text?.let(viewModel::onVoiceResult) }
         OutlinedTextField(
@@ -247,16 +263,25 @@ private fun WhatStep(state: LogMealState, viewModel: LogMealViewModel, onCreateI
                     IconButton(onClick = start) { Icon(Icons.Outlined.Mic, contentDescription = voiceLabel) }
                 }
             },
-            modifier = Modifier.fillMaxWidth().onFocusChanged { searchFocused = it.isFocused },
+            modifier = Modifier.fillMaxWidth().onFocusChanged { onSearchFocus(it.isFocused) },
         )
-        if (state.dishResults.isNotEmpty()) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                state.dishResults.forEach { dish ->
-                    AssistChip(
-                        onClick = { viewModel.onFavoriteClick(dish) },
-                        label = { Text(dish.name) },
-                        leadingIcon = { Icon(Icons.Outlined.StarOutline, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                    )
+        // Phone test 21.11.: one letter matched almost every saved dish (by name or ingredient) and the big chips
+        // pushed the ingredients off the screen. Dishes from two letters on, at most three, as compact rows.
+        if (state.query.trim().length >= 2) {
+            state.dishResults.take(3).forEach { dish ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 48.dp)
+                        .clickable {
+                            viewModel.onFavoriteClick(dish)
+                            keyboard?.hide()
+                        }
+                        .padding(vertical = 10.dp),
+                ) {
+                    Icon(Icons.Outlined.StarOutline, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                    Text(dish.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 10.dp))
                 }
             }
         }
