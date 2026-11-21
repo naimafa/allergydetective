@@ -1,7 +1,5 @@
 package com.nfar.allergydetective.ui.home
 
-import allergydetective.shared.generated.resources.home_logo
-import androidx.compose.foundation.Image
 import allergydetective.shared.generated.resources.home_background
 import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.layout.ContentScale
@@ -198,8 +196,8 @@ private fun Header(greeting: Greeting, showDot: Boolean, onBell: () -> Unit) {
     // Compact like the picture: logo row, greeting and tagline close together.
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            // Logo picture of 21.11.2026 (docs/design/home-logo-source.webp, cut with LogoCut.java).
-            Image(painterResource(Res.drawable.home_logo), contentDescription = null, modifier = Modifier.size(52.dp))
+            // User code of 21.11.2026: the logo drawn in code (AllergyDetectiveLogo), 52 dp.
+            AllergyDetectiveLogo(Modifier.size(52.dp))
             Text(
                 stringResource(Res.string.home_brand),
                 // User code of 21.11.2026: bold in the app font (Inter), 18 sp next to the 52 dp logo.

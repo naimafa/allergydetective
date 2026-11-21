@@ -83,6 +83,57 @@ private fun DrawScope.broadLeaf(base: Offset, tip: Offset, widthRatio: Float, da
     }
 }
 
+/**
+ * Logo next to "Allergy Detective" (user's code of 21.11.2026 calls it; drawn after the user's logo
+ * picture, docs/design/home-logo-source.webp): a smaller light leaf to the left and a larger dark leaf
+ * to the upper right, growing from the same point, each with a white midrib and side veins.
+ * Coordinates measured from the picture in a 100 × 100 box.
+ */
+@Composable
+fun AllergyDetectiveLogo(modifier: Modifier = Modifier) {
+    Canvas(modifier) {
+        val k = size.minDimension / 100f
+        fun o(x: Float, y: Float) = Offset(x * k, y * k)
+        fun path(block: Path.() -> Unit) = Path().apply(block)
+        fun Path.m(x: Float, y: Float) = moveTo(x * k, y * k)
+        fun Path.c(x1: Float, y1: Float, x2: Float, y2: Float, x: Float, y: Float) = cubicTo(x1 * k, y1 * k, x2 * k, y2 * k, x * k, y * k)
+        fun Path.q(x1: Float, y1: Float, x: Float, y: Float) = quadraticTo(x1 * k, y1 * k, x * k, y * k)
+
+        val left = path {
+            m(40.8f, 87.4f)
+            c(25f, 80f, 6f, 72f, 2f, 50f)
+            c(-1f, 35f, 3f, 22f, 4.9f, 14.3f)
+            c(18f, 20f, 32f, 30f, 38f, 47f)
+            c(34f, 60f, 35f, 75f, 40.8f, 87.4f)
+            close()
+        }
+        val right = path {
+            m(41.9f, 87.9f)
+            c(33f, 70f, 36f, 45f, 48f, 33f)
+            c(62f, 20f, 85f, 16f, 99.7f, 11.7f)
+            c(97f, 30f, 95f, 50f, 82f, 66f)
+            c(70f, 80f, 52f, 80f, 41.9f, 87.9f)
+            close()
+        }
+        drawPath(left, Brush.linearGradient(listOf(Color(0xFFA6DB8B), Color(0xFF3D8A55)), start = o(4f, 14f), end = o(40f, 87f)))
+        drawPath(right, Brush.linearGradient(listOf(Color(0xFF7DBA79), Color(0xFF0D4A2A)), start = o(100f, 12f), end = o(42f, 88f)))
+
+        val vein = Color(0xFFF3F7E8)
+        val thick = Stroke(width = 1.6f * k, cap = StrokeCap.Round)
+        val thin = Stroke(width = 1.1f * k, cap = StrokeCap.Round)
+        // Left leaf: midrib and two side veins.
+        drawPath(path { m(6.3f, 17.8f); q(24f, 50f, 40.8f, 87.4f) }, vein, style = thick)
+        drawPath(path { m(5.2f, 45.5f); q(17f, 49f, 23f, 54.4f) }, vein, style = thin)
+        drawPath(path { m(25.7f, 30.3f); q(26f, 40f, 22.2f, 48.7f) }, vein, style = thin)
+        // Right leaf: midrib and four side veins.
+        drawPath(path { m(99.3f, 12f); c(80f, 32f, 60f, 52f, 52.4f, 61.2f); q(42f, 72f, 41.9f, 87.9f) }, vein, style = thick)
+        drawPath(path { m(60.2f, 31.9f); q(57f, 45f, 56f, 57f) }, vein, style = thin)
+        drawPath(path { m(79f, 24f); q(75f, 32f, 73.8f, 38.7f) }, vein, style = thin)
+        drawPath(path { m(91.6f, 38.4f); q(80f, 43f, 69.4f, 46.1f) }, vein, style = thin)
+        drawPath(path { m(82.2f, 55.5f); q(66f, 56f, 54.5f, 60.1f) }, vein, style = thin)
+    }
+}
+
 /** Heart with a white pulse line ("Symptome"). */
 @Composable
 fun HeartPulseIcon(color: Color, modifier: Modifier) {
