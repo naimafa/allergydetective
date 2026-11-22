@@ -133,9 +133,9 @@ fun AppNavHost(
                     ProfileCard(ProfileTint.SAGE) { LanguageSection() }
                     ProfileCard(ProfileTint.WARM) { ThemeSection() }
                     ProfileCard(ProfileTint.SAGE) { ReminderSection() }
-                    ProfileCard { SickPeriodSection(koinViewModel()) }
+                    ProfileCard(ProfileTint.WARM) { SickPeriodSection(koinViewModel()) }
                     // User note 21.11.2026: privacy details on their own screen, here only a short line.
-                    ProfileCard {
+                    ProfileCard(ProfileTint.SAGE) {
                         SectionTitle(stringResource(Res.string.privacy_title))
                         Text(stringResource(Res.string.privacy_card_text), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         OutlinedButton(onClick = { navController.navigate(PrivacyRoute) }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {

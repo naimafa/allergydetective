@@ -53,7 +53,8 @@ private val LightColors = lightColorScheme(
     onSurface = Color(0xFF293831),
     surfaceVariant = Color(0xFFDDE3DC),
     onSurfaceVariant = Color(0xFF5F6A63),
-    surfaceContainerLowest = Color.White,
+    // User note 22.11.2026: no pure white anywhere; the light cream of the page (like the filter chips) instead.
+    surfaceContainerLowest = Color(0xFFFBF4EA),
     surfaceContainerLow = Color(0xFFF4F1E3),
     surfaceContainer = Color(0xFFFBF8EC),
     surfaceContainerHigh = Color(0xFFEAE7D8),
@@ -199,11 +200,11 @@ private val LightExtra = ExtraColors(
         heart = Color(0xFFD47636),
         moon = Color(0xFFD47636),
         dot = Color(0xFFD9483B),
-        chevronCircle = Color(0xCCFFFFFF),
+        chevronCircle = Color(0xCCFBF4EA),
         tileGlow = Color(0x59FFFFFF),
-        nav = Color(0xFFFFF9EF),
+        nav = Color(0xFFFBF4EA),
         navInactive = Color(0xFF416783),
-        cardBorder = Color.White,
+        cardBorder = Color(0xFFEADFC9),
     ),
 )
 
