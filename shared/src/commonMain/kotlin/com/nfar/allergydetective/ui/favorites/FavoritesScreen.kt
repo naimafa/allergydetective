@@ -3,6 +3,8 @@ package com.nfar.allergydetective.ui.favorites
 import allergydetective.shared.generated.resources.favorites_drag
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.outlined.DragIndicator
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
 import allergydetective.shared.generated.resources.common_save
@@ -20,7 +22,6 @@ import allergydetective.shared.generated.resources.history_delete
 import allergydetective.shared.generated.resources.favorites_count
 import allergydetective.shared.generated.resources.favorites_delete_question
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
-import allergydetective.shared.generated.resources.favorites_more
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.foundation.layout.Arrangement
@@ -46,7 +47,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.foundation.layout.size
 import allergydetective.shared.generated.resources.favorites_log
@@ -55,8 +55,6 @@ import allergydetective.shared.generated.resources.favorites_search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -198,7 +196,6 @@ private fun DishCard(
     /** Drag handle (user note 21.11.2026: sort dishes with the finger); null while searching. */
     handle: Modifier? = null,
 ) {
-    var menuOpen by remember { mutableStateOf(false) }
     // User note 22.11.2026: the card of the start screen (cream white, fine border, soft shadow).
     val home = AppColors.extra.home
     Card(
@@ -212,6 +209,13 @@ private fun DishCard(
             // Design picture 22.11.2026: name with the actions at the top right, ingredients, then one wide button.
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(name, style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f).padding(top = 8.dp))
+                // User note 22.11.2026: from the right: drag handle, edit, delete (no more "…" menu).
+                IconButton(onClick = onDelete, modifier = Modifier.size(40.dp)) {
+                    Icon(Icons.Outlined.Delete, contentDescription = stringResource(Res.string.history_delete), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
+                }
+                IconButton(onClick = onEdit, modifier = Modifier.size(40.dp)) {
+                    Icon(Icons.Outlined.Edit, contentDescription = stringResource(Res.string.favorites_edit), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
+                }
                 if (handle != null) {
                     Icon(
                         Icons.Outlined.DragIndicator,
@@ -219,27 +223,6 @@ private fun DishCard(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = handle.size(40.dp).padding(8.dp),
                     )
-                }
-                Box {
-                    IconButton(onClick = { menuOpen = true }) {
-                        Icon(Icons.Outlined.MoreHoriz, contentDescription = stringResource(Res.string.favorites_more))
-                    }
-                    DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.favorites_edit)) },
-                            onClick = {
-                                menuOpen = false
-                                onEdit()
-                            },
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.history_delete), color = MaterialTheme.colorScheme.error) },
-                            onClick = {
-                                menuOpen = false
-                                onDelete()
-                            },
-                        )
-                    }
                 }
             }
             Text(
