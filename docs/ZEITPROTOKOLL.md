@@ -96,6 +96,14 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 21.11.2026 | 13:54–14:13 | 0:19 | 3 | Vorgeschlagenen Zweig-Code gerendert und verglichen (verworfen), PR #41 abgeschlossen | – |
 | 21.11.2026 | 14:13–14:47 | 0:34 | 3 | Dark Mode der Startseite (PR #42): Kacheln klar statt milchig, Waldgrün-Hintergrund, derselbe Zweig wie hell neu eingefärbt, drei Varianten zur Wahl, unscharfe Blätter zurückgenommen | Mehrere Runden, bis Zweig, Grün und Lichthof zum hellen Modus passten |
 | 21.11.2026 | 14:47–14:55 | 0:08 | Doku | Zeitprotokoll und PROGRESS für den 21.11. | – |
+| 21.11.2026 | 14:55–15:38 | 0:43 | 3 | App-Icon aus dem Lupen-Bild der Nutzerin, vereinfacht: grüne Ecke bis zum Lupenring, Gabel und Herz statt Blitz, vergrößert (PR #44) | Launcher zeigt neue Icons erst nach Neustart des Handys |
+| 21.11.2026 | 15:38–16:20 | 0:22 | 4 | Essen-Maske: Suche nicht verdeckt, Speichern über der Tastatur, Gerichte ab zwei Buchstaben, „enthält Tomate“ als Grund (PR #45) | Pause 15:49–16:14 |
+| 21.11.2026 | 20:14–20:54 | 0:40 | 4 | Testnotizen Teil 2: Synonyme in der Suche, Favoriten scrollen zum Gericht, „als Gericht speichern“, Verlauf neueste zuerst, eine klare Favoriten-Aktion, „gut vertragen“ erklärt, Profil in Karten, krank → Symptome, Einführung zum Wischen, Datenschutz als eigene Seite (PRs #46–#54) | `adb input tap` nicht erlaubt → Nutzerin öffnet die Masken selbst |
+| 22.11.2026 | 19:10–19:16 | 0:06 | 4 | Gewürze als eigene Kategorie inkl. Kurkuma (Migration 9 → 10, PR #55) | Neue Zutat erst nach Installation auf dem Handy sichtbar |
+| 22.11.2026 | 19:16–19:23 | 0:07 | 4 | Gerichte per Finger sortieren (Migration 10 → 11, PR #56) | – |
+| 22.11.2026 | 19:23–19:35 | 0:12 | 4 | Bericht und Export als PDF oder Excel, nur Analyse oder mit allen Einträgen; JSON entfernt (PR #57) | Excel ohne Bibliothek als xlsx selbst geschrieben |
+| 22.11.2026 | 19:35–19:55 | 0:20 | 4 | Sprachen im Profil: Deutsch, Englisch, Französisch, Arabisch (rechts nach links), rund 600 Texte je neue Sprache, Test auf vollständige Übersetzungen (PR #58) | Startbildschirm des Handys statt App im Vordergrund → Screenshot ungesehen gelöscht |
+| 22.11.2026 | 19:55–20:00 | 0:05 | Doku | Zeitprotokoll und PROGRESS für den 21. und 22.11. | – |
 
 ---
 
@@ -111,3 +119,4 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 - **20.11. in ca. 2:48 h, 14 PRs:** Die Verschlüsselung war der größte Block (ca. 1:07 h inkl. Handy-Test), weil es für Room 3 keinen fertigen SQLCipher-Treiber gibt. Der Fehler bei der Umstellung zeigte sich erst auf dem echten Gerät; die Regel „alte Datei erst nach geprüfter Kopie löschen“ hat die Daten geschützt.
 - **Handy-Screenshots schlagen Annahmen:** Der Abgleich Screen für Screen hat zwei echte Fehler bei Schriftgröße 125 % gefunden (abgeschnittenes „Datum“, fehlende Sterne), die in Tests und Code-Review nicht auffallen.
 - **21.11. in ca. 3:45 h, 2 PRs (#41, #42) mit über 30 Commits:** fast nur Startseite. Am Anfang kosteten geschätzte Farben und Größen viele Runden; schneller wurde es erst durch Messen im Bild und Bild-neben-Handy-Vergleiche. Eigene Bilder der Nutzerin (Hintergrund) waren am Ende besser als gezeichnete Blätter. Der Lesemodus des Handys hatte Farbvergleiche verfälscht.
+- **21.11. Nachmittag/Abend und 22.11. in ca. 2:45 h, 15 PRs (#44–#58):** Kleine, klar beschriebene Testnotizen gingen schnell (oft 3–5 min pro PR). Länger dauerten das Icon (viele Feinrunden nach Augenmaß) und die Sprachen (Übersetzung von rund 600 Texten). Französisch und Arabisch brauchen noch eine Durchsicht durch Muttersprachler.
