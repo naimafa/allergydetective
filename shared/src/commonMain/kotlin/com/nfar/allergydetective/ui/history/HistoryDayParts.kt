@@ -37,7 +37,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Bedtime
-import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.MonitorHeart
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material.icons.outlined.Edit
@@ -45,6 +45,10 @@ import androidx.compose.material.icons.outlined.Sick
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import com.nfar.allergydetective.ui.common.AppFilterChip
+import com.nfar.allergydetective.ui.common.ChipRowWithMore
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.lazy.items
+import com.nfar.allergydetective.ui.theme.AppColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -69,8 +73,10 @@ const val SICK_FACTOR_KEY = "sick"
 @Composable
 fun HistoryFilterRow(selected: HistoryFilter, onSelect: (HistoryFilter) -> Unit) {
     // One line that can be swiped sideways: with a large system font the four chips do not fit (phone test 19.11.).
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) {
-        HistoryFilter.entries.forEach { filter ->
+    // User note 22.11.2026: "Tagesabschlüsse" was hidden behind the edge; an arrow shows that the row goes on.
+    // On the page only the arrow: a fade would draw a box over the leaf picture (phone test 22.11.).
+    ChipRowWithMore(fadeColor = Color.Transparent) {
+        items(HistoryFilter.entries) { filter ->
             AppFilterChip(
                 selected = filter == selected,
                 onClick = { onSelect(filter) },
@@ -79,7 +85,7 @@ fun HistoryFilterRow(selected: HistoryFilter, onSelect: (HistoryFilter) -> Unit)
                         when (filter) {
                             HistoryFilter.ALL -> Icons.Outlined.ViewAgenda
                             HistoryFilter.FOOD -> Icons.Outlined.Restaurant
-                            HistoryFilter.SYMPTOMS -> Icons.Outlined.Bolt
+                            HistoryFilter.SYMPTOMS -> Icons.Outlined.MonitorHeart
                             HistoryFilter.DAYS -> Icons.Outlined.Bedtime
                         },
                         contentDescription = null,

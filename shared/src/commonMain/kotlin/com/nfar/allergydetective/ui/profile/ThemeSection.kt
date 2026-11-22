@@ -10,7 +10,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import com.nfar.allergydetective.ui.common.AppFilterChip
+import com.nfar.allergydetective.ui.common.ChoiceRow
+import com.nfar.allergydetective.ui.common.ChoicePill
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,25 +31,17 @@ fun ThemeSection(controller: ThemeController = koinInject()) {
     val mode by controller.mode.collectAsState()
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionTitle(stringResource(Res.string.theme_title))
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ThemeMode.entries.forEach { option ->
-                AppFilterChip(
-                    selected = mode == option,
-                    onClick = { controller.onModeChange(option) },
-                    label = {
-                        Text(
-                            stringResource(
-                                when (option) {
-                                    ThemeMode.AUTO -> Res.string.theme_auto
-                                    ThemeMode.LIGHT -> Res.string.theme_light
-                                    ThemeMode.DARK -> Res.string.theme_dark
-                                },
-                            ),
-                        )
-                    },
-                )
-            }
+        // User note 22.11.2026: the three options in one line.
+        val labels = ThemeMode.entries.map { option ->
+            stringResource(
+                when (option) {
+                    ThemeMode.AUTO -> Res.string.theme_auto
+                    ThemeMode.LIGHT -> Res.string.theme_light
+                    ThemeMode.DARK -> Res.string.theme_dark
+                },
+            )
         }
-        Text(stringResource(Res.string.theme_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        ChoiceRow(labels, ThemeMode.entries.indexOf(mode), { controller.onModeChange(ThemeMode.entries[it]) })
+        Text(stringResource(Res.string.theme_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

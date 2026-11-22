@@ -318,6 +318,23 @@ p, h1, h2, h3 { margin: 0; }
   .screen { border-radius: 30px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+/* User note 22.11.2026: the style of the start screen on every screen. Leaf background on every view, page titles
+   in Playfair 30, one type scale (card title 18 medium, entry 16 medium, text 15, chips 14), cream cards with a fine
+   border and soft shadow, round pills with a cream fill. */
+.view { background: var(--leaf-photo) center top -36px / 100% auto no-repeat, var(--home-page); }
+.appbar, .body { background: transparent; }
+.appbar .t-title { font-family: "Playfair Display", Georgia, serif; font-weight: 600; font-size: calc(30px * var(--fs)); color: var(--ink); }
+.t-tm { font-size: calc(18px * var(--fs)); font-weight: 500; }
+.chip { border-radius: 999px; background: var(--home-page); }
+.section { background: #F7EEDF; border: 1px solid rgba(24, 79, 52, .08); border-radius: 20px; padding: 6px 16px 16px; box-shadow: 0 2px 6px rgba(0, 0, 0, .06); }
+.step { background: #F7EEDF; border: 1px solid rgba(24, 79, 52, .08); box-shadow: 0 2px 6px rgba(0, 0, 0, .06); padding: 14px 16px; gap: 8px; }
+.step-num { background: #478661; color: #fff; }
+.chips.pills { flex-wrap: nowrap; gap: 6px; }
+.chips.pills .chip { justify-content: center; padding: 0 4px; min-width: 0; }
+.when-pill { flex: 0 0 auto; }
+.field { border-radius: 999px; background: #EEEAD9; border: 0; }
+.appbar:has(.when-pill) { flex-wrap: wrap; padding-top: 8px; }
+.appbar:has(.when-pill) .t-title { order: 3; flex-basis: 100%; padding-left: 12px; }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -415,16 +432,13 @@ p, h1, h2, h3 { margin: 0; }
 
       <!-- ===================== ESSEN ERFASSEN ===================== -->
       <section class="view" id="v-meal" data-title="Essen erfassen">
-        <header class="appbar"><button class="iconbtn" data-go="start" aria-label="Zurück"><svg><use href="#i-back"/></svg></button><h2 class="t-title">Essen erfassen</h2></header>
+        <header class="appbar"><button class="iconbtn" data-go="start" aria-label="Zurück"><svg><use href="#i-back"/></svg></button><h2 class="t-title">Essen erfassen</h2><button class="chip on noicon when-pill" style="margin-left:auto">Heute, 11:00</button></header>
         <div class="body" style="gap:14px">
           <section class="step">
-            <div class="step-head"><span class="step-num">1</span><h3 class="t-tm">Wann hast du gegessen?</h3></div>
-            <div class="chips" data-single><button class="chip on noicon">Heute</button><button class="chip noicon">Gestern</button><button class="chip noicon hasicon"><svg><use href="#i-cal"/></svg>Datum</button></div>
-            <div class="chips" data-single>
-              <button class="chip">Frühstück</button><button class="chip">Mittagessen</button><button class="chip">Abendessen</button>
-              <button class="chip">Snack</button><button class="chip on">Getränk</button>
-            </div>
-            <div class="row-between t-body"><span>Heute, 11:00</span><button class="btn text">Ändern</button></div>
+            <div class="step-head"><span class="step-num">1</span><h3 class="t-tm">Welche Mahlzeit?</h3></div>
+            <!-- 22.11.2026: only the meal kind, in two even rows; day and time sit in the pill at the top right. -->
+            <div class="chips pills" data-single><button class="chip noicon" style="flex:9">Frühstück</button><button class="chip noicon" style="flex:11">Mittagessen</button></div>
+            <div class="chips pills" data-single><button class="chip noicon" style="flex:12">Abendessen</button><button class="chip noicon" style="flex:7">Snack</button><button class="chip on noicon" style="flex:9">Getränk</button></div>
           </section>
           <section class="step">
             <div class="step-head"><span class="step-num">2</span><h3 class="t-tm">Was hast du gegessen?</h3></div>

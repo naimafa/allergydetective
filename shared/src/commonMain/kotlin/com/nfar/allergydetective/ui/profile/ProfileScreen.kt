@@ -50,7 +50,7 @@ fun ProfileScreen(
         ProfileCard { KnownAllergiesSection(state, viewModel::onToggle, viewModel::onSave) }
         ProfileCard {
             SectionTitle(stringResource(Res.string.onboarding_purpose_title))
-            Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

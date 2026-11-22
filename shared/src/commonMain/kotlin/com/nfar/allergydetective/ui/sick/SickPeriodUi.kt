@@ -169,7 +169,7 @@ fun SickPeriodSection(viewModel: SickPeriodsViewModel) {
     var showDialog by remember { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionTitle(stringResource(Res.string.sick_title))
-        Text(stringResource(Res.string.sick_hint), style = MaterialTheme.typography.bodySmall)
+        Text(stringResource(Res.string.sick_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (state.periods.isEmpty()) {
             Text(stringResource(Res.string.sick_empty), style = MaterialTheme.typography.bodyMedium)
         }

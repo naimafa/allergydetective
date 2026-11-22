@@ -11,28 +11,54 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.nfar.allergydetective.ui.theme.AppColors
+
+/** Soft colour of a profile card, the same two as the tiles on the start screen. */
+enum class ProfileTint { PLAIN, WARM, SAGE }
 
 /**
  * One area of the profile in its own card (user note 21.11.2026: "Profil sieht nicht ordentlich aus,
- * fast keine Trennung zwischen den Bereichen"). White card on the page, rounded, inner padding.
+ * fast keine Trennung zwischen den Bereichen").
+ * User note 22.11.2026: the style of the start screen in every screen. The cards take the soft apricot and
+ * sage gradients of the start tiles, with the fine border and soft shadow of its cards.
  */
 @Composable
-fun ProfileCard(content: @Composable ColumnScope.() -> Unit) {
-    // Dark mode (phone test 21.11.): the lowest surface is darker than the page, so the cards vanished. There they
-    // take a lighter container and a fine outline.
-    val scheme = MaterialTheme.colorScheme
-    val dark = scheme.background.luminance() < 0.5f
+fun ProfileCard(tint: ProfileTint = ProfileTint.PLAIN, content: @Composable ColumnScope.() -> Unit) {
+    val home = AppColors.extra.home
+    val gradient = when (tint) {
+        ProfileTint.PLAIN -> null
+        ProfileTint.WARM -> home.symptomTile
+        ProfileTint.SAGE -> home.mealTile
+    }
     Card(
-        colors = CardDefaults.cardColors(containerColor = if (dark) scheme.surfaceContainer else scheme.surfaceContainerLowest),
+        colors = CardDefaults.cardColors(containerColor = if (gradient == null) home.card else Color.Transparent, contentColor = home.ink),
         shape = MaterialTheme.shapes.large,
-        elevation = CardDefaults.cardElevation(defaultElevation = if (dark) 0.dp else 1.dp),
-        border = if (dark) BorderStroke(1.dp, scheme.outlineVariant) else null,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, home.cardBorder),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .drawBehind {
+                    if (gradient != null) {
+                        // Lighter than the tiles: the card carries text and chips, not one big icon.
+                        drawRect(home.card)
+                        drawRect(
+                            Brush.linearGradient(
+                                listOf(gradient.start.copy(alpha = 0.55f), gradient.end.copy(alpha = 0.55f)),
+                                start = Offset(size.width * 0.2f, 0f),
+                                end = Offset(size.width * 0.8f, size.height),
+                            ),
+                        )
+                    }
+                }
+                .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             content = content,
         )

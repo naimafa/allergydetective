@@ -24,6 +24,13 @@ import allergydetective.shared.generated.resources.favorites_more
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.TextField
+import androidx.compose.material3.ButtonDefaults
+import com.nfar.allergydetective.ui.common.searchPillColors
+import com.nfar.allergydetective.ui.theme.AppColors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -69,8 +76,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.nfar.allergydetective.ui.common.StatusBadge
-import com.nfar.allergydetective.ui.common.StatusKind
 import com.nfar.allergydetective.ui.meal.CustomIngredientDialog
 import org.jetbrains.compose.resources.pluralStringResource
 import com.nfar.allergydetective.ui.meal.CustomIngredientViewModel
@@ -104,19 +109,25 @@ fun FavoritesScreen(
     ) {
         if (state.favorites.isNotEmpty()) {
             item {
-                Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                    StatusBadge(pluralStringResource(Res.plurals.favorites_count, state.favorites.size, state.favorites.size), StatusKind.OPEN)
-                }
-            }
-            item {
-                OutlinedTextField(
+                // Design picture 22.11.2026: the same round search pill as in the meal screen.
+                TextField(
                     value = state.query,
                     onValueChange = viewModel::onQueryChange,
-                    placeholder = { Text(stringResource(Res.string.favorites_search)) },
+                    placeholder = { Text(stringResource(Res.string.favorites_search), maxLines = 1) },
                     leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
                     singleLine = true,
-                    shape = MaterialTheme.shapes.medium,
+                    shape = CircleShape,
+                    colors = searchPillColors(),
                     modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            // Design picture 22.11.2026: a small heading over the dishes instead of a badge in its own row.
+            item {
+                Text(
+                    pluralStringResource(Res.plurals.favorites_count, state.favorites.size, state.favorites.size),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 4.dp),
                 )
             }
             if (state.visibleFavorites.isEmpty()) {
@@ -188,40 +199,25 @@ private fun DishCard(
     handle: Modifier? = null,
 ) {
     var menuOpen by remember { mutableStateOf(false) }
-    OutlinedCard(
-        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+    // User note 22.11.2026: the card of the start screen (cream white, fine border, soft shadow).
+    val home = AppColors.extra.home
+    Card(
+        colors = CardDefaults.cardColors(containerColor = home.card, contentColor = home.ink),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, home.cardBorder),
         shape = MaterialTheme.shapes.large,
         modifier = modifier.fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.padding(start = 16.dp, end = 8.dp, top = 16.dp, bottom = 4.dp)) {
+        Column(modifier = Modifier.padding(start = 16.dp, end = 4.dp, top = 8.dp, bottom = 16.dp)) {
+            // Design picture 22.11.2026: name with the actions at the top right, ingredients, then one wide button.
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                Text(name, style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f).padding(top = 8.dp))
                 if (handle != null) {
                     Icon(
                         Icons.Outlined.DragIndicator,
                         contentDescription = stringResource(Res.string.favorites_drag),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = handle.size(40.dp).padding(8.dp),
-                    )
-                }
-            }
-            Text(
-                ingredients.joinToString(" · "),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 6.dp, end = 8.dp),
-            )
-            HorizontalDivider(modifier = Modifier.padding(top = 12.dp, end = 8.dp), color = MaterialTheme.colorScheme.surfaceContainerHigh)
-            // User note 21.11.2026: "Erfassen" in every row read as "add a dish below this row". The one action
-            // now says what it does ("Als Mahlzeit eintragen"); "Bearbeiten" moved into the "…" menu with "Löschen".
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 4.dp)) {
-                FilledTonalButton(onClick = onLog, contentPadding = PaddingValues(horizontal = 14.dp), modifier = Modifier.weight(1f)) {
-                    Icon(Icons.Outlined.Restaurant, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Text(
-                        stringResource(Res.string.favorites_log),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(start = 8.dp),
                     )
                 }
                 Box {
@@ -245,6 +241,27 @@ private fun DishCard(
                         )
                     }
                 }
+            }
+            Text(
+                ingredients.joinToString(" · "),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 2.dp, end = 12.dp),
+            )
+            // User note 21.11.2026: the one action says what it does ("Als Mahlzeit eintragen").
+            FilledTonalButton(
+                onClick = onLog,
+                shape = CircleShape,
+                colors = ButtonDefaults.filledTonalButtonColors(containerColor = AppColors.extra.home.badge, contentColor = AppColors.extra.home.accent),
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp, end = 12.dp).heightIn(min = 48.dp),
+            ) {
+                Icon(Icons.Outlined.Restaurant, contentDescription = null, modifier = Modifier.size(18.dp))
+                Text(
+                    stringResource(Res.string.favorites_log),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(start = 8.dp),
+                )
             }
         }
     }

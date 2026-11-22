@@ -23,6 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nfar.allergydetective.platform.rememberNotificationPermissionRequest
 import com.nfar.allergydetective.ui.common.SectionTitle
 import com.nfar.allergydetective.ui.common.formatClock
+import com.nfar.allergydetective.ui.common.ChoiceRow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -35,7 +36,7 @@ fun ReminderSection(viewModel: ReminderViewModel = koinViewModel()) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionTitle(stringResource(Res.string.reminder_setting))
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(Res.string.reminder_setting_hint), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(Res.string.reminder_setting_hint), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Switch(
                 checked = state.settings.enabled,
                 onCheckedChange = { enabled -> if (enabled) requestPermission() else viewModel.onEnabledChange(false) },
@@ -45,15 +46,13 @@ fun ReminderSection(viewModel: ReminderViewModel = koinViewModel()) {
             Text(stringResource(Res.string.reminder_denied), color = MaterialTheme.colorScheme.tertiary, style = MaterialTheme.typography.bodySmall)
         }
         if (state.settings.enabled) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                ReminderViewModel.HOURS.forEach { hour ->
-                    AppFilterChip(
-                        selected = state.settings.hour == hour && state.settings.minute == 0,
-                        onClick = { viewModel.onTimeChange(hour, 0) },
-                        label = { Text(formatClock(hour, 0)) },
-                    )
-                }
-            }
+            // User note 22.11.2026: all four times in one line ("22" had wrapped into a line of its own).
+            val hours = ReminderViewModel.HOURS
+            ChoiceRow(
+                hours.map { formatClock(it, 0) },
+                hours.indexOfFirst { state.settings.hour == it && state.settings.minute == 0 },
+                { viewModel.onTimeChange(hours[it], 0) },
+            )
         }
     }
 }

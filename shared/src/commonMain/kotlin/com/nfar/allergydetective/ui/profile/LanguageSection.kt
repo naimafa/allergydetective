@@ -44,7 +44,7 @@ fun LanguageSection(controller: LanguageController = koinInject()) {
                 )
             }
         }
-        Text(stringResource(Res.string.language_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(Res.string.language_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
