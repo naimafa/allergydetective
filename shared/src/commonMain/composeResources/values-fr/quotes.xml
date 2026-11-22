@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Citations du jour sur l’écran d’accueil (UX 2). Encourageantes, sans promesse de guérison. Traduction du 22.11.2026. -->
+<resources>
+    <string-array name="daily_quotes">
+        <item>Chaque note est une pièce du puzzle.</item>
+        <item>De petites notes aujourd’hui, des tendances plus claires demain.</item>
+        <item>Pas besoin d’être parfait. Continue, simplement.</item>
+        <item>Un jour oublié, ce n’est pas grave. La prochaine note compte tout autant.</item>
+        <item>Écouter son corps s’apprend. Tu t’entraînes.</item>
+        <item>Les tendances ont besoin de temps. Tu leur donnes ce temps.</item>
+        <item>Dix secondes aujourd’hui t’épargnent des devinettes plus tard.</item>
+        <item>La curiosité est une bonne compagne sur ce chemin.</item>
+        <item>Les bons jours sont aussi des indices.</item>
+        <item>Note-le, puis passe à autre chose.</item>
+        <item>Tu connais ton corps mieux que n’importe quelle appli. Celle-ci prend juste des notes.</item>
+        <item>Chaque jour confirmé rend l’image plus nette.</item>
+        <item>Sans pression, sans série à tenir. Juste des indices.</item>
+        <item>Ce que tu remarques aujourd’hui comptera peut-être la semaine prochaine.</item>
+        <item>Être régulier vaut mieux qu’être complet.</item>
+        <item>Un regard calme sur les faits aide plus que l’inquiétude.</item>
+        <item>Tu rassembles des indices, tu ne te juges pas.</item>
+        <item>Un repas après l’autre.</item>
+        <item>Le sommeil et le stress font aussi partie de l’histoire.</item>
+        <item>Tes notes restent avec toi. Uniquement sur ce téléphone.</item>
+        <item>L’enquête est discrète, mais elle s’additionne.</item>
+        <item>Même « il ne s’est rien passé » est une information utile.</item>
+        <item>Quelques gestes maintenant, une meilleure discussion avec ton médecin plus tard.</item>
+        <item>Tu le fais pour toi. Et ça compte.</item>
+        <item>Un indice n’a pas besoin d’être grand pour être utile.</item>
+        <item>Aujourd’hui est un bon jour pour une petite note.</item>
+        <item>Remarquer, noter, continuer.</item>
+        <item>Ton toi de demain te remerciera pour ces notes.</item>
+        <item>La patience transforme de petites notes en une tendance claire.</item>
+        <item>Se sentir bien, ça vaut aussi la peine d’être noté.</item>
+        <item>Chaque jour noté apporte un peu plus de certitude.</item>
+        <item>Il n’y a pas de mauvaise note. Seulement plus d’informations.</item>
+        <item>Respire. Puis note.</item>
+        <item>Pas à pas, l’image devient plus claire.</item>
+        <item>Tes observations ont de la valeur.</item>
+        <item>On peut recommencer n’importe quel jour.</item>
+        <item>Un bon détective prend des notes.</item>
+        <item>Lentement mais sûrement, on trouve les indices.</item>
+        <item>La bienveillance envers soi fait partie du chemin.</item>
+        <item>Aujourd’hui compte, quoi qu’il apporte.</item>
+    </string-array>
+</resources>

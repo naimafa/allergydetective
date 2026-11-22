@@ -168,6 +168,9 @@
     <string name="report_level_strong">Strong suspicion</string>
     <string name="report_no_patterns">No patterns yet. More confirmed days are needed.</string>
     <string name="report_footer">Allergy Detective · created on %1$s</string>
+    <string name="language_title">Language</string>
+    <string name="language_system">Like the phone</string>
+    <string name="language_hint">French and Arabic are newly translated. If a text looks wrong to you, let us know.</string>
     <string name="theme_title">Appearance</string>
     <string name="theme_auto">Automatic</string>
     <string name="theme_light">Light</string>

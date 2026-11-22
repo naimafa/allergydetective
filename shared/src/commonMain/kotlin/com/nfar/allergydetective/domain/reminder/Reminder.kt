@@ -19,6 +19,10 @@ interface SettingsStore {
     /** Automatic, light or dark (feedback 19.11.). */
     fun themeMode(): ThemeMode = ThemeMode.AUTO
     fun saveThemeMode(mode: ThemeMode) = Unit
+
+    /** App language (user note 21.11.2026): null = like the phone, otherwise "de", "en", "fr" or "ar". */
+    fun appLanguage(): String? = null
+    fun saveAppLanguage(language: String?) = Unit
 }
 
 /**

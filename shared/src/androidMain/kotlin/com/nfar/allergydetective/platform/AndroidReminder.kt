@@ -60,8 +60,15 @@ class SharedPreferencesSettingsStore(context: Context) : SettingsStore {
         prefs.edit().putString(KEY_THEME, mode.name).apply()
     }
 
+    override fun appLanguage(): String? = prefs.getString(KEY_LANGUAGE, null)
+
+    override fun saveAppLanguage(language: String?) {
+        prefs.edit().apply { if (language == null) remove(KEY_LANGUAGE) else putString(KEY_LANGUAGE, language) }.apply()
+    }
+
     private companion object {
         const val KEY_THEME = "theme_mode"
+        const val KEY_LANGUAGE = "app_language"
         const val KEY_ENABLED = "reminder_enabled"
         const val KEY_HOUR = "reminder_hour"
         const val KEY_MINUTE = "reminder_minute"

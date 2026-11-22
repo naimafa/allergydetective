@@ -4,6 +4,7 @@ import allergydetective.shared.generated.resources.privacy_card_button
 import allergydetective.shared.generated.resources.privacy_card_text
 import allergydetective.shared.generated.resources.privacy_title
 import androidx.compose.material3.MaterialTheme
+import com.nfar.allergydetective.ui.profile.LanguageSection
 import com.nfar.allergydetective.ui.common.SectionTitle
 import com.nfar.allergydetective.ui.profile.PrivacyScreen
 import androidx.compose.runtime.Composable
@@ -127,6 +128,7 @@ fun AppNavHost(
                 // User note 21.11.2026: each area in its own card.
                 profileExtra = {
                     ProfileCard { DoctorReportSection() }
+                    ProfileCard { LanguageSection() }
                     ProfileCard { ThemeSection() }
                     ProfileCard { ReminderSection() }
                     ProfileCard { SickPeriodSection(koinViewModel()) }

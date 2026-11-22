@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.di
 
+import com.nfar.allergydetective.ui.theme.LanguageController
 import com.nfar.allergydetective.AppStartup
 import com.nfar.allergydetective.data.db.dao.SickPeriodDao
 import com.nfar.allergydetective.data.diary.RoomSickPeriodRepository
@@ -149,4 +150,5 @@ val appModule = module {
     single { AppStartup(seeder = get(), scope = get(AppScope), settings = get(), reminders = get(), duplicates = get()) }
     viewModelOf(::ReminderViewModel)
     single { ThemeController(store = get()) }
+    single { LanguageController(store = get()) }
 }
