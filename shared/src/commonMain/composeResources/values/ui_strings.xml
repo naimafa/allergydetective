@@ -212,6 +212,7 @@
     <string name="favorites_search">Search dish or ingredient …</string>
     <string name="favorites_no_match">No dish found.</string>
     <string name="favorites_log">Log as a meal</string>
+    <string name="favorites_drag">Hold and drag to sort</string>
     <string name="history_save_favorite">Save as favourite</string>
     <string name="favorites_editor_title">New dish</string>
     <string name="favorites_name">Name, e.g. lentil soup</string>

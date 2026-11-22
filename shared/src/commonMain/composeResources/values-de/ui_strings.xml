@@ -212,6 +212,7 @@
     <string name="favorites_search">Gericht oder Zutat suchen …</string>
     <string name="favorites_no_match">Kein Gericht gefunden.</string>
     <string name="favorites_log">Als Mahlzeit eintragen</string>
+    <string name="favorites_drag">Gedrückt halten und ziehen zum Sortieren</string>
     <string name="history_save_favorite">Als Favorit speichern</string>
     <string name="favorites_editor_title">Neues Gericht</string>
     <string name="favorites_name">Name, z.B. Linsensuppe</string>

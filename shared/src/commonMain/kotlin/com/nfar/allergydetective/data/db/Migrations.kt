@@ -96,7 +96,19 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
+    /** User note 21.11.2026: dishes in the user's own order. Existing dishes start alphabetically, as before. */
+    val MIGRATION_10_11 = object : Migration(10, 11) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE favorites ADD COLUMN sortOrder INTEGER NOT NULL DEFAULT 0")
+            connection.execSQL(
+                "UPDATE favorites SET sortOrder = (SELECT COUNT(*) FROM favorites f2 " +
+                    "WHERE f2.name COLLATE NOCASE < favorites.name COLLATE NOCASE " +
+                    "OR (f2.name COLLATE NOCASE = favorites.name COLLATE NOCASE AND f2.id < favorites.id))",
+            )
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11)
 
     private const val OILS_CATEGORY = 13L
     private const val SPICES_CATEGORY = 14L
