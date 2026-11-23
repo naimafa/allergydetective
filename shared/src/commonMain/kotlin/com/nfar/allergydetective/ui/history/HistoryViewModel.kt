@@ -79,8 +79,8 @@ class HistoryViewModel(
             val byDay = entries.groupBy { clock.epochDayOf(it.time) }
             val days = (today downTo fromDay)
                 .filter { it in byDay || it in checks }
-                // Within a day in diary order: morning first.
-                .map { HistoryDay(it, byDay[it].orEmpty().sortedBy { entry -> entry.time }, checks[it]) }
+                // User note 21.11.2026: newest first in every filter, also within a day (latest time, then latest saved).
+                .map { HistoryDay(it, byDay[it].orEmpty().sortedWith(compareByDescending<HistoryEntry> { e -> e.time }.thenByDescending { e -> e.id }), checks[it]) }
             val factorKeys = dayChecks.lifestyleFactors().associate { it.id to it.key }
             _state.update { it.copy(loading = false, days = days, factorKeys = factorKeys) }
         }
