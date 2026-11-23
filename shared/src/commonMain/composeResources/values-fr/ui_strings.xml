@@ -319,6 +319,7 @@
     <string name="meal_dish_expand">Afficher les ingrédients</string>
     <string name="meal_dish_collapse">Masquer les ingrédients</string>
     <string name="meal_dish_count">Ingrédients : %1$d</string>
+    <string name="meal_dish_prep_missing">Cru ou cuit : à choisir</string>
     <string name="meal_portion_info">Que veulent dire S, M et L ?</string>
     <string name="meal_prep_raw">cru</string>
     <string name="meal_prep_cooked">cuit</string>

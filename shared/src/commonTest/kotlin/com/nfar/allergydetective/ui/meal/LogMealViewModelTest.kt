@@ -88,7 +88,7 @@ class LogMealViewModelTest {
 
         vm.onFavoriteClick(vm.state.value.favorites.single())
 
-        assertEquals(listOf(SelectedIngredient(bread), SelectedIngredient(milk, Portion.LARGE)), vm.state.value.selected)
+        assertEquals(listOf(SelectedIngredient(bread), SelectedIngredient(milk, Portion.LARGE, dishId = 7)), vm.state.value.selected)
         vm.onSlotChange(MealSlot.BREAKFAST)
         vm.onSave()
         assertEquals(7L, repository.mealFavoriteIds.single())
@@ -130,6 +130,19 @@ class LogMealViewModelTest {
         vm.onToggleIngredient(milk)
 
         assertNull(vm.state.value.favoriteId)
+    }
+
+    @Test
+    fun twoDishesKeepTheirOwnIngredients() {
+        repository.favorites += FavoriteInfo(7, "Brot", listOf(MealItem(bread.id, Portion.MEDIUM)))
+        repository.favorites += FavoriteInfo(8, "Milch", listOf(MealItem(milk.id, Portion.LARGE)))
+        val vm = viewModel()
+
+        vm.onFavoriteClick(vm.state.value.favorites.first { it.id == 7L })
+        vm.onFavoriteClick(vm.state.value.favorites.first { it.id == 8L })
+        vm.onToggleIngredient(coffee)
+
+        assertEquals(listOf(7L, 8L, null), vm.state.value.selected.map { it.dishId })
     }
 
     private val coffee = IngredientInfo(1101, "coffee", null, BEVERAGES_CATEGORY_ID)
@@ -446,7 +459,7 @@ class LogMealViewModelTest {
 
         vm.startWithFavorite(7)
 
-        assertEquals(listOf(SelectedIngredient(milk, Portion.LARGE)), vm.state.value.selected)
+        assertEquals(listOf(SelectedIngredient(milk, Portion.LARGE, dishId = 7)), vm.state.value.selected)
         assertEquals(7L, vm.state.value.favoriteId)
         // The meal is still chosen by the user.
         assertNull(vm.state.value.slot)

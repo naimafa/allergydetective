@@ -105,6 +105,8 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -118,6 +120,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -286,6 +289,8 @@ private fun LogMealContent(
                 onAddMore = onAddMore,
             )
         }
+        // User 23.11.2026: saving as a dish in its own card, so it clearly means the whole meal, not one ingredient.
+        if (state.selected.isNotEmpty()) item { SaveAsDishCard(state, viewModel) }
         // Room below the last step, so starting a search can scroll the search field to the top.
         if (searchActive) item { Spacer(Modifier.height(480.dp)) }
     }
@@ -451,7 +456,9 @@ private fun WhatStep(
             ChipRowWithMore(favoritesRow) {
                 items(state.favorites, key = { it.id }) { favorite ->
                     AppFilterChip(
-                        selected = state.favoriteId == favorite.id,
+                        // User 23.11.2026: every chosen dish is marked, by its colour only (no check mark).
+                        selected = state.selected.any { it.dishId == favorite.id },
+                        showCheck = false,
                         onClick = { viewModel.onFavoriteClick(favorite) },
                         label = { Text(favorite.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp)) },
                         // Design picture 22.11.2026: a star after the name marks a saved dish.
@@ -466,6 +473,7 @@ private fun WhatStep(
                 items(state.recent, key = { it.id }) { ingredient ->
                     AppFilterChip(
                         selected = ingredient.id in selectedIds,
+                        showCheck = false,
                         onClick = { viewModel.onToggleIngredient(ingredient) },
                         label = { Text(ingredientName(ingredient), maxLines = 1) },
                         // Design picture 22.11.2026: "+" shows that a tap adds the ingredient.
@@ -480,28 +488,33 @@ private fun WhatStep(
         if (state.containsKnownAllergy) {
             Text(stringResource(Res.string.meal_allergy_hint), color = MaterialTheme.colorScheme.tertiary, style = MaterialTheme.typography.bodyMedium)
         }
-        SaveAsDish(state, viewModel)
     }
 }
-
 /**
  * Design picture 23.11.2026: the chosen ingredients sit inside step 2 under "Zutaten" (no own step "Wie viel?"),
- * with the dish as a header above them and "Weitere Zutat hinzufügen" below.
+ * each dish as a header over its own ingredients, single ingredients after the dishes, "Weitere Zutat
+ * hinzufügen" below. User 23.11.: two dishes in one meal each keep their header and ingredients; each arrow
+ * folds only its own dish.
  */
 @Composable
 private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMealViewModel, onAddMore: (() -> Unit)?) {
     if (state.selected.isEmpty()) return
-    // The dish's ingredients that are still chosen; the header goes once the last one is removed.
-    val dish = state.favorites.firstOrNull { it.id == state.favoriteId }
-    val dishIds = dish?.items?.map { it.ingredientId }?.toSet().orEmpty() intersect state.selected.map { it.ingredient.id }.toSet()
-    var dishOpen by remember(state.favoriteId) { mutableStateOf(true) }
-    // Raw / cooked still missing in a folded dish: open it, or saving would stay blocked without a visible reason.
-    val dishExpanded = dishOpen || state.selected.any { it.ingredient.id in dishIds && it.ingredient.id in state.needsPreparation && it.preparation == null }
-    if (dish != null && dishIds.isNotEmpty()) {
-        DishHeader(dish.name, dishIds.size, dishExpanded) { dishOpen = !dishExpanded }
+    val dishesById = state.favorites.associateBy { it.id }
+    // Newest first; an ingredient whose dish was deleted in the meantime counts as a single one.
+    val newestFirst = state.selected.asReversed()
+    val groups = newestFirst.groupBy { item -> item.dishId?.takeIf { it in dishesById } }
+    val dishIds = groups.keys.filterNotNull()
+    val folded = remember { mutableStateMapOf<Long, Boolean>() }
+    PortionLabel()
+    dishIds.forEach { dishId ->
+        val items = groups.getValue(dishId).asReversed()
+        val open = folded[dishId] != true
+        // Folded with raw / cooked still missing: the header says so, or saving would stay blocked without a reason.
+        val missing = items.any { it.ingredient.id in state.needsPreparation && it.preparation == null }
+        DishHeader(dishesById.getValue(dishId).name, items.size, open, missing) { folded[dishId] = open }
+        if (open) IngredientRows(state, items, viewModel)
     }
-    val shown = state.selected.asReversed().filter { dishExpanded || it.ingredient.id !in dishIds }
-    if (shown.isNotEmpty()) IngredientList(state, shown, viewModel)
+    groups[null]?.let { IngredientRows(state, it, viewModel) }
     onAddMore?.let { add ->
         OutlinedButton(
             onClick = add,
@@ -516,9 +529,9 @@ private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMea
     }
 }
 
-/** "Zutaten" with the S/M/L explanation behind the info icon, then one row per ingredient, newest first. */
+/** "Zutaten" with the S/M/L explanation behind the info icon. */
 @Composable
-private fun ColumnScope.IngredientList(state: LogMealState, shown: List<SelectedIngredient>, viewModel: LogMealViewModel) {
+private fun PortionLabel() {
     var showPortionHelp by remember { mutableStateOf(false) }
     val infoLabel = stringResource(Res.string.meal_portion_info)
     Row(
@@ -535,9 +548,12 @@ private fun ColumnScope.IngredientList(state: LogMealState, shown: List<Selected
     if (showPortionHelp) {
         Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
+}
+
+@Composable
+private fun IngredientRows(state: LogMealState, items: List<SelectedIngredient>, viewModel: LogMealViewModel) {
     Column {
-        // Newest first: what was just added appears on top.
-        shown.forEachIndexed { index, item ->
+        items.forEachIndexed { index, item ->
             if (index > 0) HorizontalDivider(color = AppColors.extra.home.cardBorder)
             SelectedRow(item, item.ingredient.id in state.needsPreparation, viewModel)
         }
@@ -545,26 +561,34 @@ private fun ColumnScope.IngredientList(state: LogMealState, shown: List<Selected
 }
 
 @Composable
-private fun ColumnScope.SaveAsDish(state: LogMealState, viewModel: LogMealViewModel) {
-    if (state.selected.isEmpty()) return
-    run {
-        // User note 21.11.2026: "Als Favorit speichern" read as if only one ingredient were saved. The text names
-        // the whole meal as a dish, the hint says what happens.
-        Row(verticalAlignment = Alignment.Top, modifier = Modifier.clickable { viewModel.onSaveAsFavoriteChange(!state.saveAsFavorite) }) {
-            Checkbox(checked = state.saveAsFavorite, onCheckedChange = viewModel::onSaveAsFavoriteChange)
-            Column(modifier = Modifier.padding(top = 12.dp)) {
-                Text(stringResource(Res.string.meal_save_as_favorite))
-                Text(stringResource(Res.string.meal_save_as_favorite_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+private fun SaveAsDishCard(state: LogMealState, viewModel: LogMealViewModel) {
+    val home = AppColors.extra.home
+    Card(
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = home.card, contentColor = home.ink),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, home.cardBorder),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.padding(start = 4.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)) {
+            // User note 21.11.2026: "Als Favorit speichern" read as if only one ingredient were saved. The text names
+            // the whole meal as a dish, the hint says what happens.
+            Row(verticalAlignment = Alignment.Top, modifier = Modifier.clickable { viewModel.onSaveAsFavoriteChange(!state.saveAsFavorite) }) {
+                Checkbox(checked = state.saveAsFavorite, onCheckedChange = viewModel::onSaveAsFavoriteChange)
+                Column(modifier = Modifier.padding(top = 12.dp)) {
+                    Text(stringResource(Res.string.meal_save_as_favorite), style = MaterialTheme.typography.titleSmall)
+                    Text(stringResource(Res.string.meal_save_as_favorite_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
-        }
-        if (state.saveAsFavorite) {
-            OutlinedTextField(
-                value = state.favoriteName,
-                onValueChange = viewModel::onFavoriteNameChange,
-                label = { Text(stringResource(Res.string.meal_favorite_name)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            if (state.saveAsFavorite) {
+                OutlinedTextField(
+                    value = state.favoriteName,
+                    onValueChange = viewModel::onFavoriteNameChange,
+                    label = { Text(stringResource(Res.string.meal_favorite_name)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().padding(start = 12.dp, top = 8.dp),
+                )
+            }
         }
     }
 }

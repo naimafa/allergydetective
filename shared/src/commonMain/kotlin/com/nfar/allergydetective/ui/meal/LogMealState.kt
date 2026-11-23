@@ -13,6 +13,11 @@ data class SelectedIngredient(
     val portion: Portion = Portion.MEDIUM,
     /** Raw or cooked; must be chosen for ingredients in [LogMealState.needsPreparation]. */
     val preparation: Preparation? = null,
+    /**
+     * The dish it came with (user 23.11.2026: two dishes in one meal each keep their own ingredients under their
+     * header), null when picked on its own. Only for the screen; the meal stores one favourite as before.
+     */
+    val dishId: Long? = null,
 )
 
 data class LogMealState(

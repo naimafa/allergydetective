@@ -5,6 +5,7 @@ import allergydetective.shared.generated.resources.meal_remove
 import allergydetective.shared.generated.resources.meal_dish_collapse
 import allergydetective.shared.generated.resources.meal_dish_count
 import allergydetective.shared.generated.resources.meal_dish_expand
+import allergydetective.shared.generated.resources.meal_dish_prep_missing
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
@@ -136,19 +148,17 @@ private fun mealSlotIcon(slot: MealSlot): ImageVector = when (slot) {
 
 /**
  * The picture of an ingredient (design picture 23.11.2026). There are hundreds of ingredients and no photo for
- * each (user 23.11.: agreed), so its category shows as an emoji; own ingredients without a category get their
+ * each (user 23.11.: agreed), so it shows a picture of its kind; own ingredients without a category get their
  * first letter in a sage circle.
  */
 @Composable
 fun IngredientBadge(ingredient: IngredientInfo, name: String) {
-    val emoji = ingredient.categoryId?.let(CATEGORY_EMOJI::get)
-    val density = LocalDensity.current
     Box(contentAlignment = Alignment.Center, modifier = Modifier.size(40.dp)) {
-        if (emoji != null) {
-            // In dp, not sp: the font scale of 125 % would push the picture out of its place.
-            Text(emoji, fontSize = with(density) { 26.dp.toSp() }, lineHeight = with(density) { 32.dp.toSp() })
-        } else {
-            Surface(shape = CircleShape, color = AppColors.extra.home.badge, contentColor = AppColors.extra.home.ink, modifier = Modifier.size(34.dp)) {
+        when (val picture = ingredientPicture(ingredient)) {
+            IngredientPicture.OilBottle -> OilBottle(Modifier.size(34.dp))
+            IngredientPicture.MixedVegetables -> MixedVegetables()
+            is IngredientPicture.Emoji -> EmojiText(picture.emoji, 26.dp)
+            null -> Surface(shape = CircleShape, color = AppColors.extra.home.badge, contentColor = AppColors.extra.home.ink, modifier = Modifier.size(34.dp)) {
                 Box(contentAlignment = Alignment.Center) {
                     Text(name.take(1).uppercase(), style = MaterialTheme.typography.titleSmall)
                 }
@@ -157,10 +167,90 @@ fun IngredientBadge(ingredient: IngredientInfo, name: String) {
     }
 }
 
+private sealed interface IngredientPicture {
+    data object OilBottle : IngredientPicture
+    data object MixedVegetables : IngredientPicture
+    data class Emoji(val emoji: String) : IngredientPicture
+}
+
+/**
+ * User 23.11.2026: oils as a vessel full of oil, olives as the olive branch, every vegetable as a picture
+ * of several vegetables. The rest by category.
+ */
+private fun ingredientPicture(ingredient: IngredientInfo): IngredientPicture? {
+    KEY_EMOJI[ingredient.key]?.let { return IngredientPicture.Emoji(it) }
+    return when (ingredient.categoryId) {
+        OILS_FATS -> IngredientPicture.OilBottle
+        VEGETABLES -> IngredientPicture.MixedVegetables
+        else -> ingredient.categoryId?.let(CATEGORY_EMOJI::get)?.let(IngredientPicture::Emoji)
+    }
+}
+
+/** Emoji in dp, not sp: the font scale of 125 % would push the picture out of its place. */
+@Composable
+private fun EmojiText(emoji: String, size: Dp, modifier: Modifier = Modifier) {
+    val density = LocalDensity.current
+    Text(emoji, fontSize = with(density) { size.toSp() }, lineHeight = with(density) { (size * 1.25f).toSp() }, modifier = modifier)
+}
+
+/** Carrot and tomato behind, broccoli in front: "Gemüse" as one picture. */
+@Composable
+private fun MixedVegetables() {
+    Box(modifier = Modifier.size(40.dp)) {
+        EmojiText("🥕", 18.dp, Modifier.align(Alignment.TopStart).rotate(-20f))
+        EmojiText("🍅", 17.dp, Modifier.align(Alignment.TopEnd))
+        EmojiText("🥦", 21.dp, Modifier.align(Alignment.BottomCenter))
+    }
+}
+
+/** A glass bottle full of golden oil with a cork; no emoji shows oil. */
+@Composable
+private fun OilBottle(modifier: Modifier) {
+    Canvas(modifier) {
+        val w = size.width
+        val h = size.height
+        val glass = Color(0xFFDCE6D2)
+        val outline = Color(0xFF8FA486)
+        // Body and shoulders.
+        val body = Path().apply {
+            moveTo(w * 0.40f, h * 0.22f)
+            lineTo(w * 0.60f, h * 0.22f)
+            lineTo(w * 0.60f, h * 0.34f)
+            cubicTo(w * 0.78f, h * 0.40f, w * 0.80f, h * 0.48f, w * 0.80f, h * 0.56f)
+            lineTo(w * 0.80f, h * 0.88f)
+            quadraticTo(w * 0.80f, h * 0.96f, w * 0.72f, h * 0.96f)
+            lineTo(w * 0.28f, h * 0.96f)
+            quadraticTo(w * 0.20f, h * 0.96f, w * 0.20f, h * 0.88f)
+            lineTo(w * 0.20f, h * 0.56f)
+            cubicTo(w * 0.20f, h * 0.48f, w * 0.22f, h * 0.40f, w * 0.40f, h * 0.34f)
+            close()
+        }
+        drawPath(body, glass)
+        // Oil up to the shoulders.
+        clipPath(body) {
+            drawRect(
+                Brush.verticalGradient(listOf(Color(0xFFF2C94C), Color(0xFFC99A1E)), startY = h * 0.44f, endY = h * 0.96f),
+                topLeft = Offset(0f, h * 0.44f),
+                size = Size(w, h * 0.56f),
+            )
+            drawRect(Color.White.copy(alpha = 0.35f), topLeft = Offset(w * 0.27f, h * 0.48f), size = Size(w * 0.07f, h * 0.38f))
+        }
+        drawPath(body, outline, style = Stroke(width = w * 0.045f))
+        // Cork.
+        drawRoundRect(Color(0xFFB07A45), topLeft = Offset(w * 0.37f, h * 0.06f), size = Size(w * 0.26f, h * 0.18f), cornerRadius = CornerRadius(w * 0.05f))
+    }
+}
+
+private const val VEGETABLES = 7L
+private const val OILS_FATS = 13L
+
+/** Single ingredients with their own picture. */
+private val KEY_EMOJI = mapOf("olives" to "🫒", "margarine" to "🧈")
+
 /** Seed categories (categories.json) → emoji. */
 private val CATEGORY_EMOJI = mapOf(
-    1L to "🍞", 2L to "🥛", 3L to "🧀", 4L to "🍖", 5L to "🐟", 6L to "🥚", 7L to "🥬",
-    8L to "🍎", 9L to "🥜", 10L to "🫘", 11L to "🥤", 12L to "🍯", 13L to "🫒", 14L to "🌿",
+    1L to "🍞", 2L to "🥛", 3L to "🧀", 4L to "🍖", 5L to "🐟", 6L to "🥚",
+    8L to "🍎", 9L to "🥜", 10L to "🫘", 11L to "🥤", 12L to "🍯", 14L to "🌿",
 )
 
 private val SEGMENT_WIDTH = 40.dp
@@ -266,11 +356,12 @@ private fun DeleteButton(name: String, onClick: () -> Unit) {
 
 /**
  * The chosen dish as a header over its ingredients (design picture 23.11.2026). User 23.11.: an arrow folds the
- * dish's ingredients in and out instead of a ✕; folded, the header says how many there are. Ingredients are
+ * dish's ingredients in and out instead of a ✕; folded, the header says how many there are (and when raw / cooked
+ * is still missing inside). Ingredients are
  * still removed one by one with their bin.
  */
 @Composable
-fun DishHeader(name: String, count: Int, expanded: Boolean, onToggle: () -> Unit) {
+fun DishHeader(name: String, count: Int, expanded: Boolean, missingPreparation: Boolean, onToggle: () -> Unit) {
     val home = AppColors.extra.home
     val density = LocalDensity.current
     val action = stringResource(if (expanded) Res.string.meal_dish_collapse else Res.string.meal_dish_expand)
@@ -288,6 +379,9 @@ fun DishHeader(name: String, count: Int, expanded: Boolean, onToggle: () -> Unit
                 Text(name, style = MaterialTheme.typography.titleMedium)
                 if (!expanded) {
                     Text(stringResource(Res.string.meal_dish_count, count), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (missingPreparation) {
+                        Text(stringResource(Res.string.meal_dish_prep_missing), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                    }
                 }
             }
             Icon(if (expanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.size(26.dp))

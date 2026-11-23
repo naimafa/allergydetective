@@ -323,6 +323,7 @@
     <string name="meal_dish_expand">Show ingredients</string>
     <string name="meal_dish_collapse">Hide ingredients</string>
     <string name="meal_dish_count">Ingredients: %1$d</string>
+    <string name="meal_dish_prep_missing">Raw or cooked still missing</string>
     <string name="meal_portion_info">What do S, M and L mean?</string>
     <string name="meal_prep_raw">raw</string>
     <string name="meal_prep_cooked">cooked</string>

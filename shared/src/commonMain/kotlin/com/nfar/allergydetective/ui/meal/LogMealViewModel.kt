@@ -92,12 +92,16 @@ class LogMealViewModel(
                     day = daysAgo,
                     favoriteId = meal.favoriteId,
                     selected = meal.items.mapNotNull { item ->
-                        ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation) }
+                        ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation, dishId = dishOf(state, meal.favoriteId, item.ingredientId)) }
                     },
                 )
             }
         }
     }
+
+    /** The dish an ingredient of an edited meal belongs to: the meal's favourite, if the ingredient is part of it. */
+    private fun dishOf(state: LogMealState, favoriteId: Long?, ingredientId: Long): Long? =
+        favoriteId?.takeIf { id -> state.favorites.firstOrNull { it.id == id }?.items?.any { it.ingredientId == ingredientId } == true }
 
     /** "Log" on a dish in the favourites (self-test 19.11.): the form starts with its ingredients; the meal is chosen as usual. */
     fun startWithFavorite(favoriteId: Long) {
@@ -240,7 +244,7 @@ class LogMealViewModel(
             val known = state.selected.map { it.ingredient.id }.toSet()
             val added = favorite.items
                 .filter { it.ingredientId !in known }
-                .mapNotNull { item -> ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation) } }
+                .mapNotNull { item -> ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation, dishId = favorite.id) } }
             state.copy(selected = state.selected + added, favoriteId = favorite.id, query = "", results = emptyList(), dishResults = emptyList())
         }
         suggestDrink()
