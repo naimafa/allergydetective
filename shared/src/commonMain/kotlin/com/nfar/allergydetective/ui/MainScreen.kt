@@ -160,6 +160,7 @@ fun MainScreen(
                     onAction = onHomeAction,
                     onOpenToday = { tab = MainTab.HISTORY },
                     onOpenReminders = { tab = MainTab.PROFILE },
+                    onNewStretch = homeViewModel::onStartNewStretch,
                     banner = { sickState.ongoing?.let { SickBanner(it, sickViewModel::onRecovered) } },
                 )
             }

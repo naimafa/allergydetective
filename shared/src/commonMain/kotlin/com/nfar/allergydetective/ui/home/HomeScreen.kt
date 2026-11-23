@@ -111,6 +111,8 @@ fun HomeScreen(
     state: HomeState = HomeState(),
     /** Optional card on top, e.g. "ill since ..." (self-test 18.11.). */
     banner: @Composable () -> Unit = {},
+    /** The goal is reached and "Neuen Abschnitt starten" was tapped. */
+    onNewStretch: () -> Unit = {},
     /** The bell top right: opens the evening reminder in the profile. */
     onOpenReminders: () -> Unit = {},
 ) {
@@ -141,7 +143,7 @@ fun HomeScreen(
                         Header(state.greeting, showDot = state.confirmedDays != null && state.todayOpen, onBell = onOpenReminders)
                         banner()
                         state.confirmedDays?.let {
-                            HomeProgress(it)
+                            HomeProgress(it, state.goalDays, state.goalFocus, onNewStretch)
                             HomeToday(state, onClick = onOpenToday)
                         }
                     }

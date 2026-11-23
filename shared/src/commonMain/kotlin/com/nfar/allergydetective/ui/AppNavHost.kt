@@ -25,6 +25,7 @@ import com.nfar.allergydetective.ui.profile.OnboardingScreen
 import com.nfar.allergydetective.ui.profile.ReminderSection
 import com.nfar.allergydetective.ui.profile.ThemeSection
 import com.nfar.allergydetective.ui.profile.DoctorReportSection
+import com.nfar.allergydetective.ui.profile.GoalSection
 import androidx.compose.runtime.LaunchedEffect
 import com.nfar.allergydetective.ui.symptom.LogSymptomScreen
 import com.nfar.allergydetective.ui.sick.SickPeriodSection
@@ -129,13 +130,15 @@ fun AppNavHost(
                 // User note 21.11.2026: each area in its own card.
                 profileExtra = {
                     // User note 22.11.2026: apricot and sage in turn, like the tiles on the start screen.
-                    ProfileCard(ProfileTint.WARM) { DoctorReportSection() }
-                    ProfileCard(ProfileTint.SAGE) { LanguageSection() }
-                    ProfileCard(ProfileTint.WARM) { ThemeSection() }
-                    ProfileCard(ProfileTint.SAGE) { ReminderSection() }
-                    ProfileCard(ProfileTint.WARM) { SickPeriodSection(koinViewModel()) }
+                    // User 23.11.2026: the evaluation goal first; it decides what the start screen counts towards.
+                    ProfileCard(ProfileTint.WARM) { GoalSection() }
+                    ProfileCard(ProfileTint.SAGE) { DoctorReportSection() }
+                    ProfileCard(ProfileTint.WARM) { LanguageSection() }
+                    ProfileCard(ProfileTint.SAGE) { ThemeSection() }
+                    ProfileCard(ProfileTint.WARM) { ReminderSection() }
+                    ProfileCard(ProfileTint.SAGE) { SickPeriodSection(koinViewModel()) }
                     // User note 21.11.2026: privacy details on their own screen, here only a short line.
-                    ProfileCard(ProfileTint.SAGE) {
+                    ProfileCard(ProfileTint.WARM) {
                         SectionTitle(stringResource(Res.string.privacy_title))
                         Text(stringResource(Res.string.privacy_card_text), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         OutlinedButton(onClick = { navController.navigate(PrivacyRoute) }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {

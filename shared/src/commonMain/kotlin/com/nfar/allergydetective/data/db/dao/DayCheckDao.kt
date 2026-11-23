@@ -29,6 +29,9 @@ interface DayCheckDao {
     @Query("SELECT COUNT(*) FROM day_checks WHERE status != 'OPEN'")
     suspend fun confirmedDayCount(): Int
 
+    @Query("SELECT COUNT(*) FROM day_checks WHERE status != 'OPEN' AND epochDay >= :fromDay")
+    suspend fun confirmedDayCountSince(fromDay: Long): Int
+
     @Upsert
     suspend fun upsertDayCheck(check: DayCheckEntity)
 

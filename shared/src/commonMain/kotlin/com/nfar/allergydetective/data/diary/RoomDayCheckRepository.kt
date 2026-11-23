@@ -45,6 +45,7 @@ class RoomDayCheckRepository(private val dao: DayCheckDao) : DayCheckRepository 
     override suspend fun confirmedDays(days: List<Long>): Set<Long> = dao.confirmedDays(days).toSet()
 
     override suspend fun confirmedDayCount(): Int = dao.confirmedDayCount()
+    override suspend fun confirmedDayCountSince(fromDay: Long): Int = dao.confirmedDayCountSince(fromDay)
 }
 
 private fun DayStatus.toDomain(): DayCheckStatus = when (this) {

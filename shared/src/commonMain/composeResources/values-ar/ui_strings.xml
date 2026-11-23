@@ -20,6 +20,8 @@
     <string name="home_greeting_evening">مساء الخير!</string>
     <string name="home_tagline">يومك. صحتك.</string>
     <string name="home_reminders">التذكيرات</string>
+    <string name="home_progress_focus">التركيز: %1$s</string>
+    <string name="home_progress_new_stretch">ابدأ مرحلة جديدة</string>
     <string name="home_progress_title">تقدّمك</string>
     <string name="home_progress_badge">اليوم %1$d / %2$d</string>
     <plurals name="home_progress_remaining">
@@ -179,6 +181,14 @@
     <string name="language_title">اللغة</string>
     <string name="language_system">مثل الهاتف</string>
     <string name="language_hint">الفرنسية والعربية ترجمتان جديدتان. إن بدا لك نص غير صحيح، أخبرنا.</string>
+    <string name="goal_title">فترة التقييم</string>
+    <string name="goal_hint">بعد كم يومًا مؤكدًا تنتهي المرحلة، مثلًا لتجنّب طعام معيّن.</string>
+    <string name="goal_days">%1$d أيام</string>
+    <string name="goal_custom">مخصّص</string>
+    <string name="goal_custom_days">عدد أيام مخصّص</string>
+    <string name="goal_unit">أيام</string>
+    <string name="goal_focus">التركيز الحالي (اختياري)</string>
+    <string name="goal_focus_hint">مثلًا: الامتناع عن منتجات الألبان</string>
     <string name="theme_title">المظهر</string>
     <string name="theme_auto">تلقائي</string>
     <string name="theme_light">فاتح</string>

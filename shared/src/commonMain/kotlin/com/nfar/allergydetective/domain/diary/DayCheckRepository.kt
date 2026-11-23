@@ -36,4 +36,7 @@ interface DayCheckRepository {
 
     /** Number of confirmed days, shown as progress on the home screen (UX 2). */
     suspend fun confirmedDayCount(): Int
+
+    /** Confirmed days from [fromDay] on: the progress of the current goal stretch. */
+    suspend fun confirmedDayCountSince(fromDay: Long): Int = confirmedDayCount()
 }

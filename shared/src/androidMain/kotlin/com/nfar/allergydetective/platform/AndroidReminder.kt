@@ -21,6 +21,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.nfar.allergydetective.domain.diary.DayCheckRepository
+import com.nfar.allergydetective.domain.reminder.GoalSettings
 import com.nfar.allergydetective.domain.reminder.ReminderScheduler
 import com.nfar.allergydetective.domain.reminder.ReminderSettings
 import com.nfar.allergydetective.domain.reminder.SettingsStore
@@ -66,8 +67,22 @@ class SharedPreferencesSettingsStore(context: Context) : SettingsStore {
         prefs.edit().apply { if (language == null) remove(KEY_LANGUAGE) else putString(KEY_LANGUAGE, language) }.apply()
     }
 
+    override fun goal() = GoalSettings(
+        days = prefs.getInt(KEY_GOAL_DAYS, GoalSettings.DEFAULT_DAYS),
+        focus = prefs.getString(KEY_GOAL_FOCUS, null).orEmpty(),
+        startDay = if (prefs.contains(KEY_GOAL_START)) prefs.getLong(KEY_GOAL_START, 0) else null,
+    )
+
+    override fun saveGoal(goal: GoalSettings) {
+        prefs.edit().putInt(KEY_GOAL_DAYS, goal.days).putString(KEY_GOAL_FOCUS, goal.focus)
+            .apply { if (goal.startDay == null) remove(KEY_GOAL_START) else putLong(KEY_GOAL_START, goal.startDay) }.apply()
+    }
+
     private companion object {
         const val KEY_THEME = "theme_mode"
+        const val KEY_GOAL_DAYS = "goal_days"
+        const val KEY_GOAL_FOCUS = "goal_focus"
+        const val KEY_GOAL_START = "goal_start_day"
         const val KEY_LANGUAGE = "app_language"
         const val KEY_ENABLED = "reminder_enabled"
         const val KEY_HOUR = "reminder_hour"

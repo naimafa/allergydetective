@@ -6,6 +6,8 @@ import com.nfar.allergydetective.domain.diary.DayCheckRepository
 import com.nfar.allergydetective.domain.diary.HistoryEntry
 import com.nfar.allergydetective.domain.diary.HistoryRepository
 import com.nfar.allergydetective.domain.time.AppClock
+import com.nfar.allergydetective.domain.reminder.GoalSettings
+import com.nfar.allergydetective.domain.reminder.SettingsStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +25,10 @@ data class HomeState(
     val todayOpen: Boolean = false,
     /** Local hour, picks "good morning / day / evening" (home design of 21.11.2026). */
     val hour: Int = 12,
+    /** Confirmed days the current goal needs (user 23.11.2026: set in the profile, 7 by default). */
+    val goalDays: Int = GoalSettings.DEFAULT_DAYS,
+    /** Optional focus of the stretch, e.g. "Milchprodukte weglassen". */
+    val goalFocus: String = "",
 ) {
     val greeting: Greeting get() = HomeViewModel.greeting(hour)
 }
@@ -34,18 +40,29 @@ class HomeViewModel(
     private val dayChecks: DayCheckRepository,
     private val history: HistoryRepository,
     private val clock: AppClock,
+    private val settings: SettingsStore,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
     val state: StateFlow<HomeState> = _state.asStateFlow()
+
+    /** The goal is reached: a new stretch counts from today on (user 23.11.2026: "was kommt danach?"). */
+    fun onStartNewStretch() {
+        settings.saveGoal(settings.goal().copy(startDay = clock.today()))
+        refresh()
+    }
 
     /** Called whenever the home screen becomes visible, e.g. after a day check. */
     fun refresh() {
         viewModelScope.launch {
             val today = clock.today()
             val entries = history.entriesSince(clock.startOfDayMillis(today))
+            val goal = settings.goal()
             _state.value = HomeState(
-                confirmedDays = dayChecks.confirmedDayCount(),
+                // Only the days of the current stretch count; a new stretch starts with "Neuen Abschnitt starten".
+                confirmedDays = goal.startDay?.let { dayChecks.confirmedDayCountSince(it) } ?: dayChecks.confirmedDayCount(),
+                goalDays = goal.days,
+                goalFocus = goal.focus,
                 today = today,
                 todayOpen = dayChecks.load(today)?.isConfirmed != true,
                 mealsToday = entries.count { it is HistoryEntry.MealEntry },
@@ -56,7 +73,7 @@ class HomeViewModel(
     }
 
     companion object {
-        /** Days until the first evaluation (UX 5). */
+        /** Days until the first evaluation (UX 5); the goal in the profile can change it. */
         const val COLLECTION_DAYS = 7
 
         /** Same quote all day, a different one tomorrow; the pool repeats after [size] days. */
