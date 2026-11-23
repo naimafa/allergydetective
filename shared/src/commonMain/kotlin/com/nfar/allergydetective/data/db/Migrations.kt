@@ -88,9 +88,36 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
+    /** User note 21.11.2026: spices were missing. New category with 15 spices, same rows as the seed JSON. */
+    val MIGRATION_9_10 = object : Migration(9, 10) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("INSERT OR IGNORE INTO categories (id, `key`) VALUES ($SPICES_CATEGORY, 'spices_herbs')")
+            SPICES_ROWS.forEach { connection.insertSeedIngredient(it) }
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
 
     private const val OILS_CATEGORY = 13L
+    private const val SPICES_CATEGORY = 14L
+
+    internal val SPICES_ROWS = listOf(
+        SeedRow(1401, "black_pepper", SPICES_CATEGORY, listOf("spicy"), listOf("Pfeffer")),
+        SeedRow(1402, "paprika_powder", SPICES_CATEGORY, emptyList(), listOf("Paprika edelsüß", "Paprikagewürz")),
+        SeedRow(1403, "chili_powder", SPICES_CATEGORY, listOf("spicy"), listOf("Cayennepfeffer", "Cayenne", "Chiliflocken")),
+        SeedRow(1404, "curry_powder", SPICES_CATEGORY, listOf("spicy", "mustard"), listOf("Curry")),
+        SeedRow(1405, "cinnamon", SPICES_CATEGORY, listOf("histamine_liberator"), emptyList()),
+        SeedRow(1406, "nutmeg", SPICES_CATEGORY, emptyList(), listOf("Muskat")),
+        SeedRow(1407, "cumin", SPICES_CATEGORY, emptyList(), listOf("Kumin", "Cumin")),
+        SeedRow(1408, "coriander_ground", SPICES_CATEGORY, emptyList(), listOf("Koriander")),
+        SeedRow(1409, "turmeric", SPICES_CATEGORY, emptyList(), listOf("Gelbwurz")),
+        SeedRow(1410, "ginger_ground", SPICES_CATEGORY, listOf("spicy"), listOf("Ingwerpulver")),
+        SeedRow(1411, "celery_seed_salt", SPICES_CATEGORY, listOf("celery"), listOf("Selleriesalz", "Selleriesamen")),
+        SeedRow(1412, "mustard_seed", SPICES_CATEGORY, listOf("mustard"), listOf("Senfkörner")),
+        SeedRow(1413, "garlic_powder", SPICES_CATEGORY, listOf("fructans"), listOf("Knoblauchgranulat")),
+        SeedRow(1414, "onion_powder", SPICES_CATEGORY, listOf("fructans"), listOf("Zwiebelgranulat")),
+        SeedRow(1415, "dried_herbs", SPICES_CATEGORY, emptyList(), listOf("Oregano", "Thymian", "Kräuter der Provence", "italienische Kräuter")),
+    )
 
     internal val OILS_FATS_ROWS = listOf(
         SeedRow(1301, "cooking_oil", OILS_CATEGORY, listOf("high_fat"), listOf("Öl", "Speiseöl", "Pflanzenöl")),

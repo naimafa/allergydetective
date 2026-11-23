@@ -120,5 +120,20 @@
   {"id": 1306, "key": "sesame_oil", "category": "oils_fats", "properties": ["sesame", "high_fat"]},
   {"id": 1307, "key": "peanut_oil", "category": "oils_fats", "properties": ["peanut", "high_fat"]},
   {"id": 1308, "key": "margarine", "category": "oils_fats", "properties": ["high_fat"]},
-  {"id": 1309, "key": "olives", "category": "oils_fats", "properties": ["histamine"], "synonyms": {"de": ["Olive", "grüne Oliven", "schwarze Oliven"]}}
+  {"id": 1309, "key": "olives", "category": "oils_fats", "properties": ["histamine"], "synonyms": {"de": ["Olive", "grüne Oliven", "schwarze Oliven"]}},
+  {"id": 1401, "key": "black_pepper", "category": "spices_herbs", "properties": ["spicy"], "synonyms": {"de": ["Pfeffer"]}},
+  {"id": 1402, "key": "paprika_powder", "category": "spices_herbs", "synonyms": {"de": ["Paprika edelsüß", "Paprikagewürz"]}},
+  {"id": 1403, "key": "chili_powder", "category": "spices_herbs", "properties": ["spicy"], "synonyms": {"de": ["Cayennepfeffer", "Cayenne", "Chiliflocken"]}},
+  {"id": 1404, "key": "curry_powder", "category": "spices_herbs", "properties": ["spicy", "mustard"], "synonyms": {"de": ["Curry"]}},
+  {"id": 1405, "key": "cinnamon", "category": "spices_herbs", "properties": ["histamine_liberator"]},
+  {"id": 1406, "key": "nutmeg", "category": "spices_herbs", "synonyms": {"de": ["Muskat"]}},
+  {"id": 1407, "key": "cumin", "category": "spices_herbs", "synonyms": {"de": ["Kumin", "Cumin"]}},
+  {"id": 1408, "key": "coriander_ground", "category": "spices_herbs", "synonyms": {"de": ["Koriander"]}},
+  {"id": 1409, "key": "turmeric", "category": "spices_herbs", "synonyms": {"de": ["Gelbwurz"]}},
+  {"id": 1410, "key": "ginger_ground", "category": "spices_herbs", "properties": ["spicy"], "synonyms": {"de": ["Ingwerpulver"]}},
+  {"id": 1411, "key": "celery_seed_salt", "category": "spices_herbs", "properties": ["celery"], "synonyms": {"de": ["Selleriesalz", "Selleriesamen"]}},
+  {"id": 1412, "key": "mustard_seed", "category": "spices_herbs", "properties": ["mustard"], "synonyms": {"de": ["Senfkörner"]}},
+  {"id": 1413, "key": "garlic_powder", "category": "spices_herbs", "properties": ["fructans"], "synonyms": {"de": ["Knoblauchgranulat"]}},
+  {"id": 1414, "key": "onion_powder", "category": "spices_herbs", "properties": ["fructans"], "synonyms": {"de": ["Zwiebelgranulat"]}},
+  {"id": 1415, "key": "dried_herbs", "category": "spices_herbs", "synonyms": {"de": ["Oregano", "Thymian", "Kräuter der Provence", "italienische Kräuter"]}}
 ]

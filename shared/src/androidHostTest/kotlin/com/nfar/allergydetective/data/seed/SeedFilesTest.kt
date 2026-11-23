@@ -30,9 +30,9 @@ class SeedFilesTest {
 
     @Test
     fun hasExpectedCounts() {
-        assertEquals(13, entities.categories.size)
+        assertEquals(14, entities.categories.size)
         assertEquals(26, entities.properties.size)
-        assertEquals(122, entities.ingredients.size)
+        assertEquals(137, entities.ingredients.size)
         assertEquals(24, entities.symptoms.size)
         assertEquals(4, entities.lifestyleFactors.size)
     }
@@ -52,6 +52,24 @@ class SeedFilesTest {
             assertEquals(row.synonymsDe, entities.ingredientSynonyms.filter { it.ingredientId == row.id }.map { it.synonym })
         }
         assertEquals(13L, entities.categories.single { it.key == "oils_fats" }.id)
+    }
+
+    /** Spices (user note 21.11.2026): migration 9 -> 10 for existing installs, JSON for new ones; both the same. */
+    @Test
+    fun spicesMigrationMatchesSeedFile() {
+        val propertyKeys = entities.properties.associate { it.id to it.key }
+        Migrations.SPICES_ROWS.forEach { row ->
+            val seed = entities.ingredients.single { it.id == row.id }
+            assertEquals(row.key, seed.key)
+            assertEquals(row.categoryId, seed.categoryId)
+            assertEquals(
+                row.properties.toSet(),
+                entities.ingredientProperties.filter { it.ingredientId == row.id }.map { propertyKeys.getValue(it.propertyId) }.toSet(),
+            )
+            assertEquals(row.synonymsDe, entities.ingredientSynonyms.filter { it.ingredientId == row.id }.map { it.synonym })
+        }
+        assertEquals(14L, entities.categories.single { it.key == "spices_herbs" }.id)
+        assertEquals(15, entities.ingredients.count { it.categoryId == 14L })
     }
 
     @Test
