@@ -95,6 +95,17 @@ import com.nfar.allergydetective.ui.common.displayName
 import com.nfar.allergydetective.ui.common.emergencyNumberFor
 import androidx.compose.ui.text.intl.Locale
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.foundation.layout.navigationBarsPadding
+import com.nfar.allergydetective.ui.common.StepCard
+import com.nfar.allergydetective.ui.theme.AppColors
+import allergydetective.shared.generated.resources.illness_question
+import allergydetective.shared.generated.resources.symptom_duration_title
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -273,22 +284,32 @@ private fun EmergencyNotice(onContinue: () -> Unit, onDismiss: () -> Unit) {
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+/**
+ * User 23.11.2026: like "Essen erfassen" – the parts of a complaint more prominent, each input in its own card.
+ * A tall sheet with numbered steps instead of the narrow dialog; the save button at the bottom.
+ */
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, day: Int, today: Long, viewModel: LogSymptomViewModel) {
-    AlertDialog(
+    ModalBottomSheet(
         onDismissRequest = viewModel::onDraftDismiss,
-        // Feedback 20.11.: the platform width (~270 dp) wrapped "Heute · Gestern · Datum" at font scale 1.25,
-        // which looked restless. The dialog now uses the screen width minus 16 dp on each side.
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        title = { Text(symptomEmoji(draft.symptom.id) + " " + displayName(NamePrefix.SYMPTOM, draft.symptom.key)) },
-        text = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(stringResource(Res.string.symptom_how_strong), style = MaterialTheme.typography.titleSmall)
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = AppColors.extra.home.page,
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(symptomEmoji(draft.symptom.id), style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    displayName(NamePrefix.SYMPTOM, draft.symptom.key),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = AppColors.extra.home.ink,
+                    modifier = Modifier.padding(start = 10.dp),
+                )
+            }
+            StepCard(number = 1, title = stringResource(Res.string.symptom_how_strong)) {
                 ScaleChips(draft.intensity, viewModel::onIntensityChange, labels = (1..LogSymptomViewModel.MAX_INTENSITY).map { it.toString() })
                 // Feedback 20.11.: the chosen value in words, the range below.
                 Text(
@@ -296,8 +317,9 @@ private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, day: Int, to
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
                 )
-                Text(stringResource(Res.string.symptom_intensity_range), style = MaterialTheme.typography.bodySmall)
-                Text(stringResource(Res.string.symptom_when), style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(Res.string.symptom_intensity_range), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            StepCard(number = 2, title = stringResource(Res.string.symptom_when)) {
                 // Feedback 19.11.: the same day row in every form.
                 DayPicker(day, today, viewModel::onDayChange)
                 TimeChoiceRow(
@@ -308,19 +330,32 @@ private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, day: Int, to
                     onQuickSelected = viewModel::onDayPartChange,
                     onExactSelected = viewModel::onExactTimeChange,
                 )
-                SymptomDurationChoice(draft.duration, viewModel::onDurationChange)
-                if (onSickDay) IllnessRelationChoice(draft.illnessRelation, viewModel::onIllnessRelationChange)
+            }
+            StepCard(number = 3, title = stringResource(Res.string.symptom_duration_title)) {
+                SymptomDurationChoice(draft.duration, viewModel::onDurationChange, showTitle = false)
+            }
+            if (onSickDay) {
+                StepCard(number = 4, title = stringResource(Res.string.illness_question)) {
+                    IllnessRelationChoice(draft.illnessRelation, showTitle = false, onSelect = viewModel::onIllnessRelationChange)
+                }
+            }
+            StepCard(number = if (onSickDay) 5 else 4, title = stringResource(Res.string.symptom_note)) {
                 OutlinedTextField(
                     value = draft.note,
                     onValueChange = viewModel::onNoteChange,
-                    label = { Text(stringResource(Res.string.symptom_note)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
-        },
-        confirmButton = { Button(onClick = viewModel::onSaveDraft) { Text(stringResource(Res.string.common_save)) } },
-        dismissButton = { TextButton(onClick = viewModel::onDraftDismiss) { Text(stringResource(Res.string.common_cancel)) } },
-    )
+            Button(
+                onClick = viewModel::onSaveDraft,
+                shape = CircleShape,
+                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+            ) {
+                Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(22.dp))
+                Text(stringResource(Res.string.common_save), modifier = Modifier.padding(start = 10.dp))
+            }
+        }
+    }
 }
 
 /** 1 = kaum spürbar … 5 = sehr stark. */
