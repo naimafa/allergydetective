@@ -299,11 +299,7 @@ private fun LogMealContent(
 @Composable
 private fun WhenStep(state: LogMealState, viewModel: LogMealViewModel) {
     StepCard(number = 1, title = stringResource(Res.string.meal_step_which), highlighted = state.slotMissing) {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf(MealSlot.entries.take(2), MealSlot.entries.drop(2)).forEach { row ->
-                MealSlotRow(row, state.slot, viewModel::onSlotChange)
-            }
-        }
+        MealSlotGrid(listOf(MealSlot.entries.take(2), MealSlot.entries.drop(2)), state.slot, viewModel::onSlotChange)
         if (state.slotMissing) {
             Text(stringResource(Res.string.meal_slot_missing), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
         }
@@ -495,9 +491,34 @@ private fun WhatStep(
 @Composable
 private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMealViewModel, onAddMore: (() -> Unit)?) {
     if (state.selected.isEmpty()) return
-    state.favorites.firstOrNull { it.id == state.favoriteId }?.let { dish ->
-        DishHeader(dish.name, viewModel::onRemoveFavorite)
+    // The dish's ingredients that are still chosen; the header goes once the last one is removed.
+    val dish = state.favorites.firstOrNull { it.id == state.favoriteId }
+    val dishIds = dish?.items?.map { it.ingredientId }?.toSet().orEmpty() intersect state.selected.map { it.ingredient.id }.toSet()
+    var dishOpen by remember(state.favoriteId) { mutableStateOf(true) }
+    // Raw / cooked still missing in a folded dish: open it, or saving would stay blocked without a visible reason.
+    val dishExpanded = dishOpen || state.selected.any { it.ingredient.id in dishIds && it.ingredient.id in state.needsPreparation && it.preparation == null }
+    if (dish != null && dishIds.isNotEmpty()) {
+        DishHeader(dish.name, dishIds.size, dishExpanded) { dishOpen = !dishExpanded }
     }
+    val shown = state.selected.asReversed().filter { dishExpanded || it.ingredient.id !in dishIds }
+    if (shown.isNotEmpty()) IngredientList(state, shown, viewModel)
+    onAddMore?.let { add ->
+        OutlinedButton(
+            onClick = add,
+            shape = CircleShape,
+            border = BorderStroke(1.dp, AppColors.extra.home.ink),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.extra.home.ink),
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+        ) {
+            Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+            Text(stringResource(Res.string.meal_add_more), modifier = Modifier.padding(start = 8.dp))
+        }
+    }
+}
+
+/** "Zutaten" with the S/M/L explanation behind the info icon, then one row per ingredient, newest first. */
+@Composable
+private fun ColumnScope.IngredientList(state: LogMealState, shown: List<SelectedIngredient>, viewModel: LogMealViewModel) {
     var showPortionHelp by remember { mutableStateOf(false) }
     val infoLabel = stringResource(Res.string.meal_portion_info)
     Row(
@@ -516,21 +537,9 @@ private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMea
     }
     Column {
         // Newest first: what was just added appears on top.
-        state.selected.asReversed().forEachIndexed { index, item ->
+        shown.forEachIndexed { index, item ->
             if (index > 0) HorizontalDivider(color = AppColors.extra.home.cardBorder)
             SelectedRow(item, item.ingredient.id in state.needsPreparation, viewModel)
-        }
-    }
-    onAddMore?.let { add ->
-        OutlinedButton(
-            onClick = add,
-            shape = CircleShape,
-            border = BorderStroke(1.dp, AppColors.extra.home.ink),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.extra.home.ink),
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp))
-            Text(stringResource(Res.string.meal_add_more), modifier = Modifier.padding(start = 8.dp))
         }
     }
 }

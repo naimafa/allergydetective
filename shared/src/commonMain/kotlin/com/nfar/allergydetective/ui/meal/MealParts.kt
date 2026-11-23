@@ -2,7 +2,9 @@ package com.nfar.allergydetective.ui.meal
 
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.meal_remove
-import allergydetective.shared.generated.resources.meal_remove_dish
+import allergydetective.shared.generated.resources.meal_dish_collapse
+import allergydetective.shared.generated.resources.meal_dish_count
+import allergydetective.shared.generated.resources.meal_dish_expand
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,14 +20,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BakeryDining
-import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Cookie
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.LocalDrink
 import androidx.compose.material.icons.outlined.RamenDining
 import androidx.compose.material.icons.outlined.RoomService
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -54,25 +56,53 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * The meal kinds as pills with an icon (design picture 23.11.2026), always in the order of the day
  * (user 23.11.: the chosen one must not jump to the front). Selected shows only by its colour, no check mark.
- * A pill too narrow for icon and name at font 125 % leaves the icon out; the name is never shrunk.
+ * When one pill is too narrow for icon and name (font 125 %), all leave the icon out; the name is never shrunk.
  */
 @Composable
-fun MealSlotRow(slots: List<MealSlot>, selected: MealSlot?, onSelect: (MealSlot) -> Unit) {
-    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
-        slots.forEach { slot ->
-            val label = mealSlotLabel(slot)
-            MealSlotPill(slot, label, slot == selected, { onSelect(slot) }, Modifier.weight(label.length + 4f))
+fun MealSlotGrid(rows: List<List<MealSlot>>, selected: MealSlot?, onSelect: (MealSlot) -> Unit) {
+    val style = MaterialTheme.typography.labelLarge
+    val measurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    val labels = rows.map { row -> row.map { mealSlotLabel(it) } }
+    val textWidths = remember(labels, style) {
+        labels.map { row -> row.map { measurer.measure(it, style, maxLines = 1, softWrap = false).size.width } }
+    }
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val full = constraints.maxWidth
+        // Phone test 23.11.: at font 125 % the lower row had no room for icons while the upper one had. Either
+        // every pill shows its icon or none does.
+        val showIcons = with(density) {
+            val gap = GRID_GAP.roundToPx()
+            val padding = (PILL_PADDING * 2).roundToPx()
+            val iconRoom = (20.dp + 6.dp).roundToPx()
+            labels.indices.all { r ->
+                val weights = labels[r].map { it.length + 4f }
+                val room = full - gap * (labels[r].size - 1)
+                labels[r].indices.all { i -> textWidths[r][i] + iconRoom + padding <= room * weights[i] / weights.sum() }
+            }
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            rows.forEachIndexed { r, row ->
+                Row(horizontalArrangement = Arrangement.spacedBy(GRID_GAP), modifier = Modifier.fillMaxWidth()) {
+                    row.forEachIndexed { i, slot ->
+                        val label = labels[r][i]
+                        MealSlotPill(
+                            slot, label, showIcons, slot == selected, { onSelect(slot) },
+                            Modifier.weight(label.length + if (showIcons) 4f else 2f),
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
+private val GRID_GAP = 6.dp
+private val PILL_PADDING = 6.dp
+
 @Composable
-private fun MealSlotPill(slot: MealSlot, label: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier) {
+private fun MealSlotPill(slot: MealSlot, label: String, showIcon: Boolean, selected: Boolean, onClick: () -> Unit, modifier: Modifier) {
     val scheme = MaterialTheme.colorScheme
-    val style = MaterialTheme.typography.labelLarge
-    val measurer = rememberTextMeasurer()
-    val textWidth = remember(label, style) { measurer.measure(label, style, maxLines = 1, softWrap = false).size.width }
-    val iconRoom = with(LocalDensity.current) { (20.dp + 6.dp).roundToPx() }
     Surface(
         onClick = onClick,
         selected = selected,
@@ -82,15 +112,16 @@ private fun MealSlotPill(slot: MealSlot, label: String, selected: Boolean, onCli
         border = if (selected) null else BorderStroke(1.dp, scheme.outlineVariant),
         modifier = modifier.heightIn(min = 42.dp),
     ) {
-        BoxWithConstraints(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 6.dp)) {
-            val room = constraints.maxWidth
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (textWidth + iconRoom <= room) {
-                    Icon(mealSlotIcon(slot), contentDescription = null, modifier = Modifier.size(20.dp))
-                    Spacer(Modifier.width(6.dp))
-                }
-                Text(label, style = style, maxLines = 1, softWrap = false, textAlign = TextAlign.Center)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(horizontal = PILL_PADDING),
+        ) {
+            if (showIcon) {
+                Icon(mealSlotIcon(slot), contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(6.dp))
             }
+            Text(label, style = MaterialTheme.typography.labelLarge, maxLines = 1, softWrap = false, textAlign = TextAlign.Center)
         }
     }
 }
@@ -234,26 +265,32 @@ private fun DeleteButton(name: String, onClick: () -> Unit) {
 }
 
 /**
- * The chosen dish as a header over its ingredients (design picture 23.11.2026, user 23.11.: "mach das und wir
- * sehen später wie das wirkt"). The ✕ takes the dish out again.
+ * The chosen dish as a header over its ingredients (design picture 23.11.2026). User 23.11.: an arrow folds the
+ * dish's ingredients in and out instead of a ✕; folded, the header says how many there are. Ingredients are
+ * still removed one by one with their bin.
  */
 @Composable
-fun DishHeader(name: String, onRemove: () -> Unit) {
+fun DishHeader(name: String, count: Int, expanded: Boolean, onToggle: () -> Unit) {
     val home = AppColors.extra.home
     val density = LocalDensity.current
+    val action = stringResource(if (expanded) Res.string.meal_dish_collapse else Res.string.meal_dish_expand)
     Surface(
+        onClick = onToggle,
         shape = MaterialTheme.shapes.medium,
         color = lerp(home.page, home.badge, 0.6f),
         contentColor = home.ink,
         border = BorderStroke(1.dp, home.cardBorder),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().semantics { contentDescription = "$name. $action" },
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 12.dp, top = 6.dp, bottom = 6.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)) {
             Text("🍲", fontSize = with(density) { 30.dp.toSp() }, lineHeight = with(density) { 36.dp.toSp() })
-            Text(name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f).padding(start = 12.dp))
-            IconButton(onClick = onRemove) {
-                Icon(Icons.Outlined.Close, contentDescription = stringResource(Res.string.meal_remove_dish))
+            Column(modifier = Modifier.weight(1f).padding(start = 12.dp)) {
+                Text(name, style = MaterialTheme.typography.titleMedium)
+                if (!expanded) {
+                    Text(stringResource(Res.string.meal_dish_count, count), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
+            Icon(if (expanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.size(26.dp))
         }
     }
 }

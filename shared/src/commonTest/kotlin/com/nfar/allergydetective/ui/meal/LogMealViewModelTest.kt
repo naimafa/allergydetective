@@ -132,19 +132,6 @@ class LogMealViewModelTest {
         assertNull(vm.state.value.favoriteId)
     }
 
-    @Test
-    fun removingTheDishTakesOnlyItsIngredientsOut() {
-        repository.favorites += FavoriteInfo(7, "Milk", listOf(MealItem(milk.id, Portion.LARGE)))
-        val vm = viewModel()
-        vm.onToggleIngredient(bread)
-        vm.onFavoriteClick(vm.state.value.favorites.single())
-
-        vm.onRemoveFavorite()
-
-        assertEquals(listOf(bread), vm.state.value.selected.map { it.ingredient })
-        assertNull(vm.state.value.favoriteId)
-    }
-
     private val coffee = IngredientInfo(1101, "coffee", null, BEVERAGES_CATEGORY_ID)
     private val repository = FakeRepository(listOf(bread, milk, coffee))
 

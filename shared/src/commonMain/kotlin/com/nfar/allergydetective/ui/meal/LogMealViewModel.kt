@@ -246,19 +246,6 @@ class LogMealViewModel(
         suggestDrink()
     }
 
-    /**
-     * Design picture 23.11.2026: the ✕ on the dish header takes the dish out again – its ingredients and the
-     * link to it; ingredients added on top stay.
-     */
-    fun onRemoveFavorite() {
-        _state.update { state ->
-            val dish = state.favorites.firstOrNull { it.id == state.favoriteId } ?: return@update state.copy(favoriteId = null)
-            val dishIds = dish.items.map { it.ingredientId }.toSet()
-            state.copy(selected = state.selected.filterNot { it.ingredient.id in dishIds }, favoriteId = null)
-        }
-        suggestDrink()
-    }
-
     fun onPortionChange(ingredientId: Long, portion: Portion) {
         _state.update { state ->
             state.copy(selected = state.selected.map { if (it.ingredient.id == ingredientId) it.copy(portion = portion) else it })
