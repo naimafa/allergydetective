@@ -75,6 +75,8 @@
     <string name="day_wellbeing">Wie ging es dir an dem Tag?</string>
     <string name="day_sleep">Schlaf letzte Nacht</string>
     <string name="day_hours">%1$s h</string>
+    <string name="day_sleep_less">Eine halbe Stunde weniger</string>
+    <string name="day_sleep_more">Eine halbe Stunde mehr</string>
     <string name="day_sleep_quality">Schlafqualität</string>
     <string name="day_stress">Stress an dem Tag</string>
     <string name="day_scale_hint">1 = kaum · 5 = sehr stark</string>

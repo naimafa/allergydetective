@@ -59,6 +59,19 @@ import com.nfar.allergydetective.ui.sick.SickPeriodDayCheckPart
 import com.nfar.allergydetective.ui.sick.SickPeriodsViewModel
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Remove
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.size
+import com.nfar.allergydetective.ui.theme.AppColors
+import allergydetective.shared.generated.resources.day_sleep_less
+import allergydetective.shared.generated.resources.day_sleep_more
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -106,17 +119,16 @@ fun DayCheckScreen(
         onBack = onDone,
         snackbarHostState = remember { SnackbarHostState() },
         bottomBar = {
-            Column(modifier = Modifier.navigationBarsPadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    stringResource(Res.string.day_autosave_hint),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Button(
-                    onClick = viewModel::onFinish,
-                    enabled = !state.loading,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-                ) { Text(stringResource(Res.string.day_finish)) }
+            // User 23.11.2026 ("durcheinander"): the three-line hint above the button covered the cards; it moved to
+            // the top of the page. The button looks like "Mahlzeit speichern".
+            Button(
+                onClick = viewModel::onFinish,
+                enabled = !state.loading,
+                shape = CircleShape,
+                modifier = Modifier.navigationBarsPadding().fillMaxWidth().padding(16.dp).heightIn(min = 56.dp),
+            ) {
+                Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(22.dp))
+                Text(stringResource(Res.string.day_finish), modifier = Modifier.padding(start = 10.dp))
             }
         },
     ) { padding ->
@@ -145,41 +157,59 @@ private fun DayCheckContent(
                 onSelect = { viewModel.onDaySelected(state.today - it) },
                 marked = state.confirmedDays.map { (state.today - it).toInt() }.toSet(),
             )
-            // The date in full, so it is clear which day gets confirmed.
-            Text(formatDate(LocalDate.fromEpochDays(check.epochDay), Locale.current.language), style = MaterialTheme.typography.titleLarge)
+            // The date in full, so it is clear which day gets confirmed (user 23.11.2026: smaller, it stood alone).
+            Text(
+                formatDate(LocalDate.fromEpochDays(check.epochDay), Locale.current.language),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             val openPast = state.openPastDays.filter { it != check.epochDay }
             if (openPast.isNotEmpty()) {
                 val labels = openPast.map { dayLabel((state.today - it).toInt()) }.joinToString(", ")
                 Text(stringResource(Res.string.day_open_past_hint, labels), style = MaterialTheme.typography.bodySmall)
             }
+            Text(stringResource(Res.string.day_autosave_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
-        StepCard(title = stringResource(Res.string.day_wellbeing)) {
+        // User 23.11.2026: numbered steps like "Essen erfassen", so the order is clear.
+        StepCard(number = 1, title = stringResource(Res.string.day_wellbeing)) {
             ScaleRow(check.wellbeing, viewModel::onWellbeingChange, labels = WELLBEING_FACES)
         }
 
-        StepCard(title = stringResource(Res.string.day_sleep)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = { viewModel.onSleepHoursChange(-DayCheckViewModel.SLEEP_STEP_HOURS) }) { Text("−") }
-                Text(
-                    stringResource(Res.string.day_hours, formatDecimal(check.sleepHours ?: DayCheckViewModel.DEFAULT_SLEEP_HOURS, Locale.current.language)),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                OutlinedButton(onClick = { viewModel.onSleepHoursChange(DayCheckViewModel.SLEEP_STEP_HOURS) }) { Text("+") }
+        StepCard(number = 2, title = stringResource(Res.string.day_sleep)) {
+            // One outlined pill "−  7 h  +" instead of three loose parts.
+            Surface(
+                shape = CircleShape,
+                color = AppColors.extra.home.page,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { viewModel.onSleepHoursChange(-DayCheckViewModel.SLEEP_STEP_HOURS) }) {
+                        Icon(Icons.Outlined.Remove, contentDescription = stringResource(Res.string.day_sleep_less))
+                    }
+                    Text(
+                        stringResource(Res.string.day_hours, formatDecimal(check.sleepHours ?: DayCheckViewModel.DEFAULT_SLEEP_HOURS, Locale.current.language)),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                    )
+                    IconButton(onClick = { viewModel.onSleepHoursChange(DayCheckViewModel.SLEEP_STEP_HOURS) }) {
+                        Icon(Icons.Outlined.Add, contentDescription = stringResource(Res.string.day_sleep_more))
+                    }
+                }
             }
-            Text(stringResource(Res.string.day_sleep_quality), style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(Res.string.day_sleep_quality), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 4.dp))
             // Phone test 20.11.: "1 ★" did not fit at font scale 1.25 and the star was cut off; the legend below explains the scale.
             ScaleRow(check.sleepQuality, viewModel::onSleepQualityChange)
             // Feedback 20.11.: everyone should read the scale the same way.
             Text(stringResource(Res.string.day_sleep_quality_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
-        StepCard(title = stringResource(Res.string.day_stress)) {
+        StepCard(number = 3, title = stringResource(Res.string.day_stress)) {
             ScaleRow(check.stress, viewModel::onStressChange)
             Text(stringResource(Res.string.day_scale_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
-        StepCard(title = stringResource(Res.string.day_factors)) {
+        StepCard(number = 4, title = stringResource(Res.string.day_factors)) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 state.factors.forEach { factor ->
                     AppFilterChip(
