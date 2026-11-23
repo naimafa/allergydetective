@@ -94,6 +94,23 @@ class DishEditorViewModelTest {
     }
 
     @Test
+    fun anotherDishCanBeFoundAndAddsAllItsIngredients() {
+        meals.existing += FavoriteInfo(7, "Gewürzmischung", listOf(MealItem(tomato.id, Portion.SMALL), MealItem(carrot.id, Portion.LARGE, Preparation.COOKED)))
+        val vm = viewModel()
+        vm.start()
+        vm.onAdd(lentils)
+
+        vm.onQueryChange("gewürz")
+        assertEquals(listOf("Gewürzmischung"), vm.state.value.dishResults.map { it.name })
+        vm.onAddDish(vm.state.value.dishResults.single())
+
+        assertEquals(listOf(lentils, tomato, carrot), vm.state.value.ingredients)
+        assertEquals(Portion.LARGE, vm.state.value.portions[carrot.id])
+        assertEquals(Preparation.COOKED, vm.state.value.preparations[carrot.id])
+        assertEquals("", vm.state.value.query)
+    }
+
+    @Test
     fun startClearsTheForm() {
         val vm = viewModel()
         vm.onNameChange("Alt")

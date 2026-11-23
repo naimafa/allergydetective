@@ -227,7 +227,7 @@
     <string name="history_delete_sick_question">Supprimer cette période de maladie ? Les jours compteront de nouveau normalement dans l’analyse.</string>
     <string name="favorites_delete_question">Supprimer le plat « %1$s » ? Les repas déjà notés sont conservés.</string>
     <string name="favorites_empty">Pas encore de plats. Ajoute tes plats fréquents avec leurs ingrédients, ensuite tu les notes en un geste.</string>
-    <string name="favorites_add">+ Nouveau plat</string>
+    <string name="favorites_add">Nouveau plat</string>
     <plurals name="favorites_count">
         <item quantity="one">%1$d plat</item>
         <item quantity="other">%1$d plats</item>
@@ -305,6 +305,7 @@
     <string name="meal_slot_dinner">Dîner</string>
     <string name="meal_slot_snack">En-cas</string>
     <string name="meal_slot_drink">Boisson</string>
+    <string name="ingredient_search">Chercher un ingrédient …</string>
     <string name="meal_search">Chercher un ingrédient ou un plat …</string>
     <string name="meal_dish_contains">contient %1$s</string>
     <string name="meal_also_called">aussi : %1$s</string>
