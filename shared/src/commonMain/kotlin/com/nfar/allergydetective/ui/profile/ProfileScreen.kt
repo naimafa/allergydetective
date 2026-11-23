@@ -1,5 +1,8 @@
 package com.nfar.allergydetective.ui.profile
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.onboarding_purpose
 import allergydetective.shared.generated.resources.onboarding_purpose_title
@@ -27,6 +30,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * later features such as the reminder settings.
  */
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 fun ProfileScreen(
     onSaved: () -> Unit,
     modifier: Modifier = Modifier,
@@ -34,6 +38,8 @@ fun ProfileScreen(
     extraContent: @Composable () -> Unit = {},
     /** Cards after the known allergies, e.g. privacy and the intro (user 23.11.2026: allergies before privacy). */
     lowerContent: @Composable () -> Unit = {},
+    /** Hidden: a long press on the last card opens the payment test view (user 23.11.2026). */
+    onOpenPaywallPreview: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.saved) {
@@ -53,8 +59,14 @@ fun ProfileScreen(
         ProfileCard(ProfileTint.WARM) { KnownAllergiesSection(state, viewModel::onToggle, viewModel::onSave) }
         lowerContent()
         ProfileCard(ProfileTint.SAGE) {
-            SectionTitle(stringResource(Res.string.onboarding_purpose_title))
-            Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            // Phone test 23.11.: only the title reacted; now a long press anywhere on the card opens the test view.
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth().combinedClickable(onClick = {}, onLongClick = onOpenPaywallPreview),
+            ) {
+                SectionTitle(stringResource(Res.string.onboarding_purpose_title))
+                Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
     }
 }

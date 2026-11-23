@@ -91,6 +91,7 @@ fun MainScreen(
     onAddSymptomForDay: (Int) -> Unit = {},
     profileExtra: @Composable () -> Unit = {},
     profileLower: @Composable () -> Unit = {},
+    onOpenPaywallPreview: () -> Unit = {},
     initialTab: MainTab = MainTab.HOME,
 ) {
     var tab by rememberSaveable { mutableStateOf(initialTab) }
@@ -181,6 +182,7 @@ fun MainScreen(
                 onSaved = { scope.launch { snackbarHostState.showSnackbar(getString(Res.string.common_saved)) } },
                 extraContent = profileExtra,
                 lowerContent = profileLower,
+                onOpenPaywallPreview = onOpenPaywallPreview,
             )
         }
     }

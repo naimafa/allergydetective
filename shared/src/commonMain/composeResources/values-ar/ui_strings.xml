@@ -423,4 +423,17 @@
     <string name="privacy_notifications_text">يطلب التطبيق إذن الإشعارات فقط ليذكّرك مساءً بختام اليوم. يمكنك إيقاف التذكير في الملف الشخصي.</string>
     <string name="privacy_delete_title">حذف البيانات</string>
     <string name="privacy_delete_text">تحذف التسجيلات واحدًا واحدًا في السجل. عند إلغاء تثبيت التطبيق تُحذف كل البيانات من الهاتف بالكامل.</string>
+    <string name="paywall_preview_badge">عرض تجريبي – غير مفعّل</string>
+    <string name="paywall_title">انتهت فترة التجربة لمدة 7 أيام.</string>
+    <string name="paywall_thanks">شكرًا لاستخدامك Allergy Detective!</string>
+    <string name="paywall_price">2.99 €</string>
+    <string name="paywall_per_month">/ شهريًا</string>
+    <string name="paywall_feature_entries">تسجيل الوجبات والأعراض بلا حدود</string>
+    <string name="paywall_feature_patterns">استخدام التقييمات واكتشاف الأنماط</string>
+    <string name="paywall_feature_reports">تقارير PDF وExcel للطبيب</string>
+    <string name="paywall_unlock">فعّل الآن مقابل 2.99 € شهريًا</string>
+    <string name="paywall_or">أو</string>
+    <string name="paywall_backup">احفظ بياناتك مرة واحدة</string>
+    <string name="paywall_keep">تبقى إدخالاتك محفوظة ويمكنك عرضها.</string>
+    <string name="paywall_only_preview">معاينة فقط: لا يتم شراء أو قفل أي شيء.</string>
 </resources>
