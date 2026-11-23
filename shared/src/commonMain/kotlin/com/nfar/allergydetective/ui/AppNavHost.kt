@@ -141,8 +141,11 @@ fun AppNavHost(
                     ProfileCard(ProfileTint.SAGE) { ThemeSection() }
                     ProfileCard(ProfileTint.WARM) { ReminderSection() }
                     ProfileCard(ProfileTint.SAGE) { SickPeriodSection(koinViewModel()) }
+                },
+                // User 23.11.2026: the known allergies come before privacy; these cards follow them.
+                profileLower = {
                     // User note 21.11.2026: privacy details on their own screen, here only a short line.
-                    ProfileCard(ProfileTint.WARM) {
+                    ProfileCard(ProfileTint.SAGE) {
                         SectionTitle(stringResource(Res.string.privacy_title))
                         Text(stringResource(Res.string.privacy_card_text), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         // User pictures 23.11.2026: one clear round button per card.
@@ -151,7 +154,7 @@ fun AppNavHost(
                         }
                     }
                     // User picture 23.11.2026: the intro in its own card "Willkommen" instead of a loose button.
-                    ProfileCard(ProfileTint.SAGE) {
+                    ProfileCard(ProfileTint.WARM) {
                         SectionTitle(stringResource(Res.string.welcome_title))
                         Text(stringResource(Res.string.welcome_text), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Button(onClick = { navController.navigate(IntroRoute) }, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {

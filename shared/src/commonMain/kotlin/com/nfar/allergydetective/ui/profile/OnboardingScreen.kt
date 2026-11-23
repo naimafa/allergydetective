@@ -1,5 +1,16 @@
 package com.nfar.allergydetective.ui.profile
 
+import allergydetective.shared.generated.resources.welcome_title
+import com.nfar.allergydetective.ui.theme.TileGradient
+import com.nfar.allergydetective.ui.theme.AppFonts
+import com.nfar.allergydetective.ui.theme.AppColors
+import com.nfar.allergydetective.ui.home.homeBackground
+import com.nfar.allergydetective.ui.home.AllergyDetectiveLogo
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.material3.Surface
+import androidx.compose.foundation.BorderStroke
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.home_brand
 import allergydetective.shared.generated.resources.onboarding_dishes_later
@@ -96,44 +107,61 @@ fun OnboardingScreen(
     LaunchedEffect(allergiesSaved) {
         if (allergiesSaved && !replay) pager.animateScrollToPage(pages.indexOf(PAGE_DISHES))
     }
-    Column(modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(16.dp)) {
-        Text(stringResource(Res.string.home_brand), style = MaterialTheme.typography.headlineMedium)
+    // User 23.11.2026: "die Einführungsseite ist so kahl". The look of the start screen: leaf picture, logo, Playfair
+    // titles, a big round picture per page, texts in cream cards and the three steps as coloured tiles.
+    val home = AppColors.extra.home
+    Column(modifier = Modifier.fillMaxSize().homeBackground().safeDrawingPadding().padding(16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            AllergyDetectiveLogo(Modifier.size(40.dp))
+            Text(stringResource(Res.string.home_brand), style = MaterialTheme.typography.titleLarge.copy(fontFamily = AppFonts.playfair), color = home.ink)
+        }
         HorizontalPager(state = pager, modifier = Modifier.weight(1f).fillMaxWidth().padding(top = 16.dp)) { index ->
             Column(
                 modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 when (pages[index]) {
                     PAGE_WELCOME -> {
-                        Text(stringResource(Res.string.onboarding_welcome), style = MaterialTheme.typography.bodyLarge)
-                        Text(stringResource(Res.string.onboarding_purpose_title), style = MaterialTheme.typography.titleMedium)
-                        Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium)
+                        PagePicture { AllergyDetectiveLogo(Modifier.size(84.dp)) }
+                        PageTitle(stringResource(Res.string.welcome_title))
+                        PageText(stringResource(Res.string.onboarding_welcome))
+                        InfoCard(stringResource(Res.string.onboarding_purpose_title), stringResource(Res.string.onboarding_purpose))
                     }
                     PAGE_HOW -> {
-                        Text(stringResource(Res.string.onboarding_how_title), style = MaterialTheme.typography.titleLarge)
-                        Step("🍽️", Res.string.onboarding_how_meal)
-                        Step("🤒", Res.string.onboarding_how_symptom)
-                        Step("🌙", Res.string.onboarding_how_check)
+                        PageTitle(stringResource(Res.string.onboarding_how_title))
+                        StepTile(1, "🍽️", Res.string.onboarding_how_meal, home.mealTile)
+                        StepTile(2, "🤒", Res.string.onboarding_how_symptom, home.symptomTile)
+                        StepTile(3, "🌙", Res.string.onboarding_how_check, home.dayCheckTile)
                     }
                     PAGE_PATIENCE -> {
-                        Text(stringResource(Res.string.onboarding_patience_title), style = MaterialTheme.typography.titleLarge)
-                        Text(stringResource(Res.string.onboarding_patience_text), style = MaterialTheme.typography.bodyLarge)
+                        PagePicture { Text("⏳", fontSize = 56.sp) }
+                        PageTitle(stringResource(Res.string.onboarding_patience_title))
+                        // Seven days, three of them done: the first stretch at a glance.
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            repeat(7) { day ->
+                                Box(Modifier.size(22.dp).background(if (day < 3) home.accent else home.progressTrack, CircleShape))
+                            }
+                        }
+                        PageText(stringResource(Res.string.onboarding_patience_text))
                     }
                     PAGE_ALLERGIES -> {
                         KnownAllergiesContent(state, viewModel::onToggle)
                         Button(
                             onClick = viewModel::onSave,
                             enabled = !state.loading,
+                            shape = CircleShape,
                             modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
                         ) { Text(stringResource(Res.string.onboarding_next)) }
                     }
                     PAGE_DISHES -> {
-                        Text(stringResource(Res.string.onboarding_dishes_title), style = MaterialTheme.typography.titleLarge)
-                        Text(stringResource(Res.string.onboarding_dishes_text), style = MaterialTheme.typography.bodyLarge)
-                        Button(onClick = { onFinished(true) }, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)) {
+                        PagePicture { Text("🍲", fontSize = 56.sp) }
+                        PageTitle(stringResource(Res.string.onboarding_dishes_title))
+                        PageText(stringResource(Res.string.onboarding_dishes_text))
+                        Button(onClick = { onFinished(true) }, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)) {
                             Text(stringResource(Res.string.onboarding_dishes_start))
                         }
-                        OutlinedButton(onClick = { onFinished(false) }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                        OutlinedButton(onClick = { onFinished(false) }, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
                             Text(stringResource(Res.string.onboarding_dishes_later))
                         }
                     }
@@ -159,11 +187,63 @@ fun OnboardingScreen(
     }
 }
 
+/** A big round sage picture at the top of a page. */
 @Composable
-private fun Step(emoji: String, text: StringResource) {
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
-        Text(emoji, style = MaterialTheme.typography.headlineSmall)
-        Text(stringResource(text), style = MaterialTheme.typography.bodyLarge)
+private fun PagePicture(content: @Composable () -> Unit) {
+    val home = AppColors.extra.home
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.padding(top = 8.dp).size(140.dp).background(Brush.linearGradient(listOf(home.mealTile.start, home.mealTile.end)), CircleShape),
+    ) { content() }
+}
+
+@Composable
+private fun PageTitle(text: String) {
+    Text(
+        text,
+        style = MaterialTheme.typography.headlineSmall.copy(fontFamily = AppFonts.playfair),
+        color = AppColors.extra.home.ink,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth(),
+    )
+}
+
+@Composable
+private fun PageText(text: String) {
+    Text(text, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+}
+
+/** Title and text in a cream card, like the cards of the other screens. */
+@Composable
+private fun InfoCard(title: String, text: String) {
+    val home = AppColors.extra.home
+    Surface(shape = MaterialTheme.shapes.large, color = home.card, border = BorderStroke(1.dp, home.cardBorder), modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(title, style = MaterialTheme.typography.titleMedium, color = home.ink)
+            Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+/** One step of "So funktioniert es" as a tile in the colour of its tile on the start screen. */
+@Composable
+private fun StepTile(number: Int, emoji: String, text: StringResource, tile: TileGradient) {
+    val home = AppColors.extra.home
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Brush.linearGradient(listOf(tile.start, tile.end)), MaterialTheme.shapes.large)
+            .padding(14.dp),
+    ) {
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.size(48.dp).background(home.chevronCircle, CircleShape)) {
+            Text(emoji, fontSize = 24.sp)
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text("$number", style = MaterialTheme.typography.labelLarge, color = home.accent)
+            Text(stringResource(text), style = MaterialTheme.typography.bodyLarge, color = home.ink)
+        }
     }
 }
 
@@ -174,7 +254,7 @@ private fun PageDots(current: Int, count: Int, reachable: Int, onSelect: (Int) -
         repeat(count) { index ->
             val scheme = MaterialTheme.colorScheme
             val color = when {
-                index == current -> scheme.primary
+                index == current -> AppColors.extra.home.accent
                 index < reachable -> scheme.outline
                 else -> scheme.outlineVariant
             }
