@@ -15,10 +15,10 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 0.5 Setup | ca. 3:42 h | davon ca. 2:15 h Android Studio / KMP-Einrichtung, 30 min Git-Push mit Auth-Problem, 24 min App aufs Handy |
 | 1 Daten-Herz | ca. 1:16 h | Room-Schema v1, Seed-Daten, Analyse-Engine, Gruppierung, Koin/Seeder, Repository |
 | 2 Skelett | ca. 1:16 h | Alle Screens plus die offenen Punkte (Favoriten, Historie, Reminder, Spracheingabe …) |
-| 3 Design | ca. 2:05 h | 17.11.: Theme hell/dunkel, Icons, Dashboard, Symptom-Kacheln, Ergebnis-Karten (0:16). 19.11.: Startseite feinjustiert, Dark Mode (1:10). 20.11.: App-Icon, HTML-Prototyp (0:39) |
+| 3 Design | ca. 5:42 h | 17.11.: Theme hell/dunkel, Icons, Dashboard, Symptom-Kacheln, Ergebnis-Karten (0:16). 19.11.: Startseite feinjustiert, Dark Mode (1:10). 20.11.: App-Icon, HTML-Prototyp (0:39). 21.11.: Startseite nach Design-Bild, hell und dunkel (3:37) |
 | 4 Self-Test | ca. 8:14 h | 17.11.: Vorbereitung (0:11). 18.11.: Rückmeldungen aus dem Self-Test umgesetzt, inkl. 0:07 Absturz-Reparatur (2:56). 19.11.: Design-Feedback, Historie, Krankheitstage, Nachtragen (3:14). 20.11.: Getränk, Dauer, Arzt-PDF, Verschlüsselung, Feedback-Runde (1:53); der 7-Tage-Test selbst läuft |
-| Doku / Organisation | ca. 0:42 h | OFFENE_PUNKTE, PROGRESS, Zeitprotokoll, 18.11. auch GitHub-PR (sonst meist in den Phasen enthalten) |
-| **Gesamt (erfasst)** | **ca. 17:15 h** | ohne Konzeptphase |
+| Doku / Organisation | ca. 0:50 h | OFFENE_PUNKTE, PROGRESS, Zeitprotokoll, 18.11. auch GitHub-PR (sonst meist in den Phasen enthalten) |
+| **Gesamt (erfasst)** | **ca. 21:00 h** | ohne Konzeptphase |
 
 ---
 
@@ -87,6 +87,15 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 20.11.2026 | 22:44–23:12 | 0:28 | 3 | Klickbarer HTML-Prototyp, nach Rückmeldung nach Code und Handy-Screenshots neu gebaut, Screen für Screen abgeglichen (PR #36) | Erste Version frei gestaltet, sah nicht aus wie die App; automatische Screenshot-Serie lieferte nur den Startbildschirm |
 | 20.11.2026 | 23:12–23:19 | 0:07 | 4 | Aus dem Abgleich: „Datum“ abgeschnitten (PR #37), Sterne der Schlafqualität abgeschnitten (PR #38), Symptom-Fenster breiter (PR #39); Dialog „Neues Gericht“ im Prototyp | – |
 | 20.11.2026 | 23:19–23:35 | 0:16 | Doku | Zeitprotokoll und PROGRESS für den 19. und 20.11. nachgetragen (19.11. aus der Git-Historie) | – |
+| 21.11.2026 | 11:10–11:24 | 0:14 | 3 | Startseite nach dem neuen Design-Bild: Begrüßung nach Tageszeit, Tageskarte mit drei Zahlen, Kacheln mit Verlauf (PR #41) | Branchname `feature/home-redesign` schon vergeben |
+| 21.11.2026 | 11:24–11:55 | 0:31 | 3 | Handy-Test bei Schrift 125 %: Titel und „Jetzt abschließen“ abgeschnitten, Kacheln wirkten einfarbig; Farben aus dem Bild gemessen, Logo, Zweig, Glocke, eigene Icons, neue Leiste | Handy nicht erkannt (adb-Server neu gestartet), Handy gesperrt |
+| 21.11.2026 | 11:55–12:21 | 0:26 | 3 | Alles auf einen Bildschirm ohne Scrollen, Zweig neu, Farben aus dem ChatGPT-Style-Guide, Schriften Playfair Display und Inter (OFL) eingebunden | PC-Absturz mitten im Build, Änderungen blieben erhalten |
+| 21.11.2026 | 12:21–12:51 | 0:30 | 3 | Zweites Design-Bild: Pfeile im Kreis, kein Button, „Verlauf“; Farbliste der Nutzerin; Bild und Handy nebeneinander verglichen, Größen und Kacheln angepasst | – |
+| 21.11.2026 | 12:51–13:22 | 0:31 | 3 | Fortschrittskarte nachgemessen, Design-Review von ChatGPT geprüft (Teile übernommen, Widersprüche zum Bild begründet) | Lesemodus des Handys verfälschte die Farben (rosa, körnig) |
+| 21.11.2026 | 13:22–13:54 | 0:32 | 3 | Einheitliches Creme, Zweig weich gezeichnet, dann eigenes Blätter-Bild als Hintergrund (35 KB) und Logo als Bild, zuletzt per Code gezeichnet; Schriftzug fett in Inter | WebP ohne Python/Node: per Edge gerendert, Transparenz aus zwei Hintergründen berechnet |
+| 21.11.2026 | 13:54–14:13 | 0:19 | 3 | Vorgeschlagenen Zweig-Code gerendert und verglichen (verworfen), PR #41 abgeschlossen | – |
+| 21.11.2026 | 14:13–14:47 | 0:34 | 3 | Dark Mode der Startseite (PR #42): Kacheln klar statt milchig, Waldgrün-Hintergrund, derselbe Zweig wie hell neu eingefärbt, drei Varianten zur Wahl, unscharfe Blätter zurückgenommen | Mehrere Runden, bis Zweig, Grün und Lichthof zum hellen Modus passten |
+| 21.11.2026 | 14:47–14:55 | 0:08 | Doku | Zeitprotokoll und PROGRESS für den 21.11. | – |
 
 ---
 
@@ -101,3 +110,4 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 - **19.11. in ca. 4:24 h, 20 PRs:** fast nur Design-Rückmeldungen aus dem Handy-Test. Viel Zeit ging in Feinschliff bei Schriftgröße 125 % (Kacheltexte, Chips, Tageszeile), weil jede Runde erst auf dem Handy sichtbar wurde. Die Zeiten sind nachträglich aus Git-Commits und Reflog rekonstruiert, die Hindernisse aus Commit-Texten und Code-Kommentaren.
 - **20.11. in ca. 2:48 h, 14 PRs:** Die Verschlüsselung war der größte Block (ca. 1:07 h inkl. Handy-Test), weil es für Room 3 keinen fertigen SQLCipher-Treiber gibt. Der Fehler bei der Umstellung zeigte sich erst auf dem echten Gerät; die Regel „alte Datei erst nach geprüfter Kopie löschen“ hat die Daten geschützt.
 - **Handy-Screenshots schlagen Annahmen:** Der Abgleich Screen für Screen hat zwei echte Fehler bei Schriftgröße 125 % gefunden (abgeschnittenes „Datum“, fehlende Sterne), die in Tests und Code-Review nicht auffallen.
+- **21.11. in ca. 3:45 h, 2 PRs (#41, #42) mit über 30 Commits:** fast nur Startseite. Am Anfang kosteten geschätzte Farben und Größen viele Runden; schneller wurde es erst durch Messen im Bild und Bild-neben-Handy-Vergleiche. Eigene Bilder der Nutzerin (Hintergrund) waren am Ende besser als gezeichnete Blätter. Der Lesemodus des Handys hatte Farbvergleiche verfälscht.

@@ -45,7 +45,7 @@
 ## Phase 3: Design & Content ✅
 - [x] Farben (Petrol/Salbei/Koralle), Dark Mode, Typografie, Formen, Material-Icons
 - [x] Home: Tagesspruch, Fortschrittsring, farbige Kacheln; Symptom-Kacheln mit Symbolen und Gruppenfarben; Ergebnis-Karten nach Stufe; Gesichter/Sterne im Tages-Abschluss; Haptik beim Speichern
-- [ ] Schrift Inter (braucht eine Font-Datei im Projekt; aktuell System-Schrift)
+- [x] Schriften Inter (Text) und Playfair Display (Startseite), beide SIL OFL, seit 21.11.
 - [x] Pool mit 40 Tagessprüchen (EN/DE), wechselt täglich
 
 ## Phase 4: Self-Test
@@ -91,3 +91,4 @@
 | 18.11.2026 | PC-Absturz: Git-Metadaten repariert, nichts verloren. `gh` eingerichtet, `develop` per PR #5 nach `main` gemergt (erster PR seit Phase 1) |
 | 19.11.2026 | 20 PRs nach `develop` (#7–#26), Design-Rückmeldungen aus dem Handy-Test: Waldgrün-Palette, Startseite und Kacheln, Essen in drei Schritten, Historie mit Filtern, Zeilen und Detail-Blatt, Bearbeiten und Nachtragen, Tagesabschluss mit Autosave, Krankheitstage gewichtet (Migration 6 → 7), Dark Mode (Einstellung und automatisch), gleiche Tageszeile überall. #7–#17 am selben Abend gemergt, #18–#26 am 20.11. (nachträglich aus der Git-Historie eingetragen) |
 | 20.11.2026 | 13 PRs nach `develop` (#27–#39), je ein Branch, aufeinander aufbauend: Profil-Reihenfolge, Getränk (Migration 7 → 8), Icon, Dauer (8 → 9), Arzt-PDF, SQLCipher-Verschlüsselung mit Keystore, Icon aus dem Entwurf, zuklappbare Allergien, Skalen-Legenden, HTML-Prototyp, drei Korrekturen aus dem Handy-Abgleich. Tests grün, Stand auf dem Handy installiert; Verschlüsselung dort mit echten Daten geprüft |
+| 21.11.2026 | Startseite nach dem Design-Bild neu: PR #41 (hell: gemessene Farben, Playfair Display und Inter, eigenes Blätter-Bild als Hintergrund, Logo per Code, Kacheln ohne Scrollen, „Verlauf“ statt „Historie“) und PR #42 (Dark Mode: Waldgrün, derselbe Zweig neu eingefärbt, klare Kacheln). Aufeinander aufbauend auf #40, auf dem Handy hell und dunkel geprüft, Prototyp angeglichen, Tests grün |
