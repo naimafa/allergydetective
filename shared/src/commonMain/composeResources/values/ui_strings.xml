@@ -55,6 +55,7 @@
     <string name="results_groups_title">Not distinguishable yet</string>
     <string name="results_group">%1$s always occurred together.</string>
     <string name="results_safe_title">🟢 Tolerated well (%1$d)</string>
+    <string name="results_safe_hint">From your own entries: you ate these at least %1$d times and no matching complaints followed. This is not a general list and no proof that they always agree with you.</string>
     <string name="results_allergy_notice">You ate %1$s, which is stored as a known allergy.</string>
     <string name="results_bad_sleep">Poor sleep</string>
     <string name="results_high_stress">High stress</string>

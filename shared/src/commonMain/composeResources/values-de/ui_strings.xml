@@ -55,6 +55,7 @@
     <string name="results_groups_title">Bisher nicht unterscheidbar</string>
     <string name="results_group">%1$s kamen immer zusammen vor.</string>
     <string name="results_safe_title">🟢 Gut vertragen (%1$d)</string>
+    <string name="results_safe_hint">Aus deinen eigenen Einträgen: Diese Zutaten hast du mindestens %1$d-mal gegessen, und danach kamen keine Beschwerden, die dazu passen. Das ist keine allgemeine Liste und kein Beweis, dass sie immer verträglich sind.</string>
     <string name="results_allergy_notice">Du hast %1$s gegessen, das als bekannte Allergie hinterlegt ist.</string>
     <string name="results_bad_sleep">Schlechter Schlaf</string>
     <string name="results_high_stress">Hoher Stress</string>

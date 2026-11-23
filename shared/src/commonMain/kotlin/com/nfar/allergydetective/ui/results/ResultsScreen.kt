@@ -1,5 +1,7 @@
 package com.nfar.allergydetective.ui.results
 
+import com.nfar.allergydetective.domain.analysis.SafeListThresholds
+import allergydetective.shared.generated.resources.results_safe_hint
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.home_results
 import allergydetective.shared.generated.resources.results_allergy_notice
@@ -108,6 +110,12 @@ private fun ResultsContent(state: ResultsState, modifier: Modifier) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(stringResource(Res.string.results_safe_title, state.safeIngredients.size), style = MaterialTheme.typography.titleMedium)
                         Text(state.safeIngredients.map { labelText(it) }.joinToString(", "))
+                        // User note 21.11.2026: "gut vertragen" was unclear – in general, or from my own entries? Say it.
+                        Text(
+                            stringResource(Res.string.results_safe_hint, SafeListThresholds().minExposures),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f),
+                        )
                     }
                 }
             }
