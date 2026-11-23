@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.ui.profile
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.NotificationsNone
 import allergydetective.shared.generated.resources.Res
@@ -32,18 +33,21 @@ import org.koin.compose.viewmodel.koinViewModel
 /** Evening reminder in the profile (UX 4): on/off and the time. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ReminderSection(viewModel: ReminderViewModel = koinViewModel()) {
+fun ReminderSection(viewModel: ReminderViewModel = koinViewModel(), inGroup: Boolean = false) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val requestPermission = rememberNotificationPermissionRequest { granted -> viewModel.onEnabledChange(true, granted) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionTitle(stringResource(Res.string.reminder_setting), Icons.Outlined.NotificationsNone)
+        // User 23.11.2026: the switch on the right in the same line as the title, the explanation below.
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(Res.string.reminder_setting_hint), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Box(modifier = Modifier.weight(1f)) {
+                if (inGroup) GroupSubtitle(stringResource(Res.string.reminder_setting)) else SectionTitle(stringResource(Res.string.reminder_setting), Icons.Outlined.NotificationsNone)
+            }
             Switch(
                 checked = state.settings.enabled,
                 onCheckedChange = { enabled -> if (enabled) requestPermission() else viewModel.onEnabledChange(false) },
             )
         }
+        Text(stringResource(Res.string.reminder_setting_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (state.permissionDenied) {
             Text(stringResource(Res.string.reminder_denied), color = MaterialTheme.colorScheme.tertiary, style = MaterialTheme.typography.bodySmall)
         }

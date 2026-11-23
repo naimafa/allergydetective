@@ -1,5 +1,7 @@
 package com.nfar.allergydetective.ui.sick
 
+import allergydetective.shared.generated.resources.sick_show_all
+import com.nfar.allergydetective.ui.profile.GroupSubtitle
 import androidx.compose.material.icons.outlined.Sick
 import com.nfar.allergydetective.ui.theme.AppColors
 import androidx.compose.material3.Surface
@@ -171,17 +173,20 @@ fun SickPeriodDayCheckPart(day: Long, viewModel: SickPeriodsViewModel) {
 
 /** Profile: all periods with delete, and "+ enter period". */
 @Composable
-fun SickPeriodSection(viewModel: SickPeriodsViewModel) {
+fun SickPeriodSection(viewModel: SickPeriodsViewModel, inGroup: Boolean = false) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionTitle(stringResource(Res.string.sick_title), Icons.Outlined.Sick)
-        Text(stringResource(Res.string.sick_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (inGroup) GroupSubtitle(stringResource(Res.string.sick_title)) else SectionTitle(stringResource(Res.string.sick_title), Icons.Outlined.Sick)
+        Text(stringResource(Res.string.sick_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 4.dp))
         if (state.periods.isEmpty()) {
             Text(stringResource(Res.string.sick_empty), style = MaterialTheme.typography.bodyMedium)
         }
         // User picture 23.11.2026: every period in its own small box with a bin, one round button below.
-        state.periods.forEach { period ->
+        // Grouped profile (user 23.11.2026): only the two newest periods, the rest behind "Alle anzeigen".
+        var showAll by remember { mutableStateOf(false) }
+        val shown = if (inGroup && !showAll) state.periods.take(GROUP_PERIODS) else state.periods
+        shown.forEach { period ->
             Surface(
                 shape = MaterialTheme.shapes.medium,
                 color = AppColors.extra.home.card,
@@ -195,6 +200,9 @@ fun SickPeriodSection(viewModel: SickPeriodsViewModel) {
                     }
                 }
             }
+        }
+        if (inGroup && !showAll && state.periods.size > GROUP_PERIODS) {
+            TextButton(onClick = { showAll = true }) { Text(stringResource(Res.string.sick_show_all, state.periods.size)) }
         }
         Button(onClick = { showDialog = true }, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
             Text(stringResource(Res.string.sick_add))
@@ -211,3 +219,4 @@ fun SickPeriodSection(viewModel: SickPeriodsViewModel) {
         )
     }
 }
+private const val GROUP_PERIODS = 2

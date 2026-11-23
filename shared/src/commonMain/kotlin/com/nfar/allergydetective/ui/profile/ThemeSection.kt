@@ -29,10 +29,10 @@ import org.koin.compose.koinInject
 /** Profile: "Automatic · Light · Dark" (feedback 19.11.: dark mode for the night). */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ThemeSection(controller: ThemeController = koinInject()) {
+fun ThemeSection(controller: ThemeController = koinInject(), inGroup: Boolean = false) {
     val mode by controller.mode.collectAsState()
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionTitle(stringResource(Res.string.theme_title), Icons.Outlined.Contrast)
+        if (inGroup) GroupSubtitle(stringResource(Res.string.theme_title)) else SectionTitle(stringResource(Res.string.theme_title), Icons.Outlined.Contrast)
         // User note 22.11.2026: the three options in one line.
         val labels = ThemeMode.entries.map { option ->
             stringResource(

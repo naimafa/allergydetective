@@ -1,5 +1,14 @@
 package com.nfar.allergydetective.ui.profile
 
+import allergydetective.shared.generated.resources.allergies_none_short
+import allergydetective.shared.generated.resources.allergies_section_title
+import com.nfar.allergydetective.ui.common.NamePrefix
+import com.nfar.allergydetective.ui.common.displayName
+import allergydetective.shared.generated.resources.profile_group_health
+import androidx.compose.material.icons.outlined.HealthAndSafety
+import com.nfar.allergydetective.ui.theme.AppColors
+import com.nfar.allergydetective.ui.sick.SickPeriodSection
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,7 +41,6 @@ import org.koin.compose.viewmodel.koinViewModel
  * later features such as the reminder settings.
  */
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun ProfileScreen(
     onSaved: () -> Unit,
     modifier: Modifier = Modifier,
@@ -40,10 +48,12 @@ fun ProfileScreen(
     extraContent: @Composable () -> Unit = {},
     /** Cards after the known allergies, e.g. privacy and the intro (user 23.11.2026: allergies before privacy). */
     lowerContent: @Composable () -> Unit = {},
-    /** Hidden: a long press on the last card opens the payment test view (user 23.11.2026). */
-    onOpenPaywallPreview: () -> Unit = {},
+    /** Opens the known allergies on their own page. */
+    onOpenAllergies: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    // Back from the allergies page: show what was saved there.
+    LaunchedEffect(Unit) { viewModel.refresh() }
     LaunchedEffect(state.saved) {
         if (state.saved) {
             viewModel.onSavedHandled()
@@ -56,19 +66,14 @@ fun ProfileScreen(
     ) {
         // Settings first: the allergy list is long and hid everything below it (feedback 20.11.).
         extraContent()
-        // Folded by default (feedback 20.11.): one line with the selection, the list opens on tap.
-        // User note 22.11.2026: the cards alternate apricot and sage all the way down.
-        ProfileCard(ProfileTint.WARM) { KnownAllergiesSection(state, viewModel::onToggle, viewModel::onSave) }
-        lowerContent()
+        // User 23.11.2026 (profile "überladen"): illness and allergies together in one card "Meine Gesundheit".
         ProfileCard(ProfileTint.SAGE) {
-            // Phone test 23.11.: only the title reacted; now a long press anywhere on the card opens the test view.
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth().combinedClickable(onClick = {}, onLongClick = onOpenPaywallPreview),
-            ) {
-                SectionTitle(stringResource(Res.string.onboarding_purpose_title), Icons.Outlined.Info)
-                Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
+            SectionTitle(stringResource(Res.string.profile_group_health), Icons.Outlined.HealthAndSafety)
+            GroupPart { SickPeriodSection(koinViewModel(), inGroup = true) }
+            // User 23.11.2026: like "Datenschutz" a line with an arrow; the list is on its own page.
+            val names = state.properties.filter { it.id in state.selected }.map { displayName(NamePrefix.PROPERTY, it.key) }
+            GroupPart { ProfileRow(stringResource(Res.string.allergies_section_title), names.joinToString(", ").ifEmpty { stringResource(Res.string.allergies_none_short) }, onClick = onOpenAllergies) }
         }
+        lowerContent()
     }
 }

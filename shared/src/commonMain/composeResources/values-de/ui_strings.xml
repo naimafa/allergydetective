@@ -428,4 +428,10 @@
     <string name="paywall_backup">Bisherige Daten einmalig sichern</string>
     <string name="paywall_keep">Deine bisherigen Einträge bleiben erhalten und können weiterhin angesehen werden.</string>
     <string name="paywall_only_preview">Nur Vorschau: Es wird nichts gekauft und nichts gesperrt.</string>
+    <string name="profile_group_settings">Sprache &amp; Darstellung</string>
+    <string name="profile_group_health">Meine Gesundheit</string>
+    <string name="profile_group_about">App-Info &amp; Rechtliches</string>
+    <string name="profile_privacy_hint">Deine Daten bleiben auf dem Handy</string>
+    <string name="sick_show_all">Alle anzeigen (%1$d)</string>
+    <string name="allergies_none_short">Keine angegeben</string>
 </resources>

@@ -84,15 +84,19 @@ fun DoctorReportSection(viewModel: DoctorReportViewModel = koinViewModel()) {
             state.days?.let { periods.indexOf(it) } ?: periods.size,
             { if (it < periods.size) viewModel.onDaysChange(periods[it]) else picking = true },
         )
-        HorizontalDivider(color = AppColors.extra.home.cardBorder)
-        // Two small radio rows instead of two full-width pills.
-        ContentOption(stringResource(Res.string.report_content_analysis), !state.includeEntries) { viewModel.onIncludeEntriesChange(false) }
-        ContentOption(stringResource(Res.string.report_content_all), state.includeEntries) { viewModel.onIncludeEntriesChange(true) }
+        // User 23.11.2026: the count right under the period it belongs to.
         Text(
             state.entryCount?.let { pluralStringResource(Res.plurals.report_entry_count, it, it) } ?: "…",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 4.dp),
         )
+        HorizontalDivider(color = AppColors.extra.home.cardBorder)
+        // Two small radio rows instead of two full-width pills, close together (user 23.11.2026).
+        Column {
+            ContentOption(stringResource(Res.string.report_content_analysis), !state.includeEntries) { viewModel.onIncludeEntriesChange(false) }
+            ContentOption(stringResource(Res.string.report_content_all), state.includeEntries) { viewModel.onIncludeEntriesChange(true) }
+        }
         ChoiceRow(
             listOf(stringResource(Res.string.report_format_pdf), stringResource(Res.string.report_format_excel)),
             if (state.format == ReportFormat.PDF) 0 else 1,
@@ -130,7 +134,7 @@ fun DoctorReportSection(viewModel: DoctorReportViewModel = koinViewModel()) {
 private fun ContentOption(label: String, selected: Boolean, onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp).selectable(selected = selected, onClick = onClick, role = Role.RadioButton),
+        modifier = Modifier.fillMaxWidth().heightIn(min = 40.dp).selectable(selected = selected, onClick = onClick, role = Role.RadioButton),
     ) {
         RadioButton(selected = selected, onClick = null)
         Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 12.dp))
@@ -140,6 +144,10 @@ private fun ContentOption(label: String, selected: Boolean, onClick: () -> Unit)
 /** "01.05.–31.05." for the pill of the own period. */
 private fun shortRange(from: Long, to: Long): String {
     fun d(day: Long) = LocalDate.fromEpochDays(day).let { "${it.day.toString().padStart(2, '0')}.${(it.month.ordinal + 1).toString().padStart(2, '0')}." }
+    // User 23.11.2026: within one month shorter ("10.–23.11."), so the pill keeps some room at its edges.
+    val a = LocalDate.fromEpochDays(from)
+    val b = LocalDate.fromEpochDays(to)
+    if (a.year == b.year && a.month == b.month) return "${a.day.toString().padStart(2, '0')}.–${d(to)}"
     return "${d(from)}–${d(to)}"
 }
 
