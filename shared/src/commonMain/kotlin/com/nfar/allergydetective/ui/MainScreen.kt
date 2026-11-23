@@ -159,7 +159,9 @@ fun MainScreen(
                     state = homeState,
                     onAction = onHomeAction,
                     onOpenToday = { tab = MainTab.HISTORY },
-                    onOpenReminders = { tab = MainTab.PROFILE },
+                    // User 23.11.2026: the red dot means today is still open; the bell leads straight there. Without
+                    // a dot it opens the reminder settings in the profile as before.
+                    onOpenReminders = { if (homeState.todayOpen) onOpenDayCheck(homeState.today) else tab = MainTab.PROFILE },
                     onNewStretch = homeViewModel::onStartNewStretch,
                     banner = { sickState.ongoing?.let { SickBanner(it, sickViewModel::onRecovered) } },
                 )

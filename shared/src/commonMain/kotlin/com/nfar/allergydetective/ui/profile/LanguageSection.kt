@@ -18,6 +18,7 @@ import com.nfar.allergydetective.ui.common.AppFilterChip
 import com.nfar.allergydetective.ui.common.SectionTitle
 import com.nfar.allergydetective.ui.theme.LanguageController
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.text.intl.Locale
 import org.koin.compose.koinInject
 
 /**
@@ -28,6 +29,8 @@ import org.koin.compose.koinInject
 @Composable
 fun LanguageSection(controller: LanguageController = koinInject()) {
     val language by controller.language.collectAsState()
+    // User 23.11.2026: with "Wie Handy" the language that is actually shown is marked too.
+    val shown = Locale.current.language.takeIf { it in LanguageController.SUPPORTED } ?: FALLBACK_LANGUAGE
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionTitle(stringResource(Res.string.language_title))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -35,12 +38,14 @@ fun LanguageSection(controller: LanguageController = koinInject()) {
                 selected = language == null,
                 onClick = { controller.onLanguageChange(null) },
                 label = { Text(stringResource(Res.string.language_system)) },
+                showCheck = false,
             )
             LanguageController.SUPPORTED.forEach { code ->
                 AppFilterChip(
-                    selected = language == code,
+                    selected = language == code || (language == null && code == shown),
                     onClick = { controller.onLanguageChange(code) },
                     label = { Text(OWN_NAMES.getValue(code)) },
+                    showCheck = false,
                 )
             }
         }
@@ -49,4 +54,7 @@ fun LanguageSection(controller: LanguageController = koinInject()) {
 }
 
 /** Every language in its own name. */
+/** The language shown when the phone has none of ours (the default resources are English). */
+private const val FALLBACK_LANGUAGE = "en"
+
 private val OWN_NAMES = mapOf("de" to "Deutsch", "en" to "English", "fr" to "Français", "ar" to "العربية")
