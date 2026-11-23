@@ -23,7 +23,6 @@ import com.nfar.allergydetective.ui.profile.OnboardingScreen
 import com.nfar.allergydetective.ui.profile.ReminderSection
 import com.nfar.allergydetective.ui.profile.ThemeSection
 import com.nfar.allergydetective.ui.profile.DoctorReportSection
-import com.nfar.allergydetective.ui.profile.ExportSection
 import androidx.compose.runtime.LaunchedEffect
 import com.nfar.allergydetective.ui.symptom.LogSymptomScreen
 import com.nfar.allergydetective.ui.sick.SickPeriodSection
@@ -131,7 +130,6 @@ fun AppNavHost(
                     ProfileCard { ThemeSection() }
                     ProfileCard { ReminderSection() }
                     ProfileCard { SickPeriodSection(koinViewModel()) }
-                    ProfileCard { ExportSection() }
                     // User note 21.11.2026: privacy details on their own screen, here only a short line.
                     ProfileCard {
                         SectionTitle(stringResource(Res.string.privacy_title))
