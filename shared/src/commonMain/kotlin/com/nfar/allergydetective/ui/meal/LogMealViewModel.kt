@@ -246,6 +246,9 @@ class LogMealViewModel(
     }
 
     /** The time dialog only changes the clock time; the day comes from the day row. */
+    /** The clock time now on the chosen day: the start of the time field before a meal is chosen. */
+    fun nowTime(): ExactTime = clock.localTime(clock.nowMillis()).let { (h, m) -> ExactTime(_state.value.day, h, m) }
+
     fun onExactTimeChange(time: ExactTime) {
         _state.update { it.copy(exactTime = time.copy(daysAgo = it.day), slotSuggested = false) }
     }

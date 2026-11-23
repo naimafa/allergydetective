@@ -40,6 +40,7 @@ import allergydetective.shared.generated.resources.meal_now
 import allergydetective.shared.generated.resources.time_selected
 import allergydetective.shared.generated.resources.common_done
 import androidx.compose.material.icons.outlined.Schedule
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
@@ -202,7 +203,6 @@ fun LogMealScreen(
     ScreenScaffold(
         title = stringResource(if (editMealId != null || state.openedExisting != null) Res.string.meal_edit_title else Res.string.home_log_meal),
         titleIcon = Icons.Filled.Restaurant,
-        actions = { WhenPill(state, viewModel) },
         onBack = onBack,
         snackbarHostState = snackbarHostState,
         bottomBar = {
@@ -295,6 +295,7 @@ private fun LogMealContent(
 private fun WhenStep(state: LogMealState, viewModel: LogMealViewModel) {
     StepCard(number = 1, title = stringResource(Res.string.meal_step_which), highlighted = state.slotMissing) {
         MealSlotGrid(listOf(MealSlot.entries.take(2), MealSlot.entries.drop(2)), state.slot, viewModel::onSlotTap)
+        WhenPill(state, viewModel)
         if (state.slotMissing) {
             Text(stringResource(Res.string.meal_slot_missing), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
         }
@@ -319,16 +320,19 @@ private fun whenLabel(state: LogMealState): String {
 private fun WhenPill(state: LogMealState, viewModel: LogMealViewModel) {
     var open by remember { mutableStateOf(false) }
     val home = AppColors.extra.home
+    // User 23.11.2026: at the top right the time was easy to miss. It now sits in step 1 under the meal it belongs
+    // to, as an outlined pill with a pencil.
     Surface(
         onClick = { open = true },
         shape = CircleShape,
-        color = home.accent,
-        contentColor = home.progressCard,
-        modifier = Modifier.padding(end = 12.dp),
+        color = home.page,
+        contentColor = home.ink,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
-            Icon(Icons.Outlined.Schedule, contentDescription = null, modifier = Modifier.size(16.dp))
-            Text(whenLabel(state), style = MaterialTheme.typography.labelLarge, maxLines = 1, modifier = Modifier.padding(start = 6.dp))
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.heightIn(min = 40.dp).padding(horizontal = 14.dp)) {
+            Icon(Icons.Outlined.Schedule, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text(whenLabel(state), style = MaterialTheme.typography.labelLarge, maxLines = 1, modifier = Modifier.padding(start = 8.dp, end = 8.dp))
+            Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
         }
     }
     if (open) {
@@ -342,12 +346,13 @@ private fun WhenPill(state: LogMealState, viewModel: LogMealViewModel) {
                 DayPicker(state.day, state.today, viewModel::onDayChange)
                 // User 23.11.2026: too many taps to change the time (pill → "Ändern" → dialog → OK → Fertig). The time
                 // is now set right here and taken over with "Fertig".
-                val shown = state.shownTime
-                val timeState = shown?.let { rememberTimePickerState(initialHour = it.hour, initialMinute = it.minute, is24Hour = true) }
-                timeState?.let { TimeInput(state = it, modifier = Modifier.align(Alignment.CenterHorizontally)) }
+                // Before a meal is chosen there is no stored time yet: the field starts at "now".
+                val shown = remember(state.shownTime) { state.shownTime ?: viewModel.nowTime() }
+                val timeState = rememberTimePickerState(initialHour = shown.hour, initialMinute = shown.minute, is24Hour = true)
+                TimeInput(state = timeState, modifier = Modifier.align(Alignment.CenterHorizontally))
                 Button(
                     onClick = {
-                        if (shown != null && timeState != null && (timeState.hour != shown.hour || timeState.minute != shown.minute)) {
+                        if ((timeState.hour != shown.hour || timeState.minute != shown.minute)) {
                             viewModel.onExactTimeChange(ExactTime(state.day, timeState.hour, timeState.minute))
                         }
                         open = false
