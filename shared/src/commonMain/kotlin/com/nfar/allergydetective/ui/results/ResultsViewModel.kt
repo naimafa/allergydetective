@@ -36,6 +36,8 @@ data class ResultItem(
     /** The same for meals or days without the candidate. */
     val otherExposures: Int,
     val otherWithComplaints: Int,
+    /** How many times as often complaints came with the candidate than without (TRD 2.4); 0 = unknown. */
+    val lift: Double = 0.0,
 )
 
 data class ResultsState(
@@ -76,7 +78,7 @@ class ResultsViewModel(
             confirmedDays = input.diary.dayChecks.count { it.confirmed },
             items = result.ranking
                 .filter { it.level >= EvidenceLevel.TRACE }
-                .mapNotNull { r -> label(r.candidate)?.let { ResultItem(it, r.level, r.stats.exposureCount, r.stats.hitCount, r.stats.unexposedCount, r.stats.unexposedHitCount) } },
+                .mapNotNull { r -> label(r.candidate)?.let { ResultItem(it, r.level, r.stats.exposureCount, r.stats.hitCount, r.stats.unexposedCount, r.stats.unexposedHitCount, r.lift) } },
             groups = result.groups.map { group -> group.members.mapNotNull(::label) },
             safeIngredients = result.safeIngredientIds.mapNotNull { label(Candidate.Ingredient(it)) },
             knownAllergyIngredients = result.knownAllergyExposures
