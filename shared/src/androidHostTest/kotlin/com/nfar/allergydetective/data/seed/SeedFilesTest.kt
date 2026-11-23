@@ -30,9 +30,9 @@ class SeedFilesTest {
 
     @Test
     fun hasExpectedCounts() {
-        assertEquals(14, entities.categories.size)
+        assertEquals(15, entities.categories.size)
         assertEquals(26, entities.properties.size)
-        assertEquals(137, entities.ingredients.size)
+        assertEquals(150, entities.ingredients.size)
         assertEquals(24, entities.symptoms.size)
         assertEquals(4, entities.lifestyleFactors.size)
     }
@@ -58,7 +58,7 @@ class SeedFilesTest {
     @Test
     fun spicesMigrationMatchesSeedFile() {
         val propertyKeys = entities.properties.associate { it.id to it.key }
-        Migrations.SPICES_ROWS.forEach { row ->
+        Migrations.SPICES_ROWS.filter { it.id != Migrations.DRIED_HERBS }.forEach { row ->  // dried herbs moved in 11 -> 12
             val seed = entities.ingredients.single { it.id == row.id }
             assertEquals(row.key, seed.key)
             assertEquals(row.categoryId, seed.categoryId)
@@ -69,9 +69,32 @@ class SeedFilesTest {
             assertEquals(row.synonymsDe, entities.ingredientSynonyms.filter { it.ingredientId == row.id }.map { it.synonym })
         }
         assertEquals(14L, entities.categories.single { it.key == "spices_herbs" }.id)
-        assertEquals(15, entities.ingredients.count { it.categoryId == 14L })
+        assertEquals(14, entities.ingredients.count { it.categoryId == 14L })
     }
 
+
+    /** Herbs (user 23.11.2026): migration 11 -> 12 for existing installs, JSON for new ones; both the same. */
+    @Test
+    fun herbsMigrationMatchesSeedFile() {
+        val propertyKeys = entities.properties.associate { it.id to it.key }
+        Migrations.HERBS_ROWS.forEach { row ->
+            val seed = entities.ingredients.single { it.id == row.id }
+            assertEquals(row.key, seed.key)
+            assertEquals(row.categoryId, seed.categoryId)
+            assertEquals(
+                row.properties.toSet(),
+                entities.ingredientProperties.filter { it.ingredientId == row.id }.map { propertyKeys.getValue(it.propertyId) }.toSet(),
+            )
+            assertEquals(row.synonymsDe, entities.ingredientSynonyms.filter { it.ingredientId == row.id }.map { it.synonym })
+        }
+        assertEquals(15L, entities.categories.single { it.key == "herbs" }.id)
+        assertEquals(15L, entities.ingredients.single { it.id == Migrations.DRIED_HERBS }.categoryId)
+        assertEquals(
+            listOf("Kräuter der Provence", "italienische Kräuter"),
+            entities.ingredientSynonyms.filter { it.ingredientId == Migrations.DRIED_HERBS }.map { it.synonym },
+        )
+        assertEquals(14, entities.ingredients.count { it.categoryId == 15L })
+    }
     @Test
     fun onlySwellingAndShortnessOfBreathAreRedFlags() {
         assertEquals(setOf("swelling", "shortness_of_breath"), entities.symptoms.filter { it.isRedFlag }.map { it.key }.toSet())
