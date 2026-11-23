@@ -41,6 +41,9 @@ import allergydetective.shared.generated.resources.time_selected
 import allergydetective.shared.generated.resources.common_done
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.rememberTimePickerState
+import com.nfar.allergydetective.ui.common.ExactTime
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.ui.graphics.Color
@@ -54,6 +57,7 @@ import com.nfar.allergydetective.ui.common.formatClock
 import com.nfar.allergydetective.ui.theme.AppColors
 import allergydetective.shared.generated.resources.meal_voice
 import allergydetective.shared.generated.resources.meal_add_more
+import allergydetective.shared.generated.resources.meal_opened_existing
 import allergydetective.shared.generated.resources.meal_portion_info
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material.icons.filled.Check
@@ -134,6 +138,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.diary.IngredientInfo
+import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.time.MealSlot
 import com.nfar.allergydetective.platform.rememberSpeechInput
 import com.nfar.allergydetective.ui.common.NamePrefix
@@ -141,7 +146,6 @@ import com.nfar.allergydetective.ui.common.SavedSnackbarEffect
 import com.nfar.allergydetective.ui.common.ScreenScaffold
 import com.nfar.allergydetective.ui.common.StepCard
 import com.nfar.allergydetective.ui.common.DayPicker
-import com.nfar.allergydetective.ui.common.TimeLine
 import com.nfar.allergydetective.ui.common.displayName
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -196,7 +200,7 @@ fun LogMealScreen(
     }
 
     ScreenScaffold(
-        title = stringResource(if (editMealId != null) Res.string.meal_edit_title else Res.string.home_log_meal),
+        title = stringResource(if (editMealId != null || state.openedExisting != null) Res.string.meal_edit_title else Res.string.home_log_meal),
         titleIcon = Icons.Filled.Restaurant,
         actions = { WhenPill(state, viewModel) },
         onBack = onBack,
@@ -290,9 +294,12 @@ private fun LogMealContent(
 @Composable
 private fun WhenStep(state: LogMealState, viewModel: LogMealViewModel) {
     StepCard(number = 1, title = stringResource(Res.string.meal_step_which), highlighted = state.slotMissing) {
-        MealSlotGrid(listOf(MealSlot.entries.take(2), MealSlot.entries.drop(2)), state.slot, viewModel::onSlotChange)
+        MealSlotGrid(listOf(MealSlot.entries.take(2), MealSlot.entries.drop(2)), state.slot, viewModel::onSlotTap)
         if (state.slotMissing) {
             Text(stringResource(Res.string.meal_slot_missing), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
+        }
+        state.openedExisting?.let { slot ->
+            Text(stringResource(Res.string.meal_opened_existing, mealSlotLabel(slot)), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
@@ -333,8 +340,21 @@ private fun WhenPill(state: LogMealState, viewModel: LogMealViewModel) {
                 Text(stringResource(Res.string.meal_step_when), style = MaterialTheme.typography.titleLarge)
                 // Feedback 19.11.: the same day row in every form.
                 DayPicker(state.day, state.today, viewModel::onDayChange)
-                state.shownTime?.let { TimeLine(it, viewModel::onExactTimeChange) }
-                Button(onClick = { open = false }, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                // User 23.11.2026: too many taps to change the time (pill → "Ändern" → dialog → OK → Fertig). The time
+                // is now set right here and taken over with "Fertig".
+                val shown = state.shownTime
+                val timeState = shown?.let { rememberTimePickerState(initialHour = it.hour, initialMinute = it.minute, is24Hour = true) }
+                timeState?.let { TimeInput(state = it, modifier = Modifier.align(Alignment.CenterHorizontally)) }
+                Button(
+                    onClick = {
+                        if (shown != null && timeState != null && (timeState.hour != shown.hour || timeState.minute != shown.minute)) {
+                            viewModel.onExactTimeChange(ExactTime(state.day, timeState.hour, timeState.minute))
+                        }
+                        open = false
+                    },
+                    shape = CircleShape,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                ) {
                     Text(stringResource(Res.string.common_done))
                 }
             }
@@ -379,29 +399,15 @@ private fun WhatStep(
         )
         // Phone test 21.11.: one letter matched almost every saved dish (by name or ingredient) and the big chips
         // pushed the ingredients off the screen. Dishes from two letters on, at most three, as compact rows.
-        if (state.query.trim().length >= 2) {
-            state.dishResults.take(3).forEach { dish ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 48.dp)
-                        .clickable {
-                            viewModel.onFavoriteClick(dish)
-                            keyboard?.hide()
-                        }
-                        .padding(vertical = 10.dp),
-                ) {
-                    Icon(Icons.Outlined.StarOutline, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-                    Column(modifier = Modifier.padding(start = 10.dp)) {
-                        Text(dish.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        viewModel.dishReason(dish, state.query)?.let { reason ->
-                            Text(stringResource(Res.string.meal_dish_contains, reason), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
-                        }
-                    }
-                }
-            }
+        // User 23.11.2026: searching "Olivenöl" must show the oil first, not "Linsensuppe" only because it contains it.
+        // Dishes found by their own name come first, then the ingredients, then dishes found by an ingredient.
+        val dishes = if (state.query.trim().length >= 2) state.dishResults.take(3) else emptyList()
+        val reasons = dishes.associate { it.id to viewModel.dishReason(it, state.query) }
+        val pickDish: (FavoriteInfo) -> Unit = { dish ->
+            viewModel.onFavoriteClick(dish)
+            keyboard?.hide()
         }
+        dishes.filter { reasons[it.id] == null }.forEach { DishResultRow(it, null, pickDish) }
         state.results.forEach { ingredient ->
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -422,7 +428,8 @@ private fun WhatStep(
                 }
             }
         }
-        if (state.query.isNotBlank() && state.results.isEmpty()) {
+        dishes.filter { reasons[it.id] != null }.forEach { DishResultRow(it, reasons[it.id], pickDish) }
+        if (state.query.isNotBlank() && state.results.isEmpty() && dishes.isEmpty()) {
             Text(stringResource(Res.string.meal_no_results), style = MaterialTheme.typography.bodyMedium)
         }
         if (state.query.isNotBlank() && !state.nameExists) {
@@ -631,3 +638,24 @@ fun mealSlotLabel(slot: MealSlot): String = stringResource(
     },
 )
 
+
+/** A dish in the search results; [reason] is the ingredient it was found by ("enthält Olivenöl"), if any. */
+@Composable
+private fun DishResultRow(dish: FavoriteInfo, reason: String?, onClick: (FavoriteInfo) -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .clickable { onClick(dish) }
+            .padding(vertical = 10.dp),
+    ) {
+        Icon(Icons.Outlined.StarOutline, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+        Column(modifier = Modifier.padding(start = 10.dp)) {
+            Text(dish.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            reason?.let {
+                Text(stringResource(Res.string.meal_dish_contains, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+            }
+        }
+    }
+}

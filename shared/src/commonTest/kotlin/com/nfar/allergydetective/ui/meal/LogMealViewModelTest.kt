@@ -166,6 +166,37 @@ class LogMealViewModelTest {
         assertNull(vm.state.value.favoriteId)
     }
 
+    @Test
+    fun tappingTheChosenMealTakesItBack() {
+        val vm = viewModel()
+        vm.onSlotTap(MealSlot.LUNCH)
+        assertEquals(MealSlot.LUNCH, vm.state.value.slot)
+
+        vm.onSlotTap(MealSlot.LUNCH)
+
+        assertNull(vm.state.value.slot)
+        assertNull(vm.state.value.shownTime)
+    }
+
+    @Test
+    fun choosingAnAlreadyLoggedLunchOpensIt() {
+        val vm = viewModel()
+        vm.onToggleIngredient(bread)
+        vm.onSlotChange(MealSlot.LUNCH)
+        vm.onSave()
+        vm.onToggleIngredient(milk)
+
+        vm.onSlotTap(MealSlot.LUNCH)
+
+        assertEquals(1L, vm.state.value.editingMealId)
+        assertEquals(MealSlot.LUNCH, vm.state.value.openedExisting)
+        assertEquals(listOf(bread, milk), vm.state.value.selected.map { it.ingredient })
+        // Another meal instead: back to a new one, without the lunch's ingredients.
+        vm.onSlotTap(MealSlot.DINNER)
+        assertNull(vm.state.value.editingMealId)
+        assertEquals(listOf(milk), vm.state.value.selected.map { it.ingredient })
+    }
+
     private val coffee = IngredientInfo(1101, "coffee", null, BEVERAGES_CATEGORY_ID)
     private val repository = FakeRepository(listOf(bread, milk, coffee))
 

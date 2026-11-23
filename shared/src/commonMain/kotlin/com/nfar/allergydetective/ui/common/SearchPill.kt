@@ -6,6 +6,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
 import com.nfar.allergydetective.ui.theme.AppColors
 
 /**
@@ -17,7 +18,9 @@ fun searchPillColors(): TextFieldColors {
     val home = AppColors.extra.home
     val scheme = MaterialTheme.colorScheme
     // Opaque (phone test 22.11.: the leaf picture showed through): the soft sage mixed into the page cream.
-    val fill = lerp(home.page, home.badge, 0.45f)
+    // Phone test 23.11. (dark mode): mixed into the dark page the field almost vanished on its card; dark mode
+    // takes the full sage.
+    val fill = if (home.page.luminance() < 0.5f) home.badge else lerp(home.page, home.badge, 0.45f)
     return TextFieldDefaults.colors(
         focusedContainerColor = fill,
         unfocusedContainerColor = fill,
