@@ -85,6 +85,8 @@
     <string name="day_wellbeing">كيف كان شعورك في هذا اليوم؟</string>
     <string name="day_sleep">النوم في الليلة السابقة</string>
     <string name="day_hours">%1$s ساعة</string>
+    <string name="day_sleep_less">نصف ساعة أقل</string>
+    <string name="day_sleep_more">نصف ساعة أكثر</string>
     <string name="day_sleep_quality">جودة النوم</string>
     <string name="day_stress">التوتر في هذا اليوم</string>
     <string name="day_scale_hint">1 = تقريبًا لا شيء · 5 = مرتفع جدًا</string>
