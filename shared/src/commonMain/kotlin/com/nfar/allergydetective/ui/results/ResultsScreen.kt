@@ -199,6 +199,9 @@ private fun ResultCard(item: ResultItem, onSetFocus: (String) -> Unit) {
     }
     var open by remember { mutableStateOf(false) }
     val name = labelText(item.label)
+    // Phone test 23.11.: "Hartkäse gereift (Parmesan, Bergkäse, alter Gouda)" three times in the text was too long;
+    // the explanation uses the name without the examples in brackets.
+    val short = name.substringBefore(" (").ifBlank { name }
     Card(
         onClick = { open = !open },
         colors = CardDefaults.cardColors(containerColor = container, contentColor = MaterialTheme.colorScheme.onSurface),
@@ -213,8 +216,9 @@ private fun ResultCard(item: ResultItem, onSetFocus: (String) -> Unit) {
             Text(stringResource(Res.string.results_reason, item.withComplaints, item.exposures, item.otherWithComplaints, item.otherExposures), style = MaterialTheme.typography.bodyMedium)
             if (open) {
                 Text(stringResource(Res.string.results_how_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp))
-                Text(stringResource(Res.string.results_how, name, item.withComplaints, item.exposures, item.otherWithComplaints, item.otherExposures), style = MaterialTheme.typography.bodyMedium)
-                if (item.lift >= 1.5) {
+                Text(stringResource(Res.string.results_how, short, item.withComplaints, item.exposures, item.otherWithComplaints, item.otherExposures), style = MaterialTheme.typography.bodyMedium)
+                // Without any complaints in the comparison the ratio is only an estimate ("2-mal" for 1 of 6 vs 0 of 12).
+                if (item.lift >= 1.5 && item.otherWithComplaints > 0 && item.level >= EvidenceLevel.SUSPICION) {
                     Text(stringResource(Res.string.results_how_lift, formatDecimal(item.lift.toFloat(), Locale.current.language)), style = MaterialTheme.typography.bodyMedium)
                 }
                 Text(stringResource(Res.string.results_how_limit), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -228,12 +232,12 @@ private fun ResultCard(item: ResultItem, onSetFocus: (String) -> Unit) {
                             item.level == EvidenceLevel.SUSPICION -> Res.string.results_next_suspicion
                             else -> Res.string.results_next_trace
                         },
-                        name,
+                        short,
                     ),
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 if (food && item.level >= EvidenceLevel.SUSPICION) {
-                    val focus = stringResource(Res.string.results_focus_text, name)
+                    val focus = stringResource(Res.string.results_focus_text, short)
                     OutlinedButton(
                         onClick = { onSetFocus(focus) },
                         shape = CircleShape,
