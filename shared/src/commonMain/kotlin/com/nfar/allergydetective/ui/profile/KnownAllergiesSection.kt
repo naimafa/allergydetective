@@ -27,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.nfar.allergydetective.ui.common.NamePrefix
@@ -41,19 +42,20 @@ import org.jetbrains.compose.resources.stringResource
 fun KnownAllergiesSection(state: KnownAllergiesState, onToggle: (Long) -> Unit, onSave: () -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val selectedNames = state.properties.filter { it.id in state.selected }.map { displayName(NamePrefix.PROPERTY, it.key) }
+    // User note 22.11.2026: no white card inside the profile card; the fold lies directly on the card.
     Surface(
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        color = Color.Transparent,
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxWidth().clickable { expanded = !expanded }.heightIn(min = 56.dp).padding(16.dp),
+                modifier = Modifier.fillMaxWidth().clickable { expanded = !expanded }.heightIn(min = 56.dp).padding(top = 8.dp, bottom = 4.dp),
             ) {
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(stringResource(Res.string.allergies_section_title), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(Res.string.allergies_section_title), style = MaterialTheme.typography.titleLarge)
                     Text(
                         selectedNames.joinToString(", ").ifEmpty { stringResource(Res.string.allergies_none) },
                         style = MaterialTheme.typography.bodyMedium,
@@ -70,7 +72,7 @@ fun KnownAllergiesSection(state: KnownAllergiesState, onToggle: (Long) -> Unit, 
             }
             AnimatedVisibility(visible = expanded) {
                 Column(
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                    modifier = Modifier.padding(top = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     KnownAllergiesContent(state, onToggle)

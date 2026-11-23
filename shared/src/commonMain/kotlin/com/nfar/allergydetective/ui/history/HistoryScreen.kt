@@ -13,6 +13,11 @@ import allergydetective.shared.generated.resources.history_sick_badge
 import allergydetective.shared.generated.resources.weekdays_short
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.foundation.layout.size
+import com.nfar.allergydetective.ui.theme.AppColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -30,7 +34,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddCircleOutline
-import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.MonitorHeart
 import androidx.compose.material.icons.outlined.Restaurant
 import allergydetective.shared.generated.resources.history_add
 import allergydetective.shared.generated.resources.history_add_meal
@@ -43,6 +47,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -103,15 +110,23 @@ fun HistoryScreen(
     val sickDays = state.days.map { it.epochDay }.filter { day -> sickState.periods.any { it.contains(day, sickState.today) } }.toSet()
     val visibleDays = state.visibleDays(sickDays)
     fun isSick(day: HistoryDay) = day.epochDay in sickDays || day.check?.factorIds.orEmpty().any { state.factorKeys[it] == SICK_FACTOR_KEY }
+    val listState = rememberLazyListState()
     LazyColumn(
+        state = listState,
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
     ) {
         item {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.padding(top = 16.dp)) {
                 HistoryFilterRow(state.filter, viewModel::onFilterChange)
-                TextButton(onClick = { sickEditing = SickPeriod(0, sickState.today, null) }) {
-                    Text("+ " + stringResource(Res.string.history_sick_add))
+                // Design picture 22.11.2026: a full-width outlined pill with a calendar icon.
+                OutlinedButton(
+                    onClick = { sickEditing = SickPeriod(0, sickState.today, null) },
+                    shape = CircleShape,
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                ) {
+                    Icon(Icons.Outlined.CalendarMonth, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Text("+ " + stringResource(Res.string.history_sick_add), modifier = Modifier.padding(start = 8.dp))
                 }
             }
         }
@@ -127,9 +142,18 @@ fun HistoryScreen(
             // Phone test 19.11.: with many entries the date stays visible at the top while scrolling the day.
             val daysAgo = (sickState.today - day.epochDay).toInt()
             stickyHeader(key = "date-${day.epochDay}") {
+                // User note 22.11.2026: a cream band behind every date cut through the leaf picture. The date gets
+                // the page colour only while it stays pinned at the top over the scrolling entries.
+                val key = "date-${day.epochDay}"
+                val pinned by remember(key) {
+                    derivedStateOf {
+                        listState.canScrollBackward && listState.layoutInfo.visibleItemsInfo.any { it.key == key && it.offset <= 0 }
+                    }
+                }
                 DayHeader(
                     day,
                     clock,
+                    pinned = pinned,
                     sick = isSick(day),
                     // Today and the two days before can still be added to (like the day check).
                     onAddMeal = if (daysAgo in 0..DayCheckViewModel.DAYS_BACK) ({ onAddMealForDay(daysAgo) }) else null,
@@ -245,6 +269,7 @@ private fun ConfirmDelete(question: String, onConfirm: () -> Unit, onDone: () ->
 private fun DayHeader(
     day: HistoryDay,
     clock: AppClock,
+    pinned: Boolean,
     sick: Boolean,
     onAddMeal: (() -> Unit)? = null,
     onAddSymptom: (() -> Unit)? = null,
@@ -254,7 +279,7 @@ private fun DayHeader(
     val confirmed = day.status == DayCheckStatus.NO_SYMPTOMS || day.status == DayCheckStatus.COMPLETE
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).padding(start = 4.dp, end = 4.dp, top = 16.dp, bottom = 8.dp),
+        modifier = Modifier.fillMaxWidth().background(if (pinned) AppColors.extra.home.page else Color.Transparent).padding(start = 4.dp, end = 4.dp, top = 16.dp, bottom = 8.dp),
     ) {
         Text(
             "$weekday, ${formatDate(date, Locale.current.language)}",
@@ -297,7 +322,7 @@ private fun DayHeader(
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(Res.string.history_add_symptom)) },
-                        leadingIcon = { Icon(Icons.Outlined.Bolt, contentDescription = null) },
+                        leadingIcon = { Icon(Icons.Outlined.MonitorHeart, contentDescription = null) },
                         onClick = {
                             menuOpen = false
                             onAddSymptom()

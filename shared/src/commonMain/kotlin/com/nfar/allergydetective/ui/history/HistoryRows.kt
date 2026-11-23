@@ -22,10 +22,13 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Bedtime
-import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.MonitorHeart
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.LocalCafe
@@ -69,7 +72,11 @@ import org.jetbrains.compose.resources.stringResource
  * The actions live in a sheet that opens on tap.
  */
 
-/** One row: icon circle, title, one line, arrow when it can be opened. */
+/**
+ * One row: a coloured box with the time (meals, symptoms) or an icon circle (day check), title and one line.
+ * User note 22.11.2026: rows as cards like on the start screen (cream white, fine border, soft shadow),
+ * the time in a rounded box in the colour of the entry kind, no arrow.
+ */
 @Composable
 fun HistoryRow(
     icon: ImageVector,
@@ -78,34 +85,42 @@ fun HistoryRow(
     title: String,
     subtitle: String?,
     onClick: (() -> Unit)?,
+    /** Shown instead of the icon, e.g. "10:30". */
+    timeLabel: String? = null,
 ) {
-    Surface(
+    val home = AppColors.extra.home
+    Card(
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        colors = CardDefaults.cardColors(containerColor = home.card, contentColor = home.ink),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, home.cardBorder),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = (if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier).padding(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            modifier = (if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier).fillMaxWidth().padding(12.dp),
         ) {
-            Surface(shape = CircleShape, color = circle, contentColor = tint, modifier = Modifier.size(44.dp)) {
-                Box(contentAlignment = Alignment.Center) { Icon(icon, contentDescription = null, modifier = Modifier.size(22.dp)) }
+            if (timeLabel != null) {
+                Surface(shape = RoundedCornerShape(12.dp), color = circle, contentColor = home.ink, modifier = Modifier.size(width = 60.dp, height = 48.dp)) {
+                    Box(contentAlignment = Alignment.Center) { Text(timeLabel, style = MaterialTheme.typography.titleMedium, maxLines = 1) }
+                }
+            } else {
+                Surface(shape = CircleShape, color = circle, contentColor = tint, modifier = Modifier.size(48.dp)) {
+                    Box(contentAlignment = Alignment.Center) { Icon(icon, contentDescription = null, modifier = Modifier.size(24.dp)) }
+                }
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(title, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(title, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 subtitle?.let {
                     Text(
                         it,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
-            }
-            if (onClick != null) {
-                Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }
@@ -138,16 +153,18 @@ fun EntryRow(entry: HistoryEntry, clock: AppClock, onClick: () -> Unit) {
             circle = scheme.primaryContainer,
             tint = scheme.primary,
             title = mealTitle(entry, clock),
-            // The time matters for the analysis windows; the ingredients follow in one line.
-            subtitle = (listOf(timeOf(entry, clock)) + entry.items.map { ingredientName(it.first) }).joinToString(" · "),
+            // The time stands in the box on the left; the ingredients follow in one line.
+            subtitle = entry.items.map { ingredientName(it.first) }.joinToString(" · "),
+            timeLabel = timeOf(entry, clock),
             onClick = onClick,
         )
         is HistoryEntry.SymptomEntry -> HistoryRow(
-            icon = Icons.Outlined.Bolt,
+            icon = Icons.Outlined.MonitorHeart,
             circle = scheme.tertiaryContainer,
             tint = scheme.tertiary,
             title = displayName(NamePrefix.SYMPTOM, entry.symptomKey),
-            subtitle = symptomSummary(entry, clock),
+            subtitle = symptomSummary(entry, clock, withTime = false),
+            timeLabel = timeOf(entry, clock),
             onClick = onClick,
         )
     }
@@ -155,9 +172,9 @@ fun EntryRow(entry: HistoryEntry, clock: AppClock, onClick: () -> Unit) {
 
 /** "14:00 · Stärke 3 · 1–3 Std.": the duration only when it was given. */
 @Composable
-private fun symptomSummary(entry: HistoryEntry.SymptomEntry, clock: AppClock): String =
+private fun symptomSummary(entry: HistoryEntry.SymptomEntry, clock: AppClock, withTime: Boolean = true): String =
     listOfNotNull(
-        timeOf(entry, clock),
+        timeOf(entry, clock).takeIf { withTime },
         stringResource(Res.string.history_intensity, entry.intensity),
         entry.duration?.let { symptomDurationLabel(it) },
     ).joinToString(" · ")

@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nfar.allergydetective.ui.profile.ProfileCard
+import com.nfar.allergydetective.ui.profile.ProfileTint
 import com.nfar.allergydetective.ui.daycheck.DayCheckScreen
 import com.nfar.allergydetective.ui.results.ResultsScreen
 import org.koin.compose.viewmodel.koinViewModel
@@ -127,15 +128,16 @@ fun AppNavHost(
                 },
                 // User note 21.11.2026: each area in its own card.
                 profileExtra = {
-                    ProfileCard { DoctorReportSection() }
-                    ProfileCard { LanguageSection() }
-                    ProfileCard { ThemeSection() }
-                    ProfileCard { ReminderSection() }
-                    ProfileCard { SickPeriodSection(koinViewModel()) }
+                    // User note 22.11.2026: apricot and sage in turn, like the tiles on the start screen.
+                    ProfileCard(ProfileTint.WARM) { DoctorReportSection() }
+                    ProfileCard(ProfileTint.SAGE) { LanguageSection() }
+                    ProfileCard(ProfileTint.WARM) { ThemeSection() }
+                    ProfileCard(ProfileTint.SAGE) { ReminderSection() }
+                    ProfileCard(ProfileTint.WARM) { SickPeriodSection(koinViewModel()) }
                     // User note 21.11.2026: privacy details on their own screen, here only a short line.
-                    ProfileCard {
+                    ProfileCard(ProfileTint.SAGE) {
                         SectionTitle(stringResource(Res.string.privacy_title))
-                        Text(stringResource(Res.string.privacy_card_text), style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(Res.string.privacy_card_text), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         OutlinedButton(onClick = { navController.navigate(PrivacyRoute) }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
                             Text(stringResource(Res.string.privacy_card_button))
                         }

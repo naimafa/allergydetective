@@ -53,7 +53,8 @@ private val LightColors = lightColorScheme(
     onSurface = Color(0xFF293831),
     surfaceVariant = Color(0xFFDDE3DC),
     onSurfaceVariant = Color(0xFF5F6A63),
-    surfaceContainerLowest = Color.White,
+    // User note 22.11.2026: no pure white anywhere; the light cream of the page (like the filter chips) instead.
+    surfaceContainerLowest = Color(0xFFFBF4EA),
     surfaceContainerLow = Color(0xFFF4F1E3),
     surfaceContainer = Color(0xFFFBF8EC),
     surfaceContainerHigh = Color(0xFFEAE7D8),
@@ -138,6 +139,8 @@ data class HomeColors(
     /** Icons on the sage cards. */
     val icon: Color,
     val progressCard: Color,
+    /** Cards of the other screens (user note 22.11.2026: cream instead of white), a little deeper than the page. */
+    val card: Color,
     val progressTrack: Color,
     val badge: Color,
     val todayCard: Color,
@@ -184,6 +187,7 @@ private val LightExtra = ExtraColors(
         inkSoft = Color(0xFF184F34),
         icon = Color(0xFF478661),
         progressCard = Color(0xFFFBF8EE),
+        card = Color(0xFFF7EEDF),
         progressTrack = Color(0xFFE0E3D0),
         badge = Color(0xFFD6DEC6),
         todayCard = Color(0xFFEDEEDC),
@@ -196,11 +200,11 @@ private val LightExtra = ExtraColors(
         heart = Color(0xFFD47636),
         moon = Color(0xFFD47636),
         dot = Color(0xFFD9483B),
-        chevronCircle = Color(0xCCFFFFFF),
+        chevronCircle = Color(0xCCFBF4EA),
         tileGlow = Color(0x59FFFFFF),
-        nav = Color(0xFFFFF9EF),
+        nav = Color(0xFFFBF4EA),
         navInactive = Color(0xFF416783),
-        cardBorder = Color.White,
+        cardBorder = Color(0xFFEADFC9),
     ),
 )
 
@@ -225,6 +229,7 @@ private val DarkExtra = ExtraColors(
         inkSoft = Color(0xFFCAD6C6),
         icon = Color(0xFF9CC7A8),
         progressCard = Color(0xFF0F2E21),
+        card = Color(0xFF0F2E21),
         progressTrack = Color(0xFF23463A),
         badge = Color(0xFF1F4A38),
         todayCard = Color(0xFF143A2A),
@@ -247,12 +252,20 @@ private val DarkExtra = ExtraColors(
 
 val LocalExtraColors = staticCompositionLocalOf { LightExtra }
 
-/** Slightly larger and calmer than the Material defaults. */
+/**
+ * One type scale for every screen (user note 22.11.2026: "alles einheitlich, damit es ruhig wird"):
+ * - page title: Playfair 30 (PageTitle; the greeting on the start screen 36),
+ * - card title: titleLarge, 18 medium, like "Dein Fortschritt" on the start screen,
+ * - entry in a list: titleMedium, 16 medium,
+ * - small heading in a card: titleSmall, 14 medium,
+ * - text: bodyMedium 15, hints bodySmall; chips and buttons labelLarge 14 medium.
+ */
 private val AppTypography = Typography().run {
     copy(
         headlineMedium = headlineMedium.copy(fontWeight = FontWeight.Bold),
-        titleLarge = titleLarge.copy(fontWeight = FontWeight.SemiBold),
-        titleMedium = titleMedium.copy(fontWeight = FontWeight.SemiBold),
+        titleLarge = TextStyle(fontSize = 18.sp, lineHeight = 24.sp, fontWeight = FontWeight.Medium),
+        titleMedium = TextStyle(fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.1.sp),
+        titleSmall = TextStyle(fontSize = 14.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.1.sp),
         bodyLarge = TextStyle(fontSize = 17.sp, lineHeight = 24.sp),
         bodyMedium = TextStyle(fontSize = 15.sp, lineHeight = 21.sp),
     )

@@ -37,6 +37,23 @@ import allergydetective.shared.generated.resources.meal_slot_snack
 import allergydetective.shared.generated.resources.meal_step_amount
 import allergydetective.shared.generated.resources.meal_step_what
 import allergydetective.shared.generated.resources.meal_step_when
+import allergydetective.shared.generated.resources.meal_step_which
+import allergydetective.shared.generated.resources.meal_now
+import allergydetective.shared.generated.resources.time_selected
+import allergydetective.shared.generated.resources.common_done
+import androidx.compose.material.icons.outlined.Schedule
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.unit.sp
+import com.nfar.allergydetective.ui.common.dayLabel
+import com.nfar.allergydetective.ui.common.formatClock
+import com.nfar.allergydetective.ui.theme.AppColors
 import allergydetective.shared.generated.resources.meal_voice
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Spacer
@@ -63,6 +80,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Mic
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material3.TextField
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import com.nfar.allergydetective.ui.common.searchPillColors
+import com.nfar.allergydetective.ui.common.ChipRowWithMore
+import com.nfar.allergydetective.ui.common.ChoiceRow
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AssistChip
 import androidx.compose.foundation.layout.size
@@ -155,6 +183,8 @@ fun LogMealScreen(
 
     ScreenScaffold(
         title = stringResource(if (editMealId != null) Res.string.meal_edit_title else Res.string.home_log_meal),
+        titleIcon = Icons.Filled.Restaurant,
+        actions = { WhenPill(state, viewModel) },
         onBack = onBack,
         snackbarHostState = snackbarHostState,
         bottomBar = {
@@ -162,6 +192,7 @@ fun LogMealScreen(
                 onClick = viewModel::onSave,
                 enabled = state.canSave,
                 // Phone test 21.11.: the keyboard covered the button; it now sits right above the keyboard.
+                shape = CircleShape,
                 modifier = Modifier.navigationBarsPadding().imePadding().fillMaxWidth().padding(16.dp).heightIn(min = 56.dp),
             ) {
                 Text(state.slot?.let { stringResource(Res.string.meal_save_slot, mealSlotLabel(it)) } ?: stringResource(Res.string.common_save))
@@ -206,8 +237,8 @@ private fun LogMealContent(
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
-        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 16.dp),
     ) {
         item { WhenStep(state, viewModel) }
         item { WhatStep(state, viewModel, onCreateIngredient, searchActive, onSearchFocus = { searchFocused = it }) }
@@ -217,25 +248,72 @@ private fun LogMealContent(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+/**
+ * Design picture 22.11.2026: step 1 asks only "Welche Mahlzeit?" with the five kinds in two even rows
+ * (user: "Welche Mahlzeit" sounds better than "Wann hast du gegessen"). Day and time moved into the pill at the top right.
+ */
 @Composable
 private fun WhenStep(state: LogMealState, viewModel: LogMealViewModel) {
-    StepCard(number = 1, title = stringResource(Res.string.meal_step_when), highlighted = state.slotMissing) {
-        // Feedback 19.11.: the same day row in every form.
-        DayPicker(state.day, state.today, viewModel::onDayChange)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            MealSlot.entries.forEach { slot ->
-                AppFilterChip(
-                    selected = state.slot == slot,
-                    onClick = { viewModel.onSlotChange(slot) },
-                    label = { Text(mealSlotLabel(slot)) },
+    StepCard(number = 1, title = stringResource(Res.string.meal_step_which), highlighted = state.slotMissing) {
+        // Design picture 22.11.2026: the two rows close together.
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            listOf(MealSlot.entries.take(2), MealSlot.entries.drop(2)).forEach { row ->
+                // User 22.11.: the same font size everywhere; the narrow pills let "Abendessen" fit at font 125 %.
+                ChoiceRow(
+                    labels = row.map { mealSlotLabel(it) },
+                    selectedIndex = row.indexOf(state.slot),
+                    onSelect = { viewModel.onSlotChange(row[it]) },
                 )
             }
         }
         if (state.slotMissing) {
             Text(stringResource(Res.string.meal_slot_missing), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
         }
-        state.shownTime?.let { TimeLine(it, viewModel::onExactTimeChange) }
+    }
+}
+
+/** "Jetzt" until a meal is chosen, then e.g. "Heute, 08:00" or "Gestern, 19:00": when the meal will be saved. */
+@Composable
+private fun whenLabel(state: LogMealState): String {
+    val time = state.shownTime
+    if (time == null && state.day == 0) return stringResource(Res.string.meal_now)
+    val day = dayLabel(state.day)
+    return time?.let { stringResource(Res.string.time_selected, day, formatClock(it.hour, it.minute)) } ?: day
+}
+
+/** The pill at the top right (design picture 22.11.2026); a tap opens day and time. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun WhenPill(state: LogMealState, viewModel: LogMealViewModel) {
+    var open by remember { mutableStateOf(false) }
+    val home = AppColors.extra.home
+    Surface(
+        onClick = { open = true },
+        shape = CircleShape,
+        color = home.accent,
+        contentColor = home.progressCard,
+        modifier = Modifier.padding(end = 12.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
+            Icon(Icons.Outlined.Schedule, contentDescription = null, modifier = Modifier.size(16.dp))
+            Text(whenLabel(state), style = MaterialTheme.typography.labelLarge, maxLines = 1, modifier = Modifier.padding(start = 6.dp))
+        }
+    }
+    if (open) {
+        ModalBottomSheet(onDismissRequest = { open = false }) {
+            Column(
+                modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Text(stringResource(Res.string.meal_step_when), style = MaterialTheme.typography.titleLarge)
+                // Feedback 19.11.: the same day row in every form.
+                DayPicker(state.day, state.today, viewModel::onDayChange)
+                state.shownTime?.let { TimeLine(it, viewModel::onExactTimeChange) }
+                Button(onClick = { open = false }, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                    Text(stringResource(Res.string.common_done))
+                }
+            }
+        }
     }
 }
 
@@ -256,11 +334,15 @@ private fun WhatStep(
     // While searching only the results show; otherwise each shortcut group is one scrollable row.
     StepCard(number = 2, title = stringResource(Res.string.meal_step_what)) {
         val speech = rememberSpeechInput(Locale.current.toLanguageTag()) { text -> text?.let(viewModel::onVoiceResult) }
-        OutlinedTextField(
+        // User note 22.11.2026: a soft search pill with magnifier and microphone, as in the design picture.
+        TextField(
             value = state.query,
             onValueChange = viewModel::onQueryChange,
-            label = { Text(stringResource(Res.string.meal_search)) },
+            placeholder = { Text(stringResource(Res.string.meal_search), maxLines = 1, overflow = TextOverflow.Ellipsis) },
             singleLine = true,
+            shape = CircleShape,
+            colors = searchPillColors(),
+            leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
             trailingIcon = speech?.let { start ->
                 {
                     IconButton(onClick = start) { Icon(Icons.Outlined.Mic, contentDescription = voiceLabel) }
@@ -330,25 +412,30 @@ private fun WhatStep(
                 val index = state.favorites.indexOfFirst { it.id == state.favoriteId }
                 if (index >= 0) favoritesRow.animateScrollToItem(index)
             }
-            LazyRow(state = favoritesRow, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ChipRowWithMore(favoritesRow) {
                 items(state.favorites, key = { it.id }) { favorite ->
                     AppFilterChip(
                         selected = state.favoriteId == favorite.id,
                         onClick = { viewModel.onFavoriteClick(favorite) },
                         label = { Text(favorite.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp)) },
-                        leadingIcon = { Icon(Icons.Outlined.StarOutline, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                        // Design picture 22.11.2026: a star after the name marks a saved dish.
+                        trailingIcon = { Icon(Icons.Filled.Star, contentDescription = null, modifier = Modifier.size(18.dp)) },
                     )
                 }
             }
         }
         if (!searching && state.recent.isNotEmpty()) {
             ChipGroupTitle(stringResource(Res.string.meal_quick), stringResource(Res.string.meal_quick_hint))
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ChipRowWithMore {
                 items(state.recent, key = { it.id }) { ingredient ->
                     AppFilterChip(
                         selected = ingredient.id in selectedIds,
                         onClick = { viewModel.onToggleIngredient(ingredient) },
                         label = { Text(ingredientName(ingredient), maxLines = 1) },
+                        // Design picture 22.11.2026: "+" shows that a tap adds the ingredient.
+                        trailingIcon = if (ingredient.id in selectedIds) null else {
+                            { Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                        },
                     )
                 }
             }
@@ -363,7 +450,7 @@ private fun WhatStep(
 private fun AmountStep(state: LogMealState, viewModel: LogMealViewModel) {
     StepCard(number = 3, title = stringResource(Res.string.meal_step_amount)) {
         if (state.selected.isEmpty()) {
-            Text(stringResource(Res.string.meal_amount_empty), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(Res.string.meal_amount_empty), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             return@StepCard
         }
         Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -393,12 +480,21 @@ private fun AmountStep(state: LogMealState, viewModel: LogMealViewModel) {
     }
 }
 
+/** User note 22.11.2026: a short label over each chip row as in the design picture; the hint stays for screen readers. */
 @Composable
 private fun ChipGroupTitle(title: String, hint: String) {
-    Column(modifier = Modifier.padding(top = 4.dp)) {
-        Text(title, style = MaterialTheme.typography.labelLarge)
-        Text(hint, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
+    Text(
+        title,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier
+            // Closer to its chip row: the gap of the card would otherwise sit between label and chips.
+            .layout { measurable, constraints ->
+                val placeable = measurable.measure(constraints)
+                layout(placeable.width, placeable.height - 6.dp.roundToPx()) { placeable.place(0, 0) }
+            }
+            .semantics { contentDescription = "$title. $hint" },
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -449,3 +545,4 @@ fun mealSlotLabel(slot: MealSlot): String = stringResource(
         MealSlot.DRINK -> Res.string.meal_slot_drink
     },
 )
+

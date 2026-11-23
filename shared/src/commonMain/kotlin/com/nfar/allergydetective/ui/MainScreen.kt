@@ -40,7 +40,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import com.nfar.allergydetective.ui.common.PageTitle
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -96,9 +97,10 @@ fun MainScreen(
     val scope = rememberCoroutineScope()
     Scaffold(
         // Start screen: its cream page with the peach tint fills the whole screen.
-        modifier = if (tab == MainTab.HOME) Modifier.homeBackground() else Modifier,
-        containerColor = if (tab == MainTab.HOME) Color.Transparent else MaterialTheme.colorScheme.background,
-        topBar = { if (tab != MainTab.HOME) TopAppBar(title = { Text(stringResource(tab.label)) }) },
+        // User note 22.11.2026: every tab has the start screen background and a big title in its style.
+        modifier = Modifier.homeBackground(),
+        containerColor = Color.Transparent,
+        topBar = { if (tab != MainTab.HOME) PageTitle(stringResource(tab.label), Modifier.statusBarsPadding().padding(top = 20.dp, bottom = 12.dp)) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             // Design of 21.11.2026: a cream bar, rounded on top with a soft shadow; the active tab in

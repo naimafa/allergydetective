@@ -23,7 +23,7 @@ import org.jetbrains.compose.resources.stringResource
 fun KnownAllergiesContent(state: KnownAllergiesState, onToggle: (Long) -> Unit, modifier: Modifier = Modifier) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(stringResource(Res.string.allergies_question), style = MaterialTheme.typography.titleMedium)
-        Text(stringResource(Res.string.allergies_hint), style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(Res.string.allergies_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             state.properties.forEach { property ->
                 AppFilterChip(

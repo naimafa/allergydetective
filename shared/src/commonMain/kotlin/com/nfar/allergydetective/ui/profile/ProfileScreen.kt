@@ -47,10 +47,11 @@ fun ProfileScreen(
         // Settings first: the allergy list is long and hid everything below it (feedback 20.11.).
         extraContent()
         // Folded by default (feedback 20.11.): one line with the selection, the list opens on tap.
-        ProfileCard { KnownAllergiesSection(state, viewModel::onToggle, viewModel::onSave) }
-        ProfileCard {
+        // User note 22.11.2026: the cards alternate apricot and sage all the way down.
+        ProfileCard(ProfileTint.WARM) { KnownAllergiesSection(state, viewModel::onToggle, viewModel::onSave) }
+        ProfileCard(ProfileTint.SAGE) {
             SectionTitle(stringResource(Res.string.onboarding_purpose_title))
-            Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

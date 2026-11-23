@@ -25,7 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nfar.allergydetective.platform.rememberSharePdf
 import com.nfar.allergydetective.platform.rememberShareSpreadsheet
-import com.nfar.allergydetective.ui.common.AppFilterChip
+import com.nfar.allergydetective.ui.common.ChoiceRow
+import com.nfar.allergydetective.ui.common.ChoicePill
 import com.nfar.allergydetective.ui.common.SectionTitle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -43,40 +44,22 @@ fun DoctorReportSection(viewModel: DoctorReportViewModel = koinViewModel()) {
     val title = stringResource(Res.string.report_section_title)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionTitle(title)
-        Text(stringResource(Res.string.report_hint), style = MaterialTheme.typography.bodyMedium)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            DoctorReportViewModel.PERIODS.forEach { days ->
-                AppFilterChip(
-                    selected = state.days == days,
-                    onClick = { viewModel.onDaysChange(days) },
-                    label = { Text(stringResource(Res.string.report_period_days, days)) },
-                )
-            }
-        }
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            AppFilterChip(
-                selected = !state.includeEntries,
-                onClick = { viewModel.onIncludeEntriesChange(false) },
-                label = { Text(stringResource(Res.string.report_content_analysis)) },
-            )
-            AppFilterChip(
-                selected = state.includeEntries,
-                onClick = { viewModel.onIncludeEntriesChange(true) },
-                label = { Text(stringResource(Res.string.report_content_all)) },
-            )
-        }
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            AppFilterChip(
-                selected = state.format == ReportFormat.PDF,
-                onClick = { viewModel.onFormatChange(ReportFormat.PDF) },
-                label = { Text(stringResource(Res.string.report_format_pdf)) },
-            )
-            AppFilterChip(
-                selected = state.format == ReportFormat.EXCEL,
-                onClick = { viewModel.onFormatChange(ReportFormat.EXCEL) },
-                label = { Text(stringResource(Res.string.report_format_excel)) },
-            )
-        }
+        Text(stringResource(Res.string.report_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        // User note 22.11.2026: "14 · 30 · 90 Tage" in one line; the same pills for content and format.
+        val periods = DoctorReportViewModel.PERIODS
+        ChoiceRow(
+            periods.map { stringResource(Res.string.report_period_days, it) },
+            periods.indexOf(state.days),
+            { viewModel.onDaysChange(periods[it]) },
+        )
+        // The two contents have long names: each pill takes the full width.
+        ChoicePill(stringResource(Res.string.report_content_analysis), !state.includeEntries, { viewModel.onIncludeEntriesChange(false) }, Modifier.fillMaxWidth())
+        ChoicePill(stringResource(Res.string.report_content_all), state.includeEntries, { viewModel.onIncludeEntriesChange(true) }, Modifier.fillMaxWidth())
+        ChoiceRow(
+            listOf(stringResource(Res.string.report_format_pdf), stringResource(Res.string.report_format_excel)),
+            if (state.format == ReportFormat.PDF) 0 else 1,
+            { viewModel.onFormatChange(if (it == 0) ReportFormat.PDF else ReportFormat.EXCEL) },
+        )
         Button(
             onClick = {
                 viewModel.create(
