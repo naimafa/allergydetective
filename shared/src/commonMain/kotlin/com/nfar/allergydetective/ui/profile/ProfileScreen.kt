@@ -1,18 +1,14 @@
 package com.nfar.allergydetective.ui.profile
 
 import allergydetective.shared.generated.resources.Res
-import allergydetective.shared.generated.resources.common_save
 import allergydetective.shared.generated.resources.onboarding_purpose
 import allergydetective.shared.generated.resources.onboarding_purpose_title
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,12 +46,8 @@ fun ProfileScreen(
     ) {
         // Settings first: the allergy list is long and hid everything below it (feedback 20.11.).
         extraContent()
-        KnownAllergiesContent(state, viewModel::onToggle)
-        Button(
-            onClick = viewModel::onSave,
-            enabled = !state.loading,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-        ) { Text(stringResource(Res.string.common_save)) }
+        // Folded by default (feedback 20.11.): one line with the selection, the list opens on tap.
+        KnownAllergiesSection(state, viewModel::onToggle, viewModel::onSave)
         SectionTitle(stringResource(Res.string.onboarding_purpose_title))
         Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium)
     }

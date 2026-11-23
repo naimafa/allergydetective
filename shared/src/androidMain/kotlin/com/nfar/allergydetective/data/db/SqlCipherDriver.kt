@@ -77,7 +77,10 @@ internal class SqlCipherDriver(
         deleteDatabaseFiles(target)
         val version: Int
         // An empty key opens a plain file with SQLCipher.
-        SQLiteDatabase.openDatabase(plain.absolutePath, "", null, SQLiteDatabase.OPEN_READWRITE, null, null).use { db ->
+        // CREATE_IF_NECESSARY although the file exists: ATTACH inherits the open flags of the main
+        // database and could not create the encrypted file otherwise (phone test 20.11.).
+        val flags = SQLiteDatabase.OPEN_READWRITE or SQLiteDatabase.CREATE_IF_NECESSARY
+        SQLiteDatabase.openDatabase(plain.absolutePath, "", null, flags, null, null).use { db ->
             // Bring the write-ahead log into the main file first, so nothing is left behind.
             db.query("PRAGMA wal_checkpoint(TRUNCATE)").use { it.moveToFirst() }
             version = db.version
