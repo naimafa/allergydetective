@@ -1,5 +1,12 @@
 package com.nfar.allergydetective
 
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.runtime.key
+import androidx.compose.runtime.CompositionLocalProvider
+import com.nfar.allergydetective.platform.LocalAppLocale
+import com.nfar.allergydetective.ui.theme.LanguageController
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -30,6 +37,7 @@ fun App(
     onDayCheckOpened: () -> Unit = {},
     onDarkThemeChange: (Boolean) -> Unit = {},
     themeController: ThemeController = koinInject(),
+    languageController: LanguageController = koinInject(),
     clock: AppClock = koinInject(),
 ) {
     val mode by themeController.mode.collectAsState()
@@ -46,9 +54,19 @@ fun App(
         ThemeMode.DARK -> true
     }
     LaunchedEffect(dark) { onDarkThemeChange(dark) }
-    AppTheme(darkTheme = dark) {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            AppNavHost(openDayCheck = openDayCheck, onDayCheckOpened = onDayCheckOpened)
+    // User note 21.11.2026: the language chosen in the profile; Arabic is laid out right to left.
+    val language by languageController.language.collectAsState()
+    CompositionLocalProvider(LocalAppLocale provides language) {
+        val rtl = LanguageController.isRtl(language ?: Locale.current.language)
+        CompositionLocalProvider(LocalLayoutDirection provides if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) {
+            // A new language rebuilds the screens, so every text is read again.
+            key(language) {
+                AppTheme(darkTheme = dark) {
+                    Surface(modifier = Modifier.fillMaxSize()) {
+                        AppNavHost(openDayCheck = openDayCheck, onDayCheckOpened = onDayCheckOpened)
+                    }
+                }
+            }
         }
     }
 }
