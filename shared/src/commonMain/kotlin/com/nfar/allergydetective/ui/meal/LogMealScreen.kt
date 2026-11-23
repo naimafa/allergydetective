@@ -253,26 +253,10 @@ private fun LogMealContent(
     LaunchedEffect(state.slotMissing) {
         if (state.slotMissing) listState.animateScrollToItem(0)
     }
-    // Design picture 23.11.2026: once something is chosen, favourites and quick picks fold away and the list of
-    // ingredients takes their place; "Weitere Zutat hinzufügen" brings them back (or opens the search, when
-    // there are none yet).
-    var showShortcuts by remember { mutableStateOf(false) }
-    LaunchedEffect(state.selected.isEmpty()) { if (state.selected.isEmpty()) showShortcuts = false }
+    // User 23.11.2026: favourites and recent ingredients stay visible after a choice (folding them away hid the
+    // other dishes). "Weitere Zutat hinzufügen" opens the search.
     val searchFocus = remember { FocusRequester() }
-    val scope = rememberCoroutineScope()
-    val hasShortcuts = state.favorites.isNotEmpty() || state.recent.isNotEmpty()
-    val onAddMore: (() -> Unit)? = if (showShortcuts && hasShortcuts) {
-        null
-    } else {
-        {
-            if (hasShortcuts) {
-                showShortcuts = true
-                scope.launch { listState.animateScrollToItem(1) }
-            } else {
-                searchFocus.requestFocus()
-            }
-        }
-    }
+    val onAddMore: () -> Unit = { searchFocus.requestFocus() }
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxSize(),
@@ -285,7 +269,7 @@ private fun LogMealContent(
                 state = state,
                 viewModel = viewModel,
                 onCreateIngredient = onCreateIngredient,
-                shortcuts = !searchActive && (state.selected.isEmpty() || showShortcuts),
+                shortcuts = !searchActive,
                 searchFocus = searchFocus,
                 onSearchFocus = { searchFocused = it },
                 onAddMore = onAddMore,
