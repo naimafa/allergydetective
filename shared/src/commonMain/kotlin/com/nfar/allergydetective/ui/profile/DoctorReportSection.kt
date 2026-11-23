@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.ui.profile
 
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.ui.semantics.Role
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.material3.DateRangePicker
@@ -74,7 +75,7 @@ fun DoctorReportSection(viewModel: DoctorReportViewModel = koinViewModel()) {
     val title = stringResource(Res.string.report_section_title)
     var picking by remember { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        SectionTitle(title)
+        SectionTitle(title, Icons.Outlined.Description)
         Text(stringResource(Res.string.report_hint_short), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         val periods = DoctorReportViewModel.PERIODS
         val customLabel = if (state.days == null) shortRange(state.customFrom, state.customTo) else stringResource(Res.string.report_period_custom)

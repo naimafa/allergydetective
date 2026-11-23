@@ -1,5 +1,7 @@
 package com.nfar.allergydetective.ui.profile
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -64,7 +66,7 @@ fun ProfileScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth().combinedClickable(onClick = {}, onLongClick = onOpenPaywallPreview),
             ) {
-                SectionTitle(stringResource(Res.string.onboarding_purpose_title))
+                SectionTitle(stringResource(Res.string.onboarding_purpose_title), Icons.Outlined.Info)
                 Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }

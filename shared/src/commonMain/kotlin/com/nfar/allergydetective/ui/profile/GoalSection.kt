@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.ui.profile
 
+import com.nfar.allergydetective.ui.common.SectionTitle
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.goal_custom
 import allergydetective.shared.generated.resources.goal_custom_days
@@ -58,10 +59,7 @@ fun GoalSection(store: SettingsStore = koinInject()) {
     var customText by remember { mutableStateOf(if (custom) goal.days.toString() else "") }
     val primary = MaterialTheme.colorScheme.primary
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.Eco, contentDescription = null, tint = primary, modifier = Modifier.size(22.dp))
-            Text(stringResource(Res.string.goal_title), style = MaterialTheme.typography.titleMedium, color = primary, modifier = Modifier.padding(start = 8.dp))
-        }
+        SectionTitle(stringResource(Res.string.goal_title), Icons.Outlined.Eco)
         Text(stringResource(Res.string.goal_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         val labels = GoalSettings.PRESETS.map { stringResource(Res.string.goal_days, it) } + stringResource(Res.string.goal_custom)
         val selected = if (custom) GoalSettings.PRESETS.size else GoalSettings.PRESETS.indexOf(goal.days)

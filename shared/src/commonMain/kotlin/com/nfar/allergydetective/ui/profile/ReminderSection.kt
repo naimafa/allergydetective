@@ -1,5 +1,7 @@
 package com.nfar.allergydetective.ui.profile
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.NotificationsNone
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.reminder_denied
 import allergydetective.shared.generated.resources.reminder_setting
@@ -34,7 +36,7 @@ fun ReminderSection(viewModel: ReminderViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val requestPermission = rememberNotificationPermissionRequest { granted -> viewModel.onEnabledChange(true, granted) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionTitle(stringResource(Res.string.reminder_setting))
+        SectionTitle(stringResource(Res.string.reminder_setting), Icons.Outlined.NotificationsNone)
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(Res.string.reminder_setting_hint), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Switch(

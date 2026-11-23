@@ -1,5 +1,7 @@
 package com.nfar.allergydetective.ui.profile
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Language
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.language_hint
 import allergydetective.shared.generated.resources.language_system
@@ -32,7 +34,7 @@ fun LanguageSection(controller: LanguageController = koinInject()) {
     // User 23.11.2026: with "Wie Handy" the language that is actually shown is marked too.
     val shown = Locale.current.language.takeIf { it in LanguageController.SUPPORTED } ?: FALLBACK_LANGUAGE
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionTitle(stringResource(Res.string.language_title))
+        SectionTitle(stringResource(Res.string.language_title), Icons.Outlined.Language)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             AppFilterChip(
                 selected = language == null,

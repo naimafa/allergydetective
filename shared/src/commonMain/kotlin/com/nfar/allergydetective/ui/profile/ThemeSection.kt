@@ -1,5 +1,7 @@
 package com.nfar.allergydetective.ui.profile
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Contrast
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.theme_dark
 import allergydetective.shared.generated.resources.theme_hint
@@ -30,7 +32,7 @@ import org.koin.compose.koinInject
 fun ThemeSection(controller: ThemeController = koinInject()) {
     val mode by controller.mode.collectAsState()
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionTitle(stringResource(Res.string.theme_title))
+        SectionTitle(stringResource(Res.string.theme_title), Icons.Outlined.Contrast)
         // User note 22.11.2026: the three options in one line.
         val labels = ThemeMode.entries.map { option ->
             stringResource(

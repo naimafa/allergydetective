@@ -1,5 +1,8 @@
 package com.nfar.allergydetective.ui.common
 
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Row
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_back
 import allergydetective.shared.generated.resources.common_saved
@@ -78,9 +81,17 @@ fun ScreenScaffold(
 }
 
 @Composable
-fun SectionTitle(text: String) {
-    // Card title of the type scale (Theme.kt).
-    Text(text, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 8.dp))
+fun SectionTitle(text: String, icon: ImageVector? = null) {
+    // Card title of the type scale (Theme.kt). User 23.11.2026: in the profile every area has an icon before its
+    // title, in the forest green of the actions.
+    if (icon == null) {
+        Text(text, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 8.dp))
+        return
+    }
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+        Text(text, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 10.dp))
+    }
 }
 
 /**
