@@ -3,9 +3,9 @@ package com.nfar.allergydetective.ui.meal
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.meal_remove
 import allergydetective.shared.generated.resources.meal_dish_collapse
-import allergydetective.shared.generated.resources.meal_dish_count
+import allergydetective.shared.generated.resources.meal_dishes_chosen
+import allergydetective.shared.generated.resources.meal_remove_dish
 import allergydetective.shared.generated.resources.meal_dish_expand
-import allergydetective.shared.generated.resources.meal_dish_prep_missing
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,7 +28,13 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.LocalDrink
 import androidx.compose.material.icons.outlined.RamenDining
 import androidx.compose.material.icons.outlined.RoomService
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -58,6 +64,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.diary.IngredientInfo
@@ -301,6 +308,8 @@ fun PortionSwitch(selected: Portion, onSelect: (Portion) -> Unit, modifier: Modi
 fun IngredientRow(
     ingredient: IngredientInfo,
     name: String,
+    /** "aus: Gemüsesuppe · Gemüsepfanne" (user 23.11.2026), null for an ingredient picked on its own. */
+    from: String?,
     portion: Portion,
     onPortion: (Portion) -> Unit,
     onRemove: () -> Unit,
@@ -331,6 +340,10 @@ fun IngredientRow(
                 }
             }
         }
+        // Phone test 23.11.: in the narrow name column "aus: Gemüsesuppe" broke inside the word; it gets the full width.
+        from?.let {
+            Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = BADGE_WIDTH + 10.dp))
+        }
         preparation?.let {
             Box(modifier = Modifier.padding(start = BADGE_WIDTH + 10.dp, top = 2.dp)) { it() }
         }
@@ -355,36 +368,45 @@ private fun DeleteButton(name: String, onClick: () -> Unit) {
 }
 
 /**
- * The chosen dish as a header over its ingredients (design picture 23.11.2026). User 23.11.: an arrow folds the
- * dish's ingredients in and out instead of a ✕; folded, the header says how many there are (and when raw / cooked
- * is still missing inside). Ingredients are
- * still removed one by one with their bin.
+ * The chosen dishes in one box above the ingredients (design picture 23.11.2026, second version): "Ausgewählte
+ * Gerichte (2)", folds with its arrow; the green check of a dish takes it out again.
  */
 @Composable
-fun DishHeader(name: String, count: Int, expanded: Boolean, missingPreparation: Boolean, onToggle: () -> Unit) {
+fun DishesBox(dishes: List<Pair<Long, String>>, onRemove: (Long) -> Unit) {
     val home = AppColors.extra.home
     val density = LocalDensity.current
-    val action = stringResource(if (expanded) Res.string.meal_dish_collapse else Res.string.meal_dish_expand)
+    var open by remember { mutableStateOf(true) }
+    val action = stringResource(if (open) Res.string.meal_dish_collapse else Res.string.meal_dish_expand)
+    val removeLabel = stringResource(Res.string.meal_remove_dish)
     Surface(
-        onClick = onToggle,
         shape = MaterialTheme.shapes.medium,
-        color = lerp(home.page, home.badge, 0.6f),
+        color = lerp(home.page, home.badge, 0.25f),
         contentColor = home.ink,
         border = BorderStroke(1.dp, home.cardBorder),
-        modifier = Modifier.fillMaxWidth().semantics { contentDescription = "$name. $action" },
+        modifier = Modifier.fillMaxWidth(),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)) {
-            Text("🍲", fontSize = with(density) { 30.dp.toSp() }, lineHeight = with(density) { 36.dp.toSp() })
-            Column(modifier = Modifier.weight(1f).padding(start = 12.dp)) {
-                Text(name, style = MaterialTheme.typography.titleMedium)
-                if (!expanded) {
-                    Text(stringResource(Res.string.meal_dish_count, count), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    if (missingPreparation) {
-                        Text(stringResource(Res.string.meal_dish_prep_missing), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+        Column {
+            Surface(onClick = { open = !open }, color = lerp(home.page, home.badge, 0.6f), contentColor = home.ink) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(horizontal = 14.dp).semantics { contentDescription = action },
+                ) {
+                    Text(stringResource(Res.string.meal_dishes_chosen, dishes.size), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+                    Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.size(26.dp))
+                }
+            }
+            if (open) {
+                dishes.forEachIndexed { index, (id, name) ->
+                    if (index > 0) HorizontalDivider(color = home.cardBorder, modifier = Modifier.padding(horizontal = 12.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 12.dp, end = 4.dp, top = 4.dp, bottom = 4.dp)) {
+                        Text("🍲", fontSize = with(density) { 28.dp.toSp() }, lineHeight = with(density) { 34.dp.toSp() })
+                        Text(name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f).padding(start = 12.dp))
+                        IconButton(onClick = { onRemove(id) }, modifier = Modifier.semantics { contentDescription = "$removeLabel: $name" }) {
+                            Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+                        }
                     }
                 }
             }
-            Icon(if (expanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.size(26.dp))
         }
     }
 }

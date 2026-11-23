@@ -54,11 +54,14 @@ import com.nfar.allergydetective.ui.common.formatClock
 import com.nfar.allergydetective.ui.theme.AppColors
 import allergydetective.shared.generated.resources.meal_voice
 import allergydetective.shared.generated.resources.meal_add_more
-import allergydetective.shared.generated.resources.meal_ingredients
 import allergydetective.shared.generated.resources.meal_portion_info
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Eco
+import allergydetective.shared.generated.resources.meal_from
+import allergydetective.shared.generated.resources.meal_ingredients_all
+import allergydetective.shared.generated.resources.meal_merged_hint
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.rememberCoroutineScope
@@ -120,7 +123,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -457,7 +459,7 @@ private fun WhatStep(
                 items(state.favorites, key = { it.id }) { favorite ->
                     AppFilterChip(
                         // User 23.11.2026: every chosen dish is marked, by its colour only (no check mark).
-                        selected = state.selected.any { it.dishId == favorite.id },
+                        selected = state.selected.any { favorite.id in it.dishIds },
                         showCheck = false,
                         onClick = { viewModel.onFavoriteClick(favorite) },
                         label = { Text(favorite.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp)) },
@@ -491,30 +493,28 @@ private fun WhatStep(
     }
 }
 /**
- * Design picture 23.11.2026: the chosen ingredients sit inside step 2 under "Zutaten" (no own step "Wie viel?"),
- * each dish as a header over its own ingredients, single ingredients after the dishes, "Weitere Zutat
- * hinzufügen" below. User 23.11.: two dishes in one meal each keep their header and ingredients; each arrow
- * folds only its own dish.
+ * Design picture 23.11.2026, second version: the chosen dishes in one box, below it one list for the whole meal.
+ * An ingredient of two dishes is listed once with "aus: Gemüsesuppe · Gemüsepfanne", so the amount is set for
+ * both together. "Weitere Zutat hinzufügen" below.
  */
 @Composable
 private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMealViewModel, onAddMore: (() -> Unit)?) {
     if (state.selected.isEmpty()) return
-    val dishesById = state.favorites.associateBy { it.id }
-    // Newest first; an ingredient whose dish was deleted in the meantime counts as a single one.
-    val newestFirst = state.selected.asReversed()
-    val groups = newestFirst.groupBy { item -> item.dishId?.takeIf { it in dishesById } }
-    val dishIds = groups.keys.filterNotNull()
-    val folded = remember { mutableStateMapOf<Long, Boolean>() }
-    PortionLabel()
-    dishIds.forEach { dishId ->
-        val items = groups.getValue(dishId).asReversed()
-        val open = folded[dishId] != true
-        // Folded with raw / cooked still missing: the header says so, or saving would stay blocked without a reason.
-        val missing = items.any { it.ingredient.id in state.needsPreparation && it.preparation == null }
-        DishHeader(dishesById.getValue(dishId).name, items.size, open, missing) { folded[dishId] = open }
-        if (open) IngredientRows(state, items, viewModel)
+    val dishNames = state.favorites.associate { it.id to it.name }
+    // Dishes in the order they were picked; a dish deleted in the meantime is left out.
+    val dishes = state.selected.flatMap { it.dishIds }.distinct().mapNotNull { id -> dishNames[id]?.let { id to it } }
+    if (dishes.isNotEmpty()) DishesBox(dishes, viewModel::onRemoveDish)
+    PortionLabel(merged = dishes.size > 1)
+    Column {
+        // Newest first: what was just added appears on top.
+        state.selected.asReversed().forEachIndexed { index, item ->
+            if (index > 0) HorizontalDivider(color = AppColors.extra.home.cardBorder)
+            // With one dish only, "aus: …" would repeat the same name on every row.
+            val from = item.dishIds.mapNotNull(dishNames::get).takeIf { it.isNotEmpty() && dishes.size > 1 }
+                ?.let { stringResource(Res.string.meal_from, it.joinToString(" · ")) }
+            SelectedRow(item, item.ingredient.id in state.needsPreparation, from, viewModel)
+        }
     }
-    groups[null]?.let { IngredientRows(state, it, viewModel) }
     onAddMore?.let { add ->
         OutlinedButton(
             onClick = add,
@@ -529,33 +529,29 @@ private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMea
     }
 }
 
-/** "Zutaten" with the S/M/L explanation behind the info icon. */
+/** "Zutaten der gesamten Mahlzeit" with the S/M/L explanation behind the info icon; with two dishes or more the merge hint. */
 @Composable
-private fun PortionLabel() {
+private fun PortionLabel(merged: Boolean) {
     var showPortionHelp by remember { mutableStateOf(false) }
     val infoLabel = stringResource(Res.string.meal_portion_info)
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .clickable { showPortionHelp = !showPortionHelp }
-            .semantics { contentDescription = infoLabel }
-            .padding(top = 4.dp),
-    ) {
-        // User 23.11.: a darker green than the soft sage, so the label reads well on the cream card.
-        Text(stringResource(Res.string.meal_ingredients), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
-        Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 6.dp).size(18.dp))
-    }
-    if (showPortionHelp) {
-        Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
-
-@Composable
-private fun IngredientRows(state: LogMealState, items: List<SelectedIngredient>, viewModel: LogMealViewModel) {
-    Column {
-        items.forEachIndexed { index, item ->
-            if (index > 0) HorizontalDivider(color = AppColors.extra.home.cardBorder)
-            SelectedRow(item, item.ingredient.id in state.needsPreparation, viewModel)
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clickable { showPortionHelp = !showPortionHelp }
+                .semantics { contentDescription = infoLabel }
+                .padding(top = 4.dp),
+        ) {
+            // User 23.11.: a darker green than the soft sage, so the label reads well on the cream card.
+            Icon(Icons.Outlined.Eco, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(end = 6.dp).size(20.dp))
+            Text(stringResource(Res.string.meal_ingredients_all), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f, fill = false))
+            Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 6.dp).size(18.dp))
+        }
+        if (merged) {
+            Text(stringResource(Res.string.meal_merged_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        if (showPortionHelp) {
+            Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -611,10 +607,11 @@ private fun ChipGroupTitle(title: String, hint: String) {
 }
 
 @Composable
-private fun SelectedRow(item: SelectedIngredient, needsPreparation: Boolean, viewModel: LogMealViewModel) {
+private fun SelectedRow(item: SelectedIngredient, needsPreparation: Boolean, from: String?, viewModel: LogMealViewModel) {
     IngredientRow(
         ingredient = item.ingredient,
         name = ingredientName(item.ingredient),
+        from = from,
         portion = item.portion,
         onPortion = { viewModel.onPortionChange(item.ingredient.id, it) },
         onRemove = { viewModel.onToggleIngredient(item.ingredient) },

@@ -320,10 +320,13 @@
     <string name="meal_remove">Remove</string>
     <string name="meal_ingredients">Ingredients</string>
     <string name="meal_add_more">Add another ingredient</string>
-    <string name="meal_dish_expand">Show ingredients</string>
-    <string name="meal_dish_collapse">Hide ingredients</string>
-    <string name="meal_dish_count">Ingredients: %1$d</string>
-    <string name="meal_dish_prep_missing">Raw or cooked still missing</string>
+    <string name="meal_dish_expand">Show dishes</string>
+    <string name="meal_dish_collapse">Hide dishes</string>
+    <string name="meal_dishes_chosen">Chosen dishes (%1$d)</string>
+    <string name="meal_ingredients_all">Ingredients of the whole meal</string>
+    <string name="meal_merged_hint">Ingredients that appear twice are merged.</string>
+    <string name="meal_from">from: %1$s</string>
+    <string name="meal_remove_dish">Remove dish</string>
     <string name="meal_portion_info">What do S, M and L mean?</string>
     <string name="meal_prep_raw">raw</string>
     <string name="meal_prep_cooked">cooked</string>
@@ -333,7 +336,7 @@
     <string name="common_done">Done</string>
     <string name="meal_step_when">When did you eat?</string>
     <string name="meal_step_what">What did you eat?</string>
-    <string name="meal_quick">Quick pick</string>
+    <string name="meal_quick">Recently chosen ingredients</string>
     <string name="meal_quick_hint">Single ingredients you ate recently</string>
     <string name="meal_favorites_hint">Saved dishes – a tap adds all their ingredients</string>
     <string name="meal_slot_missing">Please choose the meal first.</string>

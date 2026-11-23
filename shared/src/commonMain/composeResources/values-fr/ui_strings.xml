@@ -316,10 +316,13 @@
     <string name="meal_remove">Retirer</string>
     <string name="meal_ingredients">Ingrédients</string>
     <string name="meal_add_more">Ajouter un autre ingrédient</string>
-    <string name="meal_dish_expand">Afficher les ingrédients</string>
-    <string name="meal_dish_collapse">Masquer les ingrédients</string>
-    <string name="meal_dish_count">Ingrédients : %1$d</string>
-    <string name="meal_dish_prep_missing">Cru ou cuit : à choisir</string>
+    <string name="meal_dish_expand">Afficher les plats</string>
+    <string name="meal_dish_collapse">Masquer les plats</string>
+    <string name="meal_dishes_chosen">Plats choisis (%1$d)</string>
+    <string name="meal_ingredients_all">Ingrédients de tout le repas</string>
+    <string name="meal_merged_hint">Les ingrédients en double sont regroupés.</string>
+    <string name="meal_from">de : %1$s</string>
+    <string name="meal_remove_dish">Retirer le plat</string>
     <string name="meal_portion_info">Que veulent dire S, M et L ?</string>
     <string name="meal_prep_raw">cru</string>
     <string name="meal_prep_cooked">cuit</string>
@@ -329,7 +332,7 @@
     <string name="common_done">OK</string>
     <string name="meal_step_when">Quand as-tu mangé ?</string>
     <string name="meal_step_what">Qu’as-tu mangé ?</string>
-    <string name="meal_quick">Choix rapide</string>
+    <string name="meal_quick">Ingrédients choisis récemment</string>
     <string name="meal_quick_hint">Ingrédients que tu as mangés récemment</string>
     <string name="meal_favorites_hint">Plats enregistrés – un geste ajoute tous leurs ingrédients</string>
     <string name="meal_slot_missing">Choisis d’abord le repas, s’il te plaît.</string>

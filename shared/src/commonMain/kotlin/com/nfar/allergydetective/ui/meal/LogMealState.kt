@@ -14,10 +14,12 @@ data class SelectedIngredient(
     /** Raw or cooked; must be chosen for ingredients in [LogMealState.needsPreparation]. */
     val preparation: Preparation? = null,
     /**
-     * The dish it came with (user 23.11.2026: two dishes in one meal each keep their own ingredients under their
-     * header), null when picked on its own. Only for the screen; the meal stores one favourite as before.
+     * The dishes it came with (user 23.11.2026: one list for the whole meal, an ingredient of two dishes once,
+     * with "aus: Gemüsesuppe · Gemüsepfanne" below). Only for the screen; the meal stores one favourite as before.
      */
-    val dishId: Long? = null,
+    val dishIds: Set<Long> = emptySet(),
+    /** Picked on its own (search, quick pick, voice): it stays when its dishes are taken out. */
+    val alone: Boolean = true,
 )
 
 data class LogMealState(
