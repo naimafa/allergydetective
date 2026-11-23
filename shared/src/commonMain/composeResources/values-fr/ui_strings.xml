@@ -122,6 +122,14 @@
     <string name="common_cancel">Annuler</string>
     <string name="report_section_title">Rapport &amp; export</string>
     <string name="report_hint">Pour ton rendez-vous ou pour toi : l’analyse (fréquence, intensité, moments de la journée, durée, notes, tendances marquantes) – si tu veux, avec tous les repas, troubles et bilans du jour. En PDF à lire ou en tableau Excel. C’est toi qui décides où il va.</string>
+    <string name="report_hint_short">Données pour un rendez-vous médical ou ta propre analyse.</string>
+    <string name="report_period_custom">Du – au</string>
+    <string name="report_from">Du :</string>
+    <string name="report_to">Au :</string>
+    <plurals name="report_entry_count">
+        <item quantity="one">%1$d saisie dans la période</item>
+        <item quantity="other">%1$d saisies dans la période</item>
+    </plurals>
     <string name="report_period_days">%1$d jours</string>
     <string name="report_button">Créer et partager le PDF</string>
     <string name="report_title">Journal des symptômes – rapport</string>
@@ -276,6 +284,8 @@
     <string name="onboarding_next">Suivant</string>
     <string name="onboarding_back">Retour</string>
     <string name="onboarding_swipe_hint">Glisse vers la gauche pour continuer</string>
+    <string name="welcome_title">Bienvenue</string>
+    <string name="welcome_text">Ton introduction à l’app : découvre toutes ses fonctions.</string>
     <string name="profile_show_intro">Revoir l’introduction</string>
     <string name="onboarding_how_title">Comment ça marche</string>
     <string name="onboarding_how_meal">Note ce que tu manges : petit-déjeuner, déjeuner, dîner ou en-cas. Par recherche, favori ou à la voix.</string>

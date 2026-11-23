@@ -125,6 +125,14 @@
     <string name="export_button">Als JSON exportieren</string>
     <string name="report_section_title">Bericht &amp; Export</string>
     <string name="report_hint">Für die Sprechstunde oder für dich: die Auswertung (Häufigkeit, Stärke, Tageszeiten, Dauer, Notizen, auffällige Muster) – auf Wunsch mit allen Mahlzeiten, Beschwerden und Tagesabschlüssen. Als PDF zum Lesen oder als Excel-Tabelle. Wohin es geht, entscheidest du.</string>
+    <string name="report_hint_short">Daten für den Arzttermin oder deine eigene Auswertung.</string>
+    <string name="report_period_custom">Von – bis</string>
+    <string name="report_from">Von:</string>
+    <string name="report_to">Bis:</string>
+    <plurals name="report_entry_count">
+        <item quantity="one">%1$d Eintrag im Zeitraum</item>
+        <item quantity="other">%1$d Einträge im Zeitraum</item>
+    </plurals>
     <string name="report_period_days">%1$d Tage</string>
     <string name="report_button">PDF erstellen und teilen</string>
     <string name="report_title">Symptomtagebuch – Bericht</string>
@@ -280,7 +288,9 @@
     <string name="onboarding_next">Weiter</string>
     <string name="onboarding_back">Zurück</string>
     <string name="onboarding_swipe_hint">Zum Weiterlesen nach links wischen</string>
-    <string name="profile_show_intro">Einführung ansehen</string>
+    <string name="welcome_title">Willkommen</string>
+    <string name="welcome_text">Deine Einführung in die App: Lerne alle Funktionen kennen.</string>
+    <string name="profile_show_intro">Einführung wiederholen</string>
     <string name="onboarding_how_title">So funktioniert es</string>
     <string name="onboarding_how_meal">Trag ein, was du isst: Frühstück, Mittag, Abend oder einen Snack. Per Suche, Favorit oder Sprache.</string>
     <string name="onboarding_how_symptom">Hast du Beschwerden, trag sie ein, mit Stärke und Tageszeit.</string>

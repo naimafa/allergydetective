@@ -111,7 +111,13 @@ import org.jetbrains.compose.resources.getString
 import kotlin.coroutines.CoroutineContext
 
 data class DoctorReportState(
-    val days: Int = DoctorReportViewModel.PERIODS.first(),
+    /** 14 or 30 days back from today; null = the own period [customFrom]–[customTo] (user picture 23.11.2026). */
+    val days: Int? = DoctorReportViewModel.PERIODS.first(),
+    /** Local epoch days of the own period, both included. */
+    val customFrom: Long = 0,
+    val customTo: Long = 0,
+    /** Meals and complaints in the chosen period: "48 Einträge im Zeitraum"; null while counting. */
+    val entryCount: Int? = null,
     val busy: Boolean = false,
     /** User note 21.11.2026: only the analysis, or together with all meals, complaints and day checks. */
     val includeEntries: Boolean = false,
@@ -140,8 +146,52 @@ class DoctorReportViewModel(
     private val _state = MutableStateFlow(DoctorReportState())
     val state: StateFlow<DoctorReportState> = _state.asStateFlow()
 
+    init {
+        val today = clock.today()
+        _state.update { it.copy(customFrom = today - PERIODS.first() + 1, customTo = today) }
+        countEntries()
+    }
+
     fun onDaysChange(days: Int) {
         _state.update { it.copy(days = days) }
+        countEntries()
+    }
+
+    /** "Eigener Zeitraum": starts as the last 14 days, the dates are then changed one by one. */
+    fun onCustomPeriod() {
+        _state.update { it.copy(days = null) }
+        countEntries()
+    }
+
+    fun onCustomFromChange(day: Long) {
+        _state.update { it.copy(customFrom = day, customTo = maxOf(it.customTo, day)) }
+        countEntries()
+    }
+
+    fun onCustomToChange(day: Long) {
+        _state.update { it.copy(customTo = minOf(day, clock.today()), customFrom = minOf(it.customFrom, day)) }
+        countEntries()
+    }
+
+    /** First and last local epoch day of the chosen period. */
+    private fun range(options: DoctorReportState): Pair<Long, Long> {
+        val today = clock.today()
+        return options.days?.let { today - it + 1 to today } ?: (options.customFrom to options.customTo)
+    }
+
+    /** Meals and complaints from [fromDay] to [toDay], both days included. */
+    private suspend fun entriesIn(fromDay: Long, toDay: Long): List<HistoryEntry> {
+        val end = clock.millisAt(toDay + 1, 0, 0)
+        return history.entriesSince(clock.millisAt(fromDay, 0, 0)).filter { it.time < end }
+    }
+
+    private fun countEntries() {
+        val (fromDay, toDay) = range(_state.value)
+        _state.update { it.copy(entryCount = null) }
+        viewModelScope.launch {
+            val count = entriesIn(fromDay, toDay).size
+            _state.update { if (range(it) == fromDay to toDay) it.copy(entryCount = count) else it }
+        }
     }
 
     fun onIncludeEntriesChange(include: Boolean) {
@@ -163,9 +213,8 @@ class DoctorReportViewModel(
         _state.update { it.copy(busy = true) }
         viewModelScope.launch {
             try {
-                val today = clock.today()
-                val fromDay = today - options.days + 1
-                val entries = history.entriesSince(clock.millisAt(fromDay, 0, 0))
+                val (fromDay, today) = range(options)
+                val entries = entriesIn(fromDay, today)
                 val report = buildDoctorReport(entries, fromDay, today, clock)
                 val now = clock.nowMillis()
                 val input = analysis.loadInput(now, clock.offsetMinAt(now))
@@ -446,7 +495,8 @@ class DoctorReportViewModel(
 
     companion object {
         /** Periods to choose from, in days. */
-        val PERIODS = listOf(14, 30, 90)
+        /** User picture 23.11.2026: 14 and 30 days, everything else as an own period. */
+        val PERIODS = listOf(14, 30)
         private const val MAX_INTENSITY = 5.0
     }
 }
