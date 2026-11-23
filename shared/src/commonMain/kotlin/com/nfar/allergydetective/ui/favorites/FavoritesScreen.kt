@@ -1,5 +1,8 @@
 package com.nfar.allergydetective.ui.favorites
 
+import allergydetective.shared.generated.resources.favorites_drag
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.outlined.DragIndicator
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
 import allergydetective.shared.generated.resources.common_save
@@ -89,7 +92,12 @@ fun FavoritesScreen(
     var showEditor by remember { mutableStateOf(false) }
     var toDelete by remember { mutableStateOf<FavoriteInfo?>(null) }
     LaunchedEffect(Unit) { viewModel.refresh() }
+    val listState = rememberLazyListState()
+    val reorder = rememberDragToReorderState(listState, viewModel::onMove, viewModel::onMoveDone)
+    // While searching only part of the list shows: sorting is for the whole list.
+    val canReorder = state.query.isBlank() && state.favorites.size > 1
     LazyColumn(
+        state = listState,
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -120,6 +128,8 @@ fun FavoritesScreen(
         }
         items(state.visibleFavorites, key = { it.id }) { favorite ->
             DishCard(
+                modifier = Modifier.reorderableItem(reorder, favorite.id),
+                handle = if (canReorder) Modifier.dragHandle(reorder, favorite.id) else null,
                 name = favorite.name,
                 ingredients = favorite.items.mapNotNull { state.ingredients[it.ingredientId] }.map { ingredientName(it) },
                 onLog = { onLogDish(favorite.id) },
@@ -167,15 +177,34 @@ fun FavoritesScreen(
 
 /** Design of 19.11.: name, ingredients separated by dots; one action "log as meal", "Edit" and "Delete" behind "…". */
 @Composable
-private fun DishCard(name: String, ingredients: List<String>, onLog: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
+private fun DishCard(
+    name: String,
+    ingredients: List<String>,
+    onLog: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier,
+    /** Drag handle (user note 21.11.2026: sort dishes with the finger); null while searching. */
+    handle: Modifier? = null,
+) {
     var menuOpen by remember { mutableStateOf(false) }
     OutlinedCard(
         colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
         shape = MaterialTheme.shapes.large,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(start = 16.dp, end = 8.dp, top = 16.dp, bottom = 4.dp)) {
-            Text(name, style = MaterialTheme.typography.titleMedium)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                if (handle != null) {
+                    Icon(
+                        Icons.Outlined.DragIndicator,
+                        contentDescription = stringResource(Res.string.favorites_drag),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = handle.size(40.dp).padding(8.dp),
+                    )
+                }
+            }
             Text(
                 ingredients.joinToString(" · "),
                 style = MaterialTheme.typography.bodyMedium,

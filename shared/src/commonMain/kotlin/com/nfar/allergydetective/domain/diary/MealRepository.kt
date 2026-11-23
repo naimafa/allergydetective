@@ -51,6 +51,9 @@ interface MealRepository {
 
     suspend fun deleteFavorite(favoriteId: Long)
 
+    /** Saves the user's own order of the dishes (first id = top). Default for test fakes: nothing. */
+    suspend fun reorderFavorites(favoriteIds: List<Long>) {}
+
     /**
      * Changes name and ingredients of a dish. The database keeps the id, so logged meals keep
      * their origin; this default (for simple implementations) replaces the dish instead.

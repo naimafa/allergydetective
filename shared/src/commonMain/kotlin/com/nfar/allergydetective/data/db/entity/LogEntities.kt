@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.data.db.entity
 
+import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.Index
@@ -23,6 +24,8 @@ import com.nfar.allergydetective.data.db.model.PreparationKind
 data class FavoriteEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
+    /** Position in the user's own order (user note 21.11.2026: sort dishes with the finger). */
+    @ColumnInfo(defaultValue = "0") val sortOrder: Int = 0,
 )
 
 @Entity(

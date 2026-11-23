@@ -62,11 +62,24 @@ interface MealDao {
         return mealId
     }
 
-    @Query("SELECT * FROM favorites ORDER BY name COLLATE NOCASE")
+    @Query("SELECT * FROM favorites ORDER BY sortOrder, name COLLATE NOCASE")
     suspend fun favorites(): List<FavoriteEntity>
 
     @Query("SELECT * FROM favorite_ingredients ORDER BY favoriteId, ingredientId")
     suspend fun favoriteIngredients(): List<FavoriteIngredientEntity>
+
+    /** Next position: new dishes go to the end of the user's order. */
+    @Query("SELECT COALESCE(MAX(sortOrder), -1) + 1 FROM favorites")
+    suspend fun nextFavoriteSortOrder(): Int
+
+    @Query("UPDATE favorites SET sortOrder = :sortOrder WHERE id = :favoriteId")
+    suspend fun setFavoriteSortOrder(favoriteId: Long, sortOrder: Int)
+
+    /** The dishes in the given order, 0, 1, 2 … (dragging in the favourites list). */
+    @Transaction
+    suspend fun reorderFavorites(favoriteIds: List<Long>) {
+        favoriteIds.forEachIndexed { index, id -> setFavoriteSortOrder(id, index) }
+    }
 
     @Insert
     suspend fun insertFavorite(favorite: FavoriteEntity): Long
@@ -76,7 +89,7 @@ interface MealDao {
 
     @Transaction
     suspend fun insertFavoriteWithItems(favorite: FavoriteEntity, items: List<FavoriteIngredientEntity>): Long {
-        val favoriteId = insertFavorite(favorite)
+        val favoriteId = insertFavorite(favorite.copy(sortOrder = nextFavoriteSortOrder()))
         insertFavoriteIngredients(items.map { it.copy(favoriteId = favoriteId) })
         return favoriteId
     }

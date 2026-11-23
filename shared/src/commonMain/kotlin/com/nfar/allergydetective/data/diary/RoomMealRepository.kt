@@ -60,6 +60,8 @@ class RoomMealRepository(private val dao: MealDao) : MealRepository {
 
     override suspend fun deleteFavorite(favoriteId: Long) = dao.deleteFavorite(favoriteId)
 
+    override suspend fun reorderFavorites(favoriteIds: List<Long>) = dao.reorderFavorites(favoriteIds)
+
     override suspend fun deleteMeal(mealId: Long) = dao.deleteMeal(mealId)
 
     override suspend fun meal(mealId: Long): LoggedMeal? {

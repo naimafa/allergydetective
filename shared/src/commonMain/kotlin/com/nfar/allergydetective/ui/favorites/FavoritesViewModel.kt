@@ -54,6 +54,26 @@ class FavoritesViewModel(
         _state.update { it.copy(query = query) }
     }
 
+    /**
+     * Dragging (user note 21.11.2026): the dish [from] takes the place of [to] while the finger moves; the order
+     * is saved when the finger lifts ([onMoveDone]). Only without a search, so the full list is reordered.
+     */
+    fun onMove(from: Long, to: Long) {
+        _state.update { state ->
+            val list = state.favorites.toMutableList()
+            val fromIndex = list.indexOfFirst { it.id == from }
+            val toIndex = list.indexOfFirst { it.id == to }
+            if (fromIndex < 0 || toIndex < 0 || state.query.isNotBlank()) return@update state
+            list.add(toIndex, list.removeAt(fromIndex))
+            state.copy(favorites = list)
+        }
+    }
+
+    fun onMoveDone() {
+        val ids = _state.value.favorites.map { it.id }
+        viewModelScope.launch { meals.reorderFavorites(ids) }
+    }
+
     /** Logged meals keep their items, only the favorite disappears. */
     fun onDelete(favoriteId: Long) {
         viewModelScope.launch {
