@@ -30,6 +30,8 @@ data class DishEditorState(
     val needsPreparation: Set<Long> = emptySet(),
     val query: String = "",
     val results: List<IngredientInfo> = emptyList(),
+    /** Saved dishes whose name matches the search; the dish being edited is left out. */
+    val dishResults: List<FavoriteInfo> = emptyList(),
     /** A dish with the same name exists; saving replaces it after confirmation. */
     val sameNameDish: FavoriteInfo? = null,
     val saving: Boolean = false,
@@ -95,10 +97,27 @@ class DishEditorViewModel(
         it.copy(name = name, sameNameDish = other)
     }
 
-    fun onQueryChange(query: String) = _state.update { it.copy(query = query, results = catalog.search(query)) }
+    fun onQueryChange(query: String) = _state.update {
+        val normalized = normalizeForSearch(query)
+        val dishes = if (normalized.length < 2) emptyList() else favorites.filter { f -> f.id != it.editingId && normalizeForSearch(f.name).contains(normalized) }
+        it.copy(query = query, results = catalog.search(query), dishResults = dishes.take(3))
+    }
+
+    /** Adds every ingredient of another dish (e.g. "Gewürzmischung" into a soup), keeping its portions and raw / cooked. */
+    fun onAddDish(dish: FavoriteInfo) = _state.update { state ->
+        val new = dish.items.filter { item -> state.ingredients.none { it.id == item.ingredientId } }
+        state.copy(
+            ingredients = state.ingredients + new.mapNotNull { catalog.byId[it.ingredientId] },
+            portions = state.portions + new.associate { it.ingredientId to it.portion },
+            preparations = state.preparations + new.mapNotNull { item -> item.preparation?.let { item.ingredientId to it } },
+            query = "",
+            results = emptyList(),
+            dishResults = emptyList(),
+        )
+    }
 
     fun onAdd(ingredient: IngredientInfo) = _state.update {
-        if (ingredient in it.ingredients) it else it.copy(ingredients = it.ingredients + ingredient, query = "", results = emptyList())
+        if (ingredient in it.ingredients) it else it.copy(ingredients = it.ingredients + ingredient, query = "", results = emptyList(), dishResults = emptyList())
     }
 
     fun onRemove(ingredient: IngredientInfo) = _state.update {

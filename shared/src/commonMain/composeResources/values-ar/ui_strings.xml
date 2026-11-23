@@ -237,7 +237,7 @@
     <string name="history_delete_sick_question">حذف فترة المرض هذه؟ ستُحسب الأيام مجددًا بشكل عادي في التحليل.</string>
     <string name="favorites_delete_question">حذف الطبق «%1$s»؟ الوجبات المسجَّلة سابقًا تبقى محفوظة.</string>
     <string name="favorites_empty">لا توجد أطباق بعد. أضف أطباقك المتكررة مع مكوّناتها، ثم سجّلها بلمسة واحدة.</string>
-    <string name="favorites_add">+ طبق جديد</string>
+    <string name="favorites_add">طبق جديد</string>
     <plurals name="favorites_count">
         <item quantity="one">طبق واحد</item>
         <item quantity="two">طبقان</item>
@@ -318,6 +318,7 @@
     <string name="meal_slot_dinner">العشاء</string>
     <string name="meal_slot_snack">وجبة خفيفة</string>
     <string name="meal_slot_drink">مشروب</string>
+    <string name="ingredient_search">ابحث عن مكوّن …</string>
     <string name="meal_search">ابحث عن مكوّن أو طبق …</string>
     <string name="meal_dish_contains">يحتوي على %1$s</string>
     <string name="meal_also_called">أيضًا: %1$s</string>

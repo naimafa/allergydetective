@@ -54,6 +54,7 @@ import allergydetective.shared.generated.resources.favorites_no_match
 import allergydetective.shared.generated.resources.favorites_search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
@@ -99,10 +100,12 @@ fun FavoritesScreen(
     val reorder = rememberDragToReorderState(listState, viewModel::onMove, viewModel::onMoveDone)
     // While searching only part of the list shows: sorting is for the whole list.
     val canReorder = state.query.isBlank() && state.favorites.size > 1
+    Box(modifier = modifier.fillMaxSize()) {
     LazyColumn(
         state = listState,
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        modifier = Modifier.fillMaxSize(),
+        // Room below the last card, so the floating button does not cover it.
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 96.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         if (state.favorites.isNotEmpty()) {
@@ -149,15 +152,21 @@ fun FavoritesScreen(
                 onDelete = { toDelete = favorite },
             )
         }
-        item {
-            FilledTonalButton(
-                onClick = {
-                    editor.start()
-                    showEditor = true
-                },
-                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-            ) { Text(stringResource(Res.string.favorites_add)) }
-        }
+    }
+    // User 23.11.2026: the button at the end of the list was not visible with many dishes. It now floats at the
+    // bottom right and is always there.
+    ExtendedFloatingActionButton(
+        onClick = {
+            editor.start()
+            showEditor = true
+        },
+        icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
+        text = { Text(stringResource(Res.string.favorites_add)) },
+        shape = CircleShape,
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+        modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+    )
     }
     // Feedback 19.11.: every delete asks first.
     toDelete?.let { dish ->
@@ -289,6 +298,9 @@ private fun DishEditorDialog(
                     onQueryChange = viewModel::onQueryChange,
                     onAdd = viewModel::onAdd,
                     onRemove = viewModel::onRemove,
+                    dishes = state.dishResults,
+                    onAddDish = viewModel::onAddDish,
+                    findsDishes = true,
                 )
                 // Not found: create it here, the duplicate check runs in the dialog.
                 if (state.query.isNotBlank()) {

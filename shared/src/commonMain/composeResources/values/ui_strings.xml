@@ -231,7 +231,7 @@
     <string name="history_delete_sick_question">Delete this period of illness? The days then count normally for the evaluation again.</string>
     <string name="favorites_delete_question">Delete the dish “%1$s”? Meals already logged stay.</string>
     <string name="favorites_empty">No dishes yet. Add the dishes you eat often with their ingredients, then daily logging takes one tap.</string>
-    <string name="favorites_add">+ New dish</string>
+    <string name="favorites_add">New dish</string>
     <plurals name="favorites_count">
         <item quantity="one">%1$d dish</item>
         <item quantity="other">%1$d dishes</item>
@@ -309,6 +309,7 @@
     <string name="meal_slot_dinner">Dinner</string>
     <string name="meal_slot_snack">Snack</string>
     <string name="meal_slot_drink">Drink</string>
+    <string name="ingredient_search">Search ingredient …</string>
     <string name="meal_search">Search ingredient or dish …</string>
     <string name="meal_dish_contains">contains %1$s</string>
     <string name="meal_also_called">also: %1$s</string>
