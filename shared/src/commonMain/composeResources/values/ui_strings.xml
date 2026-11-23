@@ -324,4 +324,21 @@
     <string name="meal_save_as_favorite_hint">All ingredients above are saved together. Next time one tap adds them all at once.</string>
     <string name="meal_favorite_name">Name, e.g. muesli with milk</string>
     <string name="meal_allergy_hint">This meal contains something you marked as a known allergy.</string>
+    <!-- Privacy page (note 21.11.2026). Only what the app really does. -->
+    <string name="privacy_title">Privacy</string>
+    <string name="privacy_card_text">Your data stays on your phone. Here is exactly what the app stores and what it does not.</string>
+    <string name="privacy_card_button">See details</string>
+    <string name="privacy_intro">Allergy Detective is a diary just for you. There is no account, no server and no advertising.</string>
+    <string name="privacy_local_title">Everything stays on your phone</string>
+    <string name="privacy_local_text">Meals, complaints, day checks and settings are stored only on this device. The app has no internet permission and sends nothing to us or anyone else. The database is encrypted; the key is kept in your phone's protected storage.</string>
+    <string name="privacy_backup_title">No cloud backup</string>
+    <string name="privacy_backup_text">Android's automatic backup (e.g. to Google Drive) is switched off for this app, so your health data does not end up in a provider's backup either.</string>
+    <string name="privacy_voice_title">Voice input</string>
+    <string name="privacy_voice_text">When you tap the microphone, the app uses your phone's speech recognition and asks for recognition without internet. Whether that works depends on the phone – some devices send the speech to the recognition provider. If you do not want that, type instead.</string>
+    <string name="privacy_export_title">Shared only when you want</string>
+    <string name="privacy_export_text">A report for your doctor or an export is only created when you make it yourself. Where it goes (email, messenger, file) you decide in your phone's share sheet.</string>
+    <string name="privacy_notifications_title">Notifications</string>
+    <string name="privacy_notifications_text">The app only asks for permission to send notifications, to remind you of the day check in the evening. You can switch the reminder off in the profile.</string>
+    <string name="privacy_delete_title">Deleting data</string>
+    <string name="privacy_delete_text">You delete single entries in the history. If you uninstall the app, all data is removed from the phone completely.</string>
 </resources>

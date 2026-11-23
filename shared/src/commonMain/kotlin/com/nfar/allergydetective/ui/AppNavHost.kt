@@ -1,5 +1,11 @@
 package com.nfar.allergydetective.ui
 
+import allergydetective.shared.generated.resources.privacy_card_button
+import allergydetective.shared.generated.resources.privacy_card_text
+import allergydetective.shared.generated.resources.privacy_title
+import androidx.compose.material3.MaterialTheme
+import com.nfar.allergydetective.ui.common.SectionTitle
+import com.nfar.allergydetective.ui.profile.PrivacyScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -73,6 +79,9 @@ data object OnboardingRoute
 @Serializable
 data object IntroRoute
 
+@Serializable
+data object PrivacyRoute
+
 @Composable
 fun AppNavHost(
     openDayCheck: Boolean = false,
@@ -123,6 +132,14 @@ fun AppNavHost(
                     ProfileCard { ReminderSection() }
                     ProfileCard { SickPeriodSection(koinViewModel()) }
                     ProfileCard { ExportSection() }
+                    // User note 21.11.2026: privacy details on their own screen, here only a short line.
+                    ProfileCard {
+                        SectionTitle(stringResource(Res.string.privacy_title))
+                        Text(stringResource(Res.string.privacy_card_text), style = MaterialTheme.typography.bodyMedium)
+                        OutlinedButton(onClick = { navController.navigate(PrivacyRoute) }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                            Text(stringResource(Res.string.privacy_card_button))
+                        }
+                    }
                     OutlinedButton(
                         onClick = { navController.navigate(IntroRoute) },
                         modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
@@ -147,5 +164,6 @@ composable<IntroRoute> {            OnboardingScreen(                replay = tr
             )
         }
         composable<ResultsRoute> { ResultsScreen(onBack = back) }
+        composable<PrivacyRoute> { PrivacyScreen(onBack = back) }
     }
 }

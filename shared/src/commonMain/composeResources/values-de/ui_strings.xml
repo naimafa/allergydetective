@@ -324,4 +324,21 @@
     <string name="meal_save_as_favorite_hint">Alle Zutaten oben werden zusammen gespeichert. Beim nächsten Mal fügt ein Tipp sie alle auf einmal hinzu.</string>
     <string name="meal_favorite_name">Name, z.B. Müsli mit Milch</string>
     <string name="meal_allergy_hint">Diese Mahlzeit enthält etwas, das du als bekannte Allergie hinterlegt hast.</string>
+    <!-- Datenschutz-Seite (Notiz 21.11.2026). Nur was die App laut Code tut. -->
+    <string name="privacy_title">Datenschutz</string>
+    <string name="privacy_card_text">Deine Daten bleiben auf deinem Handy. Hier steht genau, was die App speichert und was nicht.</string>
+    <string name="privacy_card_button">Details ansehen</string>
+    <string name="privacy_intro">Allergy Detective ist ein Tagebuch nur für dich. Es gibt kein Konto, keinen Server und keine Werbung.</string>
+    <string name="privacy_local_title">Alles bleibt auf deinem Handy</string>
+    <string name="privacy_local_text">Mahlzeiten, Beschwerden, Tagesabschlüsse und Einstellungen werden nur auf diesem Gerät gespeichert. Die App hat keine Berechtigung für das Internet und schickt nichts an uns oder an andere. Die Datenbank ist verschlüsselt, der Schlüssel liegt im geschützten Speicher deines Handys.</string>
+    <string name="privacy_backup_title">Keine Cloud-Sicherung</string>
+    <string name="privacy_backup_text">Die automatische Sicherung von Android (z.B. in Google Drive) ist für diese App ausgeschaltet. Deine Gesundheitsdaten landen also auch nicht in einem Backup bei einem Anbieter.</string>
+    <string name="privacy_voice_title">Spracheingabe</string>
+    <string name="privacy_voice_text">Wenn du das Mikrofon antippst, nutzt die App die Spracherkennung deines Handys. Die App bittet um Erkennung ohne Internet. Ob das klappt, hängt vom Handy ab – manche Geräte schicken die Sprache an den Anbieter der Spracherkennung. Wenn du das nicht möchtest, tippe stattdessen.</string>
+    <string name="privacy_export_title">Weitergeben nur, wenn du es willst</string>
+    <string name="privacy_export_text">Ein Bericht für den Arzt oder ein Export entsteht nur, wenn du ihn selbst erstellst. Wohin er geht (E-Mail, Messenger, Datei), entscheidest du im Teilen-Fenster deines Handys.</string>
+    <string name="privacy_notifications_title">Benachrichtigungen</string>
+    <string name="privacy_notifications_text">Die App fragt nur nach der Erlaubnis für Benachrichtigungen, um dich abends an den Tagesabschluss zu erinnern. Du kannst die Erinnerung im Profil ausschalten.</string>
+    <string name="privacy_delete_title">Daten löschen</string>
+    <string name="privacy_delete_text">Einzelne Einträge löschst du im Verlauf. Wenn du die App deinstallierst, werden alle Daten vollständig vom Handy entfernt.</string>
 </resources>
