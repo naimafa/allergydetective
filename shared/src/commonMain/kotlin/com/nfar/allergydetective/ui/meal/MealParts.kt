@@ -257,7 +257,7 @@ private val KEY_EMOJI = mapOf("olives" to "🫒", "margarine" to "🧈")
 /** Seed categories (categories.json) → emoji. */
 private val CATEGORY_EMOJI = mapOf(
     1L to "🍞", 2L to "🥛", 3L to "🧀", 4L to "🍖", 5L to "🐟", 6L to "🥚",
-    8L to "🍎", 9L to "🥜", 10L to "🫘", 11L to "🥤", 12L to "🍯", 14L to "🌿",
+    8L to "🍎", 9L to "🥜", 10L to "🫘", 11L to "🥤", 12L to "🍯", 14L to "🧂", 15L to "🌿",
 )
 
 private val SEGMENT_WIDTH = 40.dp

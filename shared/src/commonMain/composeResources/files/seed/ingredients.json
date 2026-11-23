@@ -135,5 +135,18 @@
   {"id": 1412, "key": "mustard_seed", "category": "spices_herbs", "properties": ["mustard"], "synonyms": {"de": ["Senfkörner"]}},
   {"id": 1413, "key": "garlic_powder", "category": "spices_herbs", "properties": ["fructans"], "synonyms": {"de": ["Knoblauchgranulat"]}},
   {"id": 1414, "key": "onion_powder", "category": "spices_herbs", "properties": ["fructans"], "synonyms": {"de": ["Zwiebelgranulat"]}},
-  {"id": 1415, "key": "dried_herbs", "category": "spices_herbs", "synonyms": {"de": ["Oregano", "Thymian", "Kräuter der Provence", "italienische Kräuter"]}}
+  {"id": 1415, "key": "dried_herbs", "category": "herbs", "synonyms": {"de": ["Kräuter der Provence", "italienische Kräuter"]}},
+  {"id": 1501, "key": "thyme", "category": "herbs"},
+  {"id": 1502, "key": "rosemary", "category": "herbs"},
+  {"id": 1503, "key": "sage", "category": "herbs"},
+  {"id": 1504, "key": "oregano", "category": "herbs"},
+  {"id": 1505, "key": "basil", "category": "herbs"},
+  {"id": 1506, "key": "parsley", "category": "herbs", "synonyms": {"de": ["Petersilie glatt", "Petersilie kraus"]}},
+  {"id": 1507, "key": "dill", "category": "herbs"},
+  {"id": 1508, "key": "chives", "category": "herbs", "properties": ["fructans"]},
+  {"id": 1509, "key": "mint", "category": "herbs", "synonyms": {"de": ["Pfefferminze", "Minze frisch"]}},
+  {"id": 1510, "key": "coriander_leaves", "category": "herbs", "synonyms": {"de": ["Koriandergrün", "Koriander frisch"]}},
+  {"id": 1511, "key": "bay_leaf", "category": "herbs", "synonyms": {"de": ["Lorbeer"]}},
+  {"id": 1512, "key": "marjoram", "category": "herbs"},
+  {"id": 1513, "key": "tarragon", "category": "herbs"}
 ]

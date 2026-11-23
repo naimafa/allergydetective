@@ -108,7 +108,40 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11)
+    /**
+     * User 23.11.2026: spices and herbs as two categories, with thyme, rosemary, sage, oregano, basil and more.
+     * "Getrocknete Kräuter" moves to the herbs; oregano and thyme are no longer its synonyms but ingredients of
+     * their own. Same rows as the seed JSON.
+     */
+    val MIGRATION_11_12 = object : Migration(11, 12) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("INSERT OR IGNORE INTO categories (id, `key`) VALUES ($HERBS_CATEGORY, 'herbs')")
+            connection.execSQL("UPDATE ingredients SET categoryId = $HERBS_CATEGORY WHERE id = $DRIED_HERBS")
+            connection.execSQL("DELETE FROM ingredient_synonyms WHERE ingredientId = $DRIED_HERBS AND synonym IN ('Oregano', 'Thymian')")
+            HERBS_ROWS.forEach { connection.insertSeedIngredient(it) }
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12)
+
+    private const val HERBS_CATEGORY = 15L
+    internal const val DRIED_HERBS = 1415L
+
+    internal val HERBS_ROWS = listOf(
+        SeedRow(1501, "thyme", HERBS_CATEGORY, emptyList(), emptyList()),
+        SeedRow(1502, "rosemary", HERBS_CATEGORY, emptyList(), emptyList()),
+        SeedRow(1503, "sage", HERBS_CATEGORY, emptyList(), emptyList()),
+        SeedRow(1504, "oregano", HERBS_CATEGORY, emptyList(), emptyList()),
+        SeedRow(1505, "basil", HERBS_CATEGORY, emptyList(), emptyList()),
+        SeedRow(1506, "parsley", HERBS_CATEGORY, emptyList(), listOf("Petersilie glatt", "Petersilie kraus")),
+        SeedRow(1507, "dill", HERBS_CATEGORY, emptyList(), emptyList()),
+        SeedRow(1508, "chives", HERBS_CATEGORY, listOf("fructans"), emptyList()),
+        SeedRow(1509, "mint", HERBS_CATEGORY, emptyList(), listOf("Pfefferminze", "Minze frisch")),
+        SeedRow(1510, "coriander_leaves", HERBS_CATEGORY, emptyList(), listOf("Koriandergrün", "Koriander frisch")),
+        SeedRow(1511, "bay_leaf", HERBS_CATEGORY, emptyList(), listOf("Lorbeer")),
+        SeedRow(1512, "marjoram", HERBS_CATEGORY, emptyList(), emptyList()),
+        SeedRow(1513, "tarragon", HERBS_CATEGORY, emptyList(), emptyList()),
+    )
 
     private const val OILS_CATEGORY = 13L
     private const val SPICES_CATEGORY = 14L
