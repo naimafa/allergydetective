@@ -72,11 +72,17 @@ fun DayCheckScreen(
     onLogSymptom: () -> Unit = {},
     /** Day to open, e.g. from the history; null = today. */
     day: Long? = null,
+    /** A sick day was finished: open the symptom form for that day (days before today). */
+    onSickDayFinished: (daysAgo: Int) -> Unit = { onDone() },
     viewModel: DayCheckViewModel = koinViewModel(),
     sickViewModel: SickPeriodsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    LaunchedEffect(state.saved) { if (state.saved) onDone() }
+    LaunchedEffect(state.saved) {
+        if (state.saved) {
+            if (state.openSymptoms) onSickDayFinished((state.today - state.check.epochDay).toInt()) else onDone()
+        }
+    }
     LaunchedEffect(day) { day?.let(viewModel::onDaySelected) }
     // Entering the screen again, e.g. after logging a symptom.
     LaunchedEffect(Unit) { viewModel.onResume() }

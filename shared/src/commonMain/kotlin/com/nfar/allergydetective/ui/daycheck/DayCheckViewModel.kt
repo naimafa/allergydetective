@@ -30,6 +30,8 @@ data class DayCheckState(
     val askNoSymptoms: Boolean = false,
     /** Set after finishing, the screen closes then. */
     val saved: Boolean = false,
+    /** Finished as a sick day: the symptom form for this day opens next (user note 21.11.2026). */
+    val openSymptoms: Boolean = false,
 ) {
     /** Past days in the selection that are not confirmed yet, newest first. */
     val openPastDays: List<Long> get() = days.filter { it != today && it !in confirmedDays }
@@ -101,9 +103,19 @@ class DayCheckViewModel(
         it.copy(factorIds = if (factorId in it.factorIds) it.factorIds - factorId else it.factorIds + factorId)
     }
 
-    /** "Finish day": with symptoms the day is complete; without, the screen asks first. */
+    /**
+     * "Finish day": with symptoms the day is complete; without, the screen asks first. A sick day (user note
+     * 21.11.2026) does not ask "no complaints?" – it is finished and the symptom form opens, so the complaints
+     * of the illness are logged right away.
+     */
     fun onFinish() {
-        if (_state.value.hasSymptoms) finish(DayCheckStatus.COMPLETE) else _state.update { it.copy(askNoSymptoms = true) }
+        val state = _state.value
+        val sick = state.factors.any { it.key == SICK_FACTOR_KEY && it.id in state.check.factorIds }
+        when {
+            sick -> finish(DayCheckStatus.COMPLETE, openSymptoms = true)
+            state.hasSymptoms -> finish(DayCheckStatus.COMPLETE)
+            else -> _state.update { it.copy(askNoSymptoms = true) }
+        }
     }
 
     /** Answer "yes, no complaints". */
@@ -114,12 +126,12 @@ class DayCheckViewModel(
         _state.update { it.copy(askNoSymptoms = false) }
     }
 
-    private fun finish(status: DayCheckStatus) {
+    private fun finish(status: DayCheckStatus, openSymptoms: Boolean = false) {
         val check = _state.value.check.copy(status = status)
         _state.update { it.copy(check = check, askNoSymptoms = false) }
         viewModelScope.launch {
             saveLock.withLock { repository.save(check) }
-            _state.update { it.copy(saved = true) }
+            _state.update { it.copy(saved = true, openSymptoms = openSymptoms) }
         }
     }
 
@@ -138,3 +150,6 @@ class DayCheckViewModel(
         const val SLEEP_STEP_HOURS = 0.5f
     }
 }
+
+/** Lifestyle factor "krank" (self-test 18.11.). */
+private const val SICK_FACTOR_KEY = "sick"
