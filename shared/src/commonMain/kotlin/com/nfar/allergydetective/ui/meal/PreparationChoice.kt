@@ -29,11 +29,13 @@ fun PreparationChoice(selected: Preparation?, onSelect: (Preparation) -> Unit) {
                 selected = selected == Preparation.RAW,
                 onClick = { onSelect(Preparation.RAW) },
                 label = { Text(stringResource(Res.string.meal_prep_raw)) },
+                showCheck = false,
             )
             AppFilterChip(
                 selected = selected == Preparation.COOKED,
                 onClick = { onSelect(Preparation.COOKED) },
                 label = { Text(stringResource(Res.string.meal_prep_cooked)) },
+                showCheck = false,
             )
         }
         if (selected == null) {

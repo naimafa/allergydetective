@@ -92,12 +92,16 @@ class LogMealViewModel(
                     day = daysAgo,
                     favoriteId = meal.favoriteId,
                     selected = meal.items.mapNotNull { item ->
-                        ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation) }
+                        ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation, dishIds = setOfNotNull(dishOf(state, meal.favoriteId, item.ingredientId)), alone = dishOf(state, meal.favoriteId, item.ingredientId) == null) }
                     },
                 )
             }
         }
     }
+
+    /** The dish an ingredient of an edited meal belongs to: the meal's favourite, if the ingredient is part of it. */
+    private fun dishOf(state: LogMealState, favoriteId: Long?, ingredientId: Long): Long? =
+        favoriteId?.takeIf { id -> state.favorites.firstOrNull { it.id == id }?.items?.any { it.ingredientId == ingredientId } == true }
 
     /** "Log" on a dish in the favourites (self-test 19.11.): the form starts with its ingredients; the meal is chosen as usual. */
     fun startWithFavorite(favoriteId: Long) {
@@ -234,14 +238,41 @@ class LogMealViewModel(
         if (match.unmatched.isNotEmpty()) onQueryChange(match.unmatched.joinToString(" "))
     }
 
-    /** Adds the ingredients of a favorite with their default portions (UX 3.1). */
+    /**
+     * Adds the ingredients of a favorite with their default portions (UX 3.1); a tap on a dish that is already
+     * chosen takes it out again. User 23.11.2026: an ingredient the meal already has is not added twice: it notes
+     * the dish and keeps the larger portion.
+     */
     fun onFavoriteClick(favorite: FavoriteInfo) {
+        if (_state.value.selected.any { favorite.id in it.dishIds }) return onRemoveDish(favorite.id)
         _state.update { state ->
+            val portions = favorite.items.associate { it.ingredientId to it.portion }
+            val merged = state.selected.map { chosen ->
+                portions[chosen.ingredient.id]?.let { portion ->
+                    chosen.copy(dishIds = chosen.dishIds + favorite.id, portion = maxOf(chosen.portion, portion))
+                } ?: chosen
+            }
             val known = state.selected.map { it.ingredient.id }.toSet()
             val added = favorite.items
                 .filter { it.ingredientId !in known }
-                .mapNotNull { item -> ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation) } }
-            state.copy(selected = state.selected + added, favoriteId = favorite.id, query = "", results = emptyList(), dishResults = emptyList())
+                .mapNotNull { item ->
+                    ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation, dishIds = setOf(favorite.id), alone = false) }
+                }
+            state.copy(selected = merged + added, favoriteId = favorite.id, query = "", results = emptyList(), dishResults = emptyList())
+        }
+        suggestDrink()
+    }
+
+    /** Takes a dish out: its ingredients go, unless another dish has them or they were picked on their own. */
+    fun onRemoveDish(dishId: Long) {
+        _state.update { state ->
+            val selected = state.selected.mapNotNull { chosen ->
+                if (dishId !in chosen.dishIds) return@mapNotNull chosen
+                val rest = chosen.dishIds - dishId
+                if (rest.isEmpty() && !chosen.alone) null else chosen.copy(dishIds = rest)
+            }
+            val favoriteId = state.favoriteId.takeIf { it != dishId } ?: selected.flatMap { it.dishIds }.lastOrNull()
+            state.copy(selected = selected, favoriteId = favoriteId)
         }
         suggestDrink()
     }

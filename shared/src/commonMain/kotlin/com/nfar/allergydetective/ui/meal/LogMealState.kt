@@ -13,6 +13,13 @@ data class SelectedIngredient(
     val portion: Portion = Portion.MEDIUM,
     /** Raw or cooked; must be chosen for ingredients in [LogMealState.needsPreparation]. */
     val preparation: Preparation? = null,
+    /**
+     * The dishes it came with (user 23.11.2026: one list for the whole meal, an ingredient of two dishes once,
+     * with "aus: Gemüsesuppe · Gemüsepfanne" below). Only for the screen; the meal stores one favourite as before.
+     */
+    val dishIds: Set<Long> = emptySet(),
+    /** Picked on its own (search, quick pick, voice): it stays when its dishes are taken out. */
+    val alone: Boolean = true,
 )
 
 data class LogMealState(

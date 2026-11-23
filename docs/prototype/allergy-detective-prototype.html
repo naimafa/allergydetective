@@ -335,6 +335,22 @@ p, h1, h2, h3 { margin: 0; }
 .field { border-radius: 999px; background: #EEEAD9; border: 0; }
 .appbar:has(.when-pill) { flex-wrap: wrap; padding-top: 8px; }
 .appbar:has(.when-pill) .t-title { order: 3; flex-basis: 100%; padding-left: 12px; }
+/* 23.11.2026 meal screen: icons in the kind pills, dish header, ingredient rows with S·M·L and bin. */
+.chips.pills .chip .pi { margin-right: 6px; }
+.dish-head { display: flex; align-items: center; gap: 12px; padding: 6px 4px 6px 12px; border-radius: 16px; background: #DDE5CF; border: 1px solid var(--outline-variant); }
+.dish-head .e { font-size: 30px; } .dish-head b { flex: 1; font-size: calc(17px * var(--fs)); font-weight: 500; }
+.ing-label { color: var(--primary); font-weight: 500; font-size: calc(14px * var(--fs)); display: flex; align-items: center; gap: 6px; } .ing-label svg { width: 18px; height: 18px; }
+.ing { display: flex; align-items: center; padding: 4px 0; } .ing + .ing { border-top: 1px solid var(--outline-variant); }
+.ing .e { width: 40px; font-size: 26px; text-align: center; } .ing .n { flex: 1; padding: 0 8px 0 10px; font-weight: 500; font-size: calc(14px * var(--fs)); hyphens: auto; }
+.seg { display: flex; width: 120px; border: 1px solid var(--outline-variant); border-radius: 999px; background: var(--home-page); }
+.seg .chip { width: 40px; height: 36px; border: 0; justify-content: center; padding: 0; } .seg .chip.on { padding: 0; }
+.bin { width: 38px; height: 38px; margin-left: 6px; border-radius: 50%; border: 0; background: #DDE5CF; }
+.dishes { border: 1px solid var(--outline-variant); border-radius: 16px; overflow: hidden; } .dishes-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: #DDE5CF; font-weight: 500; } .dishes-head svg { width: 24px; height: 24px; transform: rotate(180deg); }
+.dish-row { display: flex; align-items: center; gap: 12px; padding: 6px 12px; } .dish-row + .dish-row { border-top: 1px solid var(--outline-variant); } .dish-row .e { font-size: 28px; } .dish-row b { flex: 1; font-weight: 500; } .dish-row .ok { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: var(--on-primary); display: grid; place-items: center; }
+.from { margin: -8px 0 0 50px; font-size: calc(12px * var(--fs)); color: var(--muted); }
+.add-more { border-radius: 999px; border: 1px solid var(--home-ink, #234536); background: transparent; color: var(--home-ink, #234536); min-height: 48px; }
+.bin { font-size: 18px; }
+$css
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -436,27 +452,35 @@ p, h1, h2, h3 { margin: 0; }
         <div class="body" style="gap:14px">
           <section class="step">
             <div class="step-head"><span class="step-num">1</span><h3 class="t-tm">Welche Mahlzeit?</h3></div>
-            <!-- 22.11.2026: only the meal kind, in two even rows; day and time sit in the pill at the top right. -->
-            <div class="chips pills" data-single><button class="chip noicon" style="flex:9">Frühstück</button><button class="chip noicon" style="flex:11">Mittagessen</button></div>
-            <div class="chips pills" data-single><button class="chip noicon" style="flex:12">Abendessen</button><button class="chip noicon" style="flex:7">Snack</button><button class="chip on noicon" style="flex:9">Getränk</button></div>
+            <!-- 23.11.2026: each kind with its icon (app: Material outline icons) in the fixed order of the day; selected = colour only. -->
+            <div class="chips pills" data-single><button class="chip noicon" style="flex:13">Frühstück</button><button class="chip on noicon" style="flex:15">Mittagessen</button></div>
+            <div class="chips pills" data-single><button class="chip noicon" style="flex:14">Abendessen</button><button class="chip noicon" style="flex:9">Snack</button><button class="chip noicon" style="flex:11">Getränk</button></div>
           </section>
           <section class="step">
             <div class="step-head"><span class="step-num">2</span><h3 class="t-tm">Was hast du gegessen?</h3></div>
-            <label class="field" for="mealSearch"><input id="mealSearch" placeholder="Zutat suchen …"><button class="iconbtn" type="button" aria-label="Mahlzeit einsprechen"><svg><use href="#i-mic"/></svg></button></label>
-            <div><h4 class="t-ts" style="margin:0">Favoriten</h4><p class="t-small muted">Deine gespeicherten Mahlzeiten – ein Tipp fügt alle Zutaten hinzu</p></div>
-            <div class="chips" data-multi><button class="chip wrap">Frühstück mit Käse, Oliven und Butter</button><button class="chip">Gemüsemischung</button><button class="chip">Linsensuppe</button><button class="chip">Kaffee mit Milch</button></div>
-            <div><h4 class="t-ts" style="margin:0">Schnellauswahl</h4><p class="t-small muted">Zuletzt gegessen – ein Tipp fügt es hinzu</p></div>
-            <div class="chips" data-multi><button class="chip on">Kaffee</button><button class="chip">Kuhmilch</button><button class="chip">Weißbrot</button><button class="chip">Tomate</button><button class="chip">Hafer</button></div>
+            <label class="field" for="mealSearch"><svg style="width:22px;height:22px"><use href="#i-search"/></svg><input id="mealSearch" placeholder="Zutat oder Gericht suchen …"><button class="iconbtn" type="button" aria-label="Mahlzeit einsprechen"><svg><use href="#i-mic"/></svg></button></label>
+            <!-- 23.11.2026 (final): favourites and recent ingredients stay visible; the choice shows by colour only. -->
+            <h4 class="t-ts muted" style="margin:0">Favoriten</h4>
+            <div class="chips" data-multi><button class="chip on noicon">Gemüsesuppe ★</button><button class="chip on noicon">Gemüsemischung ★</button><button class="chip noicon">Linsensuppe ★</button></div>
+            <h4 class="t-ts muted" style="margin:0">Zuletzt gewählte Zutaten</h4>
+            <div class="chips" data-multi><button class="chip noicon">Dinkelvollkornbrot +</button><button class="chip noicon">Tomate +</button></div>
+            <div class="dishes"><div class="dishes-head">Ausgewählte Gerichte (2)<svg><use href="#i-down"/></svg></div>
+              <div class="dish-row"><span class="e">🍲</span><b>Gemüsesuppe</b><span class="ok" aria-label="Gericht entfernen">✓</span></div>
+              <div class="dish-row"><span class="e">🍲</span><b>Gemüsemischung</b><span class="ok" aria-label="Gericht entfernen">✓</span></div></div>
+            <div class="ing-label">🌿 Zutaten der gesamten Mahlzeit <svg><use href="#i-info"/></svg></div>
+            <p class="t-small muted" style="margin:-6px 0 0">Doppelte Zutaten werden zusammengeführt.</p>
+            <div class="ing"><span class="e">🫘</span><span class="n">Bohnen</span><span class="seg" data-single><button class="chip noicon">S</button><button class="chip on noicon">M</button><button class="chip noicon">L</button></span><button class="bin" aria-label="Entfernen: Bohnen">🗑</button></div>
+            <p class="from">aus: Gemüsesuppe · Gemüsemischung</p>
+            <div class="ing"><span class="e">🥕</span><span class="n">Karotte</span><span class="seg" data-single><button class="chip noicon">S</button><button class="chip on noicon">M</button><button class="chip noicon">L</button></span><button class="bin" aria-label="Entfernen: Karotte">🗑</button></div>
+            <p class="from">aus: Gemüsesuppe · Gemüsemischung</p>
+            <div class="chips from" data-single><button class="chip noicon">roh</button><button class="chip on noicon">gekocht</button></div>
+            <div class="ing"><span class="e">🫙</span><span class="n">Olivenöl</span><span class="seg" data-single><button class="chip noicon">S</button><button class="chip on noicon">M</button><button class="chip noicon">L</button></span><button class="bin" aria-label="Entfernen: Olivenöl">🗑</button></div>
+            <p class="from">aus: Gemüsesuppe</p>
+            <button class="btn outlined full add-more"><svg><use href="#i-add"/></svg>Weitere Zutat hinzufügen</button>
           </section>
-          <section class="step">
-            <div class="step-head"><span class="step-num">3</span><h3 class="t-tm">Wie viel?</h3></div>
-            <div class="row-between"><span class="t-bl">Kaffee</span><button class="btn text">Entfernen</button></div>
-            <div class="chips" data-single><button class="chip">S</button><button class="chip on">M</button><button class="chip">L</button></div>
-            <p class="t-small muted">S = ein paar Bissen oder ½ Glas · M = eine Faust oder 1 Glas · L = zwei Fäuste oder 2 Gläser</p>
-            <label class="row-between t-body" style="gap:8px"><span>Als Favorit speichern</span><input type="checkbox" id="asFav" style="width:20px;height:20px;accent-color:var(--primary)"></label>
-          </section>
+          <section class="step"><label class="row-between t-body" style="gap:8px"><span><b>Ganze Mahlzeit als Gericht in den Favoriten speichern</b><br><small class="muted">Alle Zutaten oben werden zusammen gespeichert. Beim nächsten Mal fügt ein Tipp sie alle auf einmal hinzu.</small></span><input type="checkbox" id="asFav" style="width:20px;height:20px;accent-color:var(--primary)"></label></section>
         </div>
-        <div class="bottombar"><button class="btn filled full tall" data-go="history">Getränk speichern</button></div>
+        <div class="bottombar"><button class="btn filled full tall" data-go="history"><svg><use href="#i-check-circle"/></svg>Mittagessen speichern</button></div>
       </section>
 
       <!-- ===================== SYMPTOME ERFASSEN ===================== -->
