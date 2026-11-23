@@ -159,8 +159,71 @@ class LogMealViewModel(
     /** The day row (feedback 19.11.): today or up to five days back; the meal's time follows. */
     fun onDayChange(daysAgo: Int) {
         val day = daysAgo.coerceAtLeast(0)
+        val opened = _state.value.openedExisting != null
+        leaveOpenedMeal()
         _state.update { it.copy(day = day) }
         _state.value.slot?.let(::onSlotChange)
+        // The other day may have its own lunch: open that one instead.
+        if (opened || _state.value.editingMealId == null) _state.value.slot?.let(::openExistingMeal)
+    }
+
+    /** A tap on a meal chip; a tap on the chosen one takes the choice back (user 23.11.2026: it could not be undone). */
+    fun onSlotTap(slot: MealSlot) {
+        leaveOpenedMeal()
+        if (_state.value.slot == slot) {
+            _state.update { it.copy(slot = null, slotTime = null, exactTime = null, slotSuggested = false) }
+            return
+        }
+        onSlotChange(slot)
+        openExistingMeal(slot)
+    }
+
+    /** Leaving a meal that was opened only because its slot was chosen: back to a new meal, without its ingredients. */
+    private fun leaveOpenedMeal() {
+        if (_state.value.openedExisting == null) return
+        _state.update { state ->
+            state.copy(
+                editingMealId = null,
+                openedExisting = null,
+                openedItemIds = emptySet(),
+                selected = state.selected.filterNot { it.ingredient.id in state.openedItemIds },
+            )
+        }
+    }
+
+    /**
+     * User 23.11.2026: choosing "Mittagessen" when today's lunch is already logged opens that lunch for editing
+     * instead of starting a second one. What was chosen so far is added to it (a shared ingredient keeps the new
+     * portion). Snack and drink have no fixed time and can be logged several times a day.
+     */
+    private fun openExistingMeal(slot: MealSlot) {
+        val current = _state.value
+        if (current.editingMealId != null || !slot.hasFixedTime) return
+        viewModelScope.launch {
+            val eatenAt = current.exactTime?.let { clock.timeOf(it, 0) } ?: clock.timeOf(slot)
+            val mealId = repository.mealIdAt(eatenAt, slot) ?: return@launch
+            val meal = repository.meal(mealId) ?: return@launch
+            val (hour, minute) = clock.localTime(meal.eatenAt)
+            _state.update { state ->
+                if (state.slot != slot || state.editingMealId != null) return@update state
+                val chosen = state.selected
+                val old = meal.items
+                    .filter { item -> chosen.none { it.ingredient.id == item.ingredientId } }
+                    .mapNotNull { item ->
+                        val dish = dishOf(state, meal.favoriteId, item.ingredientId)
+                        ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation, dishIds = setOfNotNull(dish), alone = dish == null) }
+                    }
+                state.copy(
+                    editingMealId = mealId,
+                    openedExisting = slot,
+                    openedItemIds = old.map { it.ingredient.id }.toSet(),
+                    slotTime = null,
+                    exactTime = ExactTime(state.day, hour, minute),
+                    favoriteId = state.favoriteId ?: meal.favoriteId,
+                    selected = old + chosen,
+                )
+            }
+        }
     }
 
     /**

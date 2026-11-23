@@ -338,6 +338,7 @@
     <string name="meal_slot_missing">Choisis d’abord le repas, s’il te plaît.</string>
     <string name="meal_save_slot">Enregistrer : %1$s</string>
     <string name="meal_edit_title">Modifier le repas</string>
+    <string name="meal_opened_existing">Ce %1$s est déjà noté – tu le complètes et le modifies ici.</string>
     <string name="meal_existing_question">Il y a déjà un repas « %1$s » ce jour-là. Y ajouter les ingrédients ?</string>
     <string name="meal_existing_add">Ajouter</string>
     <string name="meal_existing_separate">Repas séparé</string>

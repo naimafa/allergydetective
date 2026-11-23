@@ -342,6 +342,7 @@
     <string name="meal_slot_missing">Please choose the meal first.</string>
     <string name="meal_save_slot">Save %1$s</string>
     <string name="meal_edit_title">Edit meal</string>
+    <string name="meal_opened_existing">This %1$s is already logged – you are adding to and editing it here.</string>
     <string name="meal_existing_question">There is already a %1$s on this day. Add the ingredients to it?</string>
     <string name="meal_existing_add">Add to it</string>
     <string name="meal_existing_separate">Separate meal</string>

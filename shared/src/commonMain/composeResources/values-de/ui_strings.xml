@@ -342,6 +342,7 @@
     <string name="meal_slot_missing">Bitte wähle zuerst die Mahlzeit.</string>
     <string name="meal_save_slot">%1$s speichern</string>
     <string name="meal_edit_title">Mahlzeit bearbeiten</string>
+    <string name="meal_opened_existing">%1$s ist an diesem Tag schon eingetragen – du ergänzt und bearbeitest es hier.</string>
     <string name="meal_existing_question">Es gibt schon ein %1$s an diesem Tag. Sollen die Zutaten dort ergänzt werden?</string>
     <string name="meal_existing_add">Ergänzen</string>
     <string name="meal_existing_separate">Eigene Mahlzeit</string>

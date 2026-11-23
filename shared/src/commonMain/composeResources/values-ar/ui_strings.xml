@@ -351,6 +351,7 @@
     <string name="meal_slot_missing">اختر الوجبة أولًا من فضلك.</string>
     <string name="meal_save_slot">حفظ: %1$s</string>
     <string name="meal_edit_title">تعديل الوجبة</string>
+    <string name="meal_opened_existing">%1$s مسجّل بالفعل في هذا اليوم – يمكنك الإضافة إليه وتعديله هنا.</string>
     <string name="meal_existing_question">توجد بالفعل وجبة «%1$s» في هذا اليوم. هل تضيف المكوّنات إليها؟</string>
     <string name="meal_existing_add">إضافة</string>
     <string name="meal_existing_separate">وجبة منفصلة</string>

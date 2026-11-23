@@ -59,6 +59,10 @@ data class LogMealState(
     val savedMealId: Long? = null,
     /** Editing a logged meal from the history (self-test 19.11.): saving replaces it. */
     val editingMealId: Long? = null,
+    /** The chosen slot was already logged that day and is now open for editing (a hint says so). */
+    val openedExisting: MealSlot? = null,
+    /** Ingredients that came from that opened meal; they go again when another slot is chosen. */
+    val openedItemIds: Set<Long> = emptySet(),
     /** There is already a meal at this slot, e.g. today's dinner: the screen asks whether to add to it. */
     val existingMealId: Long? = null,
     /** The ingredients were added to the existing meal of this slot: a short confirmation without undo. */
