@@ -90,6 +90,7 @@ fun MainScreen(
     onAddMealForDay: (Int) -> Unit = {},
     onAddSymptomForDay: (Int) -> Unit = {},
     profileExtra: @Composable () -> Unit = {},
+    profileLower: @Composable () -> Unit = {},
     initialTab: MainTab = MainTab.HOME,
 ) {
     var tab by rememberSaveable { mutableStateOf(initialTab) }
@@ -179,6 +180,7 @@ fun MainScreen(
                 modifier = modifier,
                 onSaved = { scope.launch { snackbarHostState.showSnackbar(getString(Res.string.common_saved)) } },
                 extraContent = profileExtra,
+                lowerContent = profileLower,
             )
         }
     }

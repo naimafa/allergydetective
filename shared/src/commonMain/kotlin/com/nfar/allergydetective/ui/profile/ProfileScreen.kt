@@ -32,6 +32,8 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: KnownAllergiesViewModel = koinViewModel(),
     extraContent: @Composable () -> Unit = {},
+    /** Cards after the known allergies, e.g. privacy and the intro (user 23.11.2026: allergies before privacy). */
+    lowerContent: @Composable () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.saved) {
@@ -49,6 +51,7 @@ fun ProfileScreen(
         // Folded by default (feedback 20.11.): one line with the selection, the list opens on tap.
         // User note 22.11.2026: the cards alternate apricot and sage all the way down.
         ProfileCard(ProfileTint.WARM) { KnownAllergiesSection(state, viewModel::onToggle, viewModel::onSave) }
+        lowerContent()
         ProfileCard(ProfileTint.SAGE) {
             SectionTitle(stringResource(Res.string.onboarding_purpose_title))
             Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
