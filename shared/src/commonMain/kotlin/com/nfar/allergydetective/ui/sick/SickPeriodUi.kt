@@ -1,5 +1,11 @@
 package com.nfar.allergydetective.ui.sick
 
+import com.nfar.allergydetective.ui.theme.AppColors
+import androidx.compose.material3.Surface
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.BorderStroke
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
 import allergydetective.shared.generated.resources.common_save
@@ -173,13 +179,23 @@ fun SickPeriodSection(viewModel: SickPeriodsViewModel) {
         if (state.periods.isEmpty()) {
             Text(stringResource(Res.string.sick_empty), style = MaterialTheme.typography.bodyMedium)
         }
+        // User picture 23.11.2026: every period in its own small box with a bin, one round button below.
         state.periods.forEach { period ->
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text(sickPeriodText(period), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                TextButton(onClick = { viewModel.onDelete(period.id) }) { Text(stringResource(Res.string.history_delete)) }
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                color = AppColors.extra.home.card,
+                border = BorderStroke(1.dp, AppColors.extra.home.cardBorder),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 14.dp)) {
+                    Text(sickPeriodText(period), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                    IconButton(onClick = { viewModel.onDelete(period.id) }) {
+                        Icon(Icons.Outlined.Delete, contentDescription = stringResource(Res.string.history_delete))
+                    }
+                }
             }
         }
-        OutlinedButton(onClick = { showDialog = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+        Button(onClick = { showDialog = true }, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
             Text(stringResource(Res.string.sick_add))
         }
     }

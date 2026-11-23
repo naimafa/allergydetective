@@ -132,6 +132,14 @@
     <string name="common_cancel">إلغاء</string>
     <string name="report_section_title">التقرير والتصدير</string>
     <string name="report_hint">لموعدك مع الطبيب أو لنفسك: التحليل (التكرار، الشدة، أوقات اليوم، المدة، الملاحظات، الأنماط اللافتة) – وإن أردت مع كل الوجبات والأعراض وختامات الأيام. كملف PDF للقراءة أو كجدول Excel. أنت من يقرّر أين يذهب.</string>
+    <string name="report_hint_short">بيانات لموعد الطبيب أو لتحليلك الخاص.</string>
+    <string name="report_period_custom">من – إلى</string>
+    <string name="report_from">من:</string>
+    <string name="report_to">إلى:</string>
+    <plurals name="report_entry_count">
+        <item quantity="one">%1$d إدخال في الفترة</item>
+        <item quantity="other">%1$d إدخالات في الفترة</item>
+    </plurals>
     <string name="report_period_days">%1$d يومًا</string>
     <string name="report_button">إنشاء ملف PDF ومشاركته</string>
     <string name="report_title">يوميات الأعراض – تقرير</string>
@@ -289,7 +297,9 @@
     <string name="onboarding_next">التالي</string>
     <string name="onboarding_back">رجوع</string>
     <string name="onboarding_swipe_hint">اسحب للمتابعة</string>
-    <string name="profile_show_intro">عرض المقدمة مجددًا</string>
+    <string name="welcome_title">مرحبًا</string>
+    <string name="welcome_text">مقدّمتك إلى التطبيق: تعرّف على جميع وظائفه.</string>
+    <string name="profile_show_intro">إعادة المقدّمة</string>
     <string name="onboarding_how_title">كيف يعمل</string>
     <string name="onboarding_how_meal">سجّل ما تأكله: فطور أو غداء أو عشاء أو وجبة خفيفة. بالبحث أو من المفضلة أو بالصوت.</string>
     <string name="onboarding_how_symptom">عندما تشعر بأعراض، سجّلها مع شدتها ووقتها من اليوم.</string>

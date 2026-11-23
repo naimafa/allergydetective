@@ -1,5 +1,9 @@
 package com.nfar.allergydetective.ui
 
+import allergydetective.shared.generated.resources.welcome_text
+import allergydetective.shared.generated.resources.welcome_title
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import allergydetective.shared.generated.resources.privacy_card_button
 import allergydetective.shared.generated.resources.privacy_card_text
 import allergydetective.shared.generated.resources.privacy_title
@@ -141,14 +145,19 @@ fun AppNavHost(
                     ProfileCard(ProfileTint.WARM) {
                         SectionTitle(stringResource(Res.string.privacy_title))
                         Text(stringResource(Res.string.privacy_card_text), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        OutlinedButton(onClick = { navController.navigate(PrivacyRoute) }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                        // User pictures 23.11.2026: one clear round button per card.
+                        Button(onClick = { navController.navigate(PrivacyRoute) }, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
                             Text(stringResource(Res.string.privacy_card_button))
                         }
                     }
-                    OutlinedButton(
-                        onClick = { navController.navigate(IntroRoute) },
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-                    ) { Text(stringResource(Res.string.profile_show_intro)) }
+                    // User picture 23.11.2026: the intro in its own card "Willkommen" instead of a loose button.
+                    ProfileCard(ProfileTint.SAGE) {
+                        SectionTitle(stringResource(Res.string.welcome_title))
+                        Text(stringResource(Res.string.welcome_text), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Button(onClick = { navController.navigate(IntroRoute) }, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                            Text(stringResource(Res.string.profile_show_intro))
+                        }
+                    }
                 },
             )
         }
