@@ -157,19 +157,12 @@ class DoctorReportViewModel(
         countEntries()
     }
 
-    /** "Eigener Zeitraum": starts as the last 14 days, the dates are then changed one by one. */
-    fun onCustomPeriod() {
-        _state.update { it.copy(days = null) }
-        countEntries()
-    }
-
-    fun onCustomFromChange(day: Long) {
-        _state.update { it.copy(customFrom = day, customTo = maxOf(it.customTo, day)) }
-        countEntries()
-    }
-
-    fun onCustomToChange(day: Long) {
-        _state.update { it.copy(customTo = minOf(day, clock.today()), customFrom = minOf(it.customFrom, day)) }
+    /** Own period from the calendar (user 23.11.2026); the days are put in order and end at today at the latest. */
+    fun onCustomPeriod(from: Long, to: Long) {
+        val today = clock.today()
+        val start = minOf(from, to).coerceAtMost(today)
+        val end = maxOf(from, to).coerceAtMost(today)
+        _state.update { it.copy(days = null, customFrom = start, customTo = end) }
         countEntries()
     }
 
