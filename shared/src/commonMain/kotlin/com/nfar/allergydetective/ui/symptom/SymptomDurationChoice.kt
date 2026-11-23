@@ -20,8 +20,8 @@ import org.jetbrains.compose.resources.stringResource
 /** "How long?" (feedback 20.11.): optional, tapping the chosen chip again removes it. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun SymptomDurationChoice(selected: SymptomDuration?, onSelect: (SymptomDuration) -> Unit) {
-    Text(stringResource(Res.string.symptom_duration_title), style = MaterialTheme.typography.titleSmall)
+fun SymptomDurationChoice(selected: SymptomDuration?, onSelect: (SymptomDuration) -> Unit, showTitle: Boolean = true) {
+    if (showTitle) Text(stringResource(Res.string.symptom_duration_title), style = MaterialTheme.typography.titleSmall)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         SymptomDuration.entries.forEach { duration ->
             AppFilterChip(

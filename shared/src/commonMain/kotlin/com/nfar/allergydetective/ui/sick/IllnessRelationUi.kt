@@ -24,9 +24,9 @@ import org.jetbrains.compose.resources.stringResource
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun IllnessRelationChoice(selected: IllnessRelation?, onSelect: (IllnessRelation) -> Unit) {
+fun IllnessRelationChoice(selected: IllnessRelation?, showTitle: Boolean = true, onSelect: (IllnessRelation) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(stringResource(Res.string.illness_question), style = MaterialTheme.typography.titleSmall)
+        if (showTitle) Text(stringResource(Res.string.illness_question), style = MaterialTheme.typography.titleSmall)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             IllnessRelation.entries.forEach { relation ->
                 AppFilterChip(

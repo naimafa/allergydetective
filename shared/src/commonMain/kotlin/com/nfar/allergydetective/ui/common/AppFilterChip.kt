@@ -28,8 +28,8 @@ fun AppFilterChip(
     enabled: Boolean = true,
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
-    /** Check mark on the selected chip; off for narrow chips like a 1–5 scale. */
-    showCheck: Boolean = true,
+    /** Check mark on the selected chip. User 23.11.2026: "nur die Farbe soll gewählt zeigen" – off everywhere by default. */
+    showCheck: Boolean = false,
 ) {
     val scheme = MaterialTheme.colorScheme
     FilterChip(
