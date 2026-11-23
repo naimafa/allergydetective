@@ -69,6 +69,9 @@ import com.nfar.allergydetective.ui.daycheck.DayCheckViewModel
 import com.nfar.allergydetective.ui.sick.SickPeriodDialog
 import com.nfar.allergydetective.ui.sick.SickPeriodsViewModel
 import org.jetbrains.compose.resources.stringArrayResource
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.text.font.FontWeight
+import com.nfar.allergydetective.ui.common.dayLabel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -155,13 +158,21 @@ fun HistoryScreen(
                     clock,
                     pinned = pinned,
                     sick = isSick(day),
+                    daysAgo = daysAgo,
                     // Today and the two days before can still be added to (like the day check).
                     onAddMeal = if (daysAgo in 0..DayCheckViewModel.DAYS_BACK) ({ onAddMealForDay(daysAgo) }) else null,
                     onAddSymptom = if (daysAgo in 0..DayCheckViewModel.DAYS_BACK) ({ onAddSymptomForDay(daysAgo) }) else null,
                 )
             }
             item(key = "day-${day.epochDay}") {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                // User 23.11.2026: a clear border between the days. Each day's entries sit together on one soft sage
+                // panel under its date.
+                Surface(
+                    shape = MaterialTheme.shapes.large,
+                    color = lerp(AppColors.extra.home.page, AppColors.extra.home.badge, 0.35f),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(8.dp)) {
                     if ((period != null && day.epochDay in bandDays) || (period == null && isSick(day))) {
                         SickBand(period, onEdit = { sickActions = it })
                     }
@@ -172,6 +183,7 @@ fun HistoryScreen(
                         }
                     }
                     day.entries.forEach { entry -> EntryRow(entry, clock, onClick = { opened = entry }) }
+                }
                 }
             }
         }
@@ -271,6 +283,8 @@ private fun DayHeader(
     clock: AppClock,
     pinned: Boolean,
     sick: Boolean,
+    /** 0 = today: "Heute" / "Gestern" before the date. */
+    daysAgo: Int,
     onAddMeal: (() -> Unit)? = null,
     onAddSymptom: (() -> Unit)? = null,
 ) {
@@ -279,11 +293,17 @@ private fun DayHeader(
     val confirmed = day.status == DayCheckStatus.NO_SYMPTOMS || day.status == DayCheckStatus.COMPLETE
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().background(if (pinned) AppColors.extra.home.page else Color.Transparent).padding(start = 4.dp, end = 4.dp, top = 16.dp, bottom = 8.dp),
+        modifier = Modifier.fillMaxWidth().background(if (pinned) AppColors.extra.home.page else Color.Transparent).padding(start = 4.dp, end = 4.dp, top = 24.dp, bottom = 8.dp),
     ) {
+        // "Heute" and "Gestern" in front of the date make the newest days easy to find.
+        val near = when (daysAgo) {
+            0, 1 -> dayLabel(daysAgo) + " · "
+            else -> ""
+        }
         Text(
-            "$weekday, ${formatDate(date, Locale.current.language)}",
-            style = MaterialTheme.typography.titleMedium,
+            // Phone test 23.11.: "Gestern · So, 22.11.2026" wrapped at font 125 %; next to "Heute" / "Gestern" the weekday goes.
+            if (near.isEmpty()) "$weekday, ${formatDate(date, Locale.current.language)}" else near + formatDate(date, Locale.current.language),
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
             modifier = Modifier.weight(1f),
         )
         if (sick) {
