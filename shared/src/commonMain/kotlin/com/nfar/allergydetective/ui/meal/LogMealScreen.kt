@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.ui.meal
 
+import allergydetective.shared.generated.resources.meal_save_as_favorite_hint
 import allergydetective.shared.generated.resources.meal_also_called
 import allergydetective.shared.generated.resources.meal_dish_contains
 import allergydetective.shared.generated.resources.Res
@@ -371,9 +372,14 @@ private fun AmountStep(state: LogMealState, viewModel: LogMealViewModel) {
             if (index > 0) HorizontalDivider(color = MaterialTheme.colorScheme.surfaceContainerHigh)
             SelectedRow(item, item.ingredient.id in state.needsPreparation, viewModel)
         }
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        // User note 21.11.2026: "Als Favorit speichern" read as if only one ingredient were saved. The text names
+        // the whole meal as a dish, the hint says what happens.
+        Row(verticalAlignment = Alignment.Top, modifier = Modifier.clickable { viewModel.onSaveAsFavoriteChange(!state.saveAsFavorite) }) {
             Checkbox(checked = state.saveAsFavorite, onCheckedChange = viewModel::onSaveAsFavoriteChange)
-            Text(stringResource(Res.string.meal_save_as_favorite))
+            Column(modifier = Modifier.padding(top = 12.dp)) {
+                Text(stringResource(Res.string.meal_save_as_favorite))
+                Text(stringResource(Res.string.meal_save_as_favorite_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
         if (state.saveAsFavorite) {
             OutlinedTextField(
