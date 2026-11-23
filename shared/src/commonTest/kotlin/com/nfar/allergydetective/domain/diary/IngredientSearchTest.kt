@@ -71,4 +71,11 @@ class IngredientSearchTest {
     fun wordInsideTheNameMatches() {
         assertEquals(listOf(PASTA), search.search("weizen"))
     }
+
+    @Test
+    fun synonymIsReportedOnlyWhenTheNameDoesNotMatch() {
+        assertEquals("Semmel", search.matchedSynonym(WHITE_BREAD, "sem"))
+        assertEquals(null, search.matchedSynonym(WHITE_BREAD, "weiss"))
+        assertEquals(null, search.matchedSynonym(WHOLEMEAL_BREAD, "sem"))
+    }
 }
