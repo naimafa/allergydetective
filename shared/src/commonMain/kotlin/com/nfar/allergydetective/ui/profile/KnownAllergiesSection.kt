@@ -41,7 +41,7 @@ import org.jetbrains.compose.resources.stringResource
  * selected, a tap shows the whole list with "Save". The onboarding keeps the open list.
  */
 @Composable
-fun KnownAllergiesSection(state: KnownAllergiesState, onToggle: (Long) -> Unit, onSave: () -> Unit) {
+fun KnownAllergiesSection(state: KnownAllergiesState, onToggle: (Long) -> Unit, onSave: () -> Unit, inGroup: Boolean = false) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val selectedNames = state.properties.filter { it.id in state.selected }.map { displayName(NamePrefix.PROPERTY, it.key) }
     // User note 22.11.2026: no white card inside the profile card; the fold lies directly on the card.
@@ -58,9 +58,13 @@ fun KnownAllergiesSection(state: KnownAllergiesState, onToggle: (Long) -> Unit, 
             ) {
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     // User 23.11.2026: an icon before every profile title.
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Outlined.HealthAndSafety, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
-                        Text(stringResource(Res.string.allergies_section_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 10.dp))
+                    if (inGroup) {
+                        GroupSubtitle(stringResource(Res.string.allergies_section_title))
+                    } else {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Outlined.HealthAndSafety, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+                            Text(stringResource(Res.string.allergies_section_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 10.dp))
+                        }
                     }
                     Text(
                         selectedNames.joinToString(", ").ifEmpty { stringResource(Res.string.allergies_none) },

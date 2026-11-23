@@ -428,4 +428,10 @@
     <string name="paywall_backup">Save your data once</string>
     <string name="paywall_keep">Your entries so far are kept and can still be viewed.</string>
     <string name="paywall_only_preview">Only a preview: nothing is bought or locked.</string>
+    <string name="profile_group_settings">Language &amp; look</string>
+    <string name="profile_group_health">My health</string>
+    <string name="profile_group_about">App info &amp; legal</string>
+    <string name="profile_privacy_hint">Your data stays on your phone</string>
+    <string name="sick_show_all">Show all (%1$d)</string>
+    <string name="allergies_none_short">None given</string>
 </resources>

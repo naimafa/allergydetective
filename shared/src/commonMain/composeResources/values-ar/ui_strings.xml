@@ -436,4 +436,10 @@
     <string name="paywall_backup">احفظ بياناتك مرة واحدة</string>
     <string name="paywall_keep">تبقى إدخالاتك محفوظة ويمكنك عرضها.</string>
     <string name="paywall_only_preview">معاينة فقط: لا يتم شراء أو قفل أي شيء.</string>
+    <string name="profile_group_settings">اللغة والمظهر</string>
+    <string name="profile_group_health">صحتي</string>
+    <string name="profile_group_about">معلومات التطبيق والشؤون القانونية</string>
+    <string name="profile_privacy_hint">تبقى بياناتك على هاتفك</string>
+    <string name="sick_show_all">عرض الكل (%1$d)</string>
+    <string name="allergies_none_short">لا شيء</string>
 </resources>

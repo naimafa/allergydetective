@@ -60,7 +60,8 @@ fun GoalSection(store: SettingsStore = koinInject()) {
     val primary = MaterialTheme.colorScheme.primary
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         SectionTitle(stringResource(Res.string.goal_title), Icons.Outlined.Eco)
-        Text(stringResource(Res.string.goal_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        // User 23.11.2026: a little more air around the long explanation.
+        Text(stringResource(Res.string.goal_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 4.dp))
         val labels = GoalSettings.PRESETS.map { stringResource(Res.string.goal_days, it) } + stringResource(Res.string.goal_custom)
         val selected = if (custom) GoalSettings.PRESETS.size else GoalSettings.PRESETS.indexOf(goal.days)
         ChoiceRow(labels, selected, { index ->

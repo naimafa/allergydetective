@@ -423,4 +423,10 @@
     <string name="paywall_backup">Sauvegarder tes données une fois</string>
     <string name="paywall_keep">Tes saisies restent conservées et visibles.</string>
     <string name="paywall_only_preview">Simple aperçu : rien n’est acheté ni bloqué.</string>
+    <string name="profile_group_settings">Langue et affichage</string>
+    <string name="profile_group_health">Ma santé</string>
+    <string name="profile_group_about">Infos et mentions légales</string>
+    <string name="profile_privacy_hint">Tes données restent sur ton téléphone</string>
+    <string name="sick_show_all">Tout afficher (%1$d)</string>
+    <string name="allergies_none_short">Aucune indiquée</string>
 </resources>

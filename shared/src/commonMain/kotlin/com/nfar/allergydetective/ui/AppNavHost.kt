@@ -1,5 +1,23 @@
 package com.nfar.allergydetective.ui
 
+import com.nfar.allergydetective.ui.profile.KnownAllergiesScreen
+import com.nfar.allergydetective.ui.profile.GroupPart
+import allergydetective.shared.generated.resources.common_done
+import allergydetective.shared.generated.resources.onboarding_purpose
+import allergydetective.shared.generated.resources.onboarding_purpose_title
+import allergydetective.shared.generated.resources.profile_privacy_hint
+import allergydetective.shared.generated.resources.profile_group_about
+import allergydetective.shared.generated.resources.profile_group_settings
+import com.nfar.allergydetective.ui.theme.AppColors
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Tune
+import com.nfar.allergydetective.ui.profile.ProfileRow
+import com.nfar.allergydetective.ui.profile.LanguageRow
 import androidx.compose.material.icons.outlined.WavingHand
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
@@ -96,6 +114,10 @@ data object PrivacyRoute
 @Serializable
 data object PaywallPreviewRoute
 
+/** Known allergies on their own page (user 23.11.2026). */
+@Serializable
+data object AllergiesRoute
+
 @Composable
 fun AppNavHost(
     openDayCheck: Boolean = false,
@@ -145,30 +167,37 @@ fun AppNavHost(
                     // User 23.11.2026: the evaluation goal first; it decides what the start screen counts towards.
                     ProfileCard(ProfileTint.WARM) { GoalSection() }
                     ProfileCard(ProfileTint.SAGE) { DoctorReportSection() }
-                    ProfileCard(ProfileTint.WARM) { LanguageSection() }
-                    ProfileCard(ProfileTint.SAGE) { ThemeSection() }
-                    ProfileCard(ProfileTint.WARM) { ReminderSection() }
-                    ProfileCard(ProfileTint.SAGE) { SickPeriodSection(koinViewModel()) }
-                },
-                // User 23.11.2026: the known allergies come before privacy; these cards follow them.
-                onOpenPaywallPreview = { navController.navigate(PaywallPreviewRoute) },
-                profileLower = {
-                    // User note 21.11.2026: privacy details on their own screen, here only a short line.
-                    ProfileCard(ProfileTint.SAGE) {
-                        SectionTitle(stringResource(Res.string.privacy_title), Icons.Outlined.Lock)
-                        Text(stringResource(Res.string.privacy_card_text), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        // User pictures 23.11.2026: one clear round button per card.
-                        Button(onClick = { navController.navigate(PrivacyRoute) }, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
-                            Text(stringResource(Res.string.privacy_card_button))
-                        }
-                    }
-                    // User picture 23.11.2026: the intro in its own card "Willkommen" instead of a loose button.
+                    // User 23.11.2026 (profile "überladen"): language, look and reminder in one card.
                     ProfileCard(ProfileTint.WARM) {
-                        SectionTitle(stringResource(Res.string.welcome_title), Icons.Outlined.WavingHand)
-                        Text(stringResource(Res.string.welcome_text), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Button(onClick = { navController.navigate(IntroRoute) }, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
-                            Text(stringResource(Res.string.profile_show_intro))
-                        }
+                        SectionTitle(stringResource(Res.string.profile_group_settings), Icons.Outlined.Tune)
+                        GroupPart { LanguageRow() }
+                        GroupPart { ThemeSection(inGroup = true) }
+                        GroupPart { ReminderSection(inGroup = true) }
+                    }
+                },
+                onOpenAllergies = { navController.navigate(AllergiesRoute) },
+                profileLower = {
+                    // User 23.11.2026: privacy, intro and purpose as lines of one card "App-Info & Rechtliches".
+                    // A long press on "Was die App ist und was nicht" opens the hidden payment test view.
+                    var showPurpose by remember { mutableStateOf(false) }
+                    ProfileCard(ProfileTint.WARM) {
+                        SectionTitle(stringResource(Res.string.profile_group_about), Icons.Outlined.Info)
+                        GroupPart { ProfileRow(stringResource(Res.string.privacy_title), stringResource(Res.string.profile_privacy_hint), onClick = { navController.navigate(PrivacyRoute) }) }
+                        GroupPart { ProfileRow(stringResource(Res.string.welcome_title), stringResource(Res.string.profile_show_intro), onClick = { navController.navigate(IntroRoute) }) }
+                        GroupPart { ProfileRow(
+                            stringResource(Res.string.onboarding_purpose_title),
+                            null,
+                            onClick = { showPurpose = true },
+                            onLongClick = { navController.navigate(PaywallPreviewRoute) },
+                        ) }
+                    }
+                    if (showPurpose) {
+                        AlertDialog(
+                            onDismissRequest = { showPurpose = false },
+                            title = { Text(stringResource(Res.string.onboarding_purpose_title)) },
+                            text = { Text(stringResource(Res.string.onboarding_purpose)) },
+                            confirmButton = { Button(onClick = { showPurpose = false }, shape = CircleShape) { Text(stringResource(Res.string.common_done)) } },
+                        )
                     }
                 },
             )
@@ -192,5 +221,6 @@ composable<IntroRoute> {            OnboardingScreen(                replay = tr
         composable<ResultsRoute> { ResultsScreen(onBack = back) }
         composable<PrivacyRoute> { PrivacyScreen(onBack = back) }
         composable<PaywallPreviewRoute> { PaywallPreviewScreen(onBack = back) }
+        composable<AllergiesRoute> { KnownAllergiesScreen(onBack = back) }
     }
 }
