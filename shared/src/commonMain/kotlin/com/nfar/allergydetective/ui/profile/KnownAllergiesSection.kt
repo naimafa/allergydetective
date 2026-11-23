@@ -1,5 +1,7 @@
 package com.nfar.allergydetective.ui.profile
 
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.outlined.HealthAndSafety
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.allergies_none
 import allergydetective.shared.generated.resources.allergies_section_title
@@ -55,7 +57,11 @@ fun KnownAllergiesSection(state: KnownAllergiesState, onToggle: (Long) -> Unit, 
                 modifier = Modifier.fillMaxWidth().clickable { expanded = !expanded }.heightIn(min = 56.dp).padding(top = 8.dp, bottom = 4.dp),
             ) {
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(stringResource(Res.string.allergies_section_title), style = MaterialTheme.typography.titleLarge)
+                    // User 23.11.2026: an icon before every profile title.
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Outlined.HealthAndSafety, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+                        Text(stringResource(Res.string.allergies_section_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 10.dp))
+                    }
                     Text(
                         selectedNames.joinToString(", ").ifEmpty { stringResource(Res.string.allergies_none) },
                         style = MaterialTheme.typography.bodyMedium,

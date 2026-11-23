@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.ui.sick
 
+import androidx.compose.material.icons.outlined.Sick
 import com.nfar.allergydetective.ui.theme.AppColors
 import androidx.compose.material3.Surface
 import androidx.compose.material3.IconButton
@@ -174,7 +175,7 @@ fun SickPeriodSection(viewModel: SickPeriodsViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionTitle(stringResource(Res.string.sick_title))
+        SectionTitle(stringResource(Res.string.sick_title), Icons.Outlined.Sick)
         Text(stringResource(Res.string.sick_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (state.periods.isEmpty()) {
             Text(stringResource(Res.string.sick_empty), style = MaterialTheme.typography.bodyMedium)

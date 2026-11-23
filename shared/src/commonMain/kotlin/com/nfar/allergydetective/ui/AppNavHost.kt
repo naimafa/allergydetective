@@ -1,5 +1,8 @@
 package com.nfar.allergydetective.ui
 
+import androidx.compose.material.icons.outlined.WavingHand
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Lock
 import com.nfar.allergydetective.ui.profile.PaywallPreviewScreen
 import allergydetective.shared.generated.resources.welcome_text
 import allergydetective.shared.generated.resources.welcome_title
@@ -152,7 +155,7 @@ fun AppNavHost(
                 profileLower = {
                     // User note 21.11.2026: privacy details on their own screen, here only a short line.
                     ProfileCard(ProfileTint.SAGE) {
-                        SectionTitle(stringResource(Res.string.privacy_title))
+                        SectionTitle(stringResource(Res.string.privacy_title), Icons.Outlined.Lock)
                         Text(stringResource(Res.string.privacy_card_text), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         // User pictures 23.11.2026: one clear round button per card.
                         Button(onClick = { navController.navigate(PrivacyRoute) }, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
@@ -161,7 +164,7 @@ fun AppNavHost(
                     }
                     // User picture 23.11.2026: the intro in its own card "Willkommen" instead of a loose button.
                     ProfileCard(ProfileTint.WARM) {
-                        SectionTitle(stringResource(Res.string.welcome_title))
+                        SectionTitle(stringResource(Res.string.welcome_title), Icons.Outlined.WavingHand)
                         Text(stringResource(Res.string.welcome_text), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Button(onClick = { navController.navigate(IntroRoute) }, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
                             Text(stringResource(Res.string.profile_show_intro))
