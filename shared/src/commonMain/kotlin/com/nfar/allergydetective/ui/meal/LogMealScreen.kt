@@ -9,7 +9,6 @@ import allergydetective.shared.generated.resources.custom_create_named
 import allergydetective.shared.generated.resources.home_log_meal
 import allergydetective.shared.generated.resources.meal_allergy_hint
 import allergydetective.shared.generated.resources.meal_added
-import allergydetective.shared.generated.resources.meal_amount_empty
 import allergydetective.shared.generated.resources.meal_edit_title
 import allergydetective.shared.generated.resources.meal_existing_add
 import allergydetective.shared.generated.resources.meal_existing_question
@@ -34,7 +33,6 @@ import allergydetective.shared.generated.resources.meal_slot_drink
 import allergydetective.shared.generated.resources.meal_slot_lunch
 import allergydetective.shared.generated.resources.meal_slot_missing
 import allergydetective.shared.generated.resources.meal_slot_snack
-import allergydetective.shared.generated.resources.meal_step_amount
 import allergydetective.shared.generated.resources.meal_step_what
 import allergydetective.shared.generated.resources.meal_step_when
 import allergydetective.shared.generated.resources.meal_step_which
@@ -55,6 +53,18 @@ import com.nfar.allergydetective.ui.common.dayLabel
 import com.nfar.allergydetective.ui.common.formatClock
 import com.nfar.allergydetective.ui.theme.AppColors
 import allergydetective.shared.generated.resources.meal_voice
+import allergydetective.shared.generated.resources.meal_add_more
+import allergydetective.shared.generated.resources.meal_ingredients
+import allergydetective.shared.generated.resources.meal_portion_info
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.ui.text.style.TextOverflow
@@ -90,7 +100,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
 import com.nfar.allergydetective.ui.common.searchPillColors
 import com.nfar.allergydetective.ui.common.ChipRowWithMore
-import com.nfar.allergydetective.ui.common.ChoiceRow
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AssistChip
 import androidx.compose.foundation.layout.size
@@ -195,7 +204,12 @@ fun LogMealScreen(
                 shape = CircleShape,
                 modifier = Modifier.navigationBarsPadding().imePadding().fillMaxWidth().padding(16.dp).heightIn(min = 56.dp),
             ) {
-                Text(state.slot?.let { stringResource(Res.string.meal_save_slot, mealSlotLabel(it)) } ?: stringResource(Res.string.common_save))
+                // Design picture 23.11.2026: a check mark before the text.
+                Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(22.dp))
+                Text(
+                    state.slot?.let { stringResource(Res.string.meal_save_slot, mealSlotLabel(it)) } ?: stringResource(Res.string.common_save),
+                    modifier = Modifier.padding(start = 10.dp),
+                )
             }
         },
     ) { padding ->
@@ -234,6 +248,26 @@ private fun LogMealContent(
     LaunchedEffect(state.slotMissing) {
         if (state.slotMissing) listState.animateScrollToItem(0)
     }
+    // Design picture 23.11.2026: once something is chosen, favourites and quick picks fold away and the list of
+    // ingredients takes their place; "Weitere Zutat hinzufügen" brings them back (or opens the search, when
+    // there are none yet).
+    var showShortcuts by remember { mutableStateOf(false) }
+    LaunchedEffect(state.selected.isEmpty()) { if (state.selected.isEmpty()) showShortcuts = false }
+    val searchFocus = remember { FocusRequester() }
+    val scope = rememberCoroutineScope()
+    val hasShortcuts = state.favorites.isNotEmpty() || state.recent.isNotEmpty()
+    val onAddMore: (() -> Unit)? = if (showShortcuts && hasShortcuts) {
+        null
+    } else {
+        {
+            if (hasShortcuts) {
+                showShortcuts = true
+                scope.launch { listState.animateScrollToItem(1) }
+            } else {
+                searchFocus.requestFocus()
+            }
+        }
+    }
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxSize(),
@@ -241,8 +275,17 @@ private fun LogMealContent(
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 16.dp),
     ) {
         item { WhenStep(state, viewModel) }
-        item { WhatStep(state, viewModel, onCreateIngredient, searchActive, onSearchFocus = { searchFocused = it }) }
-        item { AmountStep(state, viewModel) }
+        item {
+            WhatStep(
+                state = state,
+                viewModel = viewModel,
+                onCreateIngredient = onCreateIngredient,
+                shortcuts = !searchActive && (state.selected.isEmpty() || showShortcuts),
+                searchFocus = searchFocus,
+                onSearchFocus = { searchFocused = it },
+                onAddMore = onAddMore,
+            )
+        }
         // Room below the last step, so starting a search can scroll the search field to the top.
         if (searchActive) item { Spacer(Modifier.height(480.dp)) }
     }
@@ -251,19 +294,14 @@ private fun LogMealContent(
 /**
  * Design picture 22.11.2026: step 1 asks only "Welche Mahlzeit?" with the five kinds in two even rows
  * (user: "Welche Mahlzeit" sounds better than "Wann hast du gegessen"). Day and time moved into the pill at the top right.
+ * Design picture 23.11.2026: each kind with its icon, in the fixed order of the day.
  */
 @Composable
 private fun WhenStep(state: LogMealState, viewModel: LogMealViewModel) {
     StepCard(number = 1, title = stringResource(Res.string.meal_step_which), highlighted = state.slotMissing) {
-        // Design picture 22.11.2026: the two rows close together.
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf(MealSlot.entries.take(2), MealSlot.entries.drop(2)).forEach { row ->
-                // User 22.11.: the same font size everywhere; the narrow pills let "Abendessen" fit at font 125 %.
-                ChoiceRow(
-                    labels = row.map { mealSlotLabel(it) },
-                    selectedIndex = row.indexOf(state.slot),
-                    onSelect = { viewModel.onSlotChange(row[it]) },
-                )
+                MealSlotRow(row, state.slot, viewModel::onSlotChange)
             }
         }
         if (state.slotMissing) {
@@ -323,9 +361,11 @@ private fun WhatStep(
     state: LogMealState,
     viewModel: LogMealViewModel,
     onCreateIngredient: () -> Unit,
-    /** Search field in use: favourites and quick picks are hidden, only the results show. */
-    searching: Boolean,
+    /** Favourites and quick picks are shown: not while searching (only the results then), nor once folded away. */
+    shortcuts: Boolean,
+    searchFocus: FocusRequester,
     onSearchFocus: (Boolean) -> Unit,
+    onAddMore: (() -> Unit)?,
 ) {
     val selectedIds = state.selected.map { it.ingredient.id }.toSet()
     val keyboard = LocalSoftwareKeyboardController.current
@@ -348,7 +388,7 @@ private fun WhatStep(
                     IconButton(onClick = start) { Icon(Icons.Outlined.Mic, contentDescription = voiceLabel) }
                 }
             },
-            modifier = Modifier.fillMaxWidth().onFocusChanged { onSearchFocus(it.isFocused) },
+            modifier = Modifier.fillMaxWidth().focusRequester(searchFocus).onFocusChanged { onSearchFocus(it.isFocused) },
         )
         // Phone test 21.11.: one letter matched almost every saved dish (by name or ingredient) and the big chips
         // pushed the ingredients off the screen. Dishes from two letters on, at most three, as compact rows.
@@ -403,7 +443,7 @@ private fun WhatStep(
                 Text(stringResource(Res.string.custom_create_named, state.query.trim()))
             }
         }
-        if (!searching && state.favorites.isNotEmpty()) {
+        if (shortcuts && state.favorites.isNotEmpty()) {
             ChipGroupTitle(stringResource(Res.string.meal_favorites), stringResource(Res.string.meal_favorites_hint))
             // User note 21.11.2026: coming from the favourites tab, the chosen dish could sit far right, out of view.
             // The row scrolls to it.
@@ -424,7 +464,7 @@ private fun WhatStep(
                 }
             }
         }
-        if (!searching && state.recent.isNotEmpty()) {
+        if (shortcuts && state.recent.isNotEmpty()) {
             ChipGroupTitle(stringResource(Res.string.meal_quick), stringResource(Res.string.meal_quick_hint))
             ChipRowWithMore {
                 items(state.recent, key = { it.id }) { ingredient ->
@@ -440,25 +480,65 @@ private fun WhatStep(
                 }
             }
         }
+        ChosenIngredients(state, viewModel, onAddMore)
         if (state.containsKnownAllergy) {
             Text(stringResource(Res.string.meal_allergy_hint), color = MaterialTheme.colorScheme.tertiary, style = MaterialTheme.typography.bodyMedium)
+        }
+        SaveAsDish(state, viewModel)
+    }
+}
+
+/**
+ * Design picture 23.11.2026: the chosen ingredients sit inside step 2 under "Zutaten" (no own step "Wie viel?"),
+ * with the dish as a header above them and "Weitere Zutat hinzufügen" below.
+ */
+@Composable
+private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMealViewModel, onAddMore: (() -> Unit)?) {
+    if (state.selected.isEmpty()) return
+    state.favorites.firstOrNull { it.id == state.favoriteId }?.let { dish ->
+        DishHeader(dish.name, viewModel::onRemoveFavorite)
+    }
+    var showPortionHelp by remember { mutableStateOf(false) }
+    val infoLabel = stringResource(Res.string.meal_portion_info)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clickable { showPortionHelp = !showPortionHelp }
+            .semantics { contentDescription = infoLabel }
+            .padding(top = 4.dp),
+    ) {
+        // User 23.11.: a darker green than the soft sage, so the label reads well on the cream card.
+        Text(stringResource(Res.string.meal_ingredients), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+        Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 6.dp).size(18.dp))
+    }
+    if (showPortionHelp) {
+        Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+    Column {
+        // Newest first: what was just added appears on top.
+        state.selected.asReversed().forEachIndexed { index, item ->
+            if (index > 0) HorizontalDivider(color = AppColors.extra.home.cardBorder)
+            SelectedRow(item, item.ingredient.id in state.needsPreparation, viewModel)
+        }
+    }
+    onAddMore?.let { add ->
+        OutlinedButton(
+            onClick = add,
+            shape = CircleShape,
+            border = BorderStroke(1.dp, AppColors.extra.home.ink),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.extra.home.ink),
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+        ) {
+            Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+            Text(stringResource(Res.string.meal_add_more), modifier = Modifier.padding(start = 8.dp))
         }
     }
 }
 
 @Composable
-private fun AmountStep(state: LogMealState, viewModel: LogMealViewModel) {
-    StepCard(number = 3, title = stringResource(Res.string.meal_step_amount)) {
-        if (state.selected.isEmpty()) {
-            Text(stringResource(Res.string.meal_amount_empty), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
-            return@StepCard
-        }
-        Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        // Newest first: what was just added appears on top.
-        state.selected.asReversed().forEachIndexed { index, item ->
-            if (index > 0) HorizontalDivider(color = MaterialTheme.colorScheme.surfaceContainerHigh)
-            SelectedRow(item, item.ingredient.id in state.needsPreparation, viewModel)
-        }
+private fun ColumnScope.SaveAsDish(state: LogMealState, viewModel: LogMealViewModel) {
+    if (state.selected.isEmpty()) return
+    run {
         // User note 21.11.2026: "Als Favorit speichern" read as if only one ingredient were saved. The text names
         // the whole meal as a dish, the hint says what happens.
         Row(verticalAlignment = Alignment.Top, modifier = Modifier.clickable { viewModel.onSaveAsFavoriteChange(!state.saveAsFavorite) }) {
@@ -497,33 +577,24 @@ private fun ChipGroupTitle(title: String, hint: String) {
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SelectedRow(item: SelectedIngredient, needsPreparation: Boolean, viewModel: LogMealViewModel) {
-    Column {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(ingredientName(item.ingredient), modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
-            TextButton(onClick = { viewModel.onToggleIngredient(item.ingredient) }) {
-                Text(stringResource(Res.string.meal_remove))
-            }
-        }
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Portion.entries.forEach { portion ->
-                AppFilterChip(
-                    selected = item.portion == portion,
-                    onClick = { viewModel.onPortionChange(item.ingredient.id, portion) },
-                    label = { Text(portionLabel(portion)) },
-                )
-            }
-        }
-        if (needsPreparation) {
-            PreparationChoice(item.preparation) { viewModel.onPreparationChange(item.ingredient.id, it) }
-        }
-    }
+    IngredientRow(
+        ingredient = item.ingredient,
+        name = ingredientName(item.ingredient),
+        portion = item.portion,
+        onPortion = { viewModel.onPortionChange(item.ingredient.id, it) },
+        onRemove = { viewModel.onToggleIngredient(item.ingredient) },
+        preparation = if (needsPreparation) {
+            { PreparationChoice(item.preparation) { viewModel.onPreparationChange(item.ingredient.id, it) } }
+        } else {
+            null
+        },
+    )
 }
 
 @Composable
-private fun portionLabel(portion: Portion): String = stringResource(
+fun portionLabel(portion: Portion): String = stringResource(
     when (portion) {
         Portion.SMALL -> Res.string.meal_portion_small
         Portion.MEDIUM -> Res.string.meal_portion_medium

@@ -314,6 +314,10 @@
     <string name="meal_portion_medium">M</string>
     <string name="meal_portion_large">L</string>
     <string name="meal_remove">Retirer</string>
+    <string name="meal_ingredients">Ingrédients</string>
+    <string name="meal_add_more">Ajouter un autre ingrédient</string>
+    <string name="meal_remove_dish">Retirer le plat</string>
+    <string name="meal_portion_info">Que veulent dire S, M et L ?</string>
     <string name="meal_prep_raw">cru</string>
     <string name="meal_prep_cooked">cuit</string>
     <string name="meal_prep_missing">Cru ou cuit ? Choisis, s’il te plaît. La cuisson détruit le déclencheur lié au pollen de bouleau.</string>
@@ -322,12 +326,10 @@
     <string name="common_done">OK</string>
     <string name="meal_step_when">Quand as-tu mangé ?</string>
     <string name="meal_step_what">Qu’as-tu mangé ?</string>
-    <string name="meal_step_amount">Quelle quantité ?</string>
     <string name="meal_quick">Choix rapide</string>
     <string name="meal_quick_hint">Ingrédients que tu as mangés récemment</string>
     <string name="meal_favorites_hint">Plats enregistrés – un geste ajoute tous leurs ingrédients</string>
     <string name="meal_slot_missing">Choisis d’abord le repas, s’il te plaît.</string>
-    <string name="meal_amount_empty">Choisis un ingrédient plus haut pour indiquer la quantité.</string>
     <string name="meal_save_slot">Enregistrer : %1$s</string>
     <string name="meal_edit_title">Modifier le repas</string>
     <string name="meal_existing_question">Il y a déjà un repas « %1$s » ce jour-là. Y ajouter les ingrédients ?</string>
