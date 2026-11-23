@@ -18,6 +18,8 @@ import allergydetective.shared.generated.resources.favorites_count
 import allergydetective.shared.generated.resources.favorites_delete_question
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import allergydetective.shared.generated.resources.favorites_more
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -163,7 +165,7 @@ fun FavoritesScreen(
     }
 }
 
-/** Design of 19.11.: name, ingredients separated by dots, "Edit" and "Delete" behind "…". */
+/** Design of 19.11.: name, ingredients separated by dots; one action "log as meal", "Edit" and "Delete" behind "…". */
 @Composable
 private fun DishCard(name: String, ingredients: List<String>, onLog: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
     var menuOpen by remember { mutableStateOf(false) }
@@ -181,20 +183,30 @@ private fun DishCard(name: String, ingredients: List<String>, onLog: () -> Unit,
                 modifier = Modifier.padding(top = 6.dp, end = 8.dp),
             )
             HorizontalDivider(modifier = Modifier.padding(top = 12.dp, end = 8.dp), color = MaterialTheme.colorScheme.surfaceContainerHigh)
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                TextButton(onClick = onEdit, contentPadding = PaddingValues(horizontal = 0.dp)) {
-                    Text(stringResource(Res.string.favorites_edit))
-                }
-                Spacer(Modifier.weight(1f))
-                FilledTonalButton(onClick = onLog, contentPadding = PaddingValues(horizontal = 14.dp)) {
-                    Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Text(stringResource(Res.string.favorites_log), modifier = Modifier.padding(start = 4.dp))
+            // User note 21.11.2026: "Erfassen" in every row read as "add a dish below this row". The one action
+            // now says what it does ("Als Mahlzeit eintragen"); "Bearbeiten" moved into the "…" menu with "Löschen".
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 4.dp)) {
+                FilledTonalButton(onClick = onLog, contentPadding = PaddingValues(horizontal = 14.dp), modifier = Modifier.weight(1f)) {
+                    Icon(Icons.Outlined.Restaurant, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Text(
+                        stringResource(Res.string.favorites_log),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(start = 8.dp),
+                    )
                 }
                 Box {
                     IconButton(onClick = { menuOpen = true }) {
                         Icon(Icons.Outlined.MoreHoriz, contentDescription = stringResource(Res.string.favorites_more))
                     }
                     DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(Res.string.favorites_edit)) },
+                            onClick = {
+                                menuOpen = false
+                                onEdit()
+                            },
+                        )
                         DropdownMenuItem(
                             text = { Text(stringResource(Res.string.history_delete), color = MaterialTheme.colorScheme.error) },
                             onClick = {
