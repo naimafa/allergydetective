@@ -127,8 +127,6 @@
     <string name="report_hint">Für die Sprechstunde oder für dich: die Auswertung (Häufigkeit, Stärke, Tageszeiten, Dauer, Notizen, auffällige Muster) – auf Wunsch mit allen Mahlzeiten, Beschwerden und Tagesabschlüssen. Als PDF zum Lesen oder als Excel-Tabelle. Wohin es geht, entscheidest du.</string>
     <string name="report_hint_short">Daten für den Arzttermin oder deine eigene Auswertung.</string>
     <string name="report_period_custom">Von – bis</string>
-    <string name="report_from">Von:</string>
-    <string name="report_to">Bis:</string>
     <plurals name="report_entry_count">
         <item quantity="one">%1$d Eintrag im Zeitraum</item>
         <item quantity="other">%1$d Einträge im Zeitraum</item>

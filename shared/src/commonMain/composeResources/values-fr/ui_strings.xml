@@ -124,8 +124,6 @@
     <string name="report_hint">Pour ton rendez-vous ou pour toi : l’analyse (fréquence, intensité, moments de la journée, durée, notes, tendances marquantes) – si tu veux, avec tous les repas, troubles et bilans du jour. En PDF à lire ou en tableau Excel. C’est toi qui décides où il va.</string>
     <string name="report_hint_short">Données pour un rendez-vous médical ou ta propre analyse.</string>
     <string name="report_period_custom">Du – au</string>
-    <string name="report_from">Du :</string>
-    <string name="report_to">Au :</string>
     <plurals name="report_entry_count">
         <item quantity="one">%1$d saisie dans la période</item>
         <item quantity="other">%1$d saisies dans la période</item>

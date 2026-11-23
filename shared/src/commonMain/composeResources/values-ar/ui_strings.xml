@@ -134,8 +134,6 @@
     <string name="report_hint">لموعدك مع الطبيب أو لنفسك: التحليل (التكرار، الشدة، أوقات اليوم، المدة، الملاحظات، الأنماط اللافتة) – وإن أردت مع كل الوجبات والأعراض وختامات الأيام. كملف PDF للقراءة أو كجدول Excel. أنت من يقرّر أين يذهب.</string>
     <string name="report_hint_short">بيانات لموعد الطبيب أو لتحليلك الخاص.</string>
     <string name="report_period_custom">من – إلى</string>
-    <string name="report_from">من:</string>
-    <string name="report_to">إلى:</string>
     <plurals name="report_entry_count">
         <item quantity="one">%1$d إدخال في الفترة</item>
         <item quantity="other">%1$d إدخالات في الفترة</item>

@@ -1,36 +1,33 @@
 package com.nfar.allergydetective.ui.profile
 
+import androidx.compose.ui.semantics.Role
+import androidx.compose.material3.rememberDateRangePickerState
+import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.RadioButton
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.padding
 import allergydetective.shared.generated.resources.report_entry_count
-import allergydetective.shared.generated.resources.report_to
-import allergydetective.shared.generated.resources.report_from
 import allergydetective.shared.generated.resources.report_period_custom
 import allergydetective.shared.generated.resources.report_hint_short
 import allergydetective.shared.generated.resources.common_cancel
 import org.jetbrains.compose.resources.pluralStringResource
 import kotlinx.datetime.LocalDate
 import com.nfar.allergydetective.ui.theme.AppColors
-import com.nfar.allergydetective.ui.common.formatDate
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.Alignment
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePicker
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.BorderStroke
 import allergydetective.shared.generated.resources.Res
@@ -64,8 +61,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * "Bericht & Export" (user picture 23.11.2026): period 14 / 30 days or an own period with from / to, how many
- * entries it holds, the content, PDF or Excel, then "Erstellen und teilen".
+ * "Bericht & Export" (user pictures 23.11.2026, second round: "etwas überladen"): period 14 / 30 days or an own
+ * period, content as two small radio rows, one quiet summary line, PDF or Excel, then "Erstellen und teilen".
+ * The own period is chosen in a calendar that only shows while choosing; afterwards the pill shows the dates.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,34 +72,26 @@ fun DoctorReportSection(viewModel: DoctorReportViewModel = koinViewModel()) {
     val sharePdf = rememberSharePdf()
     val shareExcel = rememberShareSpreadsheet()
     val title = stringResource(Res.string.report_section_title)
+    var picking by remember { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         SectionTitle(title)
         Text(stringResource(Res.string.report_hint_short), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         val periods = DoctorReportViewModel.PERIODS
+        val customLabel = if (state.days == null) shortRange(state.customFrom, state.customTo) else stringResource(Res.string.report_period_custom)
         ChoiceRow(
-            periods.map { stringResource(Res.string.report_period_days, it) } + stringResource(Res.string.report_period_custom),
+            periods.map { stringResource(Res.string.report_period_days, it) } + customLabel,
             state.days?.let { periods.indexOf(it) } ?: periods.size,
-            { if (it < periods.size) viewModel.onDaysChange(periods[it]) else viewModel.onCustomPeriod() },
+            { if (it < periods.size) viewModel.onDaysChange(periods[it]) else picking = true },
         )
-        if (state.days == null) {
-            Surface(shape = MaterialTheme.shapes.medium, color = AppColors.extra.home.page, border = BorderStroke(1.dp, AppColors.extra.home.cardBorder)) {
-                Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    DateField(stringResource(Res.string.report_from), state.customFrom, latest = state.customTo, onPick = viewModel::onCustomFromChange)
-                    DateField(stringResource(Res.string.report_to), state.customTo, onPick = viewModel::onCustomToChange)
-                }
-            }
-        }
-        // How much the period holds, so an empty report is no surprise.
-        Surface(shape = MaterialTheme.shapes.medium, color = lerp(AppColors.extra.home.page, AppColors.extra.home.badge, 0.45f), modifier = Modifier.fillMaxWidth()) {
-            Text(
-                state.entryCount?.let { pluralStringResource(Res.plurals.report_entry_count, it, it) } ?: "…",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
-            )
-        }
-        // The two contents have long names: each pill takes the full width.
-        ChoicePill(stringResource(Res.string.report_content_analysis), !state.includeEntries, { viewModel.onIncludeEntriesChange(false) }, Modifier.fillMaxWidth())
-        ChoicePill(stringResource(Res.string.report_content_all), state.includeEntries, { viewModel.onIncludeEntriesChange(true) }, Modifier.fillMaxWidth())
+        HorizontalDivider(color = AppColors.extra.home.cardBorder)
+        // Two small radio rows instead of two full-width pills.
+        ContentOption(stringResource(Res.string.report_content_analysis), !state.includeEntries) { viewModel.onIncludeEntriesChange(false) }
+        ContentOption(stringResource(Res.string.report_content_all), state.includeEntries) { viewModel.onIncludeEntriesChange(true) }
+        Text(
+            state.entryCount?.let { pluralStringResource(Res.plurals.report_entry_count, it, it) } ?: "…",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         ChoiceRow(
             listOf(stringResource(Res.string.report_format_pdf), stringResource(Res.string.report_format_excel)),
             if (state.format == ReportFormat.PDF) 0 else 1,
@@ -122,47 +112,63 @@ fun DoctorReportSection(viewModel: DoctorReportViewModel = koinViewModel()) {
             Text(stringResource(Res.string.report_create), modifier = Modifier.padding(start = 10.dp))
         }
     }
+    if (picking) {
+        PeriodDialog(
+            from = state.customFrom,
+            to = state.customTo,
+            onPicked = { from, to ->
+                picking = false
+                viewModel.onCustomPeriod(from, to)
+            },
+            onDismiss = { picking = false },
+        )
+    }
 }
 
-/** "Von: 01.05.2026" with a calendar icon: a tap opens the calendar; days after today or after [latest] are not offered. */
+@Composable
+private fun ContentOption(label: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp).selectable(selected = selected, onClick = onClick, role = Role.RadioButton),
+    ) {
+        RadioButton(selected = selected, onClick = null)
+        Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 12.dp))
+    }
+}
+
+/** "01.05.–31.05." for the pill of the own period. */
+private fun shortRange(from: Long, to: Long): String {
+    fun d(day: Long) = LocalDate.fromEpochDays(day).let { "${it.day.toString().padStart(2, '0')}.${(it.month.ordinal + 1).toString().padStart(2, '0')}." }
+    return "${d(from)}–${d(to)}"
+}
+
+/** Start and end day in one calendar; no day after today. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DateField(label: String, day: Long, latest: Long? = null, onPick: (Long) -> Unit) {
-    var open by remember { mutableStateOf(false) }
+private fun PeriodDialog(from: Long, to: Long, onPicked: (Long, Long) -> Unit, onDismiss: () -> Unit) {
     val today = remember { kotlin.time.Clock.System.now().toEpochMilliseconds() / DAY_MILLIS }
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.width(56.dp))
-        Surface(
-            onClick = { open = true },
-            shape = CircleShape,
-            color = AppColors.extra.home.card,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-            modifier = Modifier.weight(1f),
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.heightIn(min = 44.dp).padding(horizontal = 14.dp)) {
-                Text(formatDate(LocalDate.fromEpochDays(day), Locale.current.language), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-                Icon(Icons.Outlined.CalendarMonth, contentDescription = null, modifier = Modifier.size(20.dp))
-            }
-        }
-    }
-    if (open) {
-        val last = minOf(latest ?: today, today)
-        val picker = rememberDatePickerState(
-            initialSelectedDateMillis = day * DAY_MILLIS,
-            selectableDates = object : SelectableDates {
-                override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis / DAY_MILLIS <= last
-            },
-        )
-        DatePickerDialog(
-            onDismissRequest = { open = false },
-            confirmButton = {
-                Button(onClick = {
-                    picker.selectedDateMillis?.let { onPick(it / DAY_MILLIS) }
-                    open = false
-                }) { Text("OK") }
-            },
-            dismissButton = { TextButton(onClick = { open = false }) { Text(stringResource(Res.string.common_cancel)) } },
-        ) { DatePicker(state = picker, showModeToggle = false) }
+    val picker = rememberDateRangePickerState(
+        initialSelectedStartDateMillis = from * DAY_MILLIS,
+        initialSelectedEndDateMillis = to * DAY_MILLIS,
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis / DAY_MILLIS <= today
+        },
+    )
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(
+                enabled = picker.selectedStartDateMillis != null,
+                onClick = {
+                    val start = picker.selectedStartDateMillis ?: return@Button
+                    val end = picker.selectedEndDateMillis ?: start
+                    onPicked(start / DAY_MILLIS, end / DAY_MILLIS)
+                },
+            ) { Text("OK") }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.common_cancel)) } },
+    ) {
+        DateRangePicker(state = picker, showModeToggle = false, modifier = Modifier.heightIn(max = 520.dp))
     }
 }
 
