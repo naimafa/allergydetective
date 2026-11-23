@@ -23,6 +23,10 @@ interface SettingsStore {
     /** App language (user note 21.11.2026): null = like the phone, otherwise "de", "en", "fr" or "ar". */
     fun appLanguage(): String? = null
     fun saveAppLanguage(language: String?) = Unit
+
+    /** Evaluation goal (user 23.11.2026): how many confirmed days, an optional focus, and where the count starts. */
+    fun goal(): GoalSettings = GoalSettings()
+    fun saveGoal(goal: GoalSettings) = Unit
 }
 
 /**
@@ -66,3 +70,21 @@ fun delayUntilNext(nowMinuteOfDay: Int, nowSecond: Int, hour: Int, minute: Int):
 }
 
 private const val MINUTES_PER_DAY = 24 * 60
+
+/**
+ * Evaluation goal (user 23.11.2026, picture "Auswertungs-Intervall"): after [days] confirmed days a stretch is
+ * done; a new one starts at [startDay] (local epoch day, null = from the first day). [focus] is a free note,
+ * e.g. "Milchprodukte weglassen".
+ */
+data class GoalSettings(
+    val days: Int = DEFAULT_DAYS,
+    val focus: String = "",
+    val startDay: Long? = null,
+) {
+    companion object {
+        const val DEFAULT_DAYS = 7
+        val PRESETS = listOf(7, 14, 21)
+        const val MIN_DAYS = 3
+        const val MAX_DAYS = 90
+    }
+}

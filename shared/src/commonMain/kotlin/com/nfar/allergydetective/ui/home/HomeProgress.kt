@@ -28,6 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nfar.allergydetective.ui.theme.AppColors
 import org.jetbrains.compose.resources.pluralStringResource
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.layout.heightIn
+import allergydetective.shared.generated.resources.home_progress_focus
+import allergydetective.shared.generated.resources.home_progress_new_stretch
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -35,8 +40,7 @@ import org.jetbrains.compose.resources.stringResource
  * how many days are left. Only confirmed days count.
  */
 @Composable
-fun HomeProgress(confirmedDays: Int) {
-    val total = HomeViewModel.COLLECTION_DAYS
+fun HomeProgress(confirmedDays: Int, total: Int, focus: String, onNewStretch: () -> Unit) {
     val ready = confirmedDays >= total
     val scheme = MaterialTheme.colorScheme
     val home = AppColors.extra.home
@@ -86,6 +90,23 @@ fun HomeProgress(confirmedDays: Int) {
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp, lineHeight = 19.sp),
                 color = home.ink,
             )
+            if (focus.isNotBlank()) {
+                Text(
+                    stringResource(Res.string.home_progress_focus, focus.trim()),
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp, lineHeight = 19.sp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            // User 23.11.2026: "7 Tage beendet – was kommt danach?" A new stretch counts again from today.
+            if (ready) {
+                OutlinedButton(
+                    onClick = onNewStretch,
+                    shape = CircleShape,
+                    border = BorderStroke(1.dp, home.accent),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = home.accent),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp),
+                ) { Text(stringResource(Res.string.home_progress_new_stretch)) }
+            }
         }
     }
 }

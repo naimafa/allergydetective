@@ -48,8 +48,8 @@ fun ProfileScreen(
         extraContent()
         // Folded by default (feedback 20.11.): one line with the selection, the list opens on tap.
         // User note 22.11.2026: the cards alternate apricot and sage all the way down.
-        ProfileCard(ProfileTint.WARM) { KnownAllergiesSection(state, viewModel::onToggle, viewModel::onSave) }
-        ProfileCard(ProfileTint.SAGE) {
+        ProfileCard(ProfileTint.SAGE) { KnownAllergiesSection(state, viewModel::onToggle, viewModel::onSave) }
+        ProfileCard(ProfileTint.WARM) {
             SectionTitle(stringResource(Res.string.onboarding_purpose_title))
             Text(stringResource(Res.string.onboarding_purpose), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }

@@ -20,6 +20,8 @@
     <string name="home_greeting_evening">Bonsoir !</string>
     <string name="home_tagline">Ta journée. Ta santé.</string>
     <string name="home_reminders">Rappels</string>
+    <string name="home_progress_focus">Objectif : %1$s</string>
+    <string name="home_progress_new_stretch">Commencer une nouvelle période</string>
     <string name="home_progress_title">Ta progression</string>
     <string name="home_progress_badge">Jour %1$d / %2$d</string>
     <plurals name="home_progress_remaining">
@@ -169,6 +171,14 @@
     <string name="language_title">Langue</string>
     <string name="language_system">Comme le téléphone</string>
     <string name="language_hint">Le français et l’arabe sont des traductions récentes. Si un texte te semble faux, dis-le-nous.</string>
+    <string name="goal_title">Intervalle d’évaluation</string>
+    <string name="goal_hint">Après combien de jours confirmés une période est terminée, p. ex. pour éviter un aliment.</string>
+    <string name="goal_days">%1$d jours</string>
+    <string name="goal_custom">Autre</string>
+    <string name="goal_custom_days">Nombre de jours</string>
+    <string name="goal_unit">jours</string>
+    <string name="goal_focus">Objectif actuel (facultatif)</string>
+    <string name="goal_focus_hint">p. ex. éviter les produits laitiers</string>
     <string name="theme_title">Apparence</string>
     <string name="theme_auto">Automatique</string>
     <string name="theme_light">Clair</string>

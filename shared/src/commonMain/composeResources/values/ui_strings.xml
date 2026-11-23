@@ -20,6 +20,8 @@
     <string name="home_greeting_evening">Good evening!</string>
     <string name="home_tagline">Your day. Your health.</string>
     <string name="home_reminders">Reminders</string>
+    <string name="home_progress_focus">Focus: %1$s</string>
+    <string name="home_progress_new_stretch">Start a new stretch</string>
     <string name="home_progress_title">Your progress</string>
     <string name="home_progress_badge">Day %1$d / %2$d</string>
     <plurals name="home_progress_remaining">
@@ -173,6 +175,14 @@
     <string name="language_title">Language</string>
     <string name="language_system">Like the phone</string>
     <string name="language_hint">French and Arabic are newly translated. If a text looks wrong to you, let us know.</string>
+    <string name="goal_title">Evaluation interval</string>
+    <string name="goal_hint">After how many confirmed days a stretch is done, e.g. to leave out one food.</string>
+    <string name="goal_days">%1$d days</string>
+    <string name="goal_custom">Own</string>
+    <string name="goal_custom_days">Own number of days</string>
+    <string name="goal_unit">days</string>
+    <string name="goal_focus">Current focus (optional)</string>
+    <string name="goal_focus_hint">e.g. leave out dairy</string>
     <string name="theme_title">Appearance</string>
     <string name="theme_auto">Automatic</string>
     <string name="theme_light">Light</string>

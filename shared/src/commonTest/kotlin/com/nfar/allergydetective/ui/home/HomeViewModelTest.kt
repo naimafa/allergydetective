@@ -7,6 +7,9 @@ import com.nfar.allergydetective.domain.diary.FactorInfo
 import com.nfar.allergydetective.domain.diary.HistoryEntry
 import com.nfar.allergydetective.domain.diary.HistoryRepository
 import com.nfar.allergydetective.domain.time.AppClock
+import com.nfar.allergydetective.domain.reminder.GoalSettings
+import com.nfar.allergydetective.domain.reminder.ReminderSettings
+import com.nfar.allergydetective.domain.reminder.SettingsStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -43,6 +46,7 @@ class HomeViewModelTest {
         }
         override suspend fun confirmedDays(days: List<Long>) = days.filter { checks[it]?.isConfirmed == true }.toSet()
         override suspend fun confirmedDayCount() = checks.values.count { it.isConfirmed }
+        override suspend fun confirmedDayCountSince(fromDay: Long) = checks.values.count { it.isConfirmed && it.epochDay >= fromDay }
     }
 
     private val repository = FakeRepository()
@@ -58,7 +62,34 @@ class HomeViewModelTest {
         override suspend fun entriesSince(fromMillis: Long) = entries.filter { it.time >= fromMillis }
     }
 
-    private fun refreshedState(): HomeState = HomeViewModel(repository, history, clock).apply { refresh() }.state.value
+   private val settings = object : SettingsStore {
+        var stored = GoalSettings()
+        override fun reminder() = ReminderSettings()
+        override fun saveReminder(settings: ReminderSettings) = Unit
+        override fun goal() = stored
+        override fun saveGoal(goal: GoalSettings) {
+            stored = goal
+        }
+    }
+
+    private fun viewModel() = HomeViewModel(repository, history, clock, settings)
+
+    private fun refreshedState(): HomeState = viewModel().apply { refresh() }.state.value
+
+    @Test
+    fun theGoalFromTheProfileIsCountedAndANewStretchStartsToday() {
+        (1..3).forEach { repository.checks[today - it] = DayCheckData(epochDay = today - it, status = DayCheckStatus.COMPLETE) }
+        settings.stored = GoalSettings(days = 3, focus = "Milch weglassen")
+        val vm = viewModel().apply { refresh() }
+        assertEquals(3, vm.state.value.confirmedDays)
+        assertEquals(3, vm.state.value.goalDays)
+        assertEquals("Milch weglassen", vm.state.value.goalFocus)
+
+        vm.onStartNewStretch()
+
+        assertEquals(today, settings.stored.startDay)
+        assertEquals(0, vm.state.value.confirmedDays)
+    }
 
     @Test
     fun todaysMealsAndSymptomsAreCounted() {
