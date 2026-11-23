@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.ui
 
+import com.nfar.allergydetective.ui.profile.PaywallPreviewScreen
 import allergydetective.shared.generated.resources.welcome_text
 import allergydetective.shared.generated.resources.welcome_title
 import androidx.compose.foundation.shape.CircleShape
@@ -88,6 +89,10 @@ data object IntroRoute
 @Serializable
 data object PrivacyRoute
 
+/** Payment page as a test view only (user 23.11.2026), reached by a long press in the profile. */
+@Serializable
+data object PaywallPreviewRoute
+
 @Composable
 fun AppNavHost(
     openDayCheck: Boolean = false,
@@ -143,6 +148,7 @@ fun AppNavHost(
                     ProfileCard(ProfileTint.SAGE) { SickPeriodSection(koinViewModel()) }
                 },
                 // User 23.11.2026: the known allergies come before privacy; these cards follow them.
+                onOpenPaywallPreview = { navController.navigate(PaywallPreviewRoute) },
                 profileLower = {
                     // User note 21.11.2026: privacy details on their own screen, here only a short line.
                     ProfileCard(ProfileTint.SAGE) {
@@ -182,5 +188,6 @@ composable<IntroRoute> {            OnboardingScreen(                replay = tr
         }
         composable<ResultsRoute> { ResultsScreen(onBack = back) }
         composable<PrivacyRoute> { PrivacyScreen(onBack = back) }
+        composable<PaywallPreviewRoute> { PaywallPreviewScreen(onBack = back) }
     }
 }

@@ -415,4 +415,17 @@
     <string name="privacy_notifications_text">Die App fragt nur nach der Erlaubnis für Benachrichtigungen, um dich abends an den Tagesabschluss zu erinnern. Du kannst die Erinnerung im Profil ausschalten.</string>
     <string name="privacy_delete_title">Daten löschen</string>
     <string name="privacy_delete_text">Einzelne Einträge löschst du im Verlauf. Wenn du die App deinstallierst, werden alle Daten vollständig vom Handy entfernt.</string>
+    <string name="paywall_preview_badge">Testansicht – nicht aktiv</string>
+    <string name="paywall_title">Deine 7-tägige Testphase ist vorbei.</string>
+    <string name="paywall_thanks">Danke, dass du Allergy Detective nutzt!</string>
+    <string name="paywall_price">2,99 €</string>
+    <string name="paywall_per_month">/ Monat</string>
+    <string name="paywall_feature_entries">Unbegrenzt Mahlzeiten und Beschwerden erfassen</string>
+    <string name="paywall_feature_patterns">Auswertungen und Mustererkennung nutzen</string>
+    <string name="paywall_feature_reports">PDF- und Excel-Berichte für die Sprechstunde</string>
+    <string name="paywall_unlock">Jetzt für 2,99 € / Monat freischalten</string>
+    <string name="paywall_or">oder</string>
+    <string name="paywall_backup">Bisherige Daten einmalig sichern</string>
+    <string name="paywall_keep">Deine bisherigen Einträge bleiben erhalten und können weiterhin angesehen werden.</string>
+    <string name="paywall_only_preview">Nur Vorschau: Es wird nichts gekauft und nichts gesperrt.</string>
 </resources>

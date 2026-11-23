@@ -410,4 +410,17 @@
     <string name="privacy_notifications_text">L’appli demande l’autorisation des notifications uniquement pour te rappeler le bilan du jour le soir. Tu peux désactiver le rappel dans le profil.</string>
     <string name="privacy_delete_title">Supprimer les données</string>
     <string name="privacy_delete_text">Tu supprimes les notes une par une dans l’historique. Si tu désinstalles l’appli, toutes les données sont entièrement effacées du téléphone.</string>
+    <string name="paywall_preview_badge">Aperçu de test – inactif</string>
+    <string name="paywall_title">Ta période d’essai de 7 jours est terminée.</string>
+    <string name="paywall_thanks">Merci d’utiliser Allergy Detective !</string>
+    <string name="paywall_price">2,99 €</string>
+    <string name="paywall_per_month">/ mois</string>
+    <string name="paywall_feature_entries">Noter repas et troubles sans limite</string>
+    <string name="paywall_feature_patterns">Utiliser les analyses et la détection de schémas</string>
+    <string name="paywall_feature_reports">Rapports PDF et Excel pour la consultation</string>
+    <string name="paywall_unlock">Débloquer pour 2,99 € / mois</string>
+    <string name="paywall_or">ou</string>
+    <string name="paywall_backup">Sauvegarder tes données une fois</string>
+    <string name="paywall_keep">Tes saisies restent conservées et visibles.</string>
+    <string name="paywall_only_preview">Simple aperçu : rien n’est acheté ni bloqué.</string>
 </resources>

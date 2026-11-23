@@ -415,4 +415,17 @@
     <string name="privacy_notifications_text">The app only asks for permission to send notifications, to remind you of the day check in the evening. You can switch the reminder off in the profile.</string>
     <string name="privacy_delete_title">Deleting data</string>
     <string name="privacy_delete_text">You delete single entries in the history. If you uninstall the app, all data is removed from the phone completely.</string>
+    <string name="paywall_preview_badge">Test view – not active</string>
+    <string name="paywall_title">Your 7-day trial is over.</string>
+    <string name="paywall_thanks">Thank you for using Allergy Detective!</string>
+    <string name="paywall_price">€2.99</string>
+    <string name="paywall_per_month">/ month</string>
+    <string name="paywall_feature_entries">Log meals and complaints without limit</string>
+    <string name="paywall_feature_patterns">Use evaluations and pattern detection</string>
+    <string name="paywall_feature_reports">PDF and Excel reports for the appointment</string>
+    <string name="paywall_unlock">Unlock now for €2.99 / month</string>
+    <string name="paywall_or">or</string>
+    <string name="paywall_backup">Save your data once</string>
+    <string name="paywall_keep">Your entries so far are kept and can still be viewed.</string>
+    <string name="paywall_only_preview">Only a preview: nothing is bought or locked.</string>
 </resources>
