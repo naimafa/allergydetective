@@ -1,6 +1,7 @@
 package com.nfar.allergydetective.ui.meal
 
 import allergydetective.shared.generated.resources.Res
+import allergydetective.shared.generated.resources.meal_portion_word
 import allergydetective.shared.generated.resources.meal_remove
 import allergydetective.shared.generated.resources.meal_dish_collapse
 import allergydetective.shared.generated.resources.meal_dishes_chosen
@@ -79,7 +80,7 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun MealSlotGrid(rows: List<List<MealSlot>>, selected: MealSlot?, onSelect: (MealSlot) -> Unit) {
-    val style = MaterialTheme.typography.labelMedium
+    val style = MaterialTheme.typography.labelLarge
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
     val labels = rows.map { row -> row.map { mealSlotLabel(it) } }
@@ -140,7 +141,7 @@ private fun MealSlotPill(slot: MealSlot, label: String, showIcon: Boolean, selec
                 Icon(mealSlotIcon(slot), contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
             }
-            Text(label, style = MaterialTheme.typography.labelMedium, maxLines = 1, softWrap = false, textAlign = TextAlign.Center)
+            Text(label, style = MaterialTheme.typography.labelLarge, maxLines = 1, softWrap = false, textAlign = TextAlign.Center)
         }
     }
 }
@@ -299,6 +300,20 @@ fun PortionSwitch(selected: Portion, onSelect: (Portion) -> Unit, modifier: Modi
     }
 }
 
+/** "Portion  [S | M | L]": the same line under every dish and every single ingredient. */
+@Composable
+fun PortionLine(portion: Portion, onPortion: (Portion) -> Unit, modifier: Modifier = Modifier) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
+        Text(
+            stringResource(Res.string.meal_portion_word),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(end = 10.dp),
+        )
+        PortionSwitch(portion, onPortion)
+    }
+}
+
 /**
  * One ingredient: picture, name, S/M/L and the bin in one line (design picture 23.11.2026). User 23.11.: the bin
  * sits close to S/M/L; a long name breaks into a second line, and only when even that leaves too little room
@@ -316,28 +331,14 @@ fun IngredientRow(
     val nameStyle = MaterialTheme.typography.bodyMedium.merge(
         TextStyle(fontWeight = FontWeight.Medium, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
     )
-    Column(modifier = Modifier.padding(vertical = 2.dp)) {
-        BoxWithConstraints {
-            val nameRoom = maxWidth - BADGE_WIDTH - 10.dp - SWITCH_WIDTH - 6.dp - DELETE_SIZE - 8.dp
-            if (nameRoom >= 76.dp) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IngredientBadge(ingredient, name)
-                    Text(name, style = nameStyle, modifier = Modifier.weight(1f).padding(start = 10.dp, end = 8.dp))
-                    PortionSwitch(portion, onPortion)
-                    Spacer(Modifier.width(6.dp))
-                    DeleteButton(name, onRemove)
-                }
-            } else {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IngredientBadge(ingredient, name)
-                        Text(name, style = nameStyle, modifier = Modifier.weight(1f).padding(start = 10.dp, end = 8.dp))
-                        DeleteButton(name, onRemove)
-                    }
-                    PortionSwitch(portion, onPortion, Modifier.padding(start = BADGE_WIDTH + 10.dp))
-                }
-            }
+    // User 24.11.2026: name over the whole width with the bin, S/M/L in its own line below ("Portion"), like a dish.
+    Column(modifier = Modifier.padding(vertical = 4.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IngredientBadge(ingredient, name)
+            Text(name, style = nameStyle, modifier = Modifier.weight(1f).padding(start = 10.dp, end = 8.dp))
+            DeleteButton(name, onRemove)
         }
+        PortionLine(portion, onPortion, Modifier.padding(start = BADGE_WIDTH + 10.dp))
         preparation?.let {
             Box(modifier = Modifier.padding(start = BADGE_WIDTH + 10.dp, top = 2.dp)) { it() }
         }

@@ -142,6 +142,7 @@ import allergydetective.shared.generated.resources.meal_place_single
 import allergydetective.shared.generated.resources.meal_multi_question
 import allergydetective.shared.generated.resources.meal_multi_all
 import allergydetective.shared.generated.resources.meal_multi_here
+import allergydetective.shared.generated.resources.meal_single_ingredients_count
 import allergydetective.shared.generated.resources.meal_remove_question
 import allergydetective.shared.generated.resources.meal_remove_dish
 import allergydetective.shared.generated.resources.common_cancel
@@ -359,7 +360,7 @@ private fun WhenPill(state: LogMealState, viewModel: LogMealViewModel) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.heightIn(min = 36.dp).padding(horizontal = 12.dp)) {
             Icon(Icons.Outlined.Schedule, contentDescription = null, modifier = Modifier.size(20.dp))
-            Text(whenLabel(state), style = MaterialTheme.typography.labelMedium, maxLines = 1, modifier = Modifier.padding(start = 8.dp, end = 8.dp))
+            Text(whenLabel(state), style = MaterialTheme.typography.labelLarge, maxLines = 1, modifier = Modifier.padding(start = 8.dp, end = 8.dp))
             Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(20.dp))
         }
     }
@@ -526,18 +527,15 @@ private fun WhatStep(
 private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMealViewModel, onAddMore: (() -> Unit)?) {
     val dishes = state.dishes.filter { state.dishInfo(it) != null }
     if (dishes.isEmpty() && state.selected.isEmpty()) return
-    PortionLabel(hasDishes = dishes.isNotEmpty())
     // Newest first: what was just added appears on top.
     if (dishes.isNotEmpty()) {
-        Text(stringResource(Res.string.meal_dishes_chosen, dishes.size), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 2.dp))
+        SectionHeading(stringResource(Res.string.meal_dishes_chosen, dishes.size), aboutDishes = true)
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             dishes.asReversed().forEach { dish -> DishCard(state, dish, viewModel) }
         }
     }
     if (state.selected.isNotEmpty()) {
-        if (dishes.isNotEmpty()) {
-            Text(stringResource(Res.string.meal_single_ingredients), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 6.dp))
-        }
+        SectionHeading(stringResource(Res.string.meal_single_ingredients_count, state.selected.size), aboutDishes = false)
         Column {
             state.selected.asReversed().forEachIndexed { index, item ->
                 if (index > 0) HorizontalDivider(color = AppColors.extra.home.cardBorder)
@@ -596,23 +594,13 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
                     Icon(Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(20.dp))
                 }
             }
-            BoxWithConstraints(modifier = Modifier.padding(start = 12.dp, end = 4.dp)) {
-                // Name, S/M/L and bin in one line when the name keeps at least ~90 dp.
-                if (maxWidth >= 132.dp + 48.dp + 100.dp + 32.dp) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        nameArea(Modifier.weight(1f))
-                        PortionSwitch(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) })
-                        bin()
-                    }
-                } else {
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            nameArea(Modifier.weight(1f))
-                            bin()
-                        }
-                        PortionSwitch(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) }, Modifier.padding(bottom = 6.dp))
-                    }
+            // User 24.11.2026: the name keeps the whole width; S/M/L sits in its own line below.
+            Column(modifier = Modifier.padding(start = 12.dp, end = 4.dp, bottom = 8.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    nameArea(Modifier.weight(1f))
+                    bin()
                 }
+                PortionLine(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) }, Modifier.padding(start = 30.dp))
             }
             if (open) {
                 ingredients.forEach { (ingredient, item) ->
@@ -638,27 +626,22 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
     }
 }
 
-/** "Zutaten der gesamten Mahlzeit" with the S/M/L explanation behind the info icon. */
+/** User 24.11.2026: "Ausgewählte Gerichte (3)" / "Einzelne Zutaten (2)" as headings (16 sp, never smaller than the names below), the S/M/L explanation behind the info icon. */
 @Composable
-private fun PortionLabel(hasDishes: Boolean) {
+private fun SectionHeading(title: String, aboutDishes: Boolean) {
     var showPortionHelp by remember { mutableStateOf(false) }
     val infoLabel = stringResource(Res.string.meal_portion_info)
-    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp), modifier = Modifier.padding(top = 4.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clickable { showPortionHelp = !showPortionHelp }
-                .semantics { contentDescription = infoLabel }
-                .padding(top = 4.dp),
+            modifier = Modifier.heightIn(min = 48.dp).clickable { showPortionHelp = !showPortionHelp }.semantics { contentDescription = "$title. $infoLabel" },
         ) {
-            // User 23.11.: a darker green than the soft sage, so the label reads well on the cream card.
-            Icon(Icons.Outlined.Eco, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(end = 6.dp).size(20.dp))
-            Text(stringResource(Res.string.meal_ingredients_all), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f, fill = false))
-            Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 6.dp).size(20.dp))
+            Text(title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f, fill = false))
+            Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 8.dp).size(20.dp))
         }
         if (showPortionHelp) {
             Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (hasDishes) {
+            if (aboutDishes) {
                 Text(stringResource(Res.string.meal_portion_help_dish), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
