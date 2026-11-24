@@ -79,7 +79,7 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun MealSlotGrid(rows: List<List<MealSlot>>, selected: MealSlot?, onSelect: (MealSlot) -> Unit) {
-    val style = MaterialTheme.typography.labelLarge
+    val style = MaterialTheme.typography.labelMedium
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
     val labels = rows.map { row -> row.map { mealSlotLabel(it) } }
@@ -93,14 +93,14 @@ fun MealSlotGrid(rows: List<List<MealSlot>>, selected: MealSlot?, onSelect: (Mea
         val showIcons = with(density) {
             val gap = GRID_GAP.roundToPx()
             val padding = (PILL_PADDING * 2).roundToPx()
-            val iconRoom = (20.dp + 6.dp).roundToPx()
+            val iconRoom = (18.dp + 6.dp).roundToPx()
             labels.indices.all { r ->
                 val weights = labels[r].map { it.length + 4f }
                 val room = full - gap * (labels[r].size - 1)
                 labels[r].indices.all { i -> textWidths[r][i] + iconRoom + padding <= room * weights[i] / weights.sum() }
             }
         }
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             rows.forEachIndexed { r, row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(GRID_GAP), modifier = Modifier.fillMaxWidth()) {
                     row.forEachIndexed { i, slot ->
@@ -129,7 +129,7 @@ private fun MealSlotPill(slot: MealSlot, label: String, showIcon: Boolean, selec
         color = if (selected) scheme.primary else AppColors.extra.home.page,
         contentColor = if (selected) scheme.onPrimary else AppColors.extra.home.ink,
         border = if (selected) null else BorderStroke(1.dp, scheme.outlineVariant),
-        modifier = modifier.heightIn(min = 42.dp),
+        modifier = modifier.heightIn(min = 36.dp),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -137,10 +137,10 @@ private fun MealSlotPill(slot: MealSlot, label: String, showIcon: Boolean, selec
             modifier = Modifier.padding(horizontal = PILL_PADDING),
         ) {
             if (showIcon) {
-                Icon(mealSlotIcon(slot), contentDescription = null, modifier = Modifier.size(20.dp))
+                Icon(mealSlotIcon(slot), contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(6.dp))
             }
-            Text(label, style = MaterialTheme.typography.labelLarge, maxLines = 1, softWrap = false, textAlign = TextAlign.Center)
+            Text(label, style = MaterialTheme.typography.labelMedium, maxLines = 1, softWrap = false, textAlign = TextAlign.Center)
         }
     }
 }

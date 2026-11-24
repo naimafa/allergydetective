@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -35,7 +36,8 @@ fun AppFilterChip(
     FilterChip(
         selected = selected,
         onClick = onClick,
-        label = label,
+        // User 24.11.2026: one calmer label size on every chip.
+        label = { ProvideTextStyle(MaterialTheme.typography.labelMedium) { label() } },
         modifier = modifier,
         enabled = enabled,
         trailingIcon = trailingIcon,

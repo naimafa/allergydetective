@@ -357,9 +357,9 @@ private fun WhenPill(state: LogMealState, viewModel: LogMealViewModel) {
         contentColor = home.ink,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.heightIn(min = 40.dp).padding(horizontal = 14.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.heightIn(min = 36.dp).padding(horizontal = 12.dp)) {
             Icon(Icons.Outlined.Schedule, contentDescription = null, modifier = Modifier.size(18.dp))
-            Text(whenLabel(state), style = MaterialTheme.typography.labelLarge, maxLines = 1, modifier = Modifier.padding(start = 8.dp, end = 8.dp))
+            Text(whenLabel(state), style = MaterialTheme.typography.labelMedium, maxLines = 1, modifier = Modifier.padding(start = 8.dp, end = 8.dp))
             Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
         }
     }
