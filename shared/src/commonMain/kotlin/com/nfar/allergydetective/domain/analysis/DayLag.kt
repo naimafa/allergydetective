@@ -109,6 +109,7 @@ internal fun dayLagStats(
     return DayLagResult(
         stats = best.value,
         lagDays = best.index.takeIf { best.value.hitCount > 0 },
-        tooOften = best.value.unexposedCount < t.minCleanDays && best.value.exposureCount >= t.minCleanDays,
+        // User 24.11.2026: only after enough finished days, and only for food on most of them.
+        tooOften = validDays.size >= t.minDaysForDaily && exposure.keys.count { it in validDays } >= validDays.size * t.dailyShare,
     )
 }
