@@ -201,7 +201,7 @@ class LogMealViewModel(
         if (current.editingMealId != null || !slot.hasFixedTime) return
         viewModelScope.launch {
             val eatenAt = current.exactTime?.let { clock.timeOf(it, 0) } ?: clock.timeOf(slot)
-            val mealId = repository.mealIdAt(eatenAt, slot) ?: return@launch
+            val mealId = existingMealOnDay(eatenAt, slot) ?: return@launch
             val meal = repository.meal(mealId) ?: return@launch
             val (hour, minute) = clock.localTime(meal.eatenAt)
             _state.update { state ->
@@ -395,6 +395,12 @@ class LogMealViewModel(
         _state.update { it.copy(existingMealId = null) }
     }
 
+    /** The meal of [slot] on the local day of [eatenAt]: a changed time must not start a second breakfast (user 24.11.2026). */
+    private suspend fun existingMealOnDay(eatenAt: Long, slot: MealSlot): Long? {
+        val day = clock.epochDayOf(eatenAt)
+        return repository.mealIdOnDay(clock.startOfDayMillis(day), clock.startOfDayMillis(day + 1), slot)
+    }
+
     private fun save(checkExisting: Boolean) {
         val current = _state.value
         if (!current.canSave) return
@@ -413,7 +419,7 @@ class LogMealViewModel(
                 return@launch
             }
             // Breakfast, lunch and dinner have a fixed time: the same slot on the same day is the same meal.
-            val existing = if (checkExisting && slot.hasFixedTime) repository.mealIdAt(eatenAt, slot) else null
+            val existing = if (checkExisting && slot.hasFixedTime) existingMealOnDay(eatenAt, slot) else null
             if (existing != null) {
                 _state.update { it.copy(saving = false, existingMealId = existing) }
                 return@launch

@@ -77,7 +77,7 @@ class LogMealViewModelTest {
             mealFavoriteIds[mealId.toInt() - 1] = favoriteId
             if (mealId.toInt() - 1 < slots.size) slots[mealId.toInt() - 1] = slot
         }
-        override suspend fun mealIdAt(eatenAt: Long, slot: MealSlot) = saved.indexOfFirst { it.first == eatenAt }.takeIf { it >= 0 }?.let { it + 1L }
+        override suspend fun mealIdOnDay(from: Long, until: Long, slot: MealSlot) = saved.indexOfFirst { it.first >= from && it.first < until && slots.getOrNull(saved.indexOf(it)) == slot }.takeIf { it >= 0 }?.let { it + 1L }
     }
 
     @Test
