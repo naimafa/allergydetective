@@ -33,6 +33,11 @@ data class AnalysisConfig(
 /** Evidence levels (TRD 2.8). n1 is the portion-weighted exposure count. */
 data class EvidenceThresholds(
     val minExposures: Double = 3.0,
+    /**
+     * User 24.11.2026: with smoothing, "0 of 5 times, otherwise 0 of 19" became a trace. Every level now needs at least
+     * this many meals with the candidate that were really followed by a complaint. A safe ingredient (no hit) is never a trace.
+     */
+    val minRealHits: Int = 2,
     val traceMinLift: Double = 1.5,
     val suspicionMinLift: Double = 2.0,
     val suspicionMinHits: Double = 3.0,
