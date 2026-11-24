@@ -50,6 +50,9 @@
 
     <string name="results_too_early">%1$d of %2$d confirmed days. The first evaluation is meaningful after %2$d days, until then everything here is preliminary.</string>
     <string name="results_nothing_yet">No clues yet. Keep logging, every entry is a piece of the puzzle.</string>
+    <string name="results_tip_title">How to help the search</string>
+    <string name="results_tip_text">Keep logging every day and finish it, also without complaints. Food you eat almost daily can only be tested if you leave it out for a few days now and then.</string>
+    <string name="onboarding_leave_out_text">Important: the app cannot compare what you eat almost every day. Leave it out for a few days now and then and keep logging. Those days make patterns visible.</string>
     <string name="results_level_trace">🔍 Trace</string>
     <string name="results_level_suspicion">🔎 Suspicion</string>
     <string name="results_level_strong">🕵️ Strong suspicion</string>

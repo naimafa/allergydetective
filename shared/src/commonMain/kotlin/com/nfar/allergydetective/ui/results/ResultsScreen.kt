@@ -1,4 +1,6 @@
 package com.nfar.allergydetective.ui.results
+import allergydetective.shared.generated.resources.results_tip_title
+import allergydetective.shared.generated.resources.results_tip_text
 import androidx.compose.ui.text.font.FontWeight
 import allergydetective.shared.generated.resources.results_daily_hint
 import allergydetective.shared.generated.resources.results_daily_title
@@ -145,6 +147,15 @@ private fun ResultsContent(state: ResultsState, modifier: Modifier, onSetFocus: 
             item { Text(stringResource(Res.string.results_nothing_yet), style = MaterialTheme.typography.bodyLarge) }
         }
         items(state.items) { ResultCard(it, onSetFocus) }
+        // User 24.11.2026: the app can only compare what is sometimes left out - say how to help it.
+        item {
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer), modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(stringResource(Res.string.results_tip_title), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(Res.string.results_tip_text), style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+        }
         if (state.groups.isNotEmpty()) {
             item { SectionTitle(stringResource(Res.string.results_groups_title)) }
             items(state.groups) { group ->

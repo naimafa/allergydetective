@@ -50,6 +50,9 @@
 
     <string name="results_too_early">%1$d jours confirmés sur %2$d. L’analyse devient parlante après %2$d jours ; d’ici là, tout ici est provisoire.</string>
     <string name="results_nothing_yet">Pas encore d’indices. Continue à noter, chaque note est une pièce du puzzle.</string>
+    <string name="results_tip_title">Comment aider la recherche</string>
+    <string name="results_tip_text">Continue à tout noter chaque jour et à clôturer la journée, même sans symptômes. Les aliments que tu manges presque tous les jours ne peuvent être testés que si tu les évites de temps en temps quelques jours.</string>
+    <string name="onboarding_leave_out_text">Important : l’appli ne peut pas comparer ce que tu manges presque tous les jours. Évite-le de temps en temps quelques jours et continue à noter. Ce sont ces jours qui rendent les motifs visibles.</string>
     <string name="results_level_trace">🔍 Piste</string>
     <string name="results_level_suspicion">🔎 Soupçon</string>
     <string name="results_level_strong">🕵️ Fort soupçon</string>

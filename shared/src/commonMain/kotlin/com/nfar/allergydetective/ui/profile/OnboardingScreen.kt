@@ -23,6 +23,7 @@ import allergydetective.shared.generated.resources.onboarding_how_symptom
 import allergydetective.shared.generated.resources.onboarding_how_title
 import allergydetective.shared.generated.resources.onboarding_next
 import allergydetective.shared.generated.resources.onboarding_patience_text
+import allergydetective.shared.generated.resources.onboarding_leave_out_text
 import allergydetective.shared.generated.resources.onboarding_patience_title
 import allergydetective.shared.generated.resources.onboarding_purpose
 import allergydetective.shared.generated.resources.onboarding_purpose_title
@@ -144,6 +145,8 @@ fun OnboardingScreen(
                             }
                         }
                         PageText(stringResource(Res.string.onboarding_patience_text))
+                        // User 24.11.2026: leaving food out now and then is what makes patterns visible.
+                        PageText(stringResource(Res.string.onboarding_leave_out_text))
                     }
                     PAGE_ALLERGIES -> {
                         KnownAllergiesContent(state, viewModel::onToggle)

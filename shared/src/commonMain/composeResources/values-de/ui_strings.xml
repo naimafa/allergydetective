@@ -50,6 +50,9 @@
 
     <string name="results_too_early">%1$d von %2$d bestätigten Tagen. Aussagekräftig wird die Auswertung nach %2$d Tagen, bis dahin ist alles hier vorläufig.</string>
     <string name="results_nothing_yet">Noch keine Spuren. Einfach weiter eintragen, jeder Eintrag ist ein Puzzleteil.</string>
+    <string name="results_tip_title">So hilfst du der Spurensuche</string>
+    <string name="results_tip_text">Trag weiter jeden Tag ein und schließ ihn ab, auch ohne Beschwerden. Lebensmittel, die du fast täglich isst, kann die App nur prüfen, wenn du sie zwischendurch einmal ein paar Tage weglässt.</string>
+    <string name="onboarding_leave_out_text">Wichtig: Was du fast jeden Tag isst, kann die App nicht vergleichen. Lass es ab und zu ein paar Tage weg und trag weiter ein. Genau diese Tage machen Muster sichtbar.</string>
     <string name="results_level_trace">🔍 Spur</string>
     <string name="results_level_suspicion">🔎 Verdacht</string>
     <string name="results_level_strong">🕵️ Starker Verdacht</string>

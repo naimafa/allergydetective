@@ -57,6 +57,9 @@
 
     <string name="results_too_early">%1$d من %2$d يومًا مؤكَّدة. يصبح التحليل ذا معنى بعد %2$d يومًا؛ وحتى ذلك الحين كل ما هنا مبدئي.</string>
     <string name="results_nothing_yet">لا توجد أدلة بعد. استمر في التسجيل، فكل تسجيل قطعة من الأحجية.</string>
+    <string name="results_tip_title">كيف تساعد البحث</string>
+    <string name="results_tip_text">واصل التسجيل كل يوم واختمه، حتى بدون أعراض. الأطعمة التي تأكلها كل يوم تقريبًا لا يمكن فحصها إلا إذا تركتها بضعة أيام من حين لآخر.</string>
+    <string name="onboarding_leave_out_text">مهم: لا يستطيع التطبيق مقارنة ما تأكله كل يوم تقريبًا. اتركه بضعة أيام من حين لآخر وواصل التسجيل. هذه الأيام هي التي تُظهر الأنماط.</string>
     <string name="results_level_trace">🔍 أثر</string>
     <string name="results_level_suspicion">🔎 اشتباه</string>
     <string name="results_level_strong">🕵️ اشتباه قوي</string>

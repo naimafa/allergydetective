@@ -29,9 +29,12 @@ internal fun complaintDays(
     config: AnalysisConfig,
 ): Map<Long, Double> {
     val result = mutableMapOf<Long, Double>()
+    // User 24.11.2026: a complaint lasting several days is one reaction - only the day it began counts.
+    val logged = diary.symptomEntries.map { it.symptomId to localEpochDay(it.startedAt, it.tzOffsetMin) }.toSet()
     for (entry in diary.symptomEntries) {
         if (entry.intensity < config.dayLag.minIntensity) continue
         val day = localEpochDay(entry.startedAt, entry.tzOffsetMin)
+        if ((entry.symptomId to day - 1) in logged) continue
         if (day !in validDays) continue
         val weight = if (day !in sickDays) {
             1.0

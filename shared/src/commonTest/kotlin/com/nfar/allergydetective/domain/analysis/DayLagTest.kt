@@ -62,6 +62,24 @@ class DayLagTest {
     }
 
     @Test
+    fun aComplaintLastingSeveralDaysCountsOnce() {
+        // Milk on day 0, a rash from day 0 to day 2: one reaction, not three.
+        val diary = DiaryBuilder().apply {
+            for (i in 0 until 10) {
+                day(i) {
+                    meal(8, BREAD)
+                    if (i == 0) meal(12, MILK)
+                    if (i in 0..2) symptom(15, 0, BLOATING, intensity = 4)
+                }
+            }
+        }
+
+        val milk = engine.analyze(diary.build()).resultFor(Candidate.Ingredient(MILK))!!
+
+        assertEquals(1, milk.stats.hitCount + milk.stats.unexposedHitCount)
+    }
+
+    @Test
     fun aMildComplaintOfOneDoesNotCount() {
         val diary = DiaryBuilder().apply {
             for (i in 0 until 24) {
