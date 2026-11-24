@@ -308,8 +308,6 @@ fun PortionSwitch(selected: Portion, onSelect: (Portion) -> Unit, modifier: Modi
 fun IngredientRow(
     ingredient: IngredientInfo,
     name: String,
-    /** "aus: Gemüsesuppe · Gemüsepfanne" (user 23.11.2026), null for an ingredient picked on its own. */
-    from: String?,
     portion: Portion,
     onPortion: (Portion) -> Unit,
     onRemove: () -> Unit,
@@ -340,10 +338,6 @@ fun IngredientRow(
                 }
             }
         }
-        // Phone test 23.11.: in the narrow name column "aus: Gemüsesuppe" broke inside the word; it gets the full width.
-        from?.let {
-            Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = BADGE_WIDTH + 10.dp))
-        }
         preparation?.let {
             Box(modifier = Modifier.padding(start = BADGE_WIDTH + 10.dp, top = 2.dp)) { it() }
         }
@@ -367,46 +361,4 @@ private fun DeleteButton(name: String, onClick: () -> Unit) {
     }
 }
 
-/**
- * The chosen dishes in one box above the ingredients (design picture 23.11.2026, second version): "Ausgewählte
- * Gerichte (2)", folds with its arrow; the green check of a dish takes it out again.
- */
-@Composable
-fun DishesBox(dishes: List<Pair<Long, String>>, onRemove: (Long) -> Unit) {
-    val home = AppColors.extra.home
-    val density = LocalDensity.current
-    var open by remember { mutableStateOf(true) }
-    val action = stringResource(if (open) Res.string.meal_dish_collapse else Res.string.meal_dish_expand)
-    val removeLabel = stringResource(Res.string.meal_remove_dish)
-    Surface(
-        shape = MaterialTheme.shapes.medium,
-        color = lerp(home.page, home.badge, 0.25f),
-        contentColor = home.ink,
-        border = BorderStroke(1.dp, home.cardBorder),
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Column {
-            Surface(onClick = { open = !open }, color = lerp(home.page, home.badge, 0.6f), contentColor = home.ink) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(horizontal = 14.dp).semantics { contentDescription = action },
-                ) {
-                    Text(stringResource(Res.string.meal_dishes_chosen, dishes.size), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
-                    Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.size(26.dp))
-                }
-            }
-            if (open) {
-                dishes.forEachIndexed { index, (id, name) ->
-                    if (index > 0) HorizontalDivider(color = home.cardBorder, modifier = Modifier.padding(horizontal = 12.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 12.dp, end = 4.dp, top = 4.dp, bottom = 4.dp)) {
-                        Text("🍲", fontSize = with(density) { 28.dp.toSp() }, lineHeight = with(density) { 34.dp.toSp() })
-                        Text(name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f).padding(start = 12.dp))
-                        IconButton(onClick = { onRemove(id) }, modifier = Modifier.semantics { contentDescription = "$removeLabel: $name" }) {
-                            Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+

@@ -121,6 +121,24 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.ui.graphics.lerp
+import allergydetective.shared.generated.resources.meal_single_ingredients
+import allergydetective.shared.generated.resources.meal_dish_show_ingredients
+import allergydetective.shared.generated.resources.meal_dish_hide_ingredients
+import allergydetective.shared.generated.resources.meal_portion_help_dish
+import allergydetective.shared.generated.resources.meal_dup_add_question
+import allergydetective.shared.generated.resources.meal_dup_add_yes
+import allergydetective.shared.generated.resources.meal_dup_add_no
+import allergydetective.shared.generated.resources.meal_place_single
+import allergydetective.shared.generated.resources.meal_multi_question
+import allergydetective.shared.generated.resources.meal_multi_all
+import allergydetective.shared.generated.resources.meal_multi_here
+import allergydetective.shared.generated.resources.meal_remove_dish
+import allergydetective.shared.generated.resources.common_cancel
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -188,6 +206,7 @@ fun LogMealScreen(
     if (state.existingMealId != null) {
         state.slot?.let { slot -> ExistingMealDialog(slot, viewModel) }
     }
+    IngredientQuestions(state, viewModel)
     if (showCustomDialog) {
         CustomIngredientDialog(
             viewModel = customViewModel,
@@ -283,7 +302,7 @@ private fun LogMealContent(
             )
         }
         // User 23.11.2026: saving as a dish in its own card, so it clearly means the whole meal, not one ingredient.
-        if (state.selected.isNotEmpty()) item { SaveAsDishCard(state, viewModel) }
+        if (state.mealItems.isNotEmpty()) item { SaveAsDishCard(state, viewModel) }
         // Room below the last step, so starting a search can scroll the search field to the top.
         if (searchActive) item { Spacer(Modifier.height(480.dp)) }
     }
@@ -460,7 +479,7 @@ private fun WhatStep(
                 items(state.favorites, key = { it.id }) { favorite ->
                     AppFilterChip(
                         // User 23.11.2026: every chosen dish is marked, by its colour only (no check mark).
-                        selected = state.selected.any { favorite.id in it.dishIds },
+                        selected = state.dishes.any { it.favoriteId == favorite.id },
                         showCheck = false,
                         onClick = { viewModel.onFavoriteClick(favorite) },
                         label = { Text(favorite.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp)) },
@@ -494,26 +513,25 @@ private fun WhatStep(
     }
 }
 /**
- * Design picture 23.11.2026, second version: the chosen dishes in one box, below it one list for the whole meal.
- * An ingredient of two dishes is listed once with "aus: Gemüsesuppe · Gemüsepfanne", so the amount is set for
- * both together. "Weitere Zutat hinzufügen" below.
+ * User 24.11.2026: chosen dishes on top, each its own card with one portion for the whole dish (folds open to check
+ * the ingredients), below them the single ingredients with their own portions.
  */
 @Composable
 private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMealViewModel, onAddMore: (() -> Unit)?) {
-    if (state.selected.isEmpty()) return
-    val dishNames = state.favorites.associate { it.id to it.name }
-    // Dishes in the order they were picked; a dish deleted in the meantime is left out.
-    val dishes = state.selected.flatMap { it.dishIds }.distinct().mapNotNull { id -> dishNames[id]?.let { id to it } }
-    if (dishes.isNotEmpty()) DishesBox(dishes, viewModel::onRemoveDish)
-    PortionLabel(merged = dishes.size > 1)
-    Column {
-        // Newest first: what was just added appears on top.
-        state.selected.asReversed().forEachIndexed { index, item ->
-            if (index > 0) HorizontalDivider(color = AppColors.extra.home.cardBorder)
-            // With one dish only, "aus: …" would repeat the same name on every row.
-            val from = item.dishIds.mapNotNull(dishNames::get).takeIf { it.isNotEmpty() && dishes.size > 1 }
-                ?.let { stringResource(Res.string.meal_from, it.joinToString(" · ")) }
-            SelectedRow(item, item.ingredient.id in state.needsPreparation, from, viewModel)
+    val dishes = state.dishes.filter { state.dishInfo(it) != null }
+    if (dishes.isEmpty() && state.selected.isEmpty()) return
+    PortionLabel(hasDishes = dishes.isNotEmpty())
+    // Newest first: what was just added appears on top.
+    dishes.asReversed().forEach { dish -> DishCard(state, dish, viewModel) }
+    if (state.selected.isNotEmpty()) {
+        if (dishes.isNotEmpty()) {
+            Text(stringResource(Res.string.meal_single_ingredients), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 6.dp))
+        }
+        Column {
+            state.selected.asReversed().forEachIndexed { index, item ->
+                if (index > 0) HorizontalDivider(color = AppColors.extra.home.cardBorder)
+                SelectedRow(item, item.ingredient.id in state.needsPreparation, viewModel)
+            }
         }
     }
     onAddMore?.let { add ->
@@ -530,9 +548,71 @@ private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMea
     }
 }
 
-/** "Zutaten der gesamten Mahlzeit" with the S/M/L explanation behind the info icon; with two dishes or more the merge hint. */
+/** A chosen dish: name, S/M/L for the whole dish, a bin, and its ingredients behind the arrow. */
 @Composable
-private fun PortionLabel(merged: Boolean) {
+private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealViewModel) {
+    val home = AppColors.extra.home
+    val info = state.dishInfo(dish) ?: return
+    var open by remember(dish.favoriteId) { mutableStateOf(false) }
+    val ingredients = state.dishItems(dish).mapNotNull { item -> viewModel.ingredientInfo(item.ingredientId)?.let { it to item } }
+    val action = stringResource(if (open) Res.string.meal_dish_hide_ingredients else Res.string.meal_dish_show_ingredients)
+    val removeLabel = stringResource(Res.string.meal_remove_dish)
+    val removeIngredient = stringResource(Res.string.meal_remove)
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        color = lerp(home.page, home.badge, 0.25f),
+        contentColor = home.ink,
+        border = BorderStroke(1.dp, home.cardBorder),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column {
+            Surface(onClick = { open = !open }, color = lerp(home.page, home.badge, 0.6f), contentColor = home.ink) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(horizontal = 14.dp).semantics { contentDescription = "${info.name}. $action" },
+                ) {
+                    Text("🍲", fontSize = 24.sp)
+                    Text(info.name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f).padding(horizontal = 10.dp))
+                    Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.size(26.dp))
+                }
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(start = 14.dp, end = 6.dp, top = 6.dp, bottom = 6.dp),
+            ) {
+                PortionSwitch(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) })
+                Spacer(Modifier.weight(1f))
+                IconButton(onClick = { viewModel.onRemoveDish(dish.favoriteId) }, modifier = Modifier.semantics { contentDescription = "$removeLabel: ${info.name}" }) {
+                    Icon(Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(22.dp))
+                }
+            }
+            if (open) {
+                ingredients.forEach { (ingredient, item) ->
+                    val name = ingredientName(ingredient)
+                    HorizontalDivider(color = home.cardBorder, modifier = Modifier.padding(horizontal = 12.dp))
+                    Column(modifier = Modifier.padding(start = 14.dp, end = 6.dp, top = 2.dp, bottom = 2.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(name, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                            IconButton(
+                                onClick = { viewModel.onRemoveIngredient(ingredient.id, dish.favoriteId) },
+                                modifier = Modifier.semantics { contentDescription = "$removeIngredient: $name" },
+                            ) { Icon(Icons.Outlined.Close, contentDescription = null, modifier = Modifier.size(20.dp)) }
+                        }
+                        if (ingredient.id in state.needsPreparation) {
+                            Box(modifier = Modifier.padding(bottom = 6.dp)) {
+                                PreparationChoice(dish.preparations[ingredient.id] ?: item.preparation) { viewModel.onDishPreparationChange(dish.favoriteId, ingredient.id, it) }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** "Zutaten der gesamten Mahlzeit" with the S/M/L explanation behind the info icon. */
+@Composable
+private fun PortionLabel(hasDishes: Boolean) {
     var showPortionHelp by remember { mutableStateOf(false) }
     val infoLabel = stringResource(Res.string.meal_portion_info)
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -548,12 +628,53 @@ private fun PortionLabel(merged: Boolean) {
             Text(stringResource(Res.string.meal_ingredients_all), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f, fill = false))
             Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 6.dp).size(18.dp))
         }
-        if (merged) {
-            Text(stringResource(Res.string.meal_merged_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
         if (showPortionHelp) {
             Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (hasDishes) {
+                Text(stringResource(Res.string.meal_portion_help_dish), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
+    }
+}
+
+/** The two questions of user 24.11.2026: adding an ingredient a dish already has, and removing one that sits in several places. */
+@Composable
+private fun IngredientQuestions(state: LogMealState, viewModel: LogMealViewModel) {
+    state.pendingAdd?.let { pending ->
+        val name = ingredientName(pending.ingredient)
+        val dishNames = pending.dishIds.mapNotNull { id -> state.favorites.firstOrNull { it.id == id }?.name }.joinToString(", ")
+        AlertDialog(
+            onDismissRequest = viewModel::onDeclineAdd,
+            text = { Text(stringResource(Res.string.meal_dup_add_question, name, dishNames)) },
+            confirmButton = { Button(onClick = viewModel::onConfirmAddAnyway) { Text(stringResource(Res.string.meal_dup_add_yes)) } },
+            dismissButton = { TextButton(onClick = viewModel::onDeclineAdd) { Text(stringResource(Res.string.meal_dup_add_no)) } },
+        )
+    }
+    state.pendingRemove?.let { pending ->
+        val name = ingredientName(pending.ingredient)
+        val single = stringResource(Res.string.meal_place_single)
+        val places = pending.places.map { place ->
+            when (place) {
+                Place.Single -> single
+                is Place.InDish -> state.favorites.firstOrNull { it.id == place.favoriteId }?.name.orEmpty()
+            }
+        }
+        AlertDialog(
+            onDismissRequest = viewModel::onRemoveCancelled,
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(stringResource(Res.string.meal_multi_question, name, places.size))
+                    places.forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
+                }
+            },
+            confirmButton = {
+                Column(horizontalAlignment = Alignment.End) {
+                    Button(onClick = viewModel::onRemoveEverywhere) { Text(stringResource(Res.string.meal_multi_all)) }
+                    TextButton(onClick = viewModel::onRemoveHereOnly) { Text(stringResource(Res.string.meal_multi_here)) }
+                    TextButton(onClick = viewModel::onRemoveCancelled) { Text(stringResource(Res.string.common_cancel)) }
+                }
+            },
+        )
     }
 }
 
@@ -608,14 +729,13 @@ private fun ChipGroupTitle(title: String, hint: String) {
 }
 
 @Composable
-private fun SelectedRow(item: SelectedIngredient, needsPreparation: Boolean, from: String?, viewModel: LogMealViewModel) {
+private fun SelectedRow(item: SelectedIngredient, needsPreparation: Boolean, viewModel: LogMealViewModel) {
     IngredientRow(
         ingredient = item.ingredient,
         name = ingredientName(item.ingredient),
-        from = from,
         portion = item.portion,
         onPortion = { viewModel.onPortionChange(item.ingredient.id, it) },
-        onRemove = { viewModel.onToggleIngredient(item.ingredient) },
+        onRemove = { viewModel.onRemoveIngredient(item.ingredient.id, null) },
         preparation = if (needsPreparation) {
             { PreparationChoice(item.preparation) { viewModel.onPreparationChange(item.ingredient.id, it) } }
         } else {

@@ -379,6 +379,17 @@
     <string name="meal_merged_hint">تُدمج المكوّنات المكرّرة.</string>
     <string name="meal_from">من: %1$s</string>
     <string name="meal_remove_dish">إزالة الطبق</string>
+    <string name="meal_single_ingredients">مكوّنات منفردة</string>
+    <string name="meal_dish_show_ingredients">إظهار المكوّنات</string>
+    <string name="meal_dish_hide_ingredients">إخفاء المكوّنات</string>
+    <string name="meal_portion_help_dish">حصة الطبق تخص الطبق كله. البذور والزيوت والتوابل والأعشاب فيه تُحسب بدرجة أصغر.</string>
+    <string name="meal_dup_add_question">%1$s موجود بالفعل في أطباقك (%2$s). هل تريد إضافته مع ذلك؟</string>
+    <string name="meal_dup_add_yes">نعم، أضفه أيضًا</string>
+    <string name="meal_dup_add_no">لا، استخدم الموجود</string>
+    <string name="meal_place_single">منفردًا</string>
+    <string name="meal_multi_question">يظهر %1$s في %2$d أماكن في وجبتك:</string>
+    <string name="meal_multi_all">إزالة من كل مكان</string>
+    <string name="meal_multi_here">هذا الموضع فقط</string>
     <string name="meal_portion_info">ماذا تعني S وM وL؟</string>
     <string name="meal_prep_raw">نيء</string>
     <string name="meal_prep_cooked">مطبوخ</string>

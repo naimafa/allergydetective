@@ -8,19 +8,37 @@ import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.time.MealSlot
 import com.nfar.allergydetective.ui.common.ExactTime
 
+/** An ingredient picked on its own, with its own portion. The ingredients of dishes are in [ChosenDish]. */
 data class SelectedIngredient(
     val ingredient: IngredientInfo,
     val portion: Portion = Portion.MEDIUM,
     /** Raw or cooked; must be chosen for ingredients in [LogMealState.needsPreparation]. */
     val preparation: Preparation? = null,
-    /**
-     * The dishes it came with (user 23.11.2026: one list for the whole meal, an ingredient of two dishes once,
-     * with "aus: Gemüsesuppe · Gemüsepfanne" below). Only for the screen; the meal stores one favourite as before.
-     */
-    val dishIds: Set<Long> = emptySet(),
-    /** Picked on its own (search, quick pick, voice): it stays when its dishes are taken out. */
-    val alone: Boolean = true,
 )
+
+/**
+ * A dish chosen for the meal (user 24.11.2026): it has one portion for the whole dish. Its ingredients come from the
+ * saved dish; [removed] are the ones left out of this meal only.
+ */
+data class ChosenDish(
+    val favoriteId: Long,
+    val portion: Portion = Portion.MEDIUM,
+    val removed: Set<Long> = emptySet(),
+    /** Raw / cooked for ingredients that need it and have no value in the saved dish. */
+    val preparations: Map<Long, Preparation> = emptyMap(),
+)
+
+/** Where an ingredient sits in the meal: picked on its own, or inside a chosen dish. */
+sealed interface Place {
+    data object Single : Place
+    data class InDish(val favoriteId: Long) : Place
+}
+
+/** "Tomate steckt schon in …": the ingredient is already in the chosen dishes; the user decides whether to add it too. */
+data class PendingAdd(val ingredient: IngredientInfo, val dishIds: List<Long>)
+
+/** "Tomate kommt an 3 Stellen vor": all places, and the one the tap came from. */
+data class PendingRemove(val ingredient: IngredientInfo, val places: List<Place>, val origin: Place)
 
 data class LogMealState(
     val loading: Boolean = true,
@@ -30,7 +48,14 @@ data class LogMealState(
     val dishResults: List<FavoriteInfo> = emptyList(),
     val recent: List<IngredientInfo> = emptyList(),
     val favorites: List<FavoriteInfo> = emptyList(),
+    /** Ingredients picked on their own; the ingredients of dishes are in [dishes]. */
     val selected: List<SelectedIngredient> = emptyList(),
+    /** Chosen dishes in the order they were picked, each with one portion. */
+    val dishes: List<ChosenDish> = emptyList(),
+    val pendingAdd: PendingAdd? = null,
+    val pendingRemove: PendingRemove? = null,
+    /** Nuts and seeds, oils, spices and herbs: counted one step smaller inside a dish. */
+    val minorIngredientIds: Set<Long> = emptySet(),
     /**
      * Breakfast, lunch, dinner or a snack. Nothing is preselected (self-test 19.11.: the time-based
      * preselection led to wrong entries); saving asks for it first.
@@ -74,19 +99,59 @@ data class LogMealState(
     val needsPreparation: Set<Long> = emptySet(),
 ) {
     val canSave: Boolean get() =
-        selected.isNotEmpty() && !saving && !missingPreparation && (!saveAsFavorite || favoriteName.isNotBlank())
+        mealItems.isNotEmpty() && !saving && !missingPreparation && (!saveAsFavorite || favoriteName.isNotBlank())
 
     /** The time that will be stored: the changed one or the slot's default. */
     val shownTime: ExactTime? get() = exactTime ?: slotTime
 
-    val missingPreparation: Boolean get() = selected.any { it.ingredient.id in needsPreparation && it.preparation == null }
+    val missingPreparation: Boolean get() = mealItems.any { it.ingredientId in needsPreparation && it.preparation == null }
 
     /** UX 3.1: a gentle hint, saving stays possible. */
-    val containsKnownAllergy: Boolean get() = selected.any { it.ingredient.id in allergyIngredientIds }
+    val containsKnownAllergy: Boolean get() = mealItems.any { it.ingredientId in allergyIngredientIds }
 
-    /** What gets stored; raw / cooked only where it was asked. */
-    val mealItems: List<MealItem> get() =
-        selected.map { MealItem(it.ingredient.id, it.portion, if (it.ingredient.id in needsPreparation) it.preparation else null) }
+    /** The saved dish behind a chosen one, or null if it was deleted in the meantime. */
+    fun dishInfo(dish: ChosenDish): FavoriteInfo? = favorites.firstOrNull { it.id == dish.favoriteId }
+
+    /** The ingredients of a chosen dish that stay in this meal. */
+    fun dishItems(dish: ChosenDish): List<MealItem> =
+        dishInfo(dish)?.items.orEmpty().filter { it.ingredientId !in dish.removed }
+
+    /**
+     * What gets stored: the ingredients of the dishes, each with its dish's portion (user 24.11.2026), and the single
+     * ingredients. An ingredient that sits in several places counts once, with the largest portion. Raw / cooked only
+     * where it was asked.
+     */
+    val mealItems: List<MealItem> get() {
+        val fromDishes = dishes.flatMap { dish ->
+            val items = dishItems(dish)
+            // Seeds, spices, oils and herbs inside a dish are a small part of it; a dish made only of them is not shrunk.
+            val hasMainPart = items.any { it.ingredientId !in minorIngredientIds }
+            items.map { item ->
+                val portion = if (hasMainPart && item.ingredientId in minorIngredientIds) dish.portion.smaller() else dish.portion
+                MealItem(item.ingredientId, portion, dish.preparations[item.ingredientId] ?: item.preparation)
+            }
+        }
+        val alone = selected.map { MealItem(it.ingredient.id, it.portion, it.preparation) }
+        return (fromDishes + alone).groupBy { it.ingredientId }.map { (id, same) ->
+            MealItem(
+                ingredientId = id,
+                portion = same.maxOf { it.portion },
+                preparation = if (id in needsPreparation) same.firstNotNullOfOrNull { it.preparation } else null,
+            )
+        }
+    }
+
+    /** Where the ingredient sits in this meal: on its own and/or in which chosen dishes. */
+    fun placesOf(ingredientId: Long): List<Place> = buildList {
+        if (selected.any { it.ingredient.id == ingredientId }) add(Place.Single)
+        dishes.forEach { dish -> if (dishItems(dish).any { it.ingredientId == ingredientId }) add(Place.InDish(dish.favoriteId)) }
+    }
 
     internal fun withAllergies(ids: Set<Long>) = copy(allergyIngredientIds = ids)
+}
+
+/** One step smaller, small stays small. */
+fun Portion.smaller(): Portion = when (this) {
+    Portion.LARGE -> Portion.MEDIUM
+    else -> Portion.SMALL
 }
