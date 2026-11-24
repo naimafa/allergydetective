@@ -112,6 +112,9 @@
     <string name="sick_day_in_period">Ce jour fait partie d’une période de maladie et compte moins dans l’analyse.</string>
     <string name="day_finish">Terminer la journée</string>
     <string name="day_autosave_hint">Tes réponses sont enregistrées tout de suite. La journée compte pour l’analyse une fois terminée.</string>
+    <string name="day_sick_banner">🤒 Cette journée compte comme jour de maladie.</string>
+    <string name="day_finished_info">Cette journée est terminée.</string>
+    <string name="day_reset">Rouvrir cette journée</string>
     <string name="day_no_symptoms_question">Aucun trouble ce jour-là ?</string>
     <string name="day_no_symptoms_yes">Oui, aucun trouble</string>
     <string name="day_no_symptoms_log">J’en ai eu : noter un symptôme</string>
@@ -166,6 +169,12 @@
     <string name="report_h_meals">Repas</string>
     <string name="report_h_complaints">Troubles</string>
     <string name="report_h_days">Bilans du jour</string>
+    <string name="report_h_diary">Journal par jour</string>
+    <string name="report_diary_type">Type</string>
+    <string name="report_diary_entry">Entrée</string>
+    <string name="report_diary_details">Détails</string>
+    <string name="report_diary_meal">Repas</string>
+    <string name="report_diary_symptom">Symptôme</string>
     <string name="report_col_time">Heure</string>
     <string name="report_col_meal">Repas</string>
     <string name="report_col_dish">Plat</string>
@@ -304,7 +313,7 @@
     <string name="time_selected">%1$s, %2$s</string>
     <string name="time_change">Modifier</string>
 
-    <string name="symptom_long_press_hint">Touche pour ajouter des détails. Un appui long enregistre tout de suite (moyen, maintenant).</string>
+    <string name="symptom_long_press_hint">Touche un symptôme pour indiquer son intensité, l’heure et la durée.</string>
     <string name="symptom_favorites">Les plus utilisés</string>
     <string name="symptom_how_strong">Quelle intensité ?</string>
     <string name="symptom_intensity_range">1 = à peine perceptible · 5 = très fort</string>
