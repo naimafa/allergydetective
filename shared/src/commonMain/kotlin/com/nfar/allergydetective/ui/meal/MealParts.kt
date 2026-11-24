@@ -79,7 +79,7 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun MealSlotGrid(rows: List<List<MealSlot>>, selected: MealSlot?, onSelect: (MealSlot) -> Unit) {
-    val style = MaterialTheme.typography.labelLarge
+    val style = MaterialTheme.typography.labelMedium
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
     val labels = rows.map { row -> row.map { mealSlotLabel(it) } }
@@ -93,14 +93,14 @@ fun MealSlotGrid(rows: List<List<MealSlot>>, selected: MealSlot?, onSelect: (Mea
         val showIcons = with(density) {
             val gap = GRID_GAP.roundToPx()
             val padding = (PILL_PADDING * 2).roundToPx()
-            val iconRoom = (20.dp + 6.dp).roundToPx()
+            val iconRoom = (18.dp + 6.dp).roundToPx()
             labels.indices.all { r ->
                 val weights = labels[r].map { it.length + 4f }
                 val room = full - gap * (labels[r].size - 1)
                 labels[r].indices.all { i -> textWidths[r][i] + iconRoom + padding <= room * weights[i] / weights.sum() }
             }
         }
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             rows.forEachIndexed { r, row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(GRID_GAP), modifier = Modifier.fillMaxWidth()) {
                     row.forEachIndexed { i, slot ->
@@ -129,7 +129,7 @@ private fun MealSlotPill(slot: MealSlot, label: String, showIcon: Boolean, selec
         color = if (selected) scheme.primary else AppColors.extra.home.page,
         contentColor = if (selected) scheme.onPrimary else AppColors.extra.home.ink,
         border = if (selected) null else BorderStroke(1.dp, scheme.outlineVariant),
-        modifier = modifier.heightIn(min = 42.dp),
+        modifier = modifier.heightIn(min = 36.dp),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -137,10 +137,10 @@ private fun MealSlotPill(slot: MealSlot, label: String, showIcon: Boolean, selec
             modifier = Modifier.padding(horizontal = PILL_PADDING),
         ) {
             if (showIcon) {
-                Icon(mealSlotIcon(slot), contentDescription = null, modifier = Modifier.size(20.dp))
+                Icon(mealSlotIcon(slot), contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(6.dp))
             }
-            Text(label, style = MaterialTheme.typography.labelLarge, maxLines = 1, softWrap = false, textAlign = TextAlign.Center)
+            Text(label, style = MaterialTheme.typography.labelMedium, maxLines = 1, softWrap = false, textAlign = TextAlign.Center)
         }
     }
 }
@@ -260,10 +260,10 @@ private val CATEGORY_EMOJI = mapOf(
     8L to "🍎", 9L to "🥜", 10L to "🫘", 11L to "🥤", 12L to "🍯", 14L to "🧂", 15L to "🌿",
 )
 
-private val SEGMENT_WIDTH = 40.dp
+private val SEGMENT_WIDTH = 32.dp
 private val SWITCH_WIDTH = SEGMENT_WIDTH * 3
 private val BADGE_WIDTH = 40.dp
-private val DELETE_SIZE = 38.dp
+private val DELETE_SIZE = 34.dp
 
 /**
  * S · M · L in one outlined pill (design picture 23.11.2026); the chosen size is filled green, without a
@@ -288,10 +288,10 @@ fun PortionSwitch(selected: Portion, onSelect: (Portion) -> Unit, modifier: Modi
                     shape = CircleShape,
                     color = if (chosen) scheme.primary else AppColors.extra.home.page,
                     contentColor = if (chosen) scheme.onPrimary else AppColors.extra.home.ink,
-                    modifier = Modifier.width(SEGMENT_WIDTH).heightIn(min = 36.dp),
+                    modifier = Modifier.width(SEGMENT_WIDTH).heightIn(min = 30.dp),
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Text(label, style = MaterialTheme.typography.labelLarge, maxLines = 1, softWrap = false)
+                        Text(label, style = MaterialTheme.typography.labelMedium, maxLines = 1, softWrap = false)
                     }
                 }
             }
@@ -308,17 +308,15 @@ fun PortionSwitch(selected: Portion, onSelect: (Portion) -> Unit, modifier: Modi
 fun IngredientRow(
     ingredient: IngredientInfo,
     name: String,
-    /** "aus: Gemüsesuppe · Gemüsepfanne" (user 23.11.2026), null for an ingredient picked on its own. */
-    from: String?,
     portion: Portion,
     onPortion: (Portion) -> Unit,
     onRemove: () -> Unit,
     preparation: @Composable (() -> Unit)?,
 ) {
-    val nameStyle = MaterialTheme.typography.titleSmall.merge(
+    val nameStyle = MaterialTheme.typography.bodyMedium.merge(
         TextStyle(fontWeight = FontWeight.Medium, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
     )
-    Column(modifier = Modifier.padding(vertical = 4.dp)) {
+    Column(modifier = Modifier.padding(vertical = 2.dp)) {
         BoxWithConstraints {
             val nameRoom = maxWidth - BADGE_WIDTH - 10.dp - SWITCH_WIDTH - 6.dp - DELETE_SIZE - 8.dp
             if (nameRoom >= 76.dp) {
@@ -339,10 +337,6 @@ fun IngredientRow(
                     PortionSwitch(portion, onPortion, Modifier.padding(start = BADGE_WIDTH + 10.dp))
                 }
             }
-        }
-        // Phone test 23.11.: in the narrow name column "aus: Gemüsesuppe" broke inside the word; it gets the full width.
-        from?.let {
-            Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = BADGE_WIDTH + 10.dp))
         }
         preparation?.let {
             Box(modifier = Modifier.padding(start = BADGE_WIDTH + 10.dp, top = 2.dp)) { it() }
@@ -367,46 +361,4 @@ private fun DeleteButton(name: String, onClick: () -> Unit) {
     }
 }
 
-/**
- * The chosen dishes in one box above the ingredients (design picture 23.11.2026, second version): "Ausgewählte
- * Gerichte (2)", folds with its arrow; the green check of a dish takes it out again.
- */
-@Composable
-fun DishesBox(dishes: List<Pair<Long, String>>, onRemove: (Long) -> Unit) {
-    val home = AppColors.extra.home
-    val density = LocalDensity.current
-    var open by remember { mutableStateOf(true) }
-    val action = stringResource(if (open) Res.string.meal_dish_collapse else Res.string.meal_dish_expand)
-    val removeLabel = stringResource(Res.string.meal_remove_dish)
-    Surface(
-        shape = MaterialTheme.shapes.medium,
-        color = lerp(home.page, home.badge, 0.25f),
-        contentColor = home.ink,
-        border = BorderStroke(1.dp, home.cardBorder),
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Column {
-            Surface(onClick = { open = !open }, color = lerp(home.page, home.badge, 0.6f), contentColor = home.ink) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(horizontal = 14.dp).semantics { contentDescription = action },
-                ) {
-                    Text(stringResource(Res.string.meal_dishes_chosen, dishes.size), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
-                    Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.size(26.dp))
-                }
-            }
-            if (open) {
-                dishes.forEachIndexed { index, (id, name) ->
-                    if (index > 0) HorizontalDivider(color = home.cardBorder, modifier = Modifier.padding(horizontal = 12.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 12.dp, end = 4.dp, top = 4.dp, bottom = 4.dp)) {
-                        Text("🍲", fontSize = with(density) { 28.dp.toSp() }, lineHeight = with(density) { 34.dp.toSp() })
-                        Text(name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f).padding(start = 12.dp))
-                        IconButton(onClick = { onRemove(id) }, modifier = Modifier.semantics { contentDescription = "$removeLabel: $name" }) {
-                            Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+

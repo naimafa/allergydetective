@@ -81,14 +81,17 @@ class LogMealViewModelTest {
     }
 
     @Test
-    fun favoriteAddsItsIngredientsWithTheirPortions() {
+    fun dishGetsOnePortionForTheWholeDish() {
         repository.favorites += FavoriteInfo(7, "Breakfast", listOf(MealItem(bread.id, Portion.SMALL), MealItem(milk.id, Portion.LARGE)))
         val vm = viewModel()
         vm.onToggleIngredient(bread)
 
         vm.onFavoriteClick(vm.state.value.favorites.single())
 
-        assertEquals(listOf(SelectedIngredient(bread, dishIds = setOf(7)), SelectedIngredient(milk, Portion.LARGE, dishIds = setOf(7), alone = false)), vm.state.value.selected)
+        assertEquals(listOf(SelectedIngredient(bread)), vm.state.value.selected)
+        // The dish starts at the largest portion of its main part and counts as a whole.
+        assertEquals(listOf(ChosenDish(7, Portion.LARGE)), vm.state.value.dishes)
+        assertEquals(listOf(MealItem(bread.id, Portion.LARGE), MealItem(milk.id, Portion.LARGE)), vm.state.value.mealItems)
         vm.onSlotChange(MealSlot.BREAKFAST)
         vm.onSave()
         assertEquals(7L, repository.mealFavoriteIds.single())
@@ -122,18 +125,19 @@ class LogMealViewModelTest {
     }
 
     @Test
-    fun clearingTheSelectionForgetsTheFavorite() {
+    fun takingTheDishOutForgetsTheFavorite() {
         repository.favorites += FavoriteInfo(7, "Milk", listOf(MealItem(milk.id, Portion.MEDIUM)))
         val vm = viewModel()
         vm.onFavoriteClick(vm.state.value.favorites.single())
 
-        vm.onToggleIngredient(milk)
+        vm.onRemoveDish(7)
 
         assertNull(vm.state.value.favoriteId)
+        assertTrue(vm.state.value.mealItems.isEmpty())
     }
 
     @Test
-    fun aSharedIngredientIsListedOnceWithBothDishesAndTheLargerPortion() {
+    fun anIngredientOfTwoDishesIsStoredOnceWithTheLargerPortion() {
         repository.favorites += FavoriteInfo(7, "Brot", listOf(MealItem(bread.id, Portion.SMALL)))
         repository.favorites += FavoriteInfo(8, "Brot mit Milch", listOf(MealItem(bread.id, Portion.LARGE), MealItem(milk.id, Portion.MEDIUM)))
         val vm = viewModel()
@@ -141,10 +145,8 @@ class LogMealViewModelTest {
         vm.onFavoriteClick(vm.state.value.favorites.first { it.id == 7L })
         vm.onFavoriteClick(vm.state.value.favorites.first { it.id == 8L })
 
-        val selected = vm.state.value.selected
-        assertEquals(listOf(bread, milk), selected.map { it.ingredient })
-        assertEquals(setOf(7L, 8L), selected.first().dishIds)
-        assertEquals(Portion.LARGE, selected.first().portion)
+        assertEquals(listOf(7L, 8L), vm.state.value.dishes.map { it.favoriteId })
+        assertEquals(listOf(MealItem(bread.id, Portion.LARGE), MealItem(milk.id, Portion.LARGE)), vm.state.value.mealItems)
     }
 
     @Test
@@ -158,11 +160,11 @@ class LogMealViewModelTest {
 
         vm.onRemoveDish(8)
 
-        assertEquals(listOf(coffee, bread), vm.state.value.selected.map { it.ingredient })
+        assertEquals(setOf(coffee.id, bread.id), vm.state.value.mealItems.map { it.ingredientId }.toSet())
         assertEquals(7L, vm.state.value.favoriteId)
         // A second tap on the chosen dish takes it out too.
         vm.onFavoriteClick(vm.state.value.favorites.first { it.id == 7L })
-        assertEquals(listOf(coffee), vm.state.value.selected.map { it.ingredient })
+        assertEquals(listOf(coffee.id), vm.state.value.mealItems.map { it.ingredientId })
         assertNull(vm.state.value.favoriteId)
     }
 
@@ -197,8 +199,135 @@ class LogMealViewModelTest {
         assertEquals(listOf(milk), vm.state.value.selected.map { it.ingredient })
     }
 
+    private val linseed = IngredientInfo(1201, "linseed", null, 9L)
+
+    @Test
+    fun seedsInADishCountOneStepSmallerThanItsMainPart() {
+        repository.favorites += FavoriteInfo(7, "Sauerteigbrot", listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(linseed.id, Portion.MEDIUM)))
+        val vm = viewModel()
+
+        vm.onFavoriteClick(vm.state.value.favorites.single())
+        assertEquals(listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(linseed.id, Portion.SMALL)), vm.state.value.mealItems)
+
+        vm.onDishPortionChange(7, Portion.LARGE)
+        assertEquals(listOf(MealItem(bread.id, Portion.LARGE), MealItem(linseed.id, Portion.MEDIUM)), vm.state.value.mealItems)
+        vm.onDishPortionChange(7, Portion.SMALL)
+        assertEquals(listOf(MealItem(bread.id, Portion.SMALL), MealItem(linseed.id, Portion.SMALL)), vm.state.value.mealItems)
+    }
+
+    @Test
+    fun aDishOfOnlySeedsIsNotShrunk() {
+        repository.favorites += FavoriteInfo(7, "Saatenmix", listOf(MealItem(linseed.id, Portion.MEDIUM)))
+        val vm = viewModel()
+
+        vm.onFavoriteClick(vm.state.value.favorites.single())
+
+        assertEquals(listOf(MealItem(linseed.id, Portion.MEDIUM)), vm.state.value.mealItems)
+    }
+
+    @Test
+    fun anIngredientAlreadyInADishAsksBeforeItIsAddedOnItsOwn() {
+        repository.favorites += FavoriteInfo(7, "Brot mit Milch", listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(milk.id, Portion.MEDIUM)))
+        val vm = viewModel()
+        vm.onFavoriteClick(vm.state.value.favorites.single())
+
+        vm.onToggleIngredient(milk)
+
+        assertEquals(PendingAdd(milk, listOf(7L)), vm.state.value.pendingAdd)
+        assertTrue(vm.state.value.selected.isEmpty())
+
+        // "Nein, bereits enthaltene verwenden": nothing is added.
+        vm.onDeclineAdd()
+        assertNull(vm.state.value.pendingAdd)
+        assertTrue(vm.state.value.selected.isEmpty())
+
+        // "Ja, zusätzlich hinzufügen": it is also a single ingredient, the meal still stores it once.
+        vm.onToggleIngredient(milk)
+        vm.onConfirmAddAnyway()
+        assertEquals(listOf(SelectedIngredient(milk)), vm.state.value.selected)
+        assertEquals(listOf(bread.id, milk.id), vm.state.value.mealItems.map { it.ingredientId })
+    }
+
+    @Test
+    fun removingAnIngredientFromOnePlaceAsksToo() {
+        repository.favorites += FavoriteInfo(7, "Brot mit Milch", listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(milk.id, Portion.MEDIUM)))
+        val vm = viewModel()
+        vm.onFavoriteClick(vm.state.value.favorites.single())
+
+        vm.onRemoveIngredient(milk.id, 7)
+        assertEquals(listOf<Place>(Place.InDish(7)), vm.state.value.pendingRemove?.places)
+        vm.onRemoveEverywhere()
+
+        assertNull(vm.state.value.pendingRemove)
+        assertEquals(listOf(bread.id), vm.state.value.mealItems.map { it.ingredientId })
+        // The saved dish itself is unchanged.
+        assertEquals(2, vm.state.value.favorites.single().items.size)
+    }
+
+    @Test
+    fun anIngredientInSeveralPlacesAsksWhereToRemoveIt() {
+        repository.favorites += FavoriteInfo(7, "Brot mit Milch", listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(milk.id, Portion.MEDIUM)))
+        val vm = viewModel()
+        vm.onFavoriteClick(vm.state.value.favorites.single())
+        vm.onToggleIngredient(milk)
+        vm.onConfirmAddAnyway()
+
+        vm.onRemoveIngredient(milk.id, null)
+        assertEquals(listOf(Place.Single, Place.InDish(7)), vm.state.value.pendingRemove?.places)
+
+        // "Nur dieses Vorkommen": only the single one goes, the dish keeps it.
+        vm.onRemoveHereOnly()
+        assertNull(vm.state.value.pendingRemove)
+        assertTrue(vm.state.value.selected.isEmpty())
+        assertEquals(listOf(bread.id, milk.id), vm.state.value.mealItems.map { it.ingredientId })
+    }
+
+    @Test
+    fun removingEverywhereTakesTheIngredientOutOfDishAndSingles() {
+        repository.favorites += FavoriteInfo(7, "Brot mit Milch", listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(milk.id, Portion.MEDIUM)))
+        val vm = viewModel()
+        vm.onFavoriteClick(vm.state.value.favorites.single())
+        vm.onToggleIngredient(milk)
+        vm.onConfirmAddAnyway()
+
+        vm.onRemoveIngredient(milk.id, 7)
+        vm.onRemoveEverywhere()
+
+        assertTrue(vm.state.value.selected.isEmpty())
+        assertEquals(listOf(bread.id), vm.state.value.mealItems.map { it.ingredientId })
+    }
+
+    @Test
+    fun cancellingTheRemoveQuestionChangesNothing() {
+        repository.favorites += FavoriteInfo(7, "Brot mit Milch", listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(milk.id, Portion.MEDIUM)))
+        val vm = viewModel()
+        vm.onFavoriteClick(vm.state.value.favorites.single())
+        vm.onToggleIngredient(milk)
+        vm.onConfirmAddAnyway()
+        vm.onRemoveIngredient(milk.id, null)
+
+        vm.onRemoveCancelled()
+
+        assertNull(vm.state.value.pendingRemove)
+        assertEquals(listOf(SelectedIngredient(milk)), vm.state.value.selected)
+    }
+
+    @Test
+    fun aDishWithoutIngredientsLeftIsRemoved() {
+        repository.favorites += FavoriteInfo(7, "Milchkaffee", listOf(MealItem(milk.id, Portion.MEDIUM)))
+        val vm = viewModel()
+        vm.onFavoriteClick(vm.state.value.favorites.single())
+
+        vm.onRemoveIngredient(milk.id, 7)
+        vm.onRemoveEverywhere()
+
+        assertTrue(vm.state.value.dishes.isEmpty())
+        assertNull(vm.state.value.favoriteId)
+        assertFalse(vm.state.value.canSave)
+    }
+
     private val coffee = IngredientInfo(1101, "coffee", null, BEVERAGES_CATEGORY_ID)
-    private val repository = FakeRepository(listOf(bread, milk, coffee))
+    private val repository = FakeRepository(listOf(bread, milk, coffee, linseed))
 
     private fun viewModel() = LogMealViewModel(
         repository = repository,
@@ -207,6 +336,7 @@ class LogMealViewModelTest {
             when (key) {
                 "white_bread" -> "Weißbrot"
                 "coffee" -> "Kaffee"
+                "linseed" -> "Leinsamen"
                 else -> "Kuhmilch"
             }
         },
@@ -295,6 +425,7 @@ class LogMealViewModelTest {
         assertEquals(listOf(SelectedIngredient(bread)), vm.state.value.selected)
 
         vm.onToggleIngredient(bread)
+        vm.onRemoveEverywhere()
         assertTrue(vm.state.value.selected.isEmpty())
         assertFalse(vm.state.value.canSave)
     }
@@ -499,7 +630,7 @@ class LogMealViewModelTest {
         assertEquals(listOf(7L), vm.state.value.dishResults.map { it.id })
 
         vm.onFavoriteClick(vm.state.value.dishResults.single())
-        assertEquals(listOf(bread.id, milk.id), vm.state.value.selected.map { it.ingredient.id })
+        assertEquals(listOf(bread.id, milk.id), vm.state.value.mealItems.map { it.ingredientId })
         assertTrue(vm.state.value.dishResults.isEmpty())
         assertEquals("", vm.state.value.query)
     }
@@ -511,7 +642,8 @@ class LogMealViewModelTest {
 
         vm.startWithFavorite(7)
 
-        assertEquals(listOf(SelectedIngredient(milk, Portion.LARGE, dishIds = setOf(7), alone = false)), vm.state.value.selected)
+        assertEquals(listOf(ChosenDish(7, Portion.LARGE)), vm.state.value.dishes)
+        assertEquals(listOf(MealItem(milk.id, Portion.LARGE)), vm.state.value.mealItems)
         assertEquals(7L, vm.state.value.favoriteId)
         // The meal is still chosen by the user.
         assertNull(vm.state.value.slot)

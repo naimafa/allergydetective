@@ -34,6 +34,8 @@ fun StepCard(
     title: String,
     number: Int? = null,
     highlighted: Boolean = false,
+    /** Inner side margin; the meal screen uses less (user 24.11.2026). */
+    sidePadding: androidx.compose.ui.unit.Dp = 12.dp,
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -46,14 +48,15 @@ fun StepCard(
         border = BorderStroke(if (highlighted) 2.dp else 1.dp, if (highlighted) scheme.error else home.cardBorder),
         modifier = modifier.fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.padding(horizontal = sidePadding, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (number != null) {
-                    Surface(shape = CircleShape, color = home.icon, contentColor = Color.White, modifier = Modifier.size(28.dp)) {
-                        Box(contentAlignment = Alignment.Center) { Text("$number", style = MaterialTheme.typography.labelLarge) }
+                    Surface(shape = CircleShape, color = home.icon, contentColor = Color.White, modifier = Modifier.size(24.dp)) {
+                        Box(contentAlignment = Alignment.Center) { Text("$number", style = MaterialTheme.typography.labelMedium) }
                     }
                 }
-                Text(title, style = MaterialTheme.typography.titleLarge)
+                // User 24.11.2026: smaller titles and gaps on every form, so the whole looks calmer.
+                Text(title, style = MaterialTheme.typography.titleMedium)
             }
             content()
         }
