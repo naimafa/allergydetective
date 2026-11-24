@@ -65,7 +65,9 @@ class AnalysisEngineFoodTest {
         val result = engine.analyze(diary.build())
 
         val bread = result.resultFor(Candidate.Ingredient(BREAD))!!
-        assertEquals(EvidenceLevel.NONE, bread.level)
+        // Eaten every day: no days without it to compare with, so no level, only the hint "fast täglich".
+        assertEquals(EvidenceLevel.INSUFFICIENT_DATA, bread.level)
+        assertTrue(bread.tooOften)
         assertEquals(0.0, bread.stats.k1)
         assertTrue(BREAD in result.safeIngredientIds)
     }
@@ -100,7 +102,7 @@ class AnalysisEngineFoodTest {
     }
 
     @Test
-    fun implausibleSymptomGroupIsNoHit() {
+    fun allComplaintsCountTogether() {
         val diary = DiaryBuilder().apply {
             days(21) { i ->
                 meal(8, BREAD)
@@ -113,7 +115,8 @@ class AnalysisEngineFoodTest {
 
         val result = engine.analyze(diary.build())
 
-        assertEquals(0.0, result.resultFor(Candidate.Property(LACTOSE))!!.stats.k1)
+        // User 24.11.2026: all complaints together, a headache after milk counts too.
+        assertTrue(result.resultFor(Candidate.Property(LACTOSE))!!.stats.k1 > 0.0)
     }
 
     @Test
@@ -153,9 +156,9 @@ class AnalysisEngineFoodTest {
     fun unexposedMealsAreCountedForTheComparison() {
         val stats = engine.analyze(lactoseDiary(days = 21).build()).resultFor(Candidate.Property(LACTOSE))!!.stats
 
-        // 21 × bread + 21 × rice without lactose; the bloating at 16:30 falls into the window of the 12:00 rice 7 times
-        assertEquals(42, stats.unexposedCount)
-        assertEquals(7, stats.unexposedHitCount)
+        // Days instead of meals: 14 days without lactose, no complaints on them.
+        assertEquals(14, stats.unexposedCount)
+        assertEquals(0, stats.unexposedHitCount)
     }
 
     @Test

@@ -29,7 +29,7 @@ class AnalysisEngine(private val config: AnalysisConfig = AnalysisConfig()) {
         return AnalysisResult(
             ranking = ranking,
             groups = indistinguishableGroups(ranking, exposures(input), config.grouping),
-            safeIngredientIds = safeIngredients(foodStats),
+            safeIngredientIds = safeIngredients(foodStats.mapValues { it.value.stats }),
             knownAllergyExposures = knownAllergyExposures(input),
         )
     }
@@ -37,9 +37,9 @@ class AnalysisEngine(private val config: AnalysisConfig = AnalysisConfig()) {
     private fun evaluate(
         input: AnalysisInput,
         earlierSuspicions: Set<Candidate>,
-        foodStats: Map<Candidate, ExposureStats> = foodStatsByCandidate(input),
+        foodResults: Map<Candidate, DayLagResult> = foodStatsByCandidate(input),
     ): List<CandidateResult> {
-        val all = foodStats + lifestyleStats(
+        val lifestyle = lifestyleStats(
             diary = input.diary,
             episodes = episodes(input),
             // An illness changes sleep and stress, too: lifestyle candidates leave sick days out.
@@ -47,25 +47,37 @@ class AnalysisEngine(private val config: AnalysisConfig = AnalysisConfig()) {
             today = localEpochDay(input.now, input.nowTzOffsetMin),
             config = config,
         )
-        return all
-            .map { (candidate, stats) ->
-                val lift = computeLift(stats, config)
-                CandidateResult(candidate, stats, lift, classifyEvidence(stats, lift, candidate in earlierSuspicions, config))
-            }
-            .sortedWith(compareByDescending<CandidateResult> { it.level }.thenByDescending { it.lift })
+        // Several delays are tested for food, so a trace needs a clearer difference (KONZEPT_MUSTERERKENNUNG.md).
+        val foodConfig = config.copy(evidence = config.evidence.copy(traceMinLift = maxOf(config.evidence.traceMinLift, config.dayLag.traceMinLift)))
+        val food = foodResults.map { (candidate, result) ->
+            val lift = computeLift(result.stats, foodConfig)
+            val level = if (result.tooOften) EvidenceLevel.INSUFFICIENT_DATA else classifyEvidence(result.stats, lift, candidate in earlierSuspicions, foodConfig)
+            CandidateResult(candidate, result.stats, lift, level, result.lagDays, result.tooOften)
+        }
+        val life = lifestyle.map { (candidate, stats) ->
+            val lift = computeLift(stats, config)
+            CandidateResult(candidate, stats, lift, classifyEvidence(stats, lift, candidate in earlierSuspicions, config))
+        }
+        return (food + life).sortedWith(compareByDescending<CandidateResult> { it.level }.thenByDescending { it.lift })
     }
 
-    /** Stats for every food candidate that occurs in at least one meal. */
-    private fun foodStatsByCandidate(input: AnalysisInput): Map<Candidate, ExposureStats> {
+    /**
+     * Day analysis with a delay for every food candidate eaten at least once (user 24.11.2026): all trigger properties
+     * and every ingredient, also those without a trigger. Known allergies are left out (TRD 2.6).
+     */
+    private fun foodStatsByCandidate(input: AnalysisInput): Map<Candidate, DayLagResult> {
         val catalog = FoodCatalog(input.reference)
-        val meals = input.diary.meals
-        val episodes = episodes(input)
-        val validDays = validDays(input)
-        return catalog.profiles()
-            .filter { profile -> meals.any { catalog.exposurePortion(it, profile.candidate, config) != null } }
-            .associate { profile ->
-                profile.candidate to foodStats(profile, meals, episodes, validDays, input.now, catalog, config, sickDays(input))
-            }
+        val validDays = validDays(input).filter { it < localEpochDay(input.now, input.nowTzOffsetMin) }.toSet()
+        val sickDays = sickDays(input)
+        val complaints = complaintDays(input.diary, validDays, sickDays, config)
+        val known = input.reference.knownAllergyPropertyIds
+        val eaten = input.diary.meals.flatMap { meal -> meal.items.map { it.ingredientId } }.toSet()
+        val candidates = input.reference.properties.filter { it.id !in known }.map { Candidate.Property(it.id) } +
+            eaten.filter { !catalog.hasKnownAllergy(it) }.map { Candidate.Ingredient(it) }
+        return candidates.mapNotNull { candidate ->
+            val exposure = exposureDays(input.diary, candidate, catalog, config).filterKeys { it in validDays }
+            if (exposure.isEmpty()) null else candidate to dayLagStats(exposure, complaints, validDays, sickDays, config)
+        }.toMap()
     }
 
     /** Exposures of all candidates for the grouping (TRD 2.7): meal ids for food, days for lifestyle. */

@@ -38,6 +38,8 @@ data class ResultItem(
     val otherWithComplaints: Int,
     /** How many times as often complaints came with the candidate than without (TRD 2.4); 0 = unknown. */
     val lift: Double = 0.0,
+    /** Food: typical delay in days, 0 = same day (user 24.11.2026); null for lifestyle or without complaints. */
+    val lagDays: Int? = null,
 )
 
 data class ResultsState(
@@ -47,6 +49,8 @@ data class ResultsState(
     val items: List<ResultItem> = emptyList(),
     val groups: List<List<CandidateLabel>> = emptyList(),
     val safeIngredients: List<CandidateLabel> = emptyList(),
+    /** Ingredients eaten almost every day: they cannot be compared, only tested by leaving them out. */
+    val dailyFoods: List<CandidateLabel> = emptyList(),
     /** Ingredients with a known allergy that were eaten (TRD 2.6). */
     val knownAllergyIngredients: List<CandidateLabel> = emptyList(),
 )
@@ -78,9 +82,11 @@ class ResultsViewModel(
             confirmedDays = input.diary.dayChecks.count { it.confirmed },
             items = result.ranking
                 .filter { it.level >= EvidenceLevel.TRACE }
-                .mapNotNull { r -> label(r.candidate)?.let { ResultItem(it, r.level, r.stats.exposureCount, r.stats.hitCount, r.stats.unexposedCount, r.stats.unexposedHitCount, r.lift) } },
+                .mapNotNull { r -> label(r.candidate)?.let { ResultItem(it, r.level, r.stats.exposureCount, r.stats.hitCount, r.stats.unexposedCount, r.stats.unexposedHitCount, r.lift, r.lagDays) } },
             groups = result.groups.map { group -> group.members.mapNotNull(::label) },
             safeIngredients = result.safeIngredientIds.mapNotNull { label(Candidate.Ingredient(it)) },
+            // Eaten almost every day: no days without it to compare with (user 24.11.2026).
+            dailyFoods = result.ranking.filter { it.tooOften && it.candidate is Candidate.Ingredient }.mapNotNull { label(it.candidate) },
             knownAllergyIngredients = result.knownAllergyExposures
                 .map { it.ingredientId }
                 .distinct()

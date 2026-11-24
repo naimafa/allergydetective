@@ -18,7 +18,8 @@ import kotlin.test.assertTrue
  */
 class AnalysisEngineSicknessTest {
 
-    private val engine = AnalysisEngine()
+    // Same-day comparison only, so the sick-day weights are checked on one fixed delay.
+    private val engine = AnalysisEngine(AnalysisConfig(dayLag = DayLagThresholds(maxLagDays = 0)))
 
     /** Milk on every day, bloating 1.5 h later; days 0–2 are sick days with [relation]. */
     private fun diary(relation: IllnessRelation?, sickDays: Int = 3): AnalysisInput = DiaryBuilder().apply {

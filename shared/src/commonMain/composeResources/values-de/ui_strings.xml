@@ -57,6 +57,14 @@
     <string name="results_details">Details zeigen</string>
     <string name="results_how_title">So wurde das festgestellt</string>
     <string name="results_how">Nach %1$s hattest du %2$d von %3$d Mal passende Beschwerden. Ohne %1$s waren es %4$d von %5$d Mal. Die App zählt Beschwerden in den Stunden nach einer Mahlzeit und vergleicht beides.</string>
+    <string name="results_reason_days">Beschwerden an %1$d von %2$d Tagen danach, sonst an %3$d von %4$d Tagen</string>
+    <string name="results_how_days">Nach %1$s hattest du an %2$d von %3$d Tagen Beschwerden. Ohne %1$s waren es %4$d von %5$d Tagen. Die App vergleicht ganze Tage und prüft, ob Beschwerden am selben Tag oder bis zu 3 Tage später kommen.</string>
+    <string name="results_lag_0">Beschwerden meist am selben Tag</string>
+    <string name="results_lag_1">Beschwerden meist am nächsten Tag</string>
+    <string name="results_lag_2">Beschwerden meist 2 Tage danach</string>
+    <string name="results_lag_3">Beschwerden meist 3 Tage danach</string>
+    <string name="results_daily_title">Fast täglich gegessen</string>
+    <string name="results_daily_hint">Diese Lebensmittel isst du fast jeden Tag. Ohne Tage zum Vergleich kann die App sie nicht prüfen. Lass eines davon 2 Wochen weg, dann zeigt sich, ob es dir besser geht.</string>
     <string name="results_how_lift">Das ist etwa %1$s-mal so oft.</string>
     <string name="results_how_limit">Ein Muster in deinen Einträgen, kein Beweis: Auch andere Lebensmittel, Schlaf oder Stress können mitspielen.</string>
     <string name="results_next_title">Was du tun kannst</string>

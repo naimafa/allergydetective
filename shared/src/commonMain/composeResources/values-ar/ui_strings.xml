@@ -64,6 +64,14 @@
     <string name="results_details">عرض التفاصيل</string>
     <string name="results_how_title">كيف تم اكتشاف ذلك</string>
     <string name="results_how">بعد %1$s ظهرت أعراض مناسبة %2$d من %3$d مرات. بدون %1$s كانت %4$d من %5$d مرات. يحسب التطبيق الأعراض في الساعات التي تلي الوجبة ويقارن بين الحالتين.</string>
+    <string name="results_reason_days">أعراض في %1$d من %2$d أيام بعده، وإلا في %3$d من %4$d أيام</string>
+    <string name="results_how_days">بعد %1$s كانت لديك أعراض في %2$d من %3$d أيام. بدون %1$s كانت %4$d من %5$d أيام. يقارن التطبيق أيامًا كاملة ويتحقق إن كانت الأعراض تأتي في اليوم نفسه أو حتى 3 أيام بعده.</string>
+    <string name="results_lag_0">الأعراض غالبًا في اليوم نفسه</string>
+    <string name="results_lag_1">الأعراض غالبًا في اليوم التالي</string>
+    <string name="results_lag_2">الأعراض غالبًا بعد يومين</string>
+    <string name="results_lag_3">الأعراض غالبًا بعد 3 أيام</string>
+    <string name="results_daily_title">يؤكل كل يوم تقريبًا</string>
+    <string name="results_daily_hint">تأكل هذه الأطعمة كل يوم تقريبًا. بدون أيام للمقارنة لا يستطيع التطبيق فحصها. اترك واحدًا منها أسبوعين لترى إن كنت تشعر بتحسن.</string>
     <string name="results_how_lift">أي أكثر بنحو %1$s مرات.</string>
     <string name="results_how_limit">هذا نمط في إدخالاتك وليس دليلًا: قد تؤثر أطعمة أخرى أو النوم أو التوتر أيضًا.</string>
     <string name="results_next_title">ما يمكنك فعله</string>
