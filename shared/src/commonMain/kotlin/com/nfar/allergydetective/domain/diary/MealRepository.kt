@@ -1,6 +1,7 @@
 package com.nfar.allergydetective.domain.diary
 
 import com.nfar.allergydetective.domain.analysis.model.MealItem
+import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.time.MealSlot
 
 /** An ingredient as the food log shows it. Predefined ones have a [key], custom ones a [customName]. */
@@ -42,7 +43,7 @@ interface MealRepository {
      * Saves the meal with its items in one transaction and returns its id.
      * [favoriteId] only records the origin, the items are always a snapshot (TRD 3.2).
      */
-    suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long? = null, slot: MealSlot? = null): Long
+    suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long? = null, slot: MealSlot? = null, snapshot: MealSnapshot? = null): Long
 
     /** Favorites with their default portions, sorted by name. */
     suspend fun favorites(): List<FavoriteInfo>
@@ -70,9 +71,9 @@ interface MealRepository {
     suspend fun meal(mealId: Long): LoggedMeal? = null
 
     /** Replaces time, kind and items of a logged meal; the id stays. */
-    suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot? = null) {
+    suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot? = null, snapshot: MealSnapshot? = null) {
         deleteMeal(mealId)
-        saveMeal(eatenAt, tzOffsetMin, items, favoriteId, slot)
+        saveMeal(eatenAt, tzOffsetMin, items, favoriteId, slot, snapshot)
     }
 
     /** A meal of [slot] eaten from [from] until [until] (one local day), e.g. today's dinner whatever its time, or null. */
@@ -87,7 +88,17 @@ data class LoggedMeal(
     val tzOffsetMin: Int = 0,
     /** Stored kind (feedback 20.11.); null only for meals from before version 8. */
     val slot: MealSlot? = null,
+    /** What was logged: dishes as they were then and single ingredients; null for meals from before version 13. */
+    val snapshot: MealSnapshot? = null,
 )
+
+/**
+ * What the user logged (user 24.11.2026): the dishes as they were then, each with its portion and the ingredients that
+ * counted, and the single ingredients. A later change or deletion of a dish does not change it.
+ */
+data class MealSnapshot(val dishes: List<SnapshotDish>, val singles: List<MealItem>)
+
+data class SnapshotDish(val favoriteId: Long?, val name: String, val portion: Portion, val items: List<MealItem>)
 
 /** Current app language for the synonym search, e.g. "de". */
 fun interface LanguageProvider {

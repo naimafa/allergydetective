@@ -70,6 +70,10 @@ interface IngredientDao {
     @Query("UPDATE meal_ingredients SET ingredientId = :to WHERE ingredientId = :from")
     suspend fun moveMealItems(from: Long, to: Long)
 
+    /** Logged occurrences may hold the same ingredient twice, so they are simply moved (user 24.11.2026). */
+    @Query("UPDATE meal_item_occurrences SET ingredientId = :to WHERE ingredientId = :from")
+    suspend fun moveOccurrences(from: Long, to: Long)
+
     @Query(
         """
         DELETE FROM favorite_ingredients WHERE ingredientId = :from
@@ -95,6 +99,7 @@ interface IngredientDao {
     suspend fun mergeCustomInto(from: Long, to: Long) {
         dropMealItemsAlreadyContaining(from, to)
         moveMealItems(from, to)
+        moveOccurrences(from, to)
         dropFavoriteItemsAlreadyContaining(from, to)
         moveFavoriteItems(from, to)
         moveBaseIngredient(from, to)

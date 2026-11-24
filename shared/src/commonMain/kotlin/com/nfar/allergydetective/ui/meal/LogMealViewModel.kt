@@ -11,6 +11,7 @@ import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.IngredientSearch
 import com.nfar.allergydetective.domain.diary.LanguageProvider
 import com.nfar.allergydetective.domain.diary.MealRepository
+import com.nfar.allergydetective.domain.diary.LoggedMeal
 import com.nfar.allergydetective.domain.diary.SearchEntry
 import com.nfar.allergydetective.domain.diary.VoiceMatcher
 import com.nfar.allergydetective.domain.diary.matches
@@ -94,15 +95,31 @@ class LogMealViewModel(
                     exactTime = ExactTime(daysAgo, hour, minute),
                     day = daysAgo,
                     favoriteId = meal.favoriteId,
-                    selected = meal.items.mapNotNull { item ->
-                        // User 24.11.2026: a logged meal stores only its ingredients, so it opens as single ingredients.
-                        ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation) }
-                    },
-                    dishes = emptyList(),
+                    // User 24.11.2026: the meal opens as it was logged - dish cards and single ingredients.
+                    selected = singlesOf(meal),
+                    dishes = dishesOf(meal),
                 )
             }
         }
     }
+
+    /** The dishes of a logged meal from its snapshot; a dish deleted since gets a negative key. */
+    private fun dishesOf(meal: LoggedMeal): List<ChosenDish> =
+        meal.snapshot?.dishes.orEmpty().mapIndexed { index, dish ->
+            ChosenDish(
+                favoriteId = dish.favoriteId ?: -(meal.id * 100 + index + 1),
+                portion = dish.portion,
+                name = dish.name,
+                items = dish.items,
+                originFavoriteId = dish.favoriteId,
+            )
+        }
+
+    /** The single ingredients of a logged meal; a meal from before the snapshot opens with all its ingredients. */
+    private fun singlesOf(meal: LoggedMeal): List<SelectedIngredient> =
+        (meal.snapshot?.singles ?: meal.items).mapNotNull { item ->
+            ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation) }
+        }
 
     /** "Log" on a dish in the favourites (self-test 19.11.): the form starts with its ingredients; the meal is chosen as usual. */
     fun startWithFavorite(favoriteId: Long) {
@@ -191,6 +208,8 @@ class LogMealViewModel(
                 openedExisting = null,
                 openedItemIds = emptySet(),
                 selected = state.selected.filterNot { it.ingredient.id in state.openedItemIds },
+                openedDishIds = emptySet(),
+                dishes = state.dishes.filterNot { it.favoriteId in state.openedDishIds },
             )
         }
     }
@@ -211,19 +230,18 @@ class LogMealViewModel(
             _state.update { state ->
                 if (state.slot != slot || state.editingMealId != null) return@update state
                 val chosen = state.selected
-                val old = meal.items
-                    .filter { item -> chosen.none { it.ingredient.id == item.ingredientId } }
-                    .mapNotNull { item ->
-                        ingredientsById[item.ingredientId]?.let { SelectedIngredient(it, item.portion, item.preparation) }
-                    }
+                val old = singlesOf(meal).filter { item -> chosen.none { it.ingredient.id == item.ingredient.id } }
+                val oldDishes = dishesOf(meal).filter { dish -> state.dishes.none { it.favoriteId == dish.favoriteId } }
                 state.copy(
                     editingMealId = mealId,
                     openedExisting = slot,
                     openedItemIds = old.map { it.ingredient.id }.toSet(),
+                    openedDishIds = oldDishes.map { it.favoriteId }.toSet(),
                     slotTime = null,
                     exactTime = ExactTime(state.day, hour, minute),
                     favoriteId = state.favoriteId ?: meal.favoriteId,
                     selected = old + chosen,
+                    dishes = oldDishes + state.dishes,
                 )
             }
         }
@@ -386,7 +404,7 @@ class LogMealViewModel(
             val main = favorite.items.filter { it.ingredientId !in state.minorIngredientIds }.ifEmpty { favorite.items }
             val start = main.maxOfOrNull { it.portion } ?: Portion.MEDIUM
             state.copy(
-                dishes = state.dishes + ChosenDish(favorite.id, start),
+                dishes = state.dishes + ChosenDish(favorite.id, start, name = favorite.name, items = favorite.items),
                 favoriteId = favorite.id,
                 query = "",
                 results = emptyList(),
@@ -453,7 +471,11 @@ class LogMealViewModel(
             val added = current.mealItems
             // An ingredient that is in both keeps the new portion.
             val merged = meal.items.filter { old -> added.none { it.ingredientId == old.ingredientId } } + added
-            repository.updateMeal(meal.id, meal.eatenAt, clock.offsetMinAt(meal.eatenAt), merged, meal.favoriteId, meal.slot ?: current.slot)
+            // The snapshot of the existing meal plus what was chosen now (user 24.11.2026).
+            val before = meal.snapshot ?: com.nfar.allergydetective.domain.diary.MealSnapshot(emptyList(), meal.items)
+            val now = current.snapshot
+            val snapshot = com.nfar.allergydetective.domain.diary.MealSnapshot(before.dishes + now.dishes, before.singles + now.singles)
+            repository.updateMeal(meal.id, meal.eatenAt, clock.offsetMinAt(meal.eatenAt), merged, meal.favoriteId, meal.slot ?: current.slot, snapshot)
             if (current.saveAsFavorite) repository.saveFavorite(current.favoriteName.trim(), added)
             resetForm(savedMealId = null, addedTo = current.slot)
         }
@@ -488,7 +510,7 @@ class LogMealViewModel(
             val items = current.mealItems
             val eatenAt = current.exactTime?.let { clock.timeOf(it, 0) } ?: clock.timeOf(slot)
             current.editingMealId?.let { mealId ->
-                repository.updateMeal(mealId, eatenAt, clock.offsetMinAt(eatenAt), items, current.favoriteId, slot)
+                repository.updateMeal(mealId, eatenAt, clock.offsetMinAt(eatenAt), items, current.favoriteId, slot, current.snapshot)
                 _state.update { it.copy(saving = false, finished = true) }
                 return@launch
             }
@@ -503,7 +525,7 @@ class LogMealViewModel(
             } else {
                 current.favoriteId
             }
-            val mealId = repository.saveMeal(eatenAt = eatenAt, tzOffsetMin = clock.offsetMinAt(eatenAt), items = items, favoriteId = favoriteId, slot = slot)
+            val mealId = repository.saveMeal(eatenAt = eatenAt, tzOffsetMin = clock.offsetMinAt(eatenAt), items = items, favoriteId = favoriteId, slot = slot, snapshot = current.snapshot)
             resetForm(savedMealId = mealId)
         }
     }

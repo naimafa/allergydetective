@@ -132,3 +132,46 @@ data class SickPeriodEntity(
     val startDay: Long,
     val endDay: Long?,
 )
+
+/**
+ * A dish as it was logged in a meal (user 24.11.2026): a snapshot with its name and portion, so a later change or
+ * deletion of the dish does not change the meal. [favoriteId] only records the origin.
+ */
+@Entity(
+    tableName = "meal_dishes",
+    foreignKeys = [
+        ForeignKey(MealEntity::class, ["id"], ["mealId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(FavoriteEntity::class, ["id"], ["favoriteId"], onDelete = ForeignKey.SET_NULL),
+    ],
+    indices = [Index("mealId"), Index("favoriteId")],
+)
+data class MealDishEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val mealId: Long,
+    val favoriteId: Long?,
+    val name: String,
+    val portion: PortionSize,
+    val position: Int,
+)
+
+/**
+ * Every occurrence of an ingredient in a meal (user 24.11.2026): inside a logged dish ([mealDishId]) or picked on its
+ * own (null). [portion] is the one that counted. meal_ingredients keeps the merged list for the analysis.
+ */
+@Entity(
+    tableName = "meal_item_occurrences",
+    foreignKeys = [
+        ForeignKey(MealEntity::class, ["id"], ["mealId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(MealDishEntity::class, ["id"], ["mealDishId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(IngredientEntity::class, ["id"], ["ingredientId"]),
+    ],
+    indices = [Index("mealId"), Index("mealDishId"), Index("ingredientId")],
+)
+data class MealItemOccurrenceEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val mealId: Long,
+    val mealDishId: Long?,
+    val ingredientId: Long,
+    val portion: PortionSize,
+    val preparation: PreparationKind? = null,
+)

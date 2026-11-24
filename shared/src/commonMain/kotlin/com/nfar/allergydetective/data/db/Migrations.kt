@@ -122,7 +122,39 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12)
+    /**
+     * User 24.11.2026: a meal keeps what was logged - its dishes as they were then (name, portion) and every occurrence
+     * of an ingredient with its origin. Existing meals get their ingredients as single occurrences; nothing is lost,
+     * they only open without dish cards.
+     */
+    val MIGRATION_12_13 = object : Migration(12, 13) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL(
+                "CREATE TABLE IF NOT EXISTS `meal_dishes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mealId` INTEGER NOT NULL, " +
+                    "`favoriteId` INTEGER, `name` TEXT NOT NULL, `portion` TEXT NOT NULL, `position` INTEGER NOT NULL, " +
+                    "FOREIGN KEY(`mealId`) REFERENCES `meals`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
+                    "FOREIGN KEY(`favoriteId`) REFERENCES `favorites`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+            )
+            connection.execSQL("CREATE INDEX IF NOT EXISTS `index_meal_dishes_mealId` ON `meal_dishes` (`mealId`)")
+            connection.execSQL("CREATE INDEX IF NOT EXISTS `index_meal_dishes_favoriteId` ON `meal_dishes` (`favoriteId`)")
+            connection.execSQL(
+                "CREATE TABLE IF NOT EXISTS `meal_item_occurrences` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mealId` INTEGER NOT NULL, " +
+                    "`mealDishId` INTEGER, `ingredientId` INTEGER NOT NULL, `portion` TEXT NOT NULL, `preparation` TEXT, " +
+                    "FOREIGN KEY(`mealId`) REFERENCES `meals`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
+                    "FOREIGN KEY(`mealDishId`) REFERENCES `meal_dishes`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
+                    "FOREIGN KEY(`ingredientId`) REFERENCES `ingredients`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+            )
+            connection.execSQL("CREATE INDEX IF NOT EXISTS `index_meal_item_occurrences_mealId` ON `meal_item_occurrences` (`mealId`)")
+            connection.execSQL("CREATE INDEX IF NOT EXISTS `index_meal_item_occurrences_mealDishId` ON `meal_item_occurrences` (`mealDishId`)")
+            connection.execSQL("CREATE INDEX IF NOT EXISTS `index_meal_item_occurrences_ingredientId` ON `meal_item_occurrences` (`ingredientId`)")
+            connection.execSQL(
+                "INSERT INTO meal_item_occurrences (mealId, mealDishId, ingredientId, portion, preparation) " +
+                    "SELECT mealId, NULL, ingredientId, portion, preparation FROM meal_ingredients ORDER BY mealId, ingredientId",
+            )
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13)
 
     private const val HERBS_CATEGORY = 15L
     internal const val DRIED_HERBS = 1415L

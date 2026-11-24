@@ -17,6 +17,10 @@ import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.LoggedMeal
 import com.nfar.allergydetective.domain.diary.MealRepository
+import com.nfar.allergydetective.domain.diary.MealSnapshot
+import com.nfar.allergydetective.domain.diary.SnapshotDish
+import com.nfar.allergydetective.data.db.entity.MealDishEntity
+import com.nfar.allergydetective.data.db.entity.MealItemOccurrenceEntity
 
 class RoomMealRepository(private val dao: MealDao) : MealRepository {
 
@@ -33,11 +37,13 @@ class RoomMealRepository(private val dao: MealDao) : MealRepository {
     override suspend fun ingredientIdsNeedingPreparation(): Set<Long> =
         dao.ingredientIdsWithProperties(HEAT_LABILE_PROPERTY_KEYS.toList()).toSet()
 
-    override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?): Long =
-        dao.insertMealWithItems(
-            meal = MealEntity(eatenAt = eatenAt, tzOffsetMin = tzOffsetMin, favoriteId = favoriteId, kind = slot?.toEntity()),
-            items = items.map { MealIngredientEntity(mealId = 0, ingredientId = it.ingredientId, portion = it.portion.toEntity(), preparation = it.preparation?.toEntity()) },
-        )
+    override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?, snapshot: MealSnapshot?): Long {
+        val meal = MealEntity(eatenAt = eatenAt, tzOffsetMin = tzOffsetMin, favoriteId = favoriteId, kind = slot?.toEntity())
+        val rows = items.map { MealIngredientEntity(mealId = 0, ingredientId = it.ingredientId, portion = it.portion.toEntity(), preparation = it.preparation?.toEntity()) }
+        // Without a snapshot (older callers) every item counts as picked on its own.
+        val shot = snapshot ?: MealSnapshot(emptyList(), items)
+        return dao.insertMealWithSnapshot(meal, rows, shot.dishRows(), shot.singleRows())
+    }
 
     override suspend fun favorites(): List<FavoriteInfo> {
         val itemsByFavorite = dao.favoriteIngredients()
@@ -67,18 +73,42 @@ class RoomMealRepository(private val dao: MealDao) : MealRepository {
     override suspend fun meal(mealId: Long): LoggedMeal? {
         val meal = dao.meal(mealId) ?: return null
         val items = dao.mealIngredients(mealId).map { MealItem(it.ingredientId, it.portion.toDomain(), it.preparation?.toDomain()) }
-        return LoggedMeal(meal.id, meal.eatenAt, items, meal.favoriteId, meal.tzOffsetMin, meal.kind?.toDomain())
+        val occurrences = dao.occurrences(mealId)
+        // Meals from before version 13 have no snapshot.
+        val snapshot = if (occurrences.isEmpty()) null else MealSnapshot(
+            dishes = dao.mealDishes(mealId).map { dish ->
+                SnapshotDish(dish.favoriteId, dish.name, dish.portion.toDomain(), occurrences.filter { it.mealDishId == dish.id }.map { it.toItem() })
+            },
+            singles = occurrences.filter { it.mealDishId == null }.map { it.toItem() },
+        )
+        return LoggedMeal(meal.id, meal.eatenAt, items, meal.favoriteId, meal.tzOffsetMin, meal.kind?.toDomain(), snapshot)
     }
 
-    override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?) =
-        dao.updateMealWithItems(
+    override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?, snapshot: MealSnapshot?) {
+        val shot = snapshot ?: MealSnapshot(emptyList(), items)
+        dao.updateMealWithSnapshot(
             mealId = mealId,
             eatenAt = eatenAt,
             tzOffsetMin = tzOffsetMin,
             favoriteId = favoriteId,
             kind = slot?.toEntity(),
             items = items.map { MealIngredientEntity(mealId = mealId, ingredientId = it.ingredientId, portion = it.portion.toEntity(), preparation = it.preparation?.toEntity()) },
+            dishes = shot.dishRows(),
+            singles = shot.singleRows(),
         )
+    }
+
+    private fun MealSnapshot.dishRows(): List<Pair<MealDishEntity, List<MealItemOccurrenceEntity>>> =
+        dishes.mapIndexed { index, dish ->
+            MealDishEntity(mealId = 0, favoriteId = dish.favoriteId, name = dish.name, portion = dish.portion.toEntity(), position = index) to dish.items.map { it.toOccurrence() }
+        }
+
+    private fun MealSnapshot.singleRows(): List<MealItemOccurrenceEntity> = singles.map { it.toOccurrence() }
+
+    private fun MealItem.toOccurrence() =
+        MealItemOccurrenceEntity(mealId = 0, mealDishId = null, ingredientId = ingredientId, portion = portion.toEntity(), preparation = preparation?.toEntity())
+
+    private fun MealItemOccurrenceEntity.toItem() = MealItem(ingredientId, portion.toDomain(), preparation?.toDomain())
 
     override suspend fun mealIdOnDay(from: Long, until: Long, slot: MealSlot): Long? = dao.mealIdOnDay(from, until, slot.toEntity())
 }

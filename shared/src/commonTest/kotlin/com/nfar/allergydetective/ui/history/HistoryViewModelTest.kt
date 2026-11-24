@@ -61,7 +61,7 @@ class HistoryViewModelTest {
         override suspend fun synonyms(language: String) = emptyMap<Long, List<String>>()
         override suspend fun recentIngredientIds(limit: Int) = emptyList<Long>()
         override suspend fun ingredientIdsWithKnownAllergy() = emptySet<Long>()
-        override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?) = 0L
+        override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?, snapshot: com.nfar.allergydetective.domain.diary.MealSnapshot?) = 0L
         override suspend fun deleteMeal(mealId: Long) {
             deletedMeals += mealId
             entries.removeAll { it is HistoryEntry.MealEntry && it.id == mealId }
@@ -72,7 +72,7 @@ class HistoryViewModelTest {
             return 77L
         }
         override suspend fun meal(mealId: Long) = LoggedMeal(mealId, clock.millisAt(today, 8, 0), listOf(MealItem(milk.id, Portion.MEDIUM)), null, 60)
-        override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?) {
+        override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?, snapshot: com.nfar.allergydetective.domain.diary.MealSnapshot?) {
             linkedFavorites += mealId to favoriteId
         }
         override suspend fun deleteFavorite(favoriteId: Long) = Unit

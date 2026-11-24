@@ -49,10 +49,12 @@ class LogMealViewModelTest {
         val mealFavoriteIds = mutableListOf<Long?>()
         val slots = mutableListOf<MealSlot?>()
         val favorites = mutableListOf<FavoriteInfo>()
+        val snapshots = mutableListOf<com.nfar.allergydetective.domain.diary.MealSnapshot?>()
 
-        override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?): Long {
+        override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?, snapshot: com.nfar.allergydetective.domain.diary.MealSnapshot?): Long {
             saved += Triple(eatenAt, tzOffsetMin, items)
             mealFavoriteIds += favoriteId
+            snapshots += snapshot
             slots += slot
             return saved.size.toLong()
         }
@@ -71,11 +73,12 @@ class LogMealViewModelTest {
 
         // Meal id = position in [saved] + 1.
         override suspend fun meal(mealId: Long) =
-            saved.getOrNull(mealId.toInt() - 1)?.let { LoggedMeal(mealId, it.first, it.third, mealFavoriteIds[mealId.toInt() - 1], slot = slots.getOrNull(mealId.toInt() - 1)) }
-        override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?) {
+            saved.getOrNull(mealId.toInt() - 1)?.let { LoggedMeal(mealId, it.first, it.third, mealFavoriteIds[mealId.toInt() - 1], slot = slots.getOrNull(mealId.toInt() - 1), snapshot = snapshots.getOrNull(mealId.toInt() - 1)) }
+        override suspend fun updateMeal(mealId: Long, eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?, snapshot: com.nfar.allergydetective.domain.diary.MealSnapshot?) {
             saved[mealId.toInt() - 1] = Triple(eatenAt, tzOffsetMin, items)
             mealFavoriteIds[mealId.toInt() - 1] = favoriteId
             if (mealId.toInt() - 1 < slots.size) slots[mealId.toInt() - 1] = slot
+            if (mealId.toInt() - 1 < snapshots.size) snapshots[mealId.toInt() - 1] = snapshot
         }
         override suspend fun mealIdOnDay(from: Long, until: Long, slot: MealSlot) = saved.indexOfFirst { it.first >= from && it.first < until && slots.getOrNull(saved.indexOf(it)) == slot }.takeIf { it >= 0 }?.let { it + 1L }
     }
@@ -90,7 +93,7 @@ class LogMealViewModelTest {
 
         assertEquals(listOf(SelectedIngredient(bread)), vm.state.value.selected)
         // The dish starts at the largest portion of its main part and counts as a whole.
-        assertEquals(listOf(ChosenDish(7, Portion.LARGE)), vm.state.value.dishes)
+        assertEquals(listOf(7L to Portion.LARGE), vm.state.value.dishes.map { it.favoriteId to it.portion })
         assertEquals(listOf(MealItem(bread.id, Portion.LARGE), MealItem(milk.id, Portion.LARGE)), vm.state.value.mealItems)
         vm.onSlotChange(MealSlot.BREAKFAST)
         vm.onSave()
@@ -324,6 +327,80 @@ class LogMealViewModelTest {
         assertTrue(vm.state.value.dishes.isEmpty())
         assertNull(vm.state.value.favoriteId)
         assertFalse(vm.state.value.canSave)
+    }
+
+    @Test
+    fun aLoggedMealOpensWithItsDishesAndSingleIngredients() {
+        repository.favorites += FavoriteInfo(7, "Sauerteigbrot", listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(linseed.id, Portion.MEDIUM)))
+        val vm = viewModel()
+        vm.onFavoriteClick(vm.state.value.favorites.single())
+        vm.onDishPortionChange(7, Portion.LARGE)
+        vm.onToggleIngredient(milk)
+        vm.onSlotChange(MealSlot.BREAKFAST)
+        vm.onSave()
+
+        val stored = repository.snapshots.single()!!
+        assertEquals("Sauerteigbrot", stored.dishes.single().name)
+        assertEquals(Portion.LARGE, stored.dishes.single().portion)
+        // The occurrence keeps the portion that counted: linseed one step smaller.
+        assertEquals(listOf(MealItem(bread.id, Portion.LARGE), MealItem(linseed.id, Portion.MEDIUM)), stored.dishes.single().items)
+        assertEquals(listOf(MealItem(milk.id, Portion.MEDIUM)), stored.singles)
+
+        val edit = viewModel()
+        edit.startEditing(1)
+        assertEquals(listOf("Sauerteigbrot"), edit.state.value.dishes.map { it.name })
+        assertEquals(Portion.LARGE, edit.state.value.dishes.single().portion)
+        assertEquals(listOf(milk), edit.state.value.selected.map { it.ingredient })
+    }
+
+    @Test
+    fun aChangedDishDoesNotChangeTheLoggedMeal() {
+        repository.favorites += FavoriteInfo(7, "Brot mit Milch", listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(milk.id, Portion.MEDIUM)))
+        val vm = viewModel()
+        vm.onFavoriteClick(vm.state.value.favorites.single())
+        vm.onSlotChange(MealSlot.BREAKFAST)
+        vm.onSave()
+        // The dish loses its milk and is renamed afterwards.
+        repository.favorites[0] = FavoriteInfo(7, "Brot", listOf(MealItem(bread.id, Portion.MEDIUM)))
+
+        val edit = viewModel()
+        edit.startEditing(1)
+
+        assertEquals("Brot mit Milch", edit.state.value.dishes.single().name)
+        assertEquals(listOf(bread.id, milk.id), edit.state.value.mealItems.map { it.ingredientId })
+    }
+
+    @Test
+    fun aDeletedDishStillOpensWithTheLoggedMeal() {
+        repository.favorites += FavoriteInfo(7, "Brot mit Milch", listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(milk.id, Portion.MEDIUM)))
+        val vm = viewModel()
+        vm.onFavoriteClick(vm.state.value.favorites.single())
+        vm.onSlotChange(MealSlot.BREAKFAST)
+        vm.onSave()
+        repository.snapshots[0] = repository.snapshots[0]!!.let { s -> s.copy(dishes = s.dishes.map { it.copy(favoriteId = null) }) }
+        repository.favorites.clear()
+
+        val edit = viewModel()
+        edit.startEditing(1)
+
+        val dish = edit.state.value.dishes.single()
+        assertEquals("Brot mit Milch", dish.name)
+        assertNull(dish.originFavoriteId)
+        assertEquals(listOf(bread.id, milk.id), edit.state.value.mealItems.map { it.ingredientId })
+    }
+
+    @Test
+    fun aMealFromBeforeTheSnapshotOpensAsSingleIngredients() {
+        repository.saved += Triple(now.toEpochMilliseconds(), 60, listOf(MealItem(bread.id, Portion.SMALL)))
+        repository.mealFavoriteIds += null
+        repository.slots += MealSlot.LUNCH
+        repository.snapshots += null
+        val vm = viewModel()
+
+        vm.startEditing(1)
+
+        assertTrue(vm.state.value.dishes.isEmpty())
+        assertEquals(listOf(SelectedIngredient(bread, Portion.SMALL)), vm.state.value.selected)
     }
 
     private val coffee = IngredientInfo(1101, "coffee", null, BEVERAGES_CATEGORY_ID)
@@ -642,7 +719,7 @@ class LogMealViewModelTest {
 
         vm.startWithFavorite(7)
 
-        assertEquals(listOf(ChosenDish(7, Portion.LARGE)), vm.state.value.dishes)
+        assertEquals(listOf(7L to Portion.LARGE), vm.state.value.dishes.map { it.favoriteId to it.portion })
         assertEquals(listOf(MealItem(milk.id, Portion.LARGE)), vm.state.value.mealItems)
         assertEquals(7L, vm.state.value.favoriteId)
         // The meal is still chosen by the user.
