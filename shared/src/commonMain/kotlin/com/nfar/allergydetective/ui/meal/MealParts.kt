@@ -274,7 +274,6 @@ private val BADGE_WIDTH = 40.dp
 private val DELETE_SIZE = 40.dp
 
 /**
- * S ·/**
  * User 24.11.2026: the portion as a small field "M ▾" in the same line as the name (two lines per entry looked
  * restless). A tap opens S / M / L, each with what it means.
  */
@@ -327,7 +326,8 @@ fun PortionLine(portion: Portion, onPortion: (Portion) -> Unit, modifier: Modifi
     }
 }
 
-· L in one outlined pill (design picture 23.11.2026); the chosen size is filled green, without a
+/**
+ * S · M · L in one outlined pill (design picture 23.11.2026); the chosen size is filled green, without a
  * check mark (user 23.11.: "nur die Farbe soll gewählt zeigen").
  */
 @Composable
@@ -357,20 +357,6 @@ fun PortionSwitch(selected: Portion, onSelect: (Portion) -> Unit, modifier: Modi
                 }
             }
         }
-    }
-}
-
-/** "Portion  [S | M | L]": the same line under every dish and every single ingredient. */
-@Composable
-fun PortionLine(portion: Portion, onPortion: (Portion) -> Unit, modifier: Modifier = Modifier) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
-        Text(
-            stringResource(Res.string.meal_portion_word),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(end = 10.dp),
-        )
-        PortionSwitch(portion, onPortion)
     }
 }
 
