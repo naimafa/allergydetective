@@ -9,6 +9,8 @@ import com.nfar.allergydetective.data.db.entity.FavoriteIngredientEntity
 import com.nfar.allergydetective.data.db.entity.IngredientEntity
 import com.nfar.allergydetective.data.db.entity.IngredientSynonymEntity
 import com.nfar.allergydetective.data.db.entity.MealEntity
+import com.nfar.allergydetective.data.db.entity.MealItemOccurrenceEntity
+import com.nfar.allergydetective.data.db.entity.MealDishEntity
 import com.nfar.allergydetective.data.db.entity.MealIngredientEntity
 import com.nfar.allergydetective.data.db.model.MealKind
 
@@ -119,6 +121,7 @@ interface MealDao {
     suspend fun deleteFavorite(favoriteId: Long) {
         deleteFavoriteIngredients(favoriteId)
         detachMealsFromFavorite(favoriteId)
+        detachMealDishesFromFavorite(favoriteId)
         deleteFavoriteRow(favoriteId)
     }
 
@@ -149,9 +152,71 @@ interface MealDao {
         insertMealIngredients(items.map { it.copy(mealId = mealId) })
     }
 
+    // --- Snapshot of what was logged (user 24.11.2026) ---
+
+    @Insert
+    suspend fun insertMealDish(dish: MealDishEntity): Long
+
+    @Insert
+    suspend fun insertOccurrences(items: List<MealItemOccurrenceEntity>)
+
+    @Query("DELETE FROM meal_item_occurrences WHERE mealId = :mealId")
+    suspend fun deleteOccurrences(mealId: Long)
+
+    @Query("DELETE FROM meal_dishes WHERE mealId = :mealId")
+    suspend fun deleteMealDishes(mealId: Long)
+
+    @Query("SELECT * FROM meal_dishes WHERE mealId = :mealId ORDER BY position, id")
+    suspend fun mealDishes(mealId: Long): List<MealDishEntity>
+
+    @Query("SELECT * FROM meal_item_occurrences WHERE mealId = :mealId ORDER BY id")
+    suspend fun occurrences(mealId: Long): List<MealItemOccurrenceEntity>
+
+    @Query("UPDATE meal_dishes SET favoriteId = NULL WHERE favoriteId = :favoriteId")
+    suspend fun detachMealDishesFromFavorite(favoriteId: Long)
+
+    /** Replaces the snapshot of a meal: its dishes with their ingredients, and the single ingredients. */
+    @Transaction
+    suspend fun replaceSnapshot(mealId: Long, dishes: List<Pair<MealDishEntity, List<MealItemOccurrenceEntity>>>, singles: List<MealItemOccurrenceEntity>) {
+        deleteOccurrences(mealId)
+        deleteMealDishes(mealId)
+        dishes.forEach { (dish, items) ->
+            val dishId = insertMealDish(dish.copy(id = 0, mealId = mealId))
+            insertOccurrences(items.map { it.copy(id = 0, mealId = mealId, mealDishId = dishId) })
+        }
+        insertOccurrences(singles.map { it.copy(id = 0, mealId = mealId, mealDishId = null) })
+    }
+
+    /** A new meal with its merged items and its snapshot, in one transaction. */
+    @Transaction
+    suspend fun insertMealWithSnapshot(
+        meal: MealEntity,
+        items: List<MealIngredientEntity>,
+        dishes: List<Pair<MealDishEntity, List<MealItemOccurrenceEntity>>>,
+        singles: List<MealItemOccurrenceEntity>,
+    ): Long {
+        val id = insertMealWithItems(meal, items)
+        replaceSnapshot(id, dishes, singles)
+        return id
+    }
+
+    /** Editing a logged meal with its snapshot, in one transaction. */
+    @Transaction
+    suspend fun updateMealWithSnapshot(
+        mealId: Long, eatenAt: Long, tzOffsetMin: Int, favoriteId: Long?, kind: MealKind?,
+        items: List<MealIngredientEntity>,
+        dishes: List<Pair<MealDishEntity, List<MealItemOccurrenceEntity>>>,
+        singles: List<MealItemOccurrenceEntity>,
+    ) {
+        updateMealWithItems(mealId, eatenAt, tzOffsetMin, favoriteId, kind, items)
+        replaceSnapshot(mealId, dishes, singles)
+    }
+
     /** Items first, so this does not depend on the foreign key cascade being enabled. */
     @Transaction
     suspend fun deleteMeal(mealId: Long) {
+        deleteOccurrences(mealId)
+        deleteMealDishes(mealId)
         deleteMealIngredients(mealId)
         deleteMealRow(mealId)
     }

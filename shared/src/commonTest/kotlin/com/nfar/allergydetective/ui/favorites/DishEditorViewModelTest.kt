@@ -33,7 +33,7 @@ class DishEditorViewModelTest {
         override suspend fun synonyms(language: String) = emptyMap<Long, List<String>>()
         override suspend fun recentIngredientIds(limit: Int) = emptyList<Long>()
         override suspend fun ingredientIdsWithKnownAllergy() = emptySet<Long>()
-        override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?) = 0L
+        override suspend fun saveMeal(eatenAt: Long, tzOffsetMin: Int, items: List<MealItem>, favoriteId: Long?, slot: MealSlot?, snapshot: com.nfar.allergydetective.domain.diary.MealSnapshot?) = 0L
         override suspend fun deleteMeal(mealId: Long) = Unit
         val existing = mutableListOf<FavoriteInfo>()
         val deleted = mutableListOf<Long>()

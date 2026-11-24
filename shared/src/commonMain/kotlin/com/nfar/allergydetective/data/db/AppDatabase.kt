@@ -14,6 +14,8 @@ import com.nfar.allergydetective.data.db.dao.MealDao
 import com.nfar.allergydetective.data.db.dao.SymptomDao
 import com.nfar.allergydetective.data.db.dao.SeedDao
 import com.nfar.allergydetective.data.db.entity.CategoryEntity
+import com.nfar.allergydetective.data.db.entity.MealDishEntity
+import com.nfar.allergydetective.data.db.entity.MealItemOccurrenceEntity
 import com.nfar.allergydetective.data.db.entity.DayCheckEntity
 import com.nfar.allergydetective.data.db.entity.DayFactorEntity
 import com.nfar.allergydetective.data.db.entity.SickPeriodEntity
@@ -55,12 +57,14 @@ const val DATABASE_NAME = "allergy_detective.db"
         FavoriteIngredientEntity::class,
         MealEntity::class,
         MealIngredientEntity::class,
+        MealDishEntity::class,
+        MealItemOccurrenceEntity::class,
         SymptomEntryEntity::class,
         DayCheckEntity::class,
         DayFactorEntity::class,
         SickPeriodEntity::class,
     ],
-    version = 12,
+    version = 13,
     exportSchema = true,
 )
 @ConstructedBy(AppDatabaseConstructor::class)

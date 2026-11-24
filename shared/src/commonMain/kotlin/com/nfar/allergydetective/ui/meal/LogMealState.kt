@@ -5,6 +5,8 @@ import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.analysis.model.Preparation
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.IngredientInfo
+import com.nfar.allergydetective.domain.diary.MealSnapshot
+import com.nfar.allergydetective.domain.diary.SnapshotDish
 import com.nfar.allergydetective.domain.time.MealSlot
 import com.nfar.allergydetective.ui.common.ExactTime
 
@@ -21,8 +23,15 @@ data class SelectedIngredient(
  * saved dish; [removed] are the ones left out of this meal only.
  */
 data class ChosenDish(
+    /** Key of the dish in this form: the dish id, or a negative id for a logged dish that was deleted since. */
     val favoriteId: Long,
     val portion: Portion = Portion.MEDIUM,
+    /** Name as logged (snapshot, user 24.11.2026). */
+    val name: String = "",
+    /** Its ingredients as logged or as the dish had them when it was picked; a later change of the dish does not reach them. */
+    val items: List<MealItem> = emptyList(),
+    /** The saved dish it came from, null once that dish is deleted. */
+    val originFavoriteId: Long? = favoriteId.takeIf { it > 0 },
     val removed: Set<Long> = emptySet(),
     /** Raw / cooked for ingredients that need it and have no value in the saved dish. */
     val preparations: Map<Long, Preparation> = emptyMap(),
@@ -88,6 +97,8 @@ data class LogMealState(
     val openedExisting: MealSlot? = null,
     /** Ingredients that came from that opened meal; they go again when another slot is chosen. */
     val openedItemIds: Set<Long> = emptySet(),
+    /** Dishes that came from that opened meal; they go again when another slot is chosen. */
+    val openedDishIds: Set<Long> = emptySet(),
     /** There is already a meal at this slot, e.g. today's dinner: the screen asks whether to add to it. */
     val existingMealId: Long? = null,
     /** The ingredients were added to the existing meal of this slot: a short confirmation without undo. */
@@ -109,12 +120,9 @@ data class LogMealState(
     /** UX 3.1: a gentle hint, saving stays possible. */
     val containsKnownAllergy: Boolean get() = mealItems.any { it.ingredientId in allergyIngredientIds }
 
-    /** The saved dish behind a chosen one, or null if it was deleted in the meantime. */
-    fun dishInfo(dish: ChosenDish): FavoriteInfo? = favorites.firstOrNull { it.id == dish.favoriteId }
-
     /** The ingredients of a chosen dish that stay in this meal. */
     fun dishItems(dish: ChosenDish): List<MealItem> =
-        dishInfo(dish)?.items.orEmpty().filter { it.ingredientId !in dish.removed }
+        dish.items.filter { it.ingredientId !in dish.removed }
 
     /**
      * What gets stored: the ingredients of the dishes, each with its dish's portion (user 24.11.2026), and the single
@@ -122,15 +130,7 @@ data class LogMealState(
      * where it was asked.
      */
     val mealItems: List<MealItem> get() {
-        val fromDishes = dishes.flatMap { dish ->
-            val items = dishItems(dish)
-            // Seeds, spices, oils and herbs inside a dish are a small part of it; a dish made only of them is not shrunk.
-            val hasMainPart = items.any { it.ingredientId !in minorIngredientIds }
-            items.map { item ->
-                val portion = if (hasMainPart && item.ingredientId in minorIngredientIds) dish.portion.smaller() else dish.portion
-                MealItem(item.ingredientId, portion, dish.preparations[item.ingredientId] ?: item.preparation)
-            }
-        }
+        val fromDishes = dishes.flatMap(::countedItems)
         val alone = selected.map { MealItem(it.ingredient.id, it.portion, it.preparation) }
         return (fromDishes + alone).groupBy { it.ingredientId }.map { (id, same) ->
             MealItem(
@@ -140,6 +140,24 @@ data class LogMealState(
             )
         }
     }
+
+    /** The ingredients of a chosen dish with the portion that counts (seeds, spices, oils and herbs one step smaller). */
+    fun countedItems(dish: ChosenDish): List<MealItem> {
+        val items = dishItems(dish)
+        // A dish made only of small parts is not shrunk.
+        val hasMainPart = items.any { it.ingredientId !in minorIngredientIds }
+        return items.map { item ->
+            val portion = if (hasMainPart && item.ingredientId in minorIngredientIds) dish.portion.smaller() else dish.portion
+            val preparation = (dish.preparations[item.ingredientId] ?: item.preparation).takeIf { item.ingredientId in needsPreparation }
+            MealItem(item.ingredientId, portion, preparation)
+        }
+    }
+
+    /** What gets stored besides the merged list: the dishes as logged and the single ingredients (user 24.11.2026). */
+    val snapshot: MealSnapshot get() = MealSnapshot(
+        dishes = dishes.map { SnapshotDish(it.originFavoriteId, it.name, it.portion, countedItems(it)) },
+        singles = selected.map { MealItem(it.ingredient.id, it.portion, it.preparation.takeIf { _ -> it.ingredient.id in needsPreparation }) },
+    )
 
     /** Where the ingredient sits in this meal: on its own and/or in which chosen dishes. */
     fun placesOf(ingredientId: Long): List<Place> = buildList {

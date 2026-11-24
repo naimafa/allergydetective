@@ -526,7 +526,7 @@ private fun WhatStep(
  */
 @Composable
 private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMealViewModel, onAddMore: (() -> Unit)?) {
-    val dishes = state.dishes.filter { state.dishInfo(it) != null }
+    val dishes = state.dishes
     if (dishes.isEmpty() && state.selected.isEmpty()) return
     // Newest first: what was just added appears on top.
     if (dishes.isNotEmpty()) {
@@ -565,7 +565,7 @@ private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMea
 @Composable
 private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealViewModel) {
     val home = AppColors.extra.home
-    val info = state.dishInfo(dish) ?: return
+    val info = dish
     var open by remember(dish.favoriteId) { mutableStateOf(false) }
     val ingredients = state.dishItems(dish).mapNotNull { item -> viewModel.ingredientInfo(item.ingredientId)?.let { it to item } }
     val action = stringResource(if (open) Res.string.meal_dish_hide_ingredients else Res.string.meal_dish_show_ingredients)
@@ -653,7 +653,7 @@ private fun SectionHeading(title: String, aboutDishes: Boolean) {
 private fun IngredientQuestions(state: LogMealState, viewModel: LogMealViewModel) {
     state.pendingAdd?.let { pending ->
         val name = ingredientName(pending.ingredient)
-        val dishNames = pending.dishIds.mapNotNull { id -> state.favorites.firstOrNull { it.id == id }?.name }.joinToString(", ")
+        val dishNames = pending.dishIds.mapNotNull { id -> state.dishes.firstOrNull { it.favoriteId == id }?.name }.joinToString(", ")
         AlertDialog(
             onDismissRequest = viewModel::onDeclineAdd,
             text = { Text(stringResource(Res.string.meal_dup_add_question, name, dishNames)) },
@@ -667,7 +667,7 @@ private fun IngredientQuestions(state: LogMealState, viewModel: LogMealViewModel
         val places = pending.places.map { place ->
             when (place) {
                 Place.Single -> single
-                is Place.InDish -> state.favorites.firstOrNull { it.id == place.favoriteId }?.name.orEmpty()
+                is Place.InDish -> state.dishes.firstOrNull { it.favoriteId == place.favoriteId }?.name.orEmpty()
             }
         }
         if (places.size == 1) {
