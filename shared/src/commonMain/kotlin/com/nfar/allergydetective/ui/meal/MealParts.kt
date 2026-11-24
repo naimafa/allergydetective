@@ -316,7 +316,7 @@ fun IngredientRow(
     val nameStyle = MaterialTheme.typography.titleSmall.merge(
         TextStyle(fontWeight = FontWeight.Medium, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
     )
-    Column(modifier = Modifier.padding(vertical = 4.dp)) {
+    Column(modifier = Modifier.padding(vertical = 2.dp)) {
         BoxWithConstraints {
             val nameRoom = maxWidth - BADGE_WIDTH - 10.dp - SWITCH_WIDTH - 6.dp - DELETE_SIZE - 8.dp
             if (nameRoom >= 76.dp) {

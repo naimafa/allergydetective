@@ -121,6 +121,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import com.nfar.allergydetective.ui.common.AppFilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.layout.BoxWithConstraints
+import allergydetective.shared.generated.resources.meal_dishes_chosen
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
@@ -522,7 +524,12 @@ private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMea
     if (dishes.isEmpty() && state.selected.isEmpty()) return
     PortionLabel(hasDishes = dishes.isNotEmpty())
     // Newest first: what was just added appears on top.
-    dishes.asReversed().forEach { dish -> DishCard(state, dish, viewModel) }
+    if (dishes.isNotEmpty()) {
+        Text(stringResource(Res.string.meal_dishes_chosen, dishes.size), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 2.dp))
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            dishes.asReversed().forEach { dish -> DishCard(state, dish, viewModel) }
+        }
+    }
     if (state.selected.isNotEmpty()) {
         if (dishes.isNotEmpty()) {
             Text(stringResource(Res.string.meal_single_ingredients), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 6.dp))
@@ -548,7 +555,10 @@ private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMea
     }
 }
 
-/** A chosen dish: name, S/M/L for the whole dish, a bin, and its ingredients behind the arrow. */
+/**
+ * A chosen dish (user 24.11.2026): name with the arrow and S/M/L for the whole dish next to it, then the bin. Folded open
+ * it lists the ingredients, only with a bin each (no sizes). A narrow screen puts S/M/L below the name.
+ */
 @Composable
 private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealViewModel) {
     val home = AppColors.extra.home
@@ -566,40 +576,53 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column {
-            Surface(onClick = { open = !open }, color = lerp(home.page, home.badge, 0.6f), contentColor = home.ink) {
+            val nameArea: @Composable (Modifier) -> Unit = { modifier ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(horizontal = 14.dp).semantics { contentDescription = "${info.name}. $action" },
+                    modifier = modifier.heightIn(min = 48.dp).clickable { open = !open }.semantics { contentDescription = "${info.name}. $action" },
                 ) {
-                    Text("🍲", fontSize = 24.sp)
-                    Text(info.name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f).padding(horizontal = 10.dp))
-                    Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.size(26.dp))
+                    Text("🍲", fontSize = 22.sp)
+                    Text(info.name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f, fill = false).padding(start = 8.dp))
+                    Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.padding(start = 2.dp).size(26.dp))
                 }
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(start = 14.dp, end = 6.dp, top = 6.dp, bottom = 6.dp),
-            ) {
-                PortionSwitch(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) })
-                Spacer(Modifier.weight(1f))
-                IconButton(onClick = { viewModel.onRemoveDish(dish.favoriteId) }, modifier = Modifier.semantics { contentDescription = "$removeLabel: ${info.name}" }) {
+            val bin: @Composable () -> Unit = {
+                IconButton(onClick = { viewModel.onRemoveDish(dish.favoriteId) }, modifier = Modifier.size(44.dp).semantics { contentDescription = "$removeLabel: ${info.name}" }) {
                     Icon(Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(22.dp))
+                }
+            }
+            BoxWithConstraints(modifier = Modifier.padding(start = 12.dp, end = 4.dp)) {
+                // Name, S/M/L and bin in one line when the name keeps at least ~90 dp.
+                if (maxWidth >= 120.dp + 44.dp + 100.dp + 32.dp) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        nameArea(Modifier.weight(1f))
+                        PortionSwitch(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) })
+                        bin()
+                    }
+                } else {
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            nameArea(Modifier.weight(1f))
+                            bin()
+                        }
+                        PortionSwitch(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) }, Modifier.padding(bottom = 6.dp))
+                    }
                 }
             }
             if (open) {
                 ingredients.forEach { (ingredient, item) ->
                     val name = ingredientName(ingredient)
                     HorizontalDivider(color = home.cardBorder, modifier = Modifier.padding(horizontal = 12.dp))
-                    Column(modifier = Modifier.padding(start = 14.dp, end = 6.dp, top = 2.dp, bottom = 2.dp)) {
+                    Column(modifier = Modifier.padding(start = 20.dp, end = 4.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(name, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                            Text(name, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f).padding(vertical = 4.dp))
                             IconButton(
                                 onClick = { viewModel.onRemoveIngredient(ingredient.id, dish.favoriteId) },
-                                modifier = Modifier.semantics { contentDescription = "$removeIngredient: $name" },
-                            ) { Icon(Icons.Outlined.Close, contentDescription = null, modifier = Modifier.size(20.dp)) }
+                                modifier = Modifier.size(40.dp).semantics { contentDescription = "$removeIngredient: $name" },
+                            ) { Icon(Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(20.dp)) }
                         }
                         if (ingredient.id in state.needsPreparation) {
-                            Box(modifier = Modifier.padding(bottom = 6.dp)) {
+                            Box(modifier = Modifier.padding(bottom = 4.dp)) {
                                 PreparationChoice(dish.preparations[ingredient.id] ?: item.preparation) { viewModel.onDishPreparationChange(dish.favoriteId, ingredient.id, it) }
                             }
                         }
