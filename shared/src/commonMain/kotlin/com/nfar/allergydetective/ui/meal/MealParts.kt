@@ -1,4 +1,5 @@
 package com.nfar.allergydetective.ui.meal
+import androidx.compose.foundation.layout.widthIn
 import allergydetective.shared.generated.resources.meal_portion_option_large
 import allergydetective.shared.generated.resources.meal_portion_option_medium
 import allergydetective.shared.generated.resources.meal_portion_option_small
@@ -296,21 +297,25 @@ fun PortionLine(portion: Portion, onPortion: (Portion) -> Unit, modifier: Modifi
                 Icon(Icons.Outlined.ArrowDropDown, contentDescription = null, modifier = Modifier.size(20.dp))
             }
         }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }, containerColor = AppColors.extra.home.card) {
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }, containerColor = AppColors.extra.home.card, modifier = Modifier.widthIn(min = 260.dp)) {
             Portion.entries.forEach { option ->
                 DropdownMenuItem(
+                    // User 24.11.2026: the list looked untidy. Letter in its own column, the word above, the amount small below.
                     text = {
-                        Text(
-                            portionLabel(option) + "  " + stringResource(
-                                when (option) {
-                                    Portion.SMALL -> Res.string.meal_portion_option_small
-                                    Portion.MEDIUM -> Res.string.meal_portion_option_medium
-                                    Portion.LARGE -> Res.string.meal_portion_option_large
-                                },
-                            ),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = if (option == portion) FontWeight.Bold else FontWeight.Normal,
-                        )
+                        val (word, amount) = stringResource(
+                            when (option) {
+                                Portion.SMALL -> Res.string.meal_portion_option_small
+                                Portion.MEDIUM -> Res.string.meal_portion_option_medium
+                                Portion.LARGE -> Res.string.meal_portion_option_large
+                            },
+                        ).split(" – ", limit = 2).let { it[0] to it.getOrElse(1) { "" } }
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+                            Text(portionLabel(option), style = MaterialTheme.typography.titleMedium, color = scheme.primary, modifier = Modifier.width(28.dp))
+                            Column {
+                                Text(word, style = MaterialTheme.typography.bodyMedium, fontWeight = if (option == portion) FontWeight.Bold else FontWeight.Normal)
+                                Text(amount, style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
+                            }
+                        }
                     },
                     leadingIcon = {
                         if (option == portion) Icon(Icons.Outlined.Check, contentDescription = null, tint = scheme.primary, modifier = Modifier.size(20.dp))
