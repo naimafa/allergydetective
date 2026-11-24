@@ -1,4 +1,7 @@
 package com.nfar.allergydetective.ui.history
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.history_check_title
@@ -207,9 +210,10 @@ fun EntrySheet(
     onDelete: (HistoryEntry) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
-            modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
+            // User 24.11.2026: with many ingredients "Bearbeiten" and "Löschen" were pushed off the screen. The sheet scrolls now.
+            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             when (entry) {
