@@ -45,7 +45,10 @@ class LiftAndEvidenceTest {
 
         assertEquals(EvidenceLevel.INSUFFICIENT_DATA, level(2.5, 2.0, 5.0))
         assertEquals(EvidenceLevel.NONE, level(5.0, 1.0, 1.4))
-        assertEquals(EvidenceLevel.TRACE, level(3.0, 1.0, 1.5))
+        assertEquals(EvidenceLevel.TRACE, level(3.0, 2.0, 1.5))
+        // User 24.11.2026: no trace without real complaints, however high the smoothed lift.
+        assertEquals(EvidenceLevel.NONE, level(5.0, 0.0, 3.0))
+        assertEquals(EvidenceLevel.NONE, level(5.0, 1.0, 3.0))
         assertEquals(EvidenceLevel.TRACE, level(5.0, 2.9, 3.0)) // lift high, but k1 < 3
         assertEquals(EvidenceLevel.SUSPICION, level(5.0, 3.0, 2.0))
         assertEquals(EvidenceLevel.SUSPICION, level(8.0, 5.0, 3.0, stable = false)) // not yet stable

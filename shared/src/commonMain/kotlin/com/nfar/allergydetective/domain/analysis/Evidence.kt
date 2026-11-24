@@ -27,6 +27,7 @@ internal fun classifyEvidence(
         stats.n1.atLeast(t.strongMinExposures)
     return when {
         !stats.n1.atLeast(t.minExposures) -> EvidenceLevel.INSUFFICIENT_DATA
+        stats.hitCount < t.minRealHits -> EvidenceLevel.NONE
         isSuspicion && isStrong && wasSuspicionBefore -> EvidenceLevel.STRONG_SUSPICION
         isSuspicion -> EvidenceLevel.SUSPICION
         lift.atLeast(t.traceMinLift) -> EvidenceLevel.TRACE
