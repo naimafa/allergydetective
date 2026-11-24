@@ -404,7 +404,8 @@ private fun DeleteButton(name: String, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         shape = CircleShape,
-        color = lerp(home.page, home.badge, 0.7f),
+        // User 24.11.2026: the same plain bin everywhere, no circle.
+        color = Color.Transparent,
         contentColor = home.ink,
         modifier = Modifier.size(DELETE_SIZE).semantics { contentDescription = description },
     ) {

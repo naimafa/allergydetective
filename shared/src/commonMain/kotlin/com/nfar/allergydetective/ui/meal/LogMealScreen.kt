@@ -584,10 +584,9 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = modifier.heightIn(min = 42.dp).clickable { open = !open }.semantics { contentDescription = "${info.name}. $action" },
                 ) {
-                    Text("🍲", fontSize = 18.sp)
                     // Phone test 24.11.: long names broke inside the word ("Linsens-uppe"); now hyphenated at syllables.
-                    Text(info.name, style = MaterialTheme.typography.bodyMedium.merge(TextStyle(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph)), modifier = Modifier.weight(1f, fill = false).padding(start = 6.dp))
-                    Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.padding(start = 2.dp).size(26.dp))
+                    Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.padding(end = 4.dp).size(26.dp))
+                    Text(info.name, style = MaterialTheme.typography.bodyMedium.merge(TextStyle(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph)), modifier = Modifier.weight(1f, fill = false).padding(start = 2.dp))
                 }
             }
             val bin: @Composable () -> Unit = {
