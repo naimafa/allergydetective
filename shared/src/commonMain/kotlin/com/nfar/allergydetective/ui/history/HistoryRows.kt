@@ -225,12 +225,12 @@ fun EntrySheet(
                         Text(listOfNotNull(ingredientName(ingredient), portionLabel(portion), preparation).joinToString(" · "), style = MaterialTheme.typography.bodyLarge)
                     }
                     FilledTonalButton(onClick = { onEdit(entry.id) }, modifier = Modifier.fillMaxWidth()) {
-                        Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(20.dp))
                         Text(stringResource(Res.string.history_edit), modifier = Modifier.padding(start = 8.dp))
                     }
                     if (entry.dishName == null) {
                         FilledTonalButton(onClick = { onSaveFavorite(entry.id) }, modifier = Modifier.fillMaxWidth()) {
-                            Icon(Icons.Outlined.StarOutline, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Outlined.StarOutline, contentDescription = null, modifier = Modifier.size(20.dp))
                             Text(stringResource(Res.string.history_save_favorite), modifier = Modifier.padding(start = 8.dp))
                         }
                     }
@@ -246,13 +246,13 @@ fun EntrySheet(
                     if (sickDay) IllnessRelationChoice(entry.illnessRelation) { onRelation(entry, it) }
                     // Feedback 19.11.: complaints can be corrected, too.
                     FilledTonalButton(onClick = { onEditSymptom(entry.id) }, modifier = Modifier.fillMaxWidth()) {
-                        Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(20.dp))
                         Text(stringResource(Res.string.history_edit), modifier = Modifier.padding(start = 8.dp))
                     }
                 }
             }
             TextButton(onClick = { onDelete(entry) }, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Outlined.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                Icon(Icons.Outlined.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
                 Text(stringResource(Res.string.history_delete), color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(start = 8.dp))
             }
         }

@@ -114,7 +114,7 @@ fun PaywallPreviewScreen(onBack: () -> Unit) {
                     }
                     Surface(shape = MaterialTheme.shapes.medium, color = lerp(home.page, home.badge, 0.3f)) {
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(14.dp)) {
-                            Icon(Icons.Outlined.Info, contentDescription = null, modifier = Modifier.size(22.dp))
+                            Icon(Icons.Outlined.Info, contentDescription = null, modifier = Modifier.size(20.dp))
                             Text(stringResource(Res.string.paywall_keep), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 12.dp))
                         }
                     }

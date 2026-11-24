@@ -1,4 +1,5 @@
 package com.nfar.allergydetective.ui.meal
+import androidx.compose.ui.text.font.FontWeight
 
 import allergydetective.shared.generated.resources.meal_save_as_favorite_hint
 import allergydetective.shared.generated.resources.meal_also_called
@@ -142,6 +143,7 @@ import allergydetective.shared.generated.resources.meal_place_single
 import allergydetective.shared.generated.resources.meal_multi_question
 import allergydetective.shared.generated.resources.meal_multi_all
 import allergydetective.shared.generated.resources.meal_multi_here
+import allergydetective.shared.generated.resources.meal_single_ingredients_count
 import allergydetective.shared.generated.resources.meal_remove_question
 import allergydetective.shared.generated.resources.meal_remove_dish
 import allergydetective.shared.generated.resources.common_cancel
@@ -242,7 +244,7 @@ fun LogMealScreen(
                 modifier = Modifier.navigationBarsPadding().imePadding().fillMaxWidth().padding(16.dp).heightIn(min = 56.dp),
             ) {
                 // Design picture 23.11.2026: a check mark before the text.
-                Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(22.dp))
+                Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(20.dp))
                 Text(
                     state.slot?.let { stringResource(Res.string.meal_save_slot, mealSlotLabel(it)) } ?: stringResource(Res.string.common_save),
                     modifier = Modifier.padding(start = 10.dp),
@@ -293,7 +295,7 @@ private fun LogMealContent(
         state = listState,
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        contentPadding = PaddingValues(start = 10.dp, end = 10.dp, top = 6.dp, bottom = 16.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 16.dp),
     ) {
         item { WhenStep(state, viewModel) }
         item {
@@ -358,9 +360,9 @@ private fun WhenPill(state: LogMealState, viewModel: LogMealViewModel) {
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.heightIn(min = 36.dp).padding(horizontal = 12.dp)) {
-            Icon(Icons.Outlined.Schedule, contentDescription = null, modifier = Modifier.size(18.dp))
-            Text(whenLabel(state), style = MaterialTheme.typography.labelMedium, maxLines = 1, modifier = Modifier.padding(start = 8.dp, end = 8.dp))
-            Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(Icons.Outlined.Schedule, contentDescription = null, modifier = Modifier.size(20.dp))
+            Text(whenLabel(state), style = MaterialTheme.typography.labelLarge, maxLines = 1, modifier = Modifier.padding(start = 8.dp, end = 8.dp))
+            Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(20.dp))
         }
     }
     if (open) {
@@ -414,7 +416,7 @@ private fun WhatStep(
     val voiceLabel = stringResource(Res.string.meal_voice)
     // Phone test 21.11.: favourites and quick picks filled the screen, the search results disappeared below them.
     // While searching only the results show; otherwise each shortcut group is one scrollable row.
-    StepCard(number = 2, title = stringResource(Res.string.meal_step_what), sidePadding = 10.dp) {
+    StepCard(number = 2, title = stringResource(Res.string.meal_step_what)) {
         val speech = rememberSpeechInput(Locale.current.toLanguageTag()) { text -> text?.let(viewModel::onVoiceResult) }
         // User note 22.11.2026: a soft search pill with magnifier and microphone, as in the design picture.
         TextField(
@@ -424,10 +426,10 @@ private fun WhatStep(
             singleLine = true,
             shape = CircleShape,
             colors = searchPillColors(),
-            leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+            leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
             trailingIcon = speech?.let { start ->
                 {
-                    IconButton(onClick = start) { Icon(Icons.Outlined.Mic, contentDescription = voiceLabel) }
+                    IconButton(onClick = start) { Icon(Icons.Outlined.Mic, contentDescription = voiceLabel, modifier = Modifier.size(20.dp)) }
                 }
             },
             modifier = Modifier.fillMaxWidth().focusRequester(searchFocus).onFocusChanged { onSearchFocus(it.isFocused) },
@@ -490,7 +492,7 @@ private fun WhatStep(
                         onClick = { viewModel.onFavoriteClick(favorite) },
                         label = { Text(favorite.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp)) },
                         // Design picture 22.11.2026: a star after the name marks a saved dish.
-                        trailingIcon = { Icon(Icons.Filled.Star, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                        trailingIcon = { Icon(Icons.Filled.Star, contentDescription = null, modifier = Modifier.size(20.dp)) },
                     )
                 }
             }
@@ -506,7 +508,7 @@ private fun WhatStep(
                         label = { Text(ingredientName(ingredient), maxLines = 1) },
                         // Design picture 22.11.2026: "+" shows that a tap adds the ingredient.
                         trailingIcon = if (ingredient.id in selectedIds) null else {
-                            { Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                            { Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp)) }
                         },
                     )
                 }
@@ -526,18 +528,15 @@ private fun WhatStep(
 private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMealViewModel, onAddMore: (() -> Unit)?) {
     val dishes = state.dishes.filter { state.dishInfo(it) != null }
     if (dishes.isEmpty() && state.selected.isEmpty()) return
-    PortionLabel(hasDishes = dishes.isNotEmpty())
     // Newest first: what was just added appears on top.
     if (dishes.isNotEmpty()) {
-        Text(stringResource(Res.string.meal_dishes_chosen, dishes.size), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 2.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        SectionHeading(stringResource(Res.string.meal_dishes_chosen, dishes.size), aboutDishes = true)
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             dishes.asReversed().forEach { dish -> DishCard(state, dish, viewModel) }
         }
     }
     if (state.selected.isNotEmpty()) {
-        if (dishes.isNotEmpty()) {
-            Text(stringResource(Res.string.meal_single_ingredients), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 6.dp))
-        }
+        SectionHeading(stringResource(Res.string.meal_single_ingredients_count, state.selected.size), aboutDishes = false)
         Column {
             state.selected.asReversed().forEachIndexed { index, item ->
                 if (index > 0) HorizontalDivider(color = AppColors.extra.home.cardBorder)
@@ -585,33 +584,22 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = modifier.heightIn(min = 42.dp).clickable { open = !open }.semantics { contentDescription = "${info.name}. $action" },
                 ) {
-                    Text("🍲", fontSize = 18.sp)
                     // Phone test 24.11.: long names broke inside the word ("Linsens-uppe"); now hyphenated at syllables.
-                    Text(info.name, style = MaterialTheme.typography.bodyMedium.merge(TextStyle(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph)), modifier = Modifier.weight(1f, fill = false).padding(start = 6.dp))
-                    Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.padding(start = 2.dp).size(26.dp))
+                    Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.padding(end = 4.dp).size(26.dp))
+                    Text(info.name, style = MaterialTheme.typography.bodyMedium.merge(TextStyle(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph)), modifier = Modifier.weight(1f, fill = false).padding(start = 2.dp))
                 }
             }
             val bin: @Composable () -> Unit = {
-                IconButton(onClick = { viewModel.onRemoveDish(dish.favoriteId) }, modifier = Modifier.size(44.dp).semantics { contentDescription = "$removeLabel: ${info.name}" }) {
-                    Icon(Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(22.dp))
+                IconButton(onClick = { viewModel.onRemoveDish(dish.favoriteId) }, modifier = Modifier.semantics { contentDescription = "$removeLabel: ${info.name}" }) {
+                    Icon(Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(20.dp))
                 }
             }
-            BoxWithConstraints(modifier = Modifier.padding(start = 12.dp, end = 4.dp)) {
-                // Name, S/M/L and bin in one line when the name keeps at least ~90 dp.
-                if (maxWidth >= 96.dp + 44.dp + 100.dp + 32.dp) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        nameArea(Modifier.weight(1f))
-                        PortionSwitch(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) })
-                        bin()
-                    }
-                } else {
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            nameArea(Modifier.weight(1f))
-                            bin()
-                        }
-                        PortionSwitch(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) }, Modifier.padding(bottom = 6.dp))
-                    }
+            // User 24.11.2026: the name keeps the whole width; S/M/L sits in its own line below.
+            Column(modifier = Modifier.padding(start = 12.dp, end = 4.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    nameArea(Modifier.weight(1f))
+                    PortionLine(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) })
+                    bin()
                 }
             }
             if (open) {
@@ -623,7 +611,7 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
                             Text(name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f).padding(vertical = 4.dp))
                             IconButton(
                                 onClick = { viewModel.onRemoveIngredient(ingredient.id, dish.favoriteId) },
-                                modifier = Modifier.size(40.dp).semantics { contentDescription = "$removeIngredient: $name" },
+                                modifier = Modifier.semantics { contentDescription = "$removeIngredient: $name" },
                             ) { Icon(Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(20.dp)) }
                         }
                         if (ingredient.id in state.needsPreparation) {
@@ -638,27 +626,22 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
     }
 }
 
-/** "Zutaten der gesamten Mahlzeit" with the S/M/L explanation behind the info icon. */
+/** User 24.11.2026: "Ausgewählte Gerichte (3)" / "Einzelne Zutaten (2)" as headings (16 sp, never smaller than the names below), the S/M/L explanation behind the info icon. */
 @Composable
-private fun PortionLabel(hasDishes: Boolean) {
+private fun SectionHeading(title: String, aboutDishes: Boolean) {
     var showPortionHelp by remember { mutableStateOf(false) }
     val infoLabel = stringResource(Res.string.meal_portion_info)
-    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp), modifier = Modifier.padding(top = 4.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clickable { showPortionHelp = !showPortionHelp }
-                .semantics { contentDescription = infoLabel }
-                .padding(top = 4.dp),
+            modifier = Modifier.heightIn(min = 48.dp).clickable { showPortionHelp = !showPortionHelp }.semantics { contentDescription = "$title. $infoLabel" },
         ) {
-            // User 23.11.: a darker green than the soft sage, so the label reads well on the cream card.
-            Icon(Icons.Outlined.Eco, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(end = 6.dp).size(20.dp))
-            Text(stringResource(Res.string.meal_ingredients_all), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f, fill = false))
-            Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 6.dp).size(18.dp))
+            Text(title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f, fill = false))
+            Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 8.dp).size(20.dp))
         }
         if (showPortionHelp) {
             Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (hasDishes) {
+            if (aboutDishes) {
                 Text(stringResource(Res.string.meal_portion_help_dish), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
@@ -699,7 +682,7 @@ private fun IngredientQuestions(state: LogMealState, viewModel: LogMealViewModel
         AlertDialog(
             onDismissRequest = viewModel::onRemoveCancelled,
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(stringResource(Res.string.meal_multi_question, name, places.size))
                     places.forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
                 }

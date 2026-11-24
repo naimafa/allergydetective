@@ -263,11 +263,16 @@ val LocalExtraColors = staticCompositionLocalOf { LightExtra }
 private val AppTypography = Typography().run {
     copy(
         headlineMedium = headlineMedium.copy(fontWeight = FontWeight.Bold),
-        titleLarge = TextStyle(fontSize = 18.sp, lineHeight = 24.sp, fontWeight = FontWeight.Medium),
+        // User 24.11.2026: five sizes - page title 30, section title 18, names and text 16, headings in cards 14, small text 12.
+        titleLarge = TextStyle(fontSize = 18.sp, lineHeight = 24.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.1.sp),
         titleMedium = TextStyle(fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.1.sp),
         titleSmall = TextStyle(fontSize = 14.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.1.sp),
-        bodyLarge = TextStyle(fontSize = 17.sp, lineHeight = 24.sp),
-        bodyMedium = TextStyle(fontSize = 15.sp, lineHeight = 21.sp),
+        bodyLarge = TextStyle(fontSize = 16.sp, lineHeight = 22.sp),
+        bodyMedium = TextStyle(fontSize = 16.sp, lineHeight = 22.sp),
+        bodySmall = TextStyle(fontSize = 12.sp, lineHeight = 16.sp),
+        labelLarge = TextStyle(fontSize = 14.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.1.sp),
+        labelMedium = TextStyle(fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.2.sp),
+        labelSmall = TextStyle(fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.2.sp),
     )
 }
 

@@ -130,7 +130,7 @@ fun DayCheckScreen(
                 shape = CircleShape,
                 modifier = Modifier.navigationBarsPadding().fillMaxWidth().padding(16.dp).heightIn(min = 56.dp),
             ) {
-                Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(22.dp))
+                Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(20.dp))
                 Text(stringResource(Res.string.day_finish), modifier = Modifier.padding(start = 10.dp))
             }
         },

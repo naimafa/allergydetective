@@ -116,7 +116,7 @@ fun TimeLine(time: ExactTime, onChange: (ExactTime) -> Unit, modifier: Modifier 
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(start = 12.dp),
         ) {
-            Icon(Icons.Outlined.Schedule, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+            Icon(Icons.Outlined.Schedule, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
             Text(
                 formatClock(time.hour, time.minute),
                 style = MaterialTheme.typography.bodyMedium,

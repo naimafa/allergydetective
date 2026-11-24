@@ -37,12 +37,12 @@ fun AppFilterChip(
         selected = selected,
         onClick = onClick,
         // User 24.11.2026: one calmer label size on every chip.
-        label = { ProvideTextStyle(MaterialTheme.typography.labelMedium) { label() } },
+        label = { ProvideTextStyle(MaterialTheme.typography.labelLarge) { label() } },
         modifier = modifier,
         enabled = enabled,
         trailingIcon = trailingIcon,
         leadingIcon = if (selected && leadingIcon == null && showCheck) {
-            { Icon(Icons.Outlined.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
+            { Icon(Icons.Outlined.Check, contentDescription = null, modifier = Modifier.size(20.dp)) }
         } else {
             leadingIcon
         },

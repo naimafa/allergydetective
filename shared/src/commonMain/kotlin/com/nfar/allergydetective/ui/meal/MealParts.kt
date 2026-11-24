@@ -1,6 +1,15 @@
 package com.nfar.allergydetective.ui.meal
+import androidx.compose.foundation.layout.widthIn
+import allergydetective.shared.generated.resources.meal_portion_option_large
+import allergydetective.shared.generated.resources.meal_portion_option_medium
+import allergydetective.shared.generated.resources.meal_portion_option_small
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DropdownMenu
 
 import allergydetective.shared.generated.resources.Res
+import allergydetective.shared.generated.resources.meal_portion_word
 import allergydetective.shared.generated.resources.meal_remove
 import allergydetective.shared.generated.resources.meal_dish_collapse
 import allergydetective.shared.generated.resources.meal_dishes_chosen
@@ -79,7 +88,7 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun MealSlotGrid(rows: List<List<MealSlot>>, selected: MealSlot?, onSelect: (MealSlot) -> Unit) {
-    val style = MaterialTheme.typography.labelMedium
+    val style = MaterialTheme.typography.labelLarge
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
     val labels = rows.map { row -> row.map { mealSlotLabel(it) } }
@@ -100,7 +109,7 @@ fun MealSlotGrid(rows: List<List<MealSlot>>, selected: MealSlot?, onSelect: (Mea
                 labels[r].indices.all { i -> textWidths[r][i] + iconRoom + padding <= room * weights[i] / weights.sum() }
             }
         }
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             rows.forEachIndexed { r, row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(GRID_GAP), modifier = Modifier.fillMaxWidth()) {
                     row.forEachIndexed { i, slot ->
@@ -137,10 +146,10 @@ private fun MealSlotPill(slot: MealSlot, label: String, showIcon: Boolean, selec
             modifier = Modifier.padding(horizontal = PILL_PADDING),
         ) {
             if (showIcon) {
-                Icon(mealSlotIcon(slot), contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(mealSlotIcon(slot), contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
             }
-            Text(label, style = MaterialTheme.typography.labelMedium, maxLines = 1, softWrap = false, textAlign = TextAlign.Center)
+            Text(label, style = MaterialTheme.typography.labelLarge, maxLines = 1, softWrap = false, textAlign = TextAlign.Center)
         }
     }
 }
@@ -260,10 +269,67 @@ private val CATEGORY_EMOJI = mapOf(
     8L to "🍎", 9L to "🥜", 10L to "🫘", 11L to "🥤", 12L to "🍯", 14L to "🧂", 15L to "🌿",
 )
 
-private val SEGMENT_WIDTH = 32.dp
+private val SEGMENT_WIDTH = 44.dp
 private val SWITCH_WIDTH = SEGMENT_WIDTH * 3
 private val BADGE_WIDTH = 40.dp
-private val DELETE_SIZE = 34.dp
+private val DELETE_SIZE = 40.dp
+
+/**
+ * User 24.11.2026: the portion as a small field "M ▾" in the same line as the name (two lines per entry looked
+ * restless). A tap opens S / M / L, each with what it means.
+ */
+@Composable
+fun PortionLine(portion: Portion, onPortion: (Portion) -> Unit, modifier: Modifier = Modifier) {
+    var open by remember { mutableStateOf(false) }
+    val scheme = MaterialTheme.colorScheme
+    val description = "${stringResource(Res.string.meal_portion_word)}: ${portionLabel(portion)}"
+    Box(modifier = modifier) {
+        Surface(
+            onClick = { open = true },
+            shape = CircleShape,
+            color = AppColors.extra.home.page,
+            contentColor = AppColors.extra.home.ink,
+            border = BorderStroke(1.dp, scheme.outlineVariant),
+            modifier = Modifier.heightIn(min = 36.dp).semantics { contentDescription = description },
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 12.dp, end = 6.dp)) {
+                Text(portionLabel(portion), style = MaterialTheme.typography.labelMedium)
+                Icon(Icons.Outlined.ArrowDropDown, contentDescription = null, modifier = Modifier.size(20.dp))
+            }
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }, containerColor = AppColors.extra.home.card, modifier = Modifier.widthIn(min = 260.dp)) {
+            Portion.entries.forEach { option ->
+                DropdownMenuItem(
+                    // User 24.11.2026: the list looked untidy. Letter in its own column, the word above, the amount small below.
+                    text = {
+                        val (word, amount) = stringResource(
+                            when (option) {
+                                Portion.SMALL -> Res.string.meal_portion_option_small
+                                Portion.MEDIUM -> Res.string.meal_portion_option_medium
+                                Portion.LARGE -> Res.string.meal_portion_option_large
+                            },
+                        ).split(" – ", limit = 2).let { it[0] to it.getOrElse(1) { "" } }
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+                            Text(portionLabel(option), style = MaterialTheme.typography.titleMedium, color = scheme.primary, modifier = Modifier.width(28.dp))
+                            Column {
+                                Text(word, style = MaterialTheme.typography.bodyMedium, fontWeight = if (option == portion) FontWeight.Bold else FontWeight.Normal)
+                                Text(amount, style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
+                            }
+                        }
+                    },
+                    leadingIcon = {
+                        if (option == portion) Icon(Icons.Outlined.Check, contentDescription = null, tint = scheme.primary, modifier = Modifier.size(20.dp))
+                        else Spacer(Modifier.size(20.dp))
+                    },
+                    onClick = {
+                        open = false
+                        onPortion(option)
+                    },
+                )
+            }
+        }
+    }
+}
 
 /**
  * S · M · L in one outlined pill (design picture 23.11.2026); the chosen size is filled green, without a
@@ -316,27 +382,14 @@ fun IngredientRow(
     val nameStyle = MaterialTheme.typography.bodyMedium.merge(
         TextStyle(fontWeight = FontWeight.Medium, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
     )
-    Column(modifier = Modifier.padding(vertical = 2.dp)) {
-        BoxWithConstraints {
-            val nameRoom = maxWidth - BADGE_WIDTH - 10.dp - SWITCH_WIDTH - 6.dp - DELETE_SIZE - 8.dp
-            if (nameRoom >= 76.dp) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IngredientBadge(ingredient, name)
-                    Text(name, style = nameStyle, modifier = Modifier.weight(1f).padding(start = 10.dp, end = 8.dp))
-                    PortionSwitch(portion, onPortion)
-                    Spacer(Modifier.width(6.dp))
-                    DeleteButton(name, onRemove)
-                }
-            } else {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IngredientBadge(ingredient, name)
-                        Text(name, style = nameStyle, modifier = Modifier.weight(1f).padding(start = 10.dp, end = 8.dp))
-                        DeleteButton(name, onRemove)
-                    }
-                    PortionSwitch(portion, onPortion, Modifier.padding(start = BADGE_WIDTH + 10.dp))
-                }
-            }
+    // User 24.11.2026: name over the whole width with the bin, S/M/L in its own line below ("Portion"), like a dish.
+    Column(modifier = Modifier.padding(vertical = 4.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IngredientBadge(ingredient, name)
+            Text(name, style = nameStyle, modifier = Modifier.weight(1f).padding(start = 10.dp, end = 8.dp))
+            PortionLine(portion, onPortion)
+            Spacer(Modifier.width(4.dp))
+            DeleteButton(name, onRemove)
         }
         preparation?.let {
             Box(modifier = Modifier.padding(start = BADGE_WIDTH + 10.dp, top = 2.dp)) { it() }
@@ -351,7 +404,8 @@ private fun DeleteButton(name: String, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         shape = CircleShape,
-        color = lerp(home.page, home.badge, 0.7f),
+        // User 24.11.2026: the same plain bin everywhere, no circle.
+        color = Color.Transparent,
         contentColor = home.ink,
         modifier = Modifier.size(DELETE_SIZE).semantics { contentDescription = description },
     ) {
