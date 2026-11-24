@@ -63,6 +63,7 @@
     <string name="results_reason_days">Complaints on %1$d of %2$d days after, otherwise on %3$d of %4$d days</string>
     <string name="results_how_days">After %1$s you had complaints on %2$d of %3$d days. Without %1$s it was %4$d of %5$d days. The app compares whole days and checks whether complaints come the same day or up to 3 days later.</string>
     <string name="results_lag_0">Complaints mostly the same day</string>
+    <string name="results_lag_fast">Complaints mostly within 2 hours</string>
     <string name="results_lag_1">Complaints mostly the next day</string>
     <string name="results_lag_2">Complaints mostly 2 days later</string>
     <string name="results_lag_3">Complaints mostly 3 days later</string>

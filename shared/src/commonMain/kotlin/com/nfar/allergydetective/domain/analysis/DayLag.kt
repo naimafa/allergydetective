@@ -19,6 +19,8 @@ internal data class DayLagResult(
     val lagDays: Int?,
     /** Eaten so often that there are too few clean days to compare with ("fast täglich"). */
     val tooOften: Boolean,
+    /** Found as a fast reaction: complaints within [DayLagThresholds.fastWindowMin] minutes after the meal. */
+    val fast: Boolean = false,
 )
 
 /** Weight of the complaints of a day: strongest intensity / max of complaints from [DayLagThresholds.minIntensity] on, less on sick days. */

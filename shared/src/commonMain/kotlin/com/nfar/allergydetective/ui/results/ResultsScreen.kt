@@ -1,4 +1,5 @@
 package com.nfar.allergydetective.ui.results
+import allergydetective.shared.generated.resources.results_lag_fast
 import allergydetective.shared.generated.resources.results_tip_title
 import allergydetective.shared.generated.resources.results_tip_text
 import androidx.compose.ui.text.font.FontWeight
@@ -248,12 +249,12 @@ private fun ResultCard(item: ResultItem, onSetFocus: (String) -> Unit) {
             val food = item.label is CandidateLabel.Ingredient || item.label is CandidateLabel.Property
             // User 24.11.2026: food is compared by days, with the delay the complaints usually came after.
             item.lagDays?.takeIf { food }?.let { lag ->
-                Text(stringResource(LAG_TEXTS.getOrElse(lag) { LAG_TEXTS.last() }), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                Text(stringResource(if (item.fast) Res.string.results_lag_fast else LAG_TEXTS.getOrElse(lag) { LAG_TEXTS.last() }), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
             }
-            Text(stringResource(if (food) Res.string.results_reason_days else Res.string.results_reason, item.withComplaints, item.exposures, item.otherWithComplaints, item.otherExposures), style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(if (food && !item.fast) Res.string.results_reason_days else Res.string.results_reason, item.withComplaints, item.exposures, item.otherWithComplaints, item.otherExposures), style = MaterialTheme.typography.bodyMedium)
             if (open) {
                 Text(stringResource(Res.string.results_how_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp))
-                Text(stringResource(if (food) Res.string.results_how_days else Res.string.results_how, short, item.withComplaints, item.exposures, item.otherWithComplaints, item.otherExposures), style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(if (food && !item.fast) Res.string.results_how_days else Res.string.results_how, short, item.withComplaints, item.exposures, item.otherWithComplaints, item.otherExposures), style = MaterialTheme.typography.bodyMedium)
                 // Without any complaints in the comparison the ratio is only an estimate ("2-mal" for 1 of 6 vs 0 of 12).
                 if (item.lift >= 1.5 && item.otherWithComplaints > 0 && item.level >= EvidenceLevel.SUSPICION) {
                     Text(stringResource(Res.string.results_how_lift, formatDecimal(item.lift.toFloat(), Locale.current.language)), style = MaterialTheme.typography.bodyMedium)

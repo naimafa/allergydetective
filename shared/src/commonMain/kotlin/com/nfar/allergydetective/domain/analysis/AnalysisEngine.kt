@@ -8,6 +8,7 @@ import com.nfar.allergydetective.domain.analysis.model.EvidenceLevel
 import com.nfar.allergydetective.domain.analysis.model.ExposureStats
 import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
 import com.nfar.allergydetective.domain.analysis.model.KnownAllergyExposure
+import com.nfar.allergydetective.domain.analysis.model.TimeWindow
 
 /**
  * The "detective logic" (TRD 2) as a pure function: valid days → episodes → hits per window
@@ -52,7 +53,7 @@ class AnalysisEngine(private val config: AnalysisConfig = AnalysisConfig()) {
         val food = foodResults.map { (candidate, result) ->
             val lift = computeLift(result.stats, foodConfig)
             val level = if (result.tooOften) EvidenceLevel.INSUFFICIENT_DATA else classifyEvidence(result.stats, lift, candidate in earlierSuspicions, foodConfig)
-            CandidateResult(candidate, result.stats, lift, level, result.lagDays, result.tooOften)
+            CandidateResult(candidate, result.stats, lift, level, result.lagDays, result.tooOften, result.fast)
         }
         val life = lifestyle.map { (candidate, stats) ->
             val lift = computeLift(stats, config)
@@ -74,9 +75,24 @@ class AnalysisEngine(private val config: AnalysisConfig = AnalysisConfig()) {
         val eaten = input.diary.meals.flatMap { meal -> meal.items.map { it.ingredientId } }.toSet()
         val candidates = input.reference.properties.filter { it.id !in known }.map { Candidate.Property(it.id) } +
             eaten.filter { !catalog.hasKnownAllergy(it) }.map { Candidate.Ingredient(it) }
+        // Fast reactions (user 24.11.2026): within 2 hours after a meal, checked per meal - a day would hide them.
+        val fastEpisodes = episodes(input).filter { it.maxIntensity >= config.dayLag.minIntensity }
+        val allGroups = input.reference.symptoms.map { it.groupKey }.toSet()
+        val fastWindow = listOf(TimeWindow(0, config.dayLag.fastWindowMin))
+        val foodConfig = config.copy(evidence = config.evidence.copy(traceMinLift = maxOf(config.evidence.traceMinLift, config.dayLag.traceMinLift)))
         return candidates.mapNotNull { candidate ->
             val exposure = exposureDays(input.diary, candidate, catalog, config).filterKeys { it in validDays }
-            if (exposure.isEmpty()) null else candidate to dayLagStats(exposure, complaints, validDays, sickDays, config)
+            if (exposure.isEmpty()) return@mapNotNull null
+            val byDay = dayLagStats(exposure, complaints, validDays, sickDays, config)
+            val fastStats = foodStats(FoodProfile(candidate, fastWindow, allGroups), input.diary.meals, fastEpisodes, validDays, input.now, catalog, config, sickDays)
+            val dayLevel = classifyEvidence(byDay.stats, computeLift(byDay.stats, foodConfig), false, foodConfig)
+            val fastLevel = classifyEvidence(fastStats, computeLift(fastStats, foodConfig), false, foodConfig)
+            // The clearer of both; on a tie the day view, which also covers later complaints.
+            candidate to if (fastLevel > dayLevel && fastLevel >= EvidenceLevel.TRACE) {
+                DayLagResult(fastStats, lagDays = 0, tooOften = false, fast = true)
+            } else {
+                byDay
+            }
         }.toMap()
     }
 

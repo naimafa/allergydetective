@@ -38,6 +38,8 @@ data class CandidateResult(
     val lagDays: Int? = null,
     /** Food eaten almost every day: no clean days to compare with. */
     val tooOften: Boolean = false,
+    /** Food: found as a fast reaction within 2 hours after the meal (user 24.11.2026). */
+    val fast: Boolean = false,
 )
 
 /** A meal that contained an ingredient with a known allergy (TRD 2.6). */

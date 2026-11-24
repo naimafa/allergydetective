@@ -81,6 +81,8 @@ data class DayLagThresholds(
     /** Fewer days without it than this: "eaten almost daily", cannot be compared. */
     val minCleanDays: Int = 3,
     /** "Eaten almost daily" is only said after this many finished days ... */
+    /** Fast reactions are checked per meal in this window (minutes). */
+    val fastWindowMin: Int = 120,
     val minDaysForDaily: Int = 7,
     /** ... and for food on at least this share of them. */
     val dailyShare: Double = 0.8,

@@ -80,6 +80,26 @@ class DayLagTest {
     }
 
     @Test
+    fun aFastReactionWithinTwoHoursIsFoundPerMeal() {
+        // Milk every day, complaints right after it only. By day it cannot be compared (eaten daily), per meal it can.
+        val diary = DiaryBuilder().apply {
+            for (i in 0 until 14) {
+                day(i) {
+                    meal(8, BREAD)
+                    meal(12, RICE)
+                    meal(18, MILK)
+                    if (i % 2 == 0) symptom(19, 0, BLOATING, intensity = 4) else symptom(19, 0, HEADACHE, intensity = 4)
+                }
+            }
+        }
+
+        val milk = engine.analyze(diary.build()).resultFor(Candidate.Ingredient(MILK))!!
+
+        assertTrue(milk.fast)
+        assertTrue(milk.level >= EvidenceLevel.SUSPICION)
+    }
+
+    @Test
     fun aMildComplaintOfOneDoesNotCount() {
         val diary = DiaryBuilder().apply {
             for (i in 0 until 24) {

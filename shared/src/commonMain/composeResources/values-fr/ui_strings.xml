@@ -63,6 +63,7 @@
     <string name="results_reason_days">Symptômes %1$d jours sur %2$d après, sinon %3$d jours sur %4$d</string>
     <string name="results_how_days">Après %1$s, tu as eu des symptômes %2$d jours sur %3$d. Sans %1$s, c’était %4$d jours sur %5$d. L’appli compare des journées entières et regarde si les symptômes viennent le jour même ou jusqu’à 3 jours plus tard.</string>
     <string name="results_lag_0">Symptômes surtout le jour même</string>
+    <string name="results_lag_fast">Symptômes surtout dans les 2 heures</string>
     <string name="results_lag_1">Symptômes surtout le lendemain</string>
     <string name="results_lag_2">Symptômes surtout 2 jours après</string>
     <string name="results_lag_3">Symptômes surtout 3 jours après</string>

@@ -40,6 +40,8 @@ data class ResultItem(
     val lift: Double = 0.0,
     /** Food: typical delay in days, 0 = same day (user 24.11.2026); null for lifestyle or without complaints. */
     val lagDays: Int? = null,
+    /** Found as a fast reaction within 2 hours after a meal; counts are meals then, not days. */
+    val fast: Boolean = false,
 )
 
 data class ResultsState(
@@ -82,7 +84,7 @@ class ResultsViewModel(
             confirmedDays = input.diary.dayChecks.count { it.confirmed },
             items = result.ranking
                 .filter { it.level >= EvidenceLevel.TRACE }
-                .mapNotNull { r -> label(r.candidate)?.let { ResultItem(it, r.level, r.stats.exposureCount, r.stats.hitCount, r.stats.unexposedCount, r.stats.unexposedHitCount, r.lift, r.lagDays) } },
+                .mapNotNull { r -> label(r.candidate)?.let { ResultItem(it, r.level, r.stats.exposureCount, r.stats.hitCount, r.stats.unexposedCount, r.stats.unexposedHitCount, r.lift, r.lagDays, r.fast) } },
             groups = result.groups.map { group -> group.members.mapNotNull(::label) },
             safeIngredients = result.safeIngredientIds.mapNotNull { label(Candidate.Ingredient(it)) },
             // Eaten almost every day: no days without it to compare with (user 24.11.2026).
