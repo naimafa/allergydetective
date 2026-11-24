@@ -261,16 +261,6 @@ class LogSymptomViewModelTest {
     }
 
     @Test
-    fun longPressSavesAtOnceWithDefaults() {
-        val vm = viewModel()
-
-        vm.onSymptomLongClick(headache)
-
-        assertEquals(Saved(3001, now.toEpochMilliseconds(), 60, 3, null), repository.saved.single())
-        assertEquals(listOf(headache), vm.state.value.favorites)
-    }
-
-    @Test
     fun emergencySymptomShowsTheNoticeBeforeTheOverlay() {
         val vm = viewModel()
 
@@ -285,21 +275,9 @@ class LogSymptomViewModelTest {
     }
 
     @Test
-    fun emergencyQuickLogSavesOnlyAfterTheNotice() {
-        val vm = viewModel()
-
-        vm.onSymptomLongClick(swelling)
-        assertTrue(repository.saved.isEmpty())
-
-        vm.onEmergencyNoticeContinue()
-        assertEquals(2004L, repository.saved.single().symptomId)
-        assertNull(vm.state.value.draft)
-    }
-
-    @Test
     fun dismissingTheNoticeSavesNothing() {
         val vm = viewModel()
-        vm.onSymptomLongClick(swelling)
+        vm.onSymptomClick(swelling)
 
         vm.onEmergencyNoticeDismiss()
 
@@ -310,7 +288,8 @@ class LogSymptomViewModelTest {
     @Test
     fun undoDeletesTheEntry() {
         val vm = viewModel()
-        vm.onSymptomLongClick(headache)
+        vm.onSymptomClick(headache)
+        vm.onSaveDraft()
 
         vm.onUndo(1L)
         vm.onSavedShown()
