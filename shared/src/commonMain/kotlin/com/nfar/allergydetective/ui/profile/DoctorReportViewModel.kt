@@ -35,6 +35,12 @@ import allergydetective.shared.generated.resources.report_col_avg
 import allergydetective.shared.generated.resources.report_col_candidate
 import allergydetective.shared.generated.resources.report_col_count
 import allergydetective.shared.generated.resources.report_col_date
+import allergydetective.shared.generated.resources.report_h_diary
+import allergydetective.shared.generated.resources.report_diary_type
+import allergydetective.shared.generated.resources.report_diary_entry
+import allergydetective.shared.generated.resources.report_diary_details
+import allergydetective.shared.generated.resources.report_diary_meal
+import allergydetective.shared.generated.resources.report_diary_symptom
 import allergydetective.shared.generated.resources.report_col_level
 import allergydetective.shared.generated.resources.report_col_max
 import allergydetective.shared.generated.resources.report_col_note
@@ -217,12 +223,12 @@ class DoctorReportViewModel(
                 val base = "allergy-detective-${clock.localDate(today)}"
                 when (options.format) {
                     ReportFormat.PDF -> {
-                        val blocks = doc.blocks + tables.flatMap { listOf(PdfBlock.Heading(it.title), PdfBlock.Table(it.rows, it.weights)) }
+                        val blocks = doc.blocks + tables.filter { it.inPdf }.flatMap { listOf(PdfBlock.Heading(it.title), PdfBlock.Table(it.rows, it.weights)) }
                         onPdf("$base.pdf", doc.copy(blocks = blocks))
                     }
                     ReportFormat.EXCEL -> {
                         val analysisSheet = Sheet(getString(Res.string.report_sheet_analysis), sheetRows(doc.blocks))
-                        onExcel("$base.xlsx", listOf(analysisSheet) + tables.map { Sheet(it.title, it.rows) })
+                        onExcel("$base.xlsx", listOf(analysisSheet) + tables.map { Sheet(it.title, it.rows, it.emphasis) })
                     }
                 }
             } finally {
@@ -232,7 +238,15 @@ class DoctorReportViewModel(
     }
 
     /** One table of entries: title, rows with the header first, column weights for the PDF. */
-    private class EntryTable(val title: String, val rows: List<List<String>>, val weights: List<Float>)
+    private class EntryTable(
+        val title: String,
+        val rows: List<List<String>>,
+        val weights: List<Float>,
+        /** Rows shown bold on a tinted band in Excel (the day rows of the diary). */
+        val emphasis: Set<Int> = emptySet(),
+        /** The diary by day is for Excel; the PDF keeps the three plain tables. */
+        val inPdf: Boolean = true,
+    )
 
     /** Meals, complaints and day checks of the period, oldest first (like a diary). */
     private suspend fun entryTables(entries: List<HistoryEntry>, fromDay: Long, today: Long): List<EntryTable> {
@@ -279,11 +293,74 @@ class DoctorReportViewModel(
                 check.factorIds.mapNotNull(factorNames::get).joinToString(", "),
             )
         }
+        val diary = diaryTable(meals, symptoms, fromDay, today)
         return listOf(
+            diary,
             EntryTable(getString(Res.string.report_h_meals), mealRows, listOf(1.1f, 0.7f, 1f, 1.2f, 3f)),
             EntryTable(getString(Res.string.report_h_complaints), symptomRows, listOf(1.1f, 0.7f, 1.4f, 0.7f, 1f, 1f, 1.6f)),
             EntryTable(getString(Res.string.report_h_days), dayRows, listOf(1.1f, 1.2f, 0.8f, 0.9f, 0.7f, 1.8f)),
         )
+    }
+
+    /**
+     * User 24.11.2026: in the three plain tables it was not clear which entries belong to one day. This sheet lists every
+     * day once as a bold band (date, finished or not, sleep, stress, factors) with its meals and complaints below, by time.
+     */
+    private suspend fun diaryTable(
+        meals: List<HistoryEntry.MealEntry>,
+        symptoms: List<HistoryEntry.SymptomEntry>,
+        fromDay: Long,
+        today: Long,
+    ): EntryTable {
+        val factorNames = dayChecks.lifestyleFactors().associate { it.id to names.name(NamePrefix.FACTOR, it.key) }
+        val mealLabel = getString(Res.string.report_diary_meal)
+        val symptomLabel = getString(Res.string.report_diary_symptom)
+        val rows = mutableListOf(
+            listOf(
+                getString(Res.string.report_col_date), getString(Res.string.report_col_time), getString(Res.string.report_diary_type),
+                getString(Res.string.report_diary_entry), getString(Res.string.report_diary_details),
+            ),
+        )
+        val emphasis = mutableSetOf<Int>()
+        for (day in fromDay..today) {
+            val dayMeals = meals.filter { clock.epochDayOf(it.time) == day }
+            val daySymptoms = symptoms.filter { clock.epochDayOf(it.time) == day }
+            val check = dayChecks.load(day)
+            if (dayMeals.isEmpty() && daySymptoms.isEmpty() && check == null) continue
+            val summary = buildList {
+                check?.let { c ->
+                    add(statusLabel(c.status))
+                    c.sleepHours?.let { add(getString(Res.string.report_col_sleep) + " " + formatDecimal(it, language.language())) }
+                    c.stress?.let { add(getString(Res.string.report_col_stress) + " " + it) }
+                    c.factorIds.mapNotNull(factorNames::get).takeIf { it.isNotEmpty() }?.let { add(it.joinToString(", ")) }
+                }
+            }
+            emphasis += rows.size
+            rows += listOf(date(day), "", "", summary.joinToString(" · "), "")
+            val entries = dayMeals.map { it.time to it as HistoryEntry } + daySymptoms.map { it.time to it as HistoryEntry }
+            for ((_, entry) in entries.sortedBy { it.first }) {
+                when (entry) {
+                    is HistoryEntry.MealEntry -> {
+                        val items = entry.items.map { (ingredient, portion) ->
+                            val name = ingredient.key?.let { names.name(NamePrefix.INGREDIENT, it) } ?: ingredient.customName.orEmpty()
+                            "$name (${portionLabel(portion)})"
+                        }
+                        val kind = entry.slot?.let { slotLabel(it) }
+                        rows += listOf("", time(entry.time), listOfNotNull(mealLabel, kind).joinToString(" · "), entry.dishName.orEmpty(), items.joinToString(", "))
+                    }
+                    is HistoryEntry.SymptomEntry -> {
+                        val details = listOfNotNull(
+                            entry.duration?.let { durationLabel(it) },
+                            entry.illnessRelation?.let { illnessLabel(it) },
+                            entry.note?.takeIf { it.isNotBlank() },
+                        ).joinToString(" · ")
+                        rows += listOf("", time(entry.time), symptomLabel, symptomName(entry.symptomKey) + " (" + entry.intensity + ")", details)
+                    }
+                    else -> Unit
+                }
+            }
+        }
+        return EntryTable(getString(Res.string.report_h_diary), rows, listOf(1.1f, 0.7f, 1.3f, 2f, 3f), emphasis, inPdf = false)
     }
 
     /** The PDF blocks as rows of one sheet: titles and texts in column A, tables as they are, a blank row between. */
