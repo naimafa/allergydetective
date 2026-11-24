@@ -1,4 +1,5 @@
 package com.nfar.allergydetective.ui.meal
+import androidx.compose.ui.text.font.FontWeight
 
 import allergydetective.shared.generated.resources.meal_save_as_favorite_hint
 import allergydetective.shared.generated.resources.meal_also_called
@@ -595,12 +596,12 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
                 }
             }
             // User 24.11.2026: the name keeps the whole width; S/M/L sits in its own line below.
-            Column(modifier = Modifier.padding(start = 12.dp, end = 4.dp, bottom = 8.dp)) {
+            Column(modifier = Modifier.padding(start = 12.dp, end = 4.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     nameArea(Modifier.weight(1f))
+                    PortionLine(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) })
                     bin()
                 }
-                PortionLine(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) }, Modifier.padding(start = 30.dp))
             }
             if (open) {
                 ingredients.forEach { (ingredient, item) ->
@@ -636,7 +637,7 @@ private fun SectionHeading(title: String, aboutDishes: Boolean) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.heightIn(min = 48.dp).clickable { showPortionHelp = !showPortionHelp }.semantics { contentDescription = "$title. $infoLabel" },
         ) {
-            Text(title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f, fill = false))
+            Text(title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f, fill = false))
             Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 8.dp).size(20.dp))
         }
         if (showPortionHelp) {

@@ -377,6 +377,9 @@
     <string name="meal_multi_question">%1$s apparaît à %2$d endroits de ton repas :</string>
     <string name="meal_multi_all">Retirer partout</string>
     <string name="meal_multi_here">Seulement celui-ci</string>
+    <string name="meal_portion_option_small">petit – quelques bouchées / ½ verre</string>
+    <string name="meal_portion_option_medium">moyen – un poing / 1 verre</string>
+    <string name="meal_portion_option_large">grand – deux poings / 2 verres</string>
     <string name="meal_single_ingredients_count">Ingrédients seuls (%1$d)</string>
     <string name="meal_portion_word">Portion</string>
     <string name="meal_remove_question">Retirer %1$s du repas ?</string>

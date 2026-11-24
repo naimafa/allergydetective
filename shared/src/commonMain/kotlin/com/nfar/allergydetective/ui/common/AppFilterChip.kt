@@ -37,7 +37,7 @@ fun AppFilterChip(
         selected = selected,
         onClick = onClick,
         // User 24.11.2026: one calmer label size on every chip.
-        label = { ProvideTextStyle(MaterialTheme.typography.labelMedium) { label() } },
+        label = { ProvideTextStyle(MaterialTheme.typography.labelLarge) { label() } },
         modifier = modifier,
         enabled = enabled,
         trailingIcon = trailingIcon,

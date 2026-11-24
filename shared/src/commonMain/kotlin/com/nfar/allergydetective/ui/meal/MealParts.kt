@@ -1,4 +1,11 @@
 package com.nfar.allergydetective.ui.meal
+import allergydetective.shared.generated.resources.meal_portion_option_large
+import allergydetective.shared.generated.resources.meal_portion_option_medium
+import allergydetective.shared.generated.resources.meal_portion_option_small
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DropdownMenu
 
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.meal_portion_word
@@ -267,7 +274,60 @@ private val BADGE_WIDTH = 40.dp
 private val DELETE_SIZE = 40.dp
 
 /**
- * S · M · L in one outlined pill (design picture 23.11.2026); the chosen size is filled green, without a
+ * S ·/**
+ * User 24.11.2026: the portion as a small field "M ▾" in the same line as the name (two lines per entry looked
+ * restless). A tap opens S / M / L, each with what it means.
+ */
+@Composable
+fun PortionLine(portion: Portion, onPortion: (Portion) -> Unit, modifier: Modifier = Modifier) {
+    var open by remember { mutableStateOf(false) }
+    val scheme = MaterialTheme.colorScheme
+    val description = "${stringResource(Res.string.meal_portion_word)}: ${portionLabel(portion)}"
+    Box(modifier = modifier) {
+        Surface(
+            onClick = { open = true },
+            shape = CircleShape,
+            color = AppColors.extra.home.page,
+            contentColor = AppColors.extra.home.ink,
+            border = BorderStroke(1.dp, scheme.outlineVariant),
+            modifier = Modifier.heightIn(min = 36.dp).semantics { contentDescription = description },
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 12.dp, end = 6.dp)) {
+                Text(portionLabel(portion), style = MaterialTheme.typography.labelMedium)
+                Icon(Icons.Outlined.ArrowDropDown, contentDescription = null, modifier = Modifier.size(20.dp))
+            }
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }, containerColor = AppColors.extra.home.card) {
+            Portion.entries.forEach { option ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            portionLabel(option) + "  " + stringResource(
+                                when (option) {
+                                    Portion.SMALL -> Res.string.meal_portion_option_small
+                                    Portion.MEDIUM -> Res.string.meal_portion_option_medium
+                                    Portion.LARGE -> Res.string.meal_portion_option_large
+                                },
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = if (option == portion) FontWeight.Bold else FontWeight.Normal,
+                        )
+                    },
+                    leadingIcon = {
+                        if (option == portion) Icon(Icons.Outlined.Check, contentDescription = null, tint = scheme.primary, modifier = Modifier.size(20.dp))
+                        else Spacer(Modifier.size(20.dp))
+                    },
+                    onClick = {
+                        open = false
+                        onPortion(option)
+                    },
+                )
+            }
+        }
+    }
+}
+
+· L in one outlined pill (design picture 23.11.2026); the chosen size is filled green, without a
  * check mark (user 23.11.: "nur die Farbe soll gewählt zeigen").
  */
 @Composable
@@ -336,9 +396,10 @@ fun IngredientRow(
         Row(verticalAlignment = Alignment.CenterVertically) {
             IngredientBadge(ingredient, name)
             Text(name, style = nameStyle, modifier = Modifier.weight(1f).padding(start = 10.dp, end = 8.dp))
+            PortionLine(portion, onPortion)
+            Spacer(Modifier.width(4.dp))
             DeleteButton(name, onRemove)
         }
-        PortionLine(portion, onPortion, Modifier.padding(start = BADGE_WIDTH + 10.dp))
         preparation?.let {
             Box(modifier = Modifier.padding(start = BADGE_WIDTH + 10.dp, top = 2.dp)) { it() }
         }

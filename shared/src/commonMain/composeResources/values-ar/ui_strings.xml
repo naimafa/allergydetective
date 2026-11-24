@@ -390,6 +390,9 @@
     <string name="meal_multi_question">يظهر %1$s في %2$d أماكن في وجبتك:</string>
     <string name="meal_multi_all">إزالة من كل مكان</string>
     <string name="meal_multi_here">هذا الموضع فقط</string>
+    <string name="meal_portion_option_small">صغير – بضع لقيمات / نصف كوب</string>
+    <string name="meal_portion_option_medium">متوسط – قبضة يد / كوب</string>
+    <string name="meal_portion_option_large">كبير – قبضتان / كوبان</string>
     <string name="meal_single_ingredients_count">مكوّنات منفردة (%1$d)</string>
     <string name="meal_portion_word">الحصة</string>
     <string name="meal_remove_question">إزالة %1$s من الوجبة؟</string>
