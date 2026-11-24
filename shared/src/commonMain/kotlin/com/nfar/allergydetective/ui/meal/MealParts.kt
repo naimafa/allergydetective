@@ -100,7 +100,7 @@ fun MealSlotGrid(rows: List<List<MealSlot>>, selected: MealSlot?, onSelect: (Mea
                 labels[r].indices.all { i -> textWidths[r][i] + iconRoom + padding <= room * weights[i] / weights.sum() }
             }
         }
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             rows.forEachIndexed { r, row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(GRID_GAP), modifier = Modifier.fillMaxWidth()) {
                     row.forEachIndexed { i, slot ->

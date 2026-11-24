@@ -293,7 +293,7 @@ private fun LogMealContent(
         state = listState,
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        contentPadding = PaddingValues(start = 10.dp, end = 10.dp, top = 6.dp, bottom = 16.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 16.dp),
     ) {
         item { WhenStep(state, viewModel) }
         item {
@@ -414,7 +414,7 @@ private fun WhatStep(
     val voiceLabel = stringResource(Res.string.meal_voice)
     // Phone test 21.11.: favourites and quick picks filled the screen, the search results disappeared below them.
     // While searching only the results show; otherwise each shortcut group is one scrollable row.
-    StepCard(number = 2, title = stringResource(Res.string.meal_step_what), sidePadding = 10.dp) {
+    StepCard(number = 2, title = stringResource(Res.string.meal_step_what)) {
         val speech = rememberSpeechInput(Locale.current.toLanguageTag()) { text -> text?.let(viewModel::onVoiceResult) }
         // User note 22.11.2026: a soft search pill with magnifier and microphone, as in the design picture.
         TextField(
@@ -530,7 +530,7 @@ private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMea
     // Newest first: what was just added appears on top.
     if (dishes.isNotEmpty()) {
         Text(stringResource(Res.string.meal_dishes_chosen, dishes.size), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 2.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             dishes.asReversed().forEach { dish -> DishCard(state, dish, viewModel) }
         }
     }
@@ -699,7 +699,7 @@ private fun IngredientQuestions(state: LogMealState, viewModel: LogMealViewModel
         AlertDialog(
             onDismissRequest = viewModel::onRemoveCancelled,
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(stringResource(Res.string.meal_multi_question, name, places.size))
                     places.forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
                 }

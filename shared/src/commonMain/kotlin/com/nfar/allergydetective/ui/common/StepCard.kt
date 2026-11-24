@@ -48,7 +48,7 @@ fun StepCard(
         border = BorderStroke(if (highlighted) 2.dp else 1.dp, if (highlighted) scheme.error else home.cardBorder),
         modifier = modifier.fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.padding(horizontal = sidePadding, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Column(modifier = Modifier.padding(horizontal = sidePadding, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (number != null) {
                     Surface(shape = CircleShape, color = home.icon, contentColor = Color.White, modifier = Modifier.size(24.dp)) {
@@ -56,7 +56,7 @@ fun StepCard(
                     }
                 }
                 // User 24.11.2026: smaller titles and gaps on every form, so the whole looks calmer.
-                Text(title, style = MaterialTheme.typography.titleMedium)
+                Text(title, style = MaterialTheme.typography.titleLarge)
             }
             content()
         }
