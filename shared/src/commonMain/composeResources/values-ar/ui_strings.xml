@@ -122,6 +122,9 @@
     <string name="sick_day_in_period">هذا اليوم ضمن فترة مرض ويُحسب بوزن أقل في التحليل.</string>
     <string name="day_finish">ختم اليوم</string>
     <string name="day_autosave_hint">تُحفظ إجاباتك فورًا. يُحسب اليوم في التحليل بعد ختمه.</string>
+    <string name="day_sick_banner">🤒 يُحسب هذا اليوم يوم مرض.</string>
+    <string name="day_finished_info">هذا اليوم مختوم.</string>
+    <string name="day_reset">إعادة فتح هذا اليوم</string>
     <string name="day_no_symptoms_question">ألم تكن هناك أعراض في هذا اليوم؟</string>
     <string name="day_no_symptoms_yes">نعم، لا أعراض</string>
     <string name="day_no_symptoms_log">كانت هناك أعراض: سجّل عَرَضًا</string>
@@ -176,6 +179,12 @@
     <string name="report_h_meals">الوجبات</string>
     <string name="report_h_complaints">الأعراض</string>
     <string name="report_h_days">ختامات الأيام</string>
+    <string name="report_h_diary">اليوميات حسب اليوم</string>
+    <string name="report_diary_type">النوع</string>
+    <string name="report_diary_entry">الإدخال</string>
+    <string name="report_diary_details">التفاصيل</string>
+    <string name="report_diary_meal">وجبة</string>
+    <string name="report_diary_symptom">عَرَض</string>
     <string name="report_col_time">الوقت</string>
     <string name="report_col_meal">الوجبة</string>
     <string name="report_col_dish">الطبق</string>
@@ -317,7 +326,7 @@
     <string name="time_selected">%1$s، %2$s</string>
     <string name="time_change">تغيير</string>
 
-    <string name="symptom_long_press_hint">المس لإضافة التفاصيل. الضغط المطوّل يحفظ فورًا (متوسط، الآن).</string>
+    <string name="symptom_long_press_hint">المس عرضًا لإضافة شدته ووقته ومدته.</string>
     <string name="symptom_favorites">الأكثر استخدامًا</string>
     <string name="symptom_how_strong">ما مدى شدته؟</string>
     <string name="symptom_intensity_range">1 = بالكاد يُلاحَظ · 5 = قوي جدًا</string>

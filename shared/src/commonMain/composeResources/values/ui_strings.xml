@@ -112,6 +112,9 @@
     <string name="sick_day_in_period">This day lies in a period of illness and counts less for the results.</string>
     <string name="day_finish">Finish day</string>
     <string name="day_autosave_hint">Your answers are saved right away. The day counts for the evaluation once you finish it.</string>
+    <string name="day_sick_banner">🤒 This day counts as a sick day.</string>
+    <string name="day_finished_info">This day is finished.</string>
+    <string name="day_reset">Reopen this day</string>
     <string name="day_no_symptoms_question">No complaints on this day?</string>
     <string name="day_no_symptoms_yes">Yes, no complaints</string>
     <string name="day_no_symptoms_log">I had some: log a symptom</string>
@@ -170,6 +173,12 @@
     <string name="report_h_meals">Meals</string>
     <string name="report_h_complaints">Complaints</string>
     <string name="report_h_days">Day checks</string>
+    <string name="report_h_diary">Diary by day</string>
+    <string name="report_diary_type">Type</string>
+    <string name="report_diary_entry">Entry</string>
+    <string name="report_diary_details">Details</string>
+    <string name="report_diary_meal">Meal</string>
+    <string name="report_diary_symptom">Complaint</string>
     <string name="report_col_time">Time</string>
     <string name="report_col_meal">Meal</string>
     <string name="report_col_dish">Dish</string>
@@ -308,7 +317,7 @@
     <string name="time_selected">%1$s, %2$s</string>
     <string name="time_change">Change</string>
 
-    <string name="symptom_long_press_hint">Tap to add details. Long press saves right away (medium, now).</string>
+    <string name="symptom_long_press_hint">Tap a symptom to add its strength, time and duration.</string>
     <string name="symptom_favorites">Used most often</string>
     <string name="symptom_how_strong">How strong?</string>
     <string name="symptom_intensity_range">1 = barely noticeable · 5 = very strong</string>

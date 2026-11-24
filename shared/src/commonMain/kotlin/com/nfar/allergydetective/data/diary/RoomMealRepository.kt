@@ -80,7 +80,7 @@ class RoomMealRepository(private val dao: MealDao) : MealRepository {
             items = items.map { MealIngredientEntity(mealId = mealId, ingredientId = it.ingredientId, portion = it.portion.toEntity(), preparation = it.preparation?.toEntity()) },
         )
 
-    override suspend fun mealIdAt(eatenAt: Long, slot: MealSlot): Long? = dao.mealIdAt(eatenAt, slot.toEntity())
+    override suspend fun mealIdOnDay(from: Long, until: Long, slot: MealSlot): Long? = dao.mealIdOnDay(from, until, slot.toEntity())
 }
 
 internal fun MealKind.toDomain(): MealSlot = when (this) {

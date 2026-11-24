@@ -52,8 +52,6 @@ data class LogSymptomState(
     val day: Int = 0,
     /** Edit saved or dismissed: the screen closes. */
     val finished: Boolean = false,
-    /** True when the notice was opened by a long press: continuing saves directly. */
-    internal val quickLogAfterNotice: Boolean = false,
 ) {
     /** The draft lies on a sick day: the overlay asks whether it belongs to the illness. */
     val draftOnSickDay: Boolean get() = draft != null && (today - day) in sickDays
@@ -143,17 +141,8 @@ class LogSymptomViewModel(
     /** Tap on a tile: overlay, or the emergency notice first. */
     fun onSymptomClick(symptom: SymptomInfo) {
         _state.update {
-            if (symptom.isRedFlag) it.copy(emergencyNoticeFor = symptom, quickLogAfterNotice = false)
+            if (symptom.isRedFlag) it.copy(emergencyNoticeFor = symptom)
             else it.copy(draft = newDraft(symptom))
-        }
-    }
-
-    /** Long press: save at once with default intensity and "now" (CONTENT_Symptome 5.3). */
-    fun onSymptomLongClick(symptom: SymptomInfo) {
-        if (symptom.isRedFlag) {
-            _state.update { it.copy(emergencyNoticeFor = symptom, quickLogAfterNotice = true) }
-        } else {
-            save(newDraft(symptom))
         }
     }
 
@@ -161,12 +150,12 @@ class LogSymptomViewModel(
     fun onEmergencyNoticeContinue() {
         val current = _state.value
         val symptom = current.emergencyNoticeFor ?: return
-        _state.update { it.copy(emergencyNoticeFor = null, quickLogAfterNotice = false) }
-        if (current.quickLogAfterNotice) save(newDraft(symptom)) else _state.update { it.copy(draft = newDraft(symptom)) }
+        _state.update { it.copy(emergencyNoticeFor = null) }
+        _state.update { it.copy(draft = newDraft(symptom)) }
     }
 
     fun onEmergencyNoticeDismiss() {
-        _state.update { it.copy(emergencyNoticeFor = null, quickLogAfterNotice = false) }
+        _state.update { it.copy(emergencyNoticeFor = null) }
     }
 
     fun onIntensityChange(intensity: Int) = updateDraft { it.copy(intensity = intensity.coerceIn(1, MAX_INTENSITY)) }
@@ -236,7 +225,7 @@ class LogSymptomViewModel(
             )
             if (clock.epochDayOf(startedAt) in _state.value.sickDays) repository.setIllnessRelation(id, draft.illnessRelation)
             draft.duration?.let { repository.setDuration(id, it) }
-            _state.update { it.copy(savedEntryId = id, favorites = favorites()) }
+            _state.update { it.copy(savedEntryId = id, favorites = favorites(), finished = true) }
         }
     }
 

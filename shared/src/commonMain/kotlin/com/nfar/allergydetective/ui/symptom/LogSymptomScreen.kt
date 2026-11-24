@@ -28,7 +28,6 @@ import allergydetective.shared.generated.resources.symptom_part_midday
 import allergydetective.shared.generated.resources.symptom_part_morning
 import allergydetective.shared.generated.resources.symptom_when
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -37,7 +36,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -73,8 +72,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Row
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -101,6 +98,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import com.nfar.allergydetective.ui.common.StepCard
 import com.nfar.allergydetective.ui.theme.AppColors
@@ -223,10 +221,8 @@ private const val TILE_COLUMNS = 2
 private val TILE_GAP = 8.dp
 private val EMOJI_SIZE = 30.dp
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SymptomTile(symptom: SymptomInfo, viewModel: LogSymptomViewModel, nameStyle: TextStyle, modifier: Modifier) {
-    val haptics = LocalHapticFeedback.current
     Surface(
         color = symptomGroupColor(symptom.groupKey, symptom.isRedFlag),
         contentColor = MaterialTheme.colorScheme.onSurface,
@@ -234,13 +230,8 @@ private fun SymptomTile(symptom: SymptomInfo, viewModel: LogSymptomViewModel, na
         border = if (symptom.isRedFlag) BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary) else null,
         modifier = modifier
             .height(60.dp)
-            .combinedClickable(
-                onClick = { viewModel.onSymptomClick(symptom) },
-                onLongClick = {
-                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    viewModel.onSymptomLongClick(symptom)
-                },
-            ),
+            // User 24.11.2026: no saving by long press, it saved by mistake. A tap opens the form.
+            .clickable { viewModel.onSymptomClick(symptom) },
     ) {
         Row(
             modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp),
@@ -297,7 +288,7 @@ private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, day: Int, to
         containerColor = AppColors.extra.home.page,
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            modifier = Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {

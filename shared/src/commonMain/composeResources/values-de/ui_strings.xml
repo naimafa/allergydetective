@@ -112,6 +112,9 @@
     <string name="sick_day_in_period">Dieser Tag liegt in einer Krankheitszeit und zählt schwächer für die Auswertung.</string>
     <string name="day_finish">Tag abschließen</string>
     <string name="day_autosave_hint">Deine Angaben werden sofort gespeichert. Der Tag zählt für die Auswertung, sobald du ihn abschließt.</string>
+    <string name="day_sick_banner">🤒 Dieser Tag zählt als Krankheitstag.</string>
+    <string name="day_finished_info">Dieser Tag ist abgeschlossen.</string>
+    <string name="day_reset">Abschluss zurücksetzen</string>
     <string name="day_no_symptoms_question">Hattest du an diesem Tag keine Beschwerden?</string>
     <string name="day_no_symptoms_yes">Ja, keine Beschwerden</string>
     <string name="day_no_symptoms_log">Doch – Symptom eintragen</string>
@@ -170,6 +173,12 @@
     <string name="report_h_meals">Mahlzeiten</string>
     <string name="report_h_complaints">Beschwerden</string>
     <string name="report_h_days">Tagesabschlüsse</string>
+    <string name="report_h_diary">Tagebuch nach Tagen</string>
+    <string name="report_diary_type">Art</string>
+    <string name="report_diary_entry">Eintrag</string>
+    <string name="report_diary_details">Details</string>
+    <string name="report_diary_meal">Essen</string>
+    <string name="report_diary_symptom">Beschwerde</string>
     <string name="report_col_time">Uhrzeit</string>
     <string name="report_col_meal">Mahlzeit</string>
     <string name="report_col_dish">Gericht</string>
@@ -308,7 +317,7 @@
     <string name="time_selected">%1$s, %2$s</string>
     <string name="time_change">Ändern</string>
 
-    <string name="symptom_long_press_hint">Tippen für Details. Lange drücken speichert sofort (mittel, jetzt).</string>
+    <string name="symptom_long_press_hint">Tippe auf ein Symptom, um Stärke, Zeit und Dauer einzutragen.</string>
     <string name="symptom_favorites">Am häufigsten</string>
     <string name="symptom_how_strong">Wie stark?</string>
     <string name="symptom_intensity_range">1 = kaum spürbar · 5 = sehr stark</string>

@@ -81,18 +81,19 @@ ${sheets.indices.joinToString("\n") { """<Relationship Id="rId${it + 1}" Type="h
 <Relationship Id="rId${sheets.size + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
 </Relationships>""",
         )
-        // Style 0 = normal, 1 = bold (header), both wrapping text.
+        // Style 0 = normal, 1 = bold (header), 2 = bold on a tinted band (day rows), all wrapping text.
         put(
             "xl/styles.xml",
             """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
 <fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>
-<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>
+<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDDE8D5"/><bgColor indexed="64"/></patternFill></fill></fills>
 <borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>
 <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
-<cellXfs count="2">
+<cellXfs count="3">
 <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>
 <xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>
+<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>
 </cellXfs>
 </styleSheet>""",
         )
@@ -108,7 +109,7 @@ private fun worksheet(sheet: Sheet): String {
     }
     val cols = widths.mapIndexed { i, w -> """<col min="${i + 1}" max="${i + 1}" width="$w" customWidth="1"/>""" }.joinToString("")
     val rows = sheet.rows.mapIndexed { r, row ->
-        val style = if (r == 0) 1 else 0
+        val style = if (r == 0) 1 else if (r in sheet.emphasisRows) 2 else 0
         val cells = row.mapIndexed { c, value ->
             """<c r="${columnName(c)}${r + 1}" t="inlineStr" s="$style"><is><t xml:space="preserve">${escape(value)}</t></is></c>"""
         }.joinToString("")

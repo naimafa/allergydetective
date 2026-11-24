@@ -134,9 +134,9 @@ interface MealDao {
     @Query("SELECT * FROM meal_ingredients WHERE mealId = :mealId")
     suspend fun mealIngredients(mealId: Long): List<MealIngredientEntity>
 
-    /** The meal of [kind] at exactly [eatenAt]; rows without a kind (before version 8) count as well. */
-    @Query("SELECT id FROM meals WHERE eatenAt = :eatenAt AND (kind = :kind OR kind IS NULL) ORDER BY id LIMIT 1")
-    suspend fun mealIdAt(eatenAt: Long, kind: MealKind): Long?
+    /** The first meal of [kind] eaten from [from] (inclusive) until [until] (exclusive), i.e. on that day (user 24.11.2026: a changed time must not lead to a second breakfast). */
+    @Query("SELECT id FROM meals WHERE eatenAt >= :from AND eatenAt < :until AND kind = :kind ORDER BY id LIMIT 1")
+    suspend fun mealIdOnDay(from: Long, until: Long, kind: MealKind): Long?
 
     @Query("UPDATE meals SET eatenAt = :eatenAt, tzOffsetMin = :tzOffsetMin, favoriteId = :favoriteId, kind = :kind WHERE id = :mealId")
     suspend fun updateMealRow(mealId: Long, eatenAt: Long, tzOffsetMin: Int, favoriteId: Long?, kind: MealKind?)

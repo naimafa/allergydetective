@@ -75,8 +75,8 @@ interface MealRepository {
         saveMeal(eatenAt, tzOffsetMin, items, favoriteId, slot)
     }
 
-    /** A meal of [slot] logged at exactly [eatenAt], e.g. today's dinner at 19:00, or null. */
-    suspend fun mealIdAt(eatenAt: Long, slot: MealSlot): Long? = null
+    /** A meal of [slot] eaten from [from] until [until] (one local day), e.g. today's dinner whatever its time, or null. */
+    suspend fun mealIdOnDay(from: Long, until: Long, slot: MealSlot): Long? = null
 }
 
 data class LoggedMeal(
