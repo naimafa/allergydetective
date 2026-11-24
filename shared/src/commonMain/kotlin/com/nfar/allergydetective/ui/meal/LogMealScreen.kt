@@ -120,6 +120,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import com.nfar.allergydetective.ui.common.AppFilterChip
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.foundation.layout.BoxWithConstraints
 import allergydetective.shared.generated.resources.meal_dishes_chosen
@@ -139,6 +142,7 @@ import allergydetective.shared.generated.resources.meal_place_single
 import allergydetective.shared.generated.resources.meal_multi_question
 import allergydetective.shared.generated.resources.meal_multi_all
 import allergydetective.shared.generated.resources.meal_multi_here
+import allergydetective.shared.generated.resources.meal_remove_question
 import allergydetective.shared.generated.resources.meal_remove_dish
 import allergydetective.shared.generated.resources.common_cancel
 import androidx.compose.material3.Icon
@@ -289,7 +293,7 @@ private fun LogMealContent(
         state = listState,
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 16.dp),
+        contentPadding = PaddingValues(start = 10.dp, end = 10.dp, top = 6.dp, bottom = 16.dp),
     ) {
         item { WhenStep(state, viewModel) }
         item {
@@ -410,7 +414,7 @@ private fun WhatStep(
     val voiceLabel = stringResource(Res.string.meal_voice)
     // Phone test 21.11.: favourites and quick picks filled the screen, the search results disappeared below them.
     // While searching only the results show; otherwise each shortcut group is one scrollable row.
-    StepCard(number = 2, title = stringResource(Res.string.meal_step_what)) {
+    StepCard(number = 2, title = stringResource(Res.string.meal_step_what), sidePadding = 10.dp) {
         val speech = rememberSpeechInput(Locale.current.toLanguageTag()) { text -> text?.let(viewModel::onVoiceResult) }
         // User note 22.11.2026: a soft search pill with magnifier and microphone, as in the design picture.
         TextField(
@@ -526,7 +530,7 @@ private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMea
     // Newest first: what was just added appears on top.
     if (dishes.isNotEmpty()) {
         Text(stringResource(Res.string.meal_dishes_chosen, dishes.size), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 2.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             dishes.asReversed().forEach { dish -> DishCard(state, dish, viewModel) }
         }
     }
@@ -579,10 +583,11 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
             val nameArea: @Composable (Modifier) -> Unit = { modifier ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = modifier.heightIn(min = 48.dp).clickable { open = !open }.semantics { contentDescription = "${info.name}. $action" },
+                    modifier = modifier.heightIn(min = 42.dp).clickable { open = !open }.semantics { contentDescription = "${info.name}. $action" },
                 ) {
-                    Text("🍲", fontSize = 22.sp)
-                    Text(info.name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f, fill = false).padding(start = 8.dp))
+                    Text("🍲", fontSize = 18.sp)
+                    // Phone test 24.11.: long names broke inside the word ("Linsens-uppe"); now hyphenated at syllables.
+                    Text(info.name, style = MaterialTheme.typography.bodyMedium.merge(TextStyle(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph)), modifier = Modifier.weight(1f, fill = false).padding(start = 6.dp))
                     Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.padding(start = 2.dp).size(26.dp))
                 }
             }
@@ -593,7 +598,7 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
             }
             BoxWithConstraints(modifier = Modifier.padding(start = 12.dp, end = 4.dp)) {
                 // Name, S/M/L and bin in one line when the name keeps at least ~90 dp.
-                if (maxWidth >= 120.dp + 44.dp + 100.dp + 32.dp) {
+                if (maxWidth >= 96.dp + 44.dp + 100.dp + 32.dp) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         nameArea(Modifier.weight(1f))
                         PortionSwitch(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) })
@@ -615,7 +620,7 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
                     HorizontalDivider(color = home.cardBorder, modifier = Modifier.padding(horizontal = 12.dp))
                     Column(modifier = Modifier.padding(start = 20.dp, end = 4.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(name, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f).padding(vertical = 4.dp))
+                            Text(name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f).padding(vertical = 4.dp))
                             IconButton(
                                 onClick = { viewModel.onRemoveIngredient(ingredient.id, dish.favoriteId) },
                                 modifier = Modifier.size(40.dp).semantics { contentDescription = "$removeIngredient: $name" },
@@ -682,10 +687,19 @@ private fun IngredientQuestions(state: LogMealState, viewModel: LogMealViewModel
                 is Place.InDish -> state.favorites.firstOrNull { it.id == place.favoriteId }?.name.orEmpty()
             }
         }
+        if (places.size == 1) {
+            AlertDialog(
+                onDismissRequest = viewModel::onRemoveCancelled,
+                text = { Text(stringResource(Res.string.meal_remove_question, name)) },
+                confirmButton = { Button(onClick = viewModel::onRemoveEverywhere) { Text(stringResource(Res.string.meal_remove)) } },
+                dismissButton = { TextButton(onClick = viewModel::onRemoveCancelled) { Text(stringResource(Res.string.common_cancel)) } },
+            )
+            return
+        }
         AlertDialog(
             onDismissRequest = viewModel::onRemoveCancelled,
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(stringResource(Res.string.meal_multi_question, name, places.size))
                     places.forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
                 }

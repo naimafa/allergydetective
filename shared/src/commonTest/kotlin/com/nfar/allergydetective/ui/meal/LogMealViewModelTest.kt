@@ -249,12 +249,14 @@ class LogMealViewModelTest {
     }
 
     @Test
-    fun removingAnIngredientFromOnePlaceNeedsNoQuestion() {
+    fun removingAnIngredientFromOnePlaceAsksToo() {
         repository.favorites += FavoriteInfo(7, "Brot mit Milch", listOf(MealItem(bread.id, Portion.MEDIUM), MealItem(milk.id, Portion.MEDIUM)))
         val vm = viewModel()
         vm.onFavoriteClick(vm.state.value.favorites.single())
 
         vm.onRemoveIngredient(milk.id, 7)
+        assertEquals(listOf<Place>(Place.InDish(7)), vm.state.value.pendingRemove?.places)
+        vm.onRemoveEverywhere()
 
         assertNull(vm.state.value.pendingRemove)
         assertEquals(listOf(bread.id), vm.state.value.mealItems.map { it.ingredientId })
@@ -317,6 +319,7 @@ class LogMealViewModelTest {
         vm.onFavoriteClick(vm.state.value.favorites.single())
 
         vm.onRemoveIngredient(milk.id, 7)
+        vm.onRemoveEverywhere()
 
         assertTrue(vm.state.value.dishes.isEmpty())
         assertNull(vm.state.value.favoriteId)
@@ -422,6 +425,7 @@ class LogMealViewModelTest {
         assertEquals(listOf(SelectedIngredient(bread)), vm.state.value.selected)
 
         vm.onToggleIngredient(bread)
+        vm.onRemoveEverywhere()
         assertTrue(vm.state.value.selected.isEmpty())
         assertFalse(vm.state.value.canSave)
     }

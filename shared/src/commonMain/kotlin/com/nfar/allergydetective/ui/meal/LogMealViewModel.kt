@@ -320,7 +320,8 @@ class LogMealViewModel(
     /** One place: removed at once. Several: the screen asks whether to remove it everywhere or only here. */
     private fun requestRemove(ingredient: IngredientInfo, origin: Place) {
         val places = _state.value.placesOf(ingredient.id)
-        if (places.size >= 2) {
+        // User 24.11.2026: always ask, a tap on the bin can be a mistake.
+        if (places.isNotEmpty()) {
             _state.update { it.copy(pendingRemove = PendingRemove(ingredient, places, origin)) }
         } else {
             removeFrom(ingredient.id, origin)

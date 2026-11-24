@@ -260,10 +260,10 @@ private val CATEGORY_EMOJI = mapOf(
     8L to "🍎", 9L to "🥜", 10L to "🫘", 11L to "🥤", 12L to "🍯", 14L to "🧂", 15L to "🌿",
 )
 
-private val SEGMENT_WIDTH = 40.dp
+private val SEGMENT_WIDTH = 32.dp
 private val SWITCH_WIDTH = SEGMENT_WIDTH * 3
 private val BADGE_WIDTH = 40.dp
-private val DELETE_SIZE = 38.dp
+private val DELETE_SIZE = 34.dp
 
 /**
  * S · M · L in one outlined pill (design picture 23.11.2026); the chosen size is filled green, without a
@@ -288,10 +288,10 @@ fun PortionSwitch(selected: Portion, onSelect: (Portion) -> Unit, modifier: Modi
                     shape = CircleShape,
                     color = if (chosen) scheme.primary else AppColors.extra.home.page,
                     contentColor = if (chosen) scheme.onPrimary else AppColors.extra.home.ink,
-                    modifier = Modifier.width(SEGMENT_WIDTH).heightIn(min = 36.dp),
+                    modifier = Modifier.width(SEGMENT_WIDTH).heightIn(min = 30.dp),
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Text(label, style = MaterialTheme.typography.labelLarge, maxLines = 1, softWrap = false)
+                        Text(label, style = MaterialTheme.typography.labelMedium, maxLines = 1, softWrap = false)
                     }
                 }
             }
@@ -313,7 +313,7 @@ fun IngredientRow(
     onRemove: () -> Unit,
     preparation: @Composable (() -> Unit)?,
 ) {
-    val nameStyle = MaterialTheme.typography.titleSmall.merge(
+    val nameStyle = MaterialTheme.typography.bodyMedium.merge(
         TextStyle(fontWeight = FontWeight.Medium, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
     )
     Column(modifier = Modifier.padding(vertical = 2.dp)) {
