@@ -9,6 +9,9 @@ import allergydetective.shared.generated.resources.day_no_symptoms_log
 import allergydetective.shared.generated.resources.day_no_symptoms_question
 import allergydetective.shared.generated.resources.day_no_symptoms_yes
 import allergydetective.shared.generated.resources.day_open_past_hint
+import allergydetective.shared.generated.resources.day_sick_banner
+import allergydetective.shared.generated.resources.day_finished_info
+import allergydetective.shared.generated.resources.day_reset
 import allergydetective.shared.generated.resources.day_scale_hint
 import allergydetective.shared.generated.resources.day_sick_hint
 import allergydetective.shared.generated.resources.day_sleep
@@ -144,6 +147,7 @@ private fun DayCheckContent(
     sickViewModel: SickPeriodsViewModel,
     modifier: Modifier,
 ) {
+    val sickState by sickViewModel.state.collectAsStateWithLifecycle()
     val check = state.check
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
@@ -169,6 +173,22 @@ private fun DayCheckContent(
                 Text(stringResource(Res.string.day_open_past_hint, labels), style = MaterialTheme.typography.bodySmall)
             }
             Text(stringResource(Res.string.day_autosave_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+
+        // User 24.11.2026: entered sick days were hard to see here. A clear banner says so, and a finished day can be reopened.
+        val sickFactor = state.factors.any { it.key == SICK_FACTOR_KEY && it.id in check.factorIds }
+        if (sickState.isSick(check.epochDay) || sickFactor) {
+            Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.tertiaryContainer, contentColor = MaterialTheme.colorScheme.onTertiaryContainer) {
+                Text(stringResource(Res.string.day_sick_banner), style = MaterialTheme.typography.titleSmall, modifier = Modifier.fillMaxWidth().padding(14.dp))
+            }
+        }
+        if (check.isConfirmed) {
+            Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer) {
+                Column(modifier = Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(stringResource(Res.string.day_finished_info), style = MaterialTheme.typography.titleSmall)
+                    OutlinedButton(onClick = viewModel::onReset, modifier = Modifier.heightIn(min = 44.dp)) { Text(stringResource(Res.string.day_reset)) }
+                }
+            }
         }
 
         // User 23.11.2026: numbered steps like "Essen erfassen", so the order is clear.

@@ -118,6 +118,13 @@ class DayCheckViewModel(
         }
     }
 
+    /** User 24.11.2026: take a finished day back, so its answers can be corrected and it can be finished again. */
+    fun onReset() {
+        val check = _state.value.check.copy(status = DayCheckStatus.OPEN)
+        _state.update { it.copy(check = check, confirmedDays = it.confirmedDays - check.epochDay) }
+        viewModelScope.launch { saveLock.withLock { repository.save(check) } }
+    }
+
     /** Answer "yes, no complaints". */
     fun onConfirmNoSymptoms() = finish(DayCheckStatus.NO_SYMPTOMS)
 
