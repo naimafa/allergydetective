@@ -26,6 +26,7 @@ data class AnalysisConfig(
     val lifestyle: LifestyleThresholds = LifestyleThresholds(),
     val grouping: GroupingThresholds = GroupingThresholds(),
     val sickness: SicknessWeights = SicknessWeights(),
+    val dayLag: DayLagThresholds = DayLagThresholds(),
 ) {
     fun portionFactor(portion: Portion): Double = portionFactors.getValue(portion)
 }
@@ -69,6 +70,24 @@ data class GroupingThresholds(
 data class SicknessWeights(
     val dayWeight: Double = 0.5,
     val unknownRelationWeight: Double = 0.5,
+)
+
+/** Day analysis with a delay (KONZEPT_MUSTERERKENNUNG.md, decided with the user 24.11.2026). */
+data class DayLagThresholds(
+    /** A day counts as a day with complaints from this intensity on. */
+    val minIntensity: Int = 2,
+    /** Delays tested: same day up to this many days later. */
+    val maxLagDays: Int = 3,
+    /** Fewer days without it than this: "eaten almost daily", cannot be compared. */
+    val minCleanDays: Int = 3,
+    /** "Eaten almost daily" is only said after this many finished days ... */
+    /** Fast reactions are checked per meal in this window (minutes). */
+    val fastWindowMin: Int = 120,
+    val minDaysForDaily: Int = 7,
+    /** ... and for food on at least this share of them. */
+    val dailyShare: Double = 0.8,
+    /** Testing several delays finds chance results more easily, so a trace needs a clearer difference. */
+    val traceMinLift: Double = 2.0,
 )
 
 /** Lifestyle candidates (TRD 2.5). */

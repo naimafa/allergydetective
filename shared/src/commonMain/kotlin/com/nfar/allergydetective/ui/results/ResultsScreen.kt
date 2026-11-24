@@ -1,4 +1,16 @@
 package com.nfar.allergydetective.ui.results
+import allergydetective.shared.generated.resources.results_lag_fast
+import allergydetective.shared.generated.resources.results_tip_title
+import allergydetective.shared.generated.resources.results_tip_text
+import androidx.compose.ui.text.font.FontWeight
+import allergydetective.shared.generated.resources.results_daily_hint
+import allergydetective.shared.generated.resources.results_daily_title
+import allergydetective.shared.generated.resources.results_lag_3
+import allergydetective.shared.generated.resources.results_lag_2
+import allergydetective.shared.generated.resources.results_lag_1
+import allergydetective.shared.generated.resources.results_lag_0
+import allergydetective.shared.generated.resources.results_how_days
+import allergydetective.shared.generated.resources.results_reason_days
 
 import com.nfar.allergydetective.domain.analysis.SafeListThresholds
 import allergydetective.shared.generated.resources.results_safe_hint
@@ -136,6 +148,15 @@ private fun ResultsContent(state: ResultsState, modifier: Modifier, onSetFocus: 
             item { Text(stringResource(Res.string.results_nothing_yet), style = MaterialTheme.typography.bodyLarge) }
         }
         items(state.items) { ResultCard(it, onSetFocus) }
+        // User 24.11.2026: the app can only compare what is sometimes left out - say how to help it.
+        item {
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer), modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(stringResource(Res.string.results_tip_title), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(Res.string.results_tip_text), style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+        }
         if (state.groups.isNotEmpty()) {
             item { SectionTitle(stringResource(Res.string.results_groups_title)) }
             items(state.groups) { group ->
@@ -160,6 +181,18 @@ private fun ResultsContent(state: ResultsState, modifier: Modifier, onSetFocus: 
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f),
                         )
+                    }
+                }
+            }
+        }
+        // User 24.11.2026: food eaten almost every day cannot be compared - say so instead of a false trace.
+        if (state.dailyFoods.isNotEmpty()) {
+            item {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(stringResource(Res.string.results_daily_title), style = MaterialTheme.typography.titleMedium)
+                        Text(state.dailyFoods.map { labelText(it) }.joinToString(", "))
+                        Text(stringResource(Res.string.results_daily_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
@@ -213,10 +246,15 @@ private fun ResultCard(item: ResultItem, onSetFocus: (String) -> Unit) {
                 Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = stringResource(Res.string.results_details))
             }
             Text(name, style = MaterialTheme.typography.titleMedium)
-            Text(stringResource(Res.string.results_reason, item.withComplaints, item.exposures, item.otherWithComplaints, item.otherExposures), style = MaterialTheme.typography.bodyMedium)
+            val food = item.label is CandidateLabel.Ingredient || item.label is CandidateLabel.Property
+            // User 24.11.2026: food is compared by days, with the delay the complaints usually came after.
+            item.lagDays?.takeIf { food }?.let { lag ->
+                Text(stringResource(if (item.fast) Res.string.results_lag_fast else LAG_TEXTS.getOrElse(lag) { LAG_TEXTS.last() }), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+            }
+            Text(stringResource(if (food && !item.fast) Res.string.results_reason_days else Res.string.results_reason, item.withComplaints, item.exposures, item.otherWithComplaints, item.otherExposures), style = MaterialTheme.typography.bodyMedium)
             if (open) {
                 Text(stringResource(Res.string.results_how_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp))
-                Text(stringResource(Res.string.results_how, short, item.withComplaints, item.exposures, item.otherWithComplaints, item.otherExposures), style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(if (food && !item.fast) Res.string.results_how_days else Res.string.results_how, short, item.withComplaints, item.exposures, item.otherWithComplaints, item.otherExposures), style = MaterialTheme.typography.bodyMedium)
                 // Without any complaints in the comparison the ratio is only an estimate ("2-mal" for 1 of 6 vs 0 of 12).
                 if (item.lift >= 1.5 && item.otherWithComplaints > 0 && item.level >= EvidenceLevel.SUSPICION) {
                     Text(stringResource(Res.string.results_how_lift, formatDecimal(item.lift.toFloat(), Locale.current.language)), style = MaterialTheme.typography.bodyMedium)
@@ -266,3 +304,6 @@ private fun labelText(label: CandidateLabel): String = when (label) {
     CandidateLabel.BadSleep -> stringResource(Res.string.results_bad_sleep)
     CandidateLabel.HighStress -> stringResource(Res.string.results_high_stress)
 }
+
+/** "Beschwerden meist am selben Tag / am nächsten Tag / 2 Tage danach / 3 Tage danach". */
+private val LAG_TEXTS = listOf(Res.string.results_lag_0, Res.string.results_lag_1, Res.string.results_lag_2, Res.string.results_lag_3)

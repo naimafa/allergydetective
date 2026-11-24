@@ -3,6 +3,7 @@ package com.nfar.allergydetective.domain.analysis
 import com.nfar.allergydetective.domain.analysis.fixtures.DiaryBuilder
 import com.nfar.allergydetective.domain.analysis.fixtures.TestCatalog.BLOATING
 import com.nfar.allergydetective.domain.analysis.fixtures.TestCatalog.BREAD
+import com.nfar.allergydetective.domain.analysis.fixtures.TestCatalog.HEADACHE
 import com.nfar.allergydetective.domain.analysis.fixtures.TestCatalog.MILK
 import com.nfar.allergydetective.domain.analysis.model.AnalysisInput
 import com.nfar.allergydetective.domain.analysis.model.Candidate
@@ -18,7 +19,8 @@ import kotlin.test.assertTrue
  */
 class AnalysisEngineSicknessTest {
 
-    private val engine = AnalysisEngine()
+    // Same-day comparison only, so the sick-day weights are checked on one fixed delay.
+    private val engine = AnalysisEngine(AnalysisConfig(dayLag = DayLagThresholds(maxLagDays = 0)))
 
     /** Milk on every day, bloating 1.5 h later; days 0–2 are sick days with [relation]. */
     private fun diary(relation: IllnessRelation?, sickDays: Int = 3): AnalysisInput = DiaryBuilder().apply {
@@ -26,7 +28,8 @@ class AnalysisEngineSicknessTest {
             day(i, sick = i < sickDays) {
                 meal(8, BREAD)
                 meal(15, MILK)
-                symptom(16, 30, BLOATING, intensity = 4, relation = relation.takeIf { i < sickDays })
+                // Two complaints taking turns, so no complaint lasts over two days (those count once, user 24.11.2026).
+                symptom(16, 30, if (i % 2 == 0) BLOATING else HEADACHE, intensity = 4, relation = relation.takeIf { i < sickDays })
             }
         }
     }.build()

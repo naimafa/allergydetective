@@ -73,7 +73,7 @@ class ResultsViewModelTest {
         assertEquals(7, lactose.exposures)
         assertEquals(7, lactose.withComplaints)
         // 21 bread meals without lactose; bloating is outside their window
-        assertEquals(21, lactose.otherExposures)
+        assertEquals(14, lactose.otherExposures) // days without lactose (user 24.11.2026: days instead of meals)
         assertEquals(0, lactose.otherWithComplaints)
         assertEquals(21, state.confirmedDays)
     }

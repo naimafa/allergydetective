@@ -50,6 +50,9 @@
 
     <string name="results_too_early">%1$d jours confirmés sur %2$d. L’analyse devient parlante après %2$d jours ; d’ici là, tout ici est provisoire.</string>
     <string name="results_nothing_yet">Pas encore d’indices. Continue à noter, chaque note est une pièce du puzzle.</string>
+    <string name="results_tip_title">Comment aider la recherche</string>
+    <string name="results_tip_text">Continue à tout noter chaque jour et à clôturer la journée, même sans symptômes. Les aliments que tu manges presque tous les jours ne peuvent être testés que si tu les évites de temps en temps quelques jours.</string>
+    <string name="onboarding_leave_out_text">Important : l’appli ne peut pas comparer ce que tu manges presque tous les jours. Évite-le de temps en temps quelques jours et continue à noter. Ce sont ces jours qui rendent les motifs visibles.</string>
     <string name="results_level_trace">🔍 Piste</string>
     <string name="results_level_suspicion">🔎 Soupçon</string>
     <string name="results_level_strong">🕵️ Fort soupçon</string>
@@ -57,6 +60,15 @@
     <string name="results_details">Voir les détails</string>
     <string name="results_how_title">Comment c’est établi</string>
     <string name="results_how">Après %1$s, tu as eu des troubles %2$d fois sur %3$d. Sans %1$s, %4$d fois sur %5$d. L’app compte les troubles dans les heures après un repas et compare les deux.</string>
+    <string name="results_reason_days">Symptômes %1$d jours sur %2$d après, sinon %3$d jours sur %4$d</string>
+    <string name="results_how_days">Après %1$s, tu as eu des symptômes %2$d jours sur %3$d. Sans %1$s, c’était %4$d jours sur %5$d. L’appli compare des journées entières et regarde si les symptômes viennent le jour même ou jusqu’à 3 jours plus tard.</string>
+    <string name="results_lag_0">Symptômes surtout le jour même</string>
+    <string name="results_lag_fast">Symptômes surtout dans les 2 heures</string>
+    <string name="results_lag_1">Symptômes surtout le lendemain</string>
+    <string name="results_lag_2">Symptômes surtout 2 jours après</string>
+    <string name="results_lag_3">Symptômes surtout 3 jours après</string>
+    <string name="results_daily_title">Mangé presque tous les jours</string>
+    <string name="results_daily_hint">Tu manges ces aliments presque tous les jours. Sans jours de comparaison, l’appli ne peut pas les tester. Évite-en un pendant 2 semaines pour voir si tu te sens mieux.</string>
     <string name="results_how_lift">C’est environ %1$s fois plus souvent.</string>
     <string name="results_how_limit">Un schéma dans tes saisies, pas une preuve : d’autres aliments, le sommeil ou le stress peuvent aussi jouer.</string>
     <string name="results_next_title">Ce que tu peux faire</string>
