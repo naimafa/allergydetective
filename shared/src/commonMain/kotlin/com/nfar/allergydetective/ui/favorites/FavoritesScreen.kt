@@ -220,10 +220,10 @@ private fun DishCard(
                 Text(name, style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f).padding(top = 8.dp))
                 // User note 22.11.2026: from the right: drag handle, edit, delete (no more "…" menu).
                 IconButton(onClick = onDelete, modifier = Modifier.size(40.dp)) {
-                    Icon(Icons.Outlined.Delete, contentDescription = stringResource(Res.string.history_delete), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
+                    Icon(Icons.Outlined.Delete, contentDescription = stringResource(Res.string.history_delete), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
                 }
                 IconButton(onClick = onEdit, modifier = Modifier.size(40.dp)) {
-                    Icon(Icons.Outlined.Edit, contentDescription = stringResource(Res.string.favorites_edit), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
+                    Icon(Icons.Outlined.Edit, contentDescription = stringResource(Res.string.favorites_edit), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
                 }
                 if (handle != null) {
                     Icon(
@@ -247,7 +247,7 @@ private fun DishCard(
                 colors = ButtonDefaults.filledTonalButtonColors(containerColor = AppColors.extra.home.badge, contentColor = AppColors.extra.home.accent),
                 modifier = Modifier.fillMaxWidth().padding(top = 12.dp, end = 12.dp).heightIn(min = 48.dp),
             ) {
-                Icon(Icons.Outlined.Restaurant, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(Icons.Outlined.Restaurant, contentDescription = null, modifier = Modifier.size(20.dp))
                 Text(
                     stringResource(Res.string.favorites_log),
                     maxLines = 1,

@@ -93,7 +93,7 @@ fun GoalSection(store: SettingsStore = koinInject()) {
         }
         HorizontalDivider(color = AppColors.extra.home.cardBorder)
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.GpsFixed, contentDescription = null, tint = primary, modifier = Modifier.size(22.dp))
+            Icon(Icons.Outlined.GpsFixed, contentDescription = null, tint = primary, modifier = Modifier.size(20.dp))
             Text(stringResource(Res.string.goal_focus), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(start = 8.dp))
         }
         OutlinedTextField(

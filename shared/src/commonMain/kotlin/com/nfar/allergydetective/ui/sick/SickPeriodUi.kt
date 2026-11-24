@@ -156,7 +156,7 @@ fun SickPeriodDayCheckPart(day: Long, viewModel: SickPeriodsViewModel) {
         onClick = { showDialog = true },
         modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
     ) {
-        Icon(Icons.Outlined.DateRange, contentDescription = null, modifier = Modifier.size(18.dp))
+        Icon(Icons.Outlined.DateRange, contentDescription = null, modifier = Modifier.size(20.dp))
         Text(stringResource(Res.string.sick_longer), modifier = Modifier.padding(start = 8.dp))
     }
     if (showDialog) {

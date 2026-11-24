@@ -242,7 +242,7 @@ fun LogMealScreen(
                 modifier = Modifier.navigationBarsPadding().imePadding().fillMaxWidth().padding(16.dp).heightIn(min = 56.dp),
             ) {
                 // Design picture 23.11.2026: a check mark before the text.
-                Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(22.dp))
+                Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(20.dp))
                 Text(
                     state.slot?.let { stringResource(Res.string.meal_save_slot, mealSlotLabel(it)) } ?: stringResource(Res.string.common_save),
                     modifier = Modifier.padding(start = 10.dp),
@@ -358,9 +358,9 @@ private fun WhenPill(state: LogMealState, viewModel: LogMealViewModel) {
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.heightIn(min = 36.dp).padding(horizontal = 12.dp)) {
-            Icon(Icons.Outlined.Schedule, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(Icons.Outlined.Schedule, contentDescription = null, modifier = Modifier.size(20.dp))
             Text(whenLabel(state), style = MaterialTheme.typography.labelMedium, maxLines = 1, modifier = Modifier.padding(start = 8.dp, end = 8.dp))
-            Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(20.dp))
         }
     }
     if (open) {
@@ -424,10 +424,10 @@ private fun WhatStep(
             singleLine = true,
             shape = CircleShape,
             colors = searchPillColors(),
-            leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+            leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
             trailingIcon = speech?.let { start ->
                 {
-                    IconButton(onClick = start) { Icon(Icons.Outlined.Mic, contentDescription = voiceLabel) }
+                    IconButton(onClick = start) { Icon(Icons.Outlined.Mic, contentDescription = voiceLabel, modifier = Modifier.size(20.dp)) }
                 }
             },
             modifier = Modifier.fillMaxWidth().focusRequester(searchFocus).onFocusChanged { onSearchFocus(it.isFocused) },
@@ -490,7 +490,7 @@ private fun WhatStep(
                         onClick = { viewModel.onFavoriteClick(favorite) },
                         label = { Text(favorite.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp)) },
                         // Design picture 22.11.2026: a star after the name marks a saved dish.
-                        trailingIcon = { Icon(Icons.Filled.Star, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                        trailingIcon = { Icon(Icons.Filled.Star, contentDescription = null, modifier = Modifier.size(20.dp)) },
                     )
                 }
             }
@@ -506,7 +506,7 @@ private fun WhatStep(
                         label = { Text(ingredientName(ingredient), maxLines = 1) },
                         // Design picture 22.11.2026: "+" shows that a tap adds the ingredient.
                         trailingIcon = if (ingredient.id in selectedIds) null else {
-                            { Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                            { Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp)) }
                         },
                     )
                 }
@@ -592,13 +592,13 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
                 }
             }
             val bin: @Composable () -> Unit = {
-                IconButton(onClick = { viewModel.onRemoveDish(dish.favoriteId) }, modifier = Modifier.size(44.dp).semantics { contentDescription = "$removeLabel: ${info.name}" }) {
-                    Icon(Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(22.dp))
+                IconButton(onClick = { viewModel.onRemoveDish(dish.favoriteId) }, modifier = Modifier.semantics { contentDescription = "$removeLabel: ${info.name}" }) {
+                    Icon(Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(20.dp))
                 }
             }
             BoxWithConstraints(modifier = Modifier.padding(start = 12.dp, end = 4.dp)) {
                 // Name, S/M/L and bin in one line when the name keeps at least ~90 dp.
-                if (maxWidth >= 96.dp + 44.dp + 100.dp + 32.dp) {
+                if (maxWidth >= 132.dp + 48.dp + 100.dp + 32.dp) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         nameArea(Modifier.weight(1f))
                         PortionSwitch(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) })
@@ -623,7 +623,7 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
                             Text(name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f).padding(vertical = 4.dp))
                             IconButton(
                                 onClick = { viewModel.onRemoveIngredient(ingredient.id, dish.favoriteId) },
-                                modifier = Modifier.size(40.dp).semantics { contentDescription = "$removeIngredient: $name" },
+                                modifier = Modifier.semantics { contentDescription = "$removeIngredient: $name" },
                             ) { Icon(Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(20.dp)) }
                         }
                         if (ingredient.id in state.needsPreparation) {
@@ -654,7 +654,7 @@ private fun PortionLabel(hasDishes: Boolean) {
             // User 23.11.: a darker green than the soft sage, so the label reads well on the cream card.
             Icon(Icons.Outlined.Eco, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(end = 6.dp).size(20.dp))
             Text(stringResource(Res.string.meal_ingredients_all), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f, fill = false))
-            Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 6.dp).size(18.dp))
+            Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 6.dp).size(20.dp))
         }
         if (showPortionHelp) {
             Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

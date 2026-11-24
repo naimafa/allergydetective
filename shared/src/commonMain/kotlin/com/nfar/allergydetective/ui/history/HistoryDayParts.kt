@@ -89,7 +89,7 @@ fun HistoryFilterRow(selected: HistoryFilter, onSelect: (HistoryFilter) -> Unit)
                             HistoryFilter.DAYS -> Icons.Outlined.Bedtime
                         },
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(20.dp),
                     )
                 },
                 label = {
@@ -129,9 +129,9 @@ fun SickBand(period: SickPeriod?, onEdit: (SickPeriod) -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = clickable.padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
-            Icon(Icons.Outlined.Sick, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(Icons.Outlined.Sick, contentDescription = null, modifier = Modifier.size(20.dp))
             Text(text, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-            if (period != null) Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+            if (period != null) Icon(Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(20.dp))
         }
     }
 }

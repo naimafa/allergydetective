@@ -128,7 +128,7 @@ fun HistoryScreen(
                     shape = CircleShape,
                     modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 ) {
-                    Icon(Icons.Outlined.CalendarMonth, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Outlined.CalendarMonth, contentDescription = null, modifier = Modifier.size(20.dp))
                     Text("+ " + stringResource(Res.string.history_sick_add), modifier = Modifier.padding(start = 8.dp))
                 }
             }

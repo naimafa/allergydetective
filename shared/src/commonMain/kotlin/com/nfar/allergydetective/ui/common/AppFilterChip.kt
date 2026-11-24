@@ -42,7 +42,7 @@ fun AppFilterChip(
         enabled = enabled,
         trailingIcon = trailingIcon,
         leadingIcon = if (selected && leadingIcon == null && showCheck) {
-            { Icon(Icons.Outlined.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
+            { Icon(Icons.Outlined.Check, contentDescription = null, modifier = Modifier.size(20.dp)) }
         } else {
             leadingIcon
         },

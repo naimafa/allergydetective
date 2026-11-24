@@ -342,7 +342,7 @@ private fun SymptomOverlay(draft: SymptomDraft, onSickDay: Boolean, day: Int, to
                 shape = CircleShape,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
             ) {
-                Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(22.dp))
+                Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(20.dp))
                 Text(stringResource(Res.string.common_save), modifier = Modifier.padding(start = 10.dp))
             }
         }

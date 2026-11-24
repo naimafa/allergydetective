@@ -137,7 +137,7 @@ private fun MealSlotPill(slot: MealSlot, label: String, showIcon: Boolean, selec
             modifier = Modifier.padding(horizontal = PILL_PADDING),
         ) {
             if (showIcon) {
-                Icon(mealSlotIcon(slot), contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(mealSlotIcon(slot), contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
             }
             Text(label, style = MaterialTheme.typography.labelMedium, maxLines = 1, softWrap = false, textAlign = TextAlign.Center)
@@ -260,10 +260,10 @@ private val CATEGORY_EMOJI = mapOf(
     8L to "🍎", 9L to "🥜", 10L to "🫘", 11L to "🥤", 12L to "🍯", 14L to "🧂", 15L to "🌿",
 )
 
-private val SEGMENT_WIDTH = 32.dp
+private val SEGMENT_WIDTH = 44.dp
 private val SWITCH_WIDTH = SEGMENT_WIDTH * 3
 private val BADGE_WIDTH = 40.dp
-private val DELETE_SIZE = 34.dp
+private val DELETE_SIZE = 40.dp
 
 /**
  * S · M · L in one outlined pill (design picture 23.11.2026); the chosen size is filled green, without a

@@ -72,7 +72,7 @@ fun DayPicker(
             onClick = { showCalendar = true },
             label = { Text(if (daysAgo > QUICK_DAYS) shortDate(today - daysAgo) else stringResource(Res.string.day_pick_date)) },
             trailingIcon = doneMark(daysAgo > QUICK_DAYS && daysAgo in marked, selected = true),
-            leadingIcon = { Icon(Icons.Outlined.CalendarMonth, contentDescription = null, modifier = Modifier.size(18.dp)) },
+            leadingIcon = { Icon(Icons.Outlined.CalendarMonth, contentDescription = null, modifier = Modifier.size(20.dp)) },
             showCheck = false,
         )
     }
@@ -116,6 +116,6 @@ private fun doneMark(done: Boolean, selected: Boolean): (@Composable () -> Unit)
     {
         // White on a selected (green) chip.
         val scheme = MaterialTheme.colorScheme
-        Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = if (selected) scheme.onPrimary else scheme.primary, modifier = Modifier.size(18.dp))
+        Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = if (selected) scheme.onPrimary else scheme.primary, modifier = Modifier.size(20.dp))
     }
 }
