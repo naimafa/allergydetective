@@ -4,6 +4,8 @@ import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.meal_prep_cooked
 import allergydetective.shared.generated.resources.meal_prep_missing
 import allergydetective.shared.generated.resources.meal_prep_raw
+import allergydetective.shared.generated.resources.meal_variant_gluten_free
+import allergydetective.shared.generated.resources.meal_variant_normal
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -45,5 +47,28 @@ fun PreparationChoice(selected: Preparation?, onSelect: (Preparation) -> Unit) {
                 color = MaterialTheme.colorScheme.error,
             )
         }
+    }
+}
+
+/**
+ * "normal / glutenfrei" for products that are also sold gluten-free (user 25.11.2026). Normal is preselected; the
+ * gluten-free version counts without gluten in the evaluation.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun GlutenFreeChoice(glutenFree: Boolean, onChange: (Boolean) -> Unit) {
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        AppFilterChip(
+            selected = !glutenFree,
+            onClick = { onChange(false) },
+            label = { Text(stringResource(Res.string.meal_variant_normal)) },
+            showCheck = false,
+        )
+        AppFilterChip(
+            selected = glutenFree,
+            onClick = { onChange(true) },
+            label = { Text(stringResource(Res.string.meal_variant_gluten_free)) },
+            showCheck = false,
+        )
     }
 }

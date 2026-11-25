@@ -451,6 +451,17 @@ class LogMealViewModel(
         }
     }
 
+    /** "normal / glutenfrei" for a product that has a gluten-free version (user 25.11.2026). */
+    fun onGlutenFreeChange(ingredientId: Long, glutenFree: Boolean) {
+        _state.update { state ->
+            state.copy(
+                selected = state.selected.map {
+                    if (it.ingredient.id == ingredientId) it.copy(preparation = Preparation.GLUTEN_FREE.takeIf { glutenFree }) else it
+                },
+            )
+        }
+    }
+
     fun onSaveAsFavoriteChange(enabled: Boolean) {
         _state.update { it.copy(saveAsFavorite = enabled) }
     }

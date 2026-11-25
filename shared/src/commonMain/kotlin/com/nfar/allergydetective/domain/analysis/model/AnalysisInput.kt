@@ -32,6 +32,8 @@ data class TriggerProperty(
     val symptomGroups: Set<String>,
     /** Destroyed by cooking (birch pollen cross-reaction): ignored for cooked items. */
     val heatLabile: Boolean = false,
+    /** Gluten: not counted for an item eaten in its gluten-free version (user 25.11.2026). */
+    val gluten: Boolean = false,
 )
 
 data class IngredientRef(val id: Long, val propertyIds: Set<Long>)
@@ -58,7 +60,8 @@ data class Meal(
  */
 data class MealItem(val ingredientId: Long, val portion: Portion, val preparation: Preparation? = null)
 
-enum class Preparation { RAW, COOKED }
+/** Raw or cooked (heat-labile triggers); user 25.11.2026: or the gluten-free version of a product (no gluten counted). */
+enum class Preparation { RAW, COOKED, GLUTEN_FREE }
 
 /** Portion size (TRD 1.4). The analysis factor is configured in [com.nfar.allergydetective.domain.analysis.AnalysisConfig]. */
 enum class Portion { SMALL, MEDIUM, LARGE }

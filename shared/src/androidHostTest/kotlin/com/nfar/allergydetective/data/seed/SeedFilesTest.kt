@@ -172,6 +172,17 @@ class SeedFilesTest {
         assertTrue(1601L in eggIds)
         assertTrue(105L !in eggIds)
     }
+
+    /** "normal / glutenfrei" (user 25.11.2026) only for catalog products with gluten, never with raw / cooked. */
+    @Test
+    fun glutenFreeOptionOnlyForProductsWithGluten() {
+        val keys = entities.properties.associate { it.id to it.key }
+        com.nfar.allergydetective.domain.diary.GLUTEN_FREE_OPTION_IDS.forEach { id ->
+            val properties = entities.ingredientProperties.filter { it.ingredientId == id }.map { keys.getValue(it.propertyId) }
+            assertTrue("gluten" in properties, "$id has no gluten")
+            assertTrue("birch_pollen_cross" !in properties, "$id asks raw / cooked")
+        }
+    }
     @Test
     fun biscuitsAreInTheCatalog() {
         val biscuits = entities.ingredients.single { it.key == "biscuits" }

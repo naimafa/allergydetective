@@ -21,6 +21,9 @@ import allergydetective.shared.generated.resources.favorites_same_name
 import allergydetective.shared.generated.resources.history_delete
 import allergydetective.shared.generated.resources.favorites_count
 import allergydetective.shared.generated.resources.favorites_delete_question
+import com.nfar.allergydetective.ui.meal.GlutenFreeChoice
+import com.nfar.allergydetective.domain.analysis.model.Preparation
+import com.nfar.allergydetective.domain.diary.GLUTEN_FREE_OPTION_IDS
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material.icons.outlined.Restaurant
@@ -312,6 +315,11 @@ private fun DishEditorDialog(
                 state.ingredients.filter { it.id in state.needsPreparation }.forEach { ingredient ->
                     Text(ingredientName(ingredient), style = MaterialTheme.typography.titleSmall)
                     PreparationChoice(state.preparations[ingredient.id]) { viewModel.onPreparationChange(ingredient.id, it) }
+                }
+                // User 25.11.2026: a dish can be the gluten-free version of bread, pasta, pizza …
+                state.ingredients.filter { it.id in GLUTEN_FREE_OPTION_IDS }.forEach { ingredient ->
+                    Text(ingredientName(ingredient), style = MaterialTheme.typography.titleSmall)
+                    GlutenFreeChoice(state.preparations[ingredient.id] == Preparation.GLUTEN_FREE) { viewModel.onGlutenFreeChange(ingredient.id, it) }
                 }
             }
         },

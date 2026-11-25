@@ -40,6 +40,7 @@ private fun AnalysisRows.toReferenceData(): ReferenceData {
                 windows = windowsByProperty[it.id].orEmpty(),
                 symptomGroups = groupsByProperty[it.id].orEmpty().toSet(),
                 heatLabile = it.key in HEAT_LABILE_PROPERTY_KEYS,
+                gluten = it.key == GLUTEN_PROPERTY_KEY,
             )
         },
         ingredients = ingredients.map { IngredientRef(it.id, propertiesByIngredient[it.id].orEmpty().toSet()) },
@@ -69,6 +70,9 @@ private fun AnalysisRows.toDiaryData(today: Long): DiaryData {
 
 /** Triggers destroyed by cooking. Ingredients with one of them ask "raw or cooked?". */
 val HEAT_LABILE_PROPERTY_KEYS = setOf("birch_pollen_cross")
+
+/** Gluten, left out for items eaten gluten-free (user 25.11.2026). */
+const val GLUTEN_PROPERTY_KEY = "gluten"
 
 internal fun IllnessRelationKind.toDomain(): IllnessRelation = when (this) {
     IllnessRelationKind.RELATED -> IllnessRelation.RELATED
