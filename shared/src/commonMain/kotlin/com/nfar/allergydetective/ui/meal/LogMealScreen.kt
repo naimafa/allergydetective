@@ -294,7 +294,15 @@ private fun LogMealContent(
     // User 23.11.2026: favourites and recent ingredients stay visible after a choice (folding them away hid the
     // other dishes). "Weitere Zutat hinzufügen" opens the search.
     val searchFocus = remember { FocusRequester() }
-    val onAddMore: () -> Unit = { searchFocus.requestFocus() }
+    val scope = rememberCoroutineScope()
+    val addMoreKeyboard = LocalSoftwareKeyboardController.current
+    // User 25.11.2026: it worked only once. After picking an ingredient the keyboard closes but the search field
+    // keeps its focus, so asking for focus again changed nothing. Now it always scrolls there and opens the keyboard.
+    val onAddMore: () -> Unit = {
+        searchFocus.requestFocus()
+        addMoreKeyboard?.show()
+        scope.launch { listState.animateScrollToItem(1) }
+    }
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxSize(),
