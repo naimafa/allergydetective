@@ -140,6 +140,19 @@ class LogMealViewModelTest {
     }
 
     @Test
+    fun theNameOfADishIsNotOfferedAsANewIngredient() {
+        // User 25.11.2026: dishes ended up in "Meine Zutaten" because their name could be created as an ingredient.
+        repository.favorites += FavoriteInfo(7, "Linsensuppe", listOf(MealItem(bread.id, Portion.MEDIUM)))
+        val vm = viewModel()
+
+        vm.onQueryChange("linsensuppe ")
+        assertTrue(vm.state.value.nameExists)
+
+        vm.onQueryChange("Linsensuppe scharf")
+        assertFalse(vm.state.value.nameExists)
+    }
+
+    @Test
     fun anIngredientOfTwoDishesIsStoredOnceWithTheLargerPortion() {
         repository.favorites += FavoriteInfo(7, "Brot", listOf(MealItem(bread.id, Portion.SMALL)))
         repository.favorites += FavoriteInfo(8, "Brot mit Milch", listOf(MealItem(bread.id, Portion.LARGE), MealItem(milk.id, Portion.MEDIUM)))

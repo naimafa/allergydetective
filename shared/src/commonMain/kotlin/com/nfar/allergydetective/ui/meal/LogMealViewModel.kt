@@ -171,7 +171,11 @@ class LogMealViewModel(
                 results = search.search(query).mapNotNull(ingredientsById::get),
                 // Self-test 19.11.: a dish can be found by its name or an ingredient.
                 dishResults = if (query.isBlank()) emptyList() else it.favorites.filter { dish -> dish.matches(query, ingredientNames) },
-                nameExists = normalizeForSearch(query) in knownNames,
+                // User 25.11.2026: typing a dish's name offered it as a new ingredient, and dishes ended up in
+                // "Meine Zutaten". A dish name counts as taken, too.
+                nameExists = normalizeForSearch(query).let { typed ->
+                    typed in knownNames || it.favorites.any { dish -> normalizeForSearch(dish.name) == typed }
+                },
             )
         }
     }

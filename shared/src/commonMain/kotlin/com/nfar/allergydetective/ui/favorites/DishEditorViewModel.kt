@@ -32,6 +32,8 @@ data class DishEditorState(
     val results: List<IngredientInfo> = emptyList(),
     /** Saved dishes whose name matches the search; the dish being edited is left out. */
     val dishResults: List<FavoriteInfo> = emptyList(),
+    /** The search text is already an ingredient or dish: no "create as new ingredient". */
+    val nameExists: Boolean = false,
     /** A dish with the same name exists; saving replaces it after confirmation. */
     val sameNameDish: FavoriteInfo? = null,
     val saving: Boolean = false,
@@ -100,7 +102,11 @@ class DishEditorViewModel(
     fun onQueryChange(query: String) = _state.update {
         val normalized = normalizeForSearch(query)
         val dishes = if (normalized.length < 2) emptyList() else favorites.filter { f -> f.id != it.editingId && normalizeForSearch(f.name).contains(normalized) }
-        it.copy(query = query, results = catalog.search(query), dishResults = dishes.take(3))
+        // User 25.11.2026: no "create as new ingredient" for the name of an ingredient or a dish that exists.
+        val taken = normalized.isNotBlank() && (
+            catalog.bestMatch(query)?.second == 0 || favorites.any { f -> normalizeForSearch(f.name) == normalized }
+            )
+        it.copy(query = query, results = catalog.search(query), dishResults = dishes.take(3), nameExists = taken)
     }
 
     /** Adds every ingredient of another dish (e.g. "Gewürzmischung" into a soup), keeping its portions and raw / cooked. */
