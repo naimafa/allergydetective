@@ -50,6 +50,12 @@
 
     <string name="results_too_early">%1$d of %2$d confirmed days. The first evaluation is meaningful after %2$d days, until then everything here is preliminary.</string>
     <string name="results_nothing_yet">No clues yet. Keep logging, every entry is a piece of the puzzle.</string>
+    <string name="results_why_title">Why no pattern yet?</string>
+    <string name="results_why_too_few_days">A pattern only shows when something repeats. To see it, the app compares your days with each other and needs at least %2$d finished days. So far there are %1$d.</string>
+    <string name="results_why_no_complaints">You have not logged any complaints on your finished days. Without complaints there is nothing for the app to look for, and that is good news. If something comes up again, log it.</string>
+    <string name="results_why_few_complaint_days">So far you had complaints on one day only. Whether a food is behind them shows only when complaints happen more often and the app can see what those days had in common.</string>
+    <string name="results_why_no_good_days">You had complaints on every finished day. The app finds triggers by comparing days with and without complaints. As soon as there are days without complaints, it can compare.</string>
+    <string name="results_why_nothing_stands_out">So far no food goes along with your complaints clearly more often than others. Maybe it needs more days, maybe something other than food is behind them. Just keep logging.</string>
     <string name="results_tip_title">How to help the search</string>
     <string name="results_tip_text">Keep logging every day and finish it, also without complaints. Food you eat almost daily can only be tested if you leave it out for a few days now and then.</string>
     <string name="onboarding_leave_out_text">Important: the app cannot compare what you eat almost every day. Leave it out for a few days now and then and keep logging. Those days make patterns visible.</string>

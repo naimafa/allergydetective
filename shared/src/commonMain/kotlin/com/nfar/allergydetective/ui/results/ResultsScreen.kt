@@ -27,6 +27,12 @@ import allergydetective.shared.generated.resources.results_level_suspicion
 import allergydetective.shared.generated.resources.results_level_trace
 import allergydetective.shared.generated.resources.results_local
 import allergydetective.shared.generated.resources.results_nothing_yet
+import allergydetective.shared.generated.resources.results_why_title
+import allergydetective.shared.generated.resources.results_why_too_few_days
+import allergydetective.shared.generated.resources.results_why_no_complaints
+import allergydetective.shared.generated.resources.results_why_few_complaint_days
+import allergydetective.shared.generated.resources.results_why_no_good_days
+import allergydetective.shared.generated.resources.results_why_nothing_stands_out
 import allergydetective.shared.generated.resources.results_reason
 import allergydetective.shared.generated.resources.results_safe_title
 import allergydetective.shared.generated.resources.results_too_early
@@ -146,6 +152,7 @@ private fun ResultsContent(state: ResultsState, modifier: Modifier, onSetFocus: 
         }
         if (state.items.isEmpty()) {
             item { Text(stringResource(Res.string.results_nothing_yet), style = MaterialTheme.typography.bodyLarge) }
+            item { WhyNoPatternCard(state) }
         }
         items(state.items) { ResultCard(it, onSetFocus) }
         // User 24.11.2026: the app can only compare what is sometimes left out - say how to help it.
@@ -206,6 +213,32 @@ private fun ResultsContent(state: ResultsState, modifier: Modifier, onSetFocus: 
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+        }
+    }
+}
+
+/** User 25.11.2026: "no pattern yet" says why, in everyday words; a tap on the title opens it. */
+@Composable
+private fun WhyNoPatternCard(state: ResultsState) {
+    var open by remember { mutableStateOf(false) }
+    val text = when (state.noPatternReason) {
+        NoPatternReason.TOO_FEW_DAYS -> stringResource(Res.string.results_why_too_few_days, state.confirmedDays, ResultsViewModel.FIRST_EVALUATION_DAYS)
+        NoPatternReason.NO_COMPLAINTS -> stringResource(Res.string.results_why_no_complaints)
+        NoPatternReason.FEW_COMPLAINT_DAYS -> stringResource(Res.string.results_why_few_complaint_days)
+        NoPatternReason.NO_GOOD_DAYS -> stringResource(Res.string.results_why_no_good_days)
+        NoPatternReason.NOTHING_STANDS_OUT -> stringResource(Res.string.results_why_nothing_stands_out)
+    }
+    Card(
+        onClick = { open = !open },
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(Res.string.results_why_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null)
+            }
+            if (open) Text(text, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
