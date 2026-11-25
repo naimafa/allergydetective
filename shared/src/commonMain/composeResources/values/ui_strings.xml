@@ -351,6 +351,8 @@
     <string name="symptom_duration_under_1h">under 1 h</string>
     <string name="symptom_duration_h1_to_3">1–3 h</string>
     <string name="symptom_duration_h3_to_12">3–12 h</string>
+    <string name="symptom_duration_h3_to_6">3–6 h</string>
+    <string name="symptom_duration_h6_to_12">6–12 h</string>
     <string name="symptom_duration_over_12h">longer</string>
     <string name="emergency_title">Important</string>
     <string name="emergency_text">Shortness of breath or swelling of the mouth, tongue or throat can be an emergency. If in doubt, call for help.</string>

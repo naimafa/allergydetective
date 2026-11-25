@@ -360,6 +360,8 @@
     <string name="symptom_duration_under_1h">أقل من ساعة</string>
     <string name="symptom_duration_h1_to_3">1–3 ساعات</string>
     <string name="symptom_duration_h3_to_12">3–12 ساعة</string>
+    <string name="symptom_duration_h3_to_6">3–6 ساعات</string>
+    <string name="symptom_duration_h6_to_12">6–12 ساعة</string>
     <string name="symptom_duration_over_12h">أطول</string>
     <string name="emergency_title">مهم</string>
     <string name="emergency_text">ضيق التنفس أو تورّم الفم أو اللسان أو الحلق قد يكون حالة طارئة. عند الشك اتصل بالإسعاف.</string>
