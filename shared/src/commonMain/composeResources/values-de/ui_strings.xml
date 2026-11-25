@@ -59,9 +59,8 @@
     <string name="experiment_how_long">Wie lange?</string>
     <string name="experiment_days_n">%1$d Tage</string>
     <string name="experiment_since">Seit wann lässt du es weg?</string>
-    <string name="experiment_since_today">ab heute</string>
-    <string name="experiment_since_yesterday">seit gestern</string>
-    <string name="experiment_since_2">seit vorgestern</string>
+    <string name="experiment_before_days">Zum Vergleich: %1$d abgeschlossene Tage davor</string>
+    <string name="experiment_before_few">Weniger als 5 Tage davor: So kann der Test kein Ergebnis zeigen. Wähle einen späteren Start oder trag erst noch ein paar Tage ein.</string>
     <string name="experiment_begin">Test starten</string>
     <string name="experiment_focus">Ohne %1$s</string>
     <string name="experiment_running">Ohne %1$s · Tag %2$d von %3$d</string>

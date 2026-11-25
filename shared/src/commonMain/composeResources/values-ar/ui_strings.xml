@@ -66,9 +66,8 @@
     <string name="experiment_how_long">لأي مدة؟</string>
     <string name="experiment_days_n">%1$d يومًا</string>
     <string name="experiment_since">منذ متى تستبعده؟</string>
-    <string name="experiment_since_today">من اليوم</string>
-    <string name="experiment_since_yesterday">منذ أمس</string>
-    <string name="experiment_since_2">منذ أول أمس</string>
+    <string name="experiment_before_days">للمقارنة: %1$d يومًا مكتملًا قبل ذلك</string>
+    <string name="experiment_before_few">أقل من 5 أيام قبل ذلك: لن يتمكن الاختبار من إظهار نتيجة هكذا. اختر بداية لاحقة أو سجّل بضعة أيام أخرى أولًا.</string>
     <string name="experiment_begin">بدء الاختبار</string>
     <string name="experiment_focus">بدون %1$s</string>
     <string name="experiment_running">بدون %1$s · اليوم %2$d من %3$d</string>

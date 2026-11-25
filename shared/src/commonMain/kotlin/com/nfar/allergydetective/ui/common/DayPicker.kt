@@ -48,6 +48,8 @@ fun DayPicker(
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
     marked: Set<Int> = emptySet(),
+    /** How far back the calendar goes; the Weglass-Test allows 14 days (user 25.11.2026). */
+    maxDaysBack: Int = MAX_DAYS_BACK,
 ) {
     var showCalendar by remember { mutableStateOf(false) }
     // Phone test 19.11.: in the symptom dialog "Datum" was cut to "Dat". No check mark (the green fill
@@ -77,7 +79,7 @@ fun DayPicker(
         )
     }
     if (showCalendar) {
-        val first = today - MAX_DAYS_BACK
+        val first = today - maxDaysBack
         val state = rememberDatePickerState(
             initialSelectedDateMillis = (today - daysAgo) * DAY_MILLIS,
             selectableDates = object : SelectableDates {

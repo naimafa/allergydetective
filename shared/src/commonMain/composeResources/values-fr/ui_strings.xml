@@ -59,9 +59,8 @@
     <string name="experiment_how_long">Combien de temps ?</string>
     <string name="experiment_days_n">%1$d jours</string>
     <string name="experiment_since">Depuis quand l’évites-tu ?</string>
-    <string name="experiment_since_today">à partir d’aujourd’hui</string>
-    <string name="experiment_since_yesterday">depuis hier</string>
-    <string name="experiment_since_2">depuis avant-hier</string>
+    <string name="experiment_before_days">Pour comparer : %1$d jours clôturés avant</string>
+    <string name="experiment_before_few">Moins de 5 jours avant : le test ne pourra pas donner de résultat ainsi. Choisis un début plus tardif ou note encore quelques jours.</string>
     <string name="experiment_begin">Démarrer le test</string>
     <string name="experiment_focus">Sans %1$s</string>
     <string name="experiment_running">Sans %1$s · jour %2$d sur %3$d</string>
