@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.ui.results
 
+import com.nfar.allergydetective.domain.analysis.AnalysisConfig
 import com.nfar.allergydetective.domain.analysis.localEpochDay
 import com.nfar.allergydetective.domain.analysis.model.DiaryData
 
@@ -27,11 +28,16 @@ enum class NoPatternReason {
 /** Complaint days needed before a pattern is possible (as `minRealHits` in the analysis). */
 internal const val MIN_COMPLAINT_DAYS = 2
 
-internal fun noPatternReason(diary: DiaryData, firstEvaluationDays: Int): NoPatternReason {
+internal fun noPatternReason(
+    diary: DiaryData,
+    firstEvaluationDays: Int,
+    minIntensity: Int = AnalysisConfig().dayLag.minIntensity,
+): NoPatternReason {
     val finished = diary.dayChecks.filter { it.confirmed }.map { it.epochDay }.toSet()
     if (finished.size < firstEvaluationDays) return NoPatternReason.TOO_FEW_DAYS
     val complaintDays = diary.symptomEntries
-        .filter { it.intensity > 0 }
+        // The same bar as the day analysis: very light complaints do not make a complaint day.
+        .filter { it.intensity >= minIntensity }
         .map { localEpochDay(it.startedAt, it.tzOffsetMin) }
         .filter { it in finished }
         .toSet()

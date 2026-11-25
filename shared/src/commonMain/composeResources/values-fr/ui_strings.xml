@@ -52,7 +52,7 @@
     <string name="results_nothing_yet">Pas encore d’indices. Continue à noter, chaque note est une pièce du puzzle.</string>
     <string name="results_why_title">Pourquoi pas encore de schéma ?</string>
     <string name="results_why_too_few_days">Un schéma n’apparaît que lorsque quelque chose se répète. Pour cela, l’app compare tes jours entre eux et a besoin d’au moins %2$d jours clôturés. Pour l’instant, il y en a %1$d.</string>
-    <string name="results_why_no_complaints">Tu n’as noté aucun symptôme pendant tes jours clôturés. Sans symptômes, l’app n’a rien à chercher, et c’est une bonne nouvelle. Si quelque chose revient, note-le.</string>
+    <string name="results_why_no_complaints">Tes jours clôturés n’ont pas eu de symptômes marqués. Sans eux, l’app n’a rien à chercher, et c’est une bonne nouvelle. Si quelque chose revient, note-le.</string>
     <string name="results_why_few_complaint_days">Jusqu’ici, tu as eu des symptômes un seul jour. On ne voit si un aliment en est la cause que lorsque les symptômes reviennent plus souvent et que l’app peut voir ce que ces jours ont en commun.</string>
     <string name="results_why_no_good_days">Tu as eu des symptômes chaque jour clôturé. L’app trouve les déclencheurs en comparant les jours avec et sans symptômes. Dès qu’il y aura des jours sans symptômes, elle pourra comparer.</string>
     <string name="results_why_nothing_stands_out">Jusqu’ici, aucun aliment n’accompagne tes symptômes nettement plus souvent que les autres. Il faut peut-être plus de jours, ou autre chose que l’alimentation est en cause. Continue simplement à noter.</string>

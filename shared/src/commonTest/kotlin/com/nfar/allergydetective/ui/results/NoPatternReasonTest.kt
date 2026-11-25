@@ -26,6 +26,12 @@ class NoPatternReasonTest {
     fun complaintsOnAnOpenDayDoNotCount() = assertEquals(NoPatternReason.NO_COMPLAINTS, noPatternReason(diary(7, listOf(9)), 7))
 
     @Test
+    fun veryLightComplaintsDoNotCount() {
+        val light = diary(7, listOf(2)).let { d -> d.copy(symptomEntries = d.symptomEntries.map { it.copy(intensity = 1) }) }
+        assertEquals(NoPatternReason.NO_COMPLAINTS, noPatternReason(light, 7))
+    }
+
+    @Test
     fun complaintsOnOneDayOnly() = assertEquals(NoPatternReason.FEW_COMPLAINT_DAYS, noPatternReason(diary(7, listOf(3, 3)), 7))
 
     @Test
