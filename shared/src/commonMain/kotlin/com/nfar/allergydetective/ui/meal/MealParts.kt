@@ -264,7 +264,15 @@ private const val VEGETABLES = 7L
 private const val OILS_FATS = 13L
 
 /** Single ingredients with their own picture. */
-private val KEY_EMOJI = mapOf("olives" to "🫒", "margarine" to "🧈")
+private val KEY_EMOJI = mapOf(
+    "olives" to "🫒", "margarine" to "🧈",
+    // Catalog gaps (user 25.11.2026): where one picture says it better than the category's.
+    "biscuits" to "🍪", "waffles" to "🧇", "doughnut" to "🍩", "cream_cake" to "🍰", "pancakes_crepes" to "🥞",
+    "lye_pastry" to "🥨", "flatbread" to "🫓", "tortilla_wrap" to "🌯", "rice_cakes" to "🍘", "pudding" to "🍮",
+    "frankfurters" to "🌭", "broccoli" to "🥦", "cabbage" to "🥬", "sweet_potato" to "🍠", "fries" to "🍟",
+    "grapes" to "🍇", "melon" to "🍈", "coconut" to "🥥", "hot_chocolate" to "☕", "milk_coffee" to "☕",
+    "popcorn" to "🍿", "fruit_gums" to "🍬", "sorbet" to "🍧", "instant_noodles" to "🍜", "fish_fingers" to "🐟",
+)
 
 /** Seed categories (categories.json) → emoji. */
 private val CATEGORY_EMOJI = mapOf(
