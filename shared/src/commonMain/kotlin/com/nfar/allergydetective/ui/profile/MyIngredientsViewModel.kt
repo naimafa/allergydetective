@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.nfar.allergydetective.domain.diary.CategoryInfo
 import com.nfar.allergydetective.domain.diary.CustomIngredient
 import com.nfar.allergydetective.domain.diary.CustomIngredientRepository
+import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.LanguageProvider
 import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.diary.PropertyInfo
+import com.nfar.allergydetective.domain.diary.normalizeForSearch
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
 import com.nfar.allergydetective.ui.meal.IngredientCatalog
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +40,12 @@ data class IngredientReplace(
     val query: String = "",
     val results: List<IngredientInfo> = emptyList(),
     val target: IngredientInfo? = null,
-)
+    /** User 25.11.2026: dishes are found, too - an ingredient that was really a dish is replaced by it. */
+    val dishResults: List<FavoriteInfo> = emptyList(),
+    val targetDish: FavoriteInfo? = null,
+) {
+    val canReplace: Boolean get() = target != null || targetDish != null
+}
 
 data class MyIngredientsState(
     val loading: Boolean = true,
@@ -66,6 +73,7 @@ class MyIngredientsViewModel(
     val state: StateFlow<MyIngredientsState> = _state.asStateFlow()
 
     private var catalog = IngredientCatalog.EMPTY
+    private var dishes: List<FavoriteInfo> = emptyList()
 
     init {
         viewModelScope.launch {
@@ -78,6 +86,7 @@ class MyIngredientsViewModel(
 
     private suspend fun reload() {
         catalog = IngredientCatalog.load(meals, names, language)
+        dishes = meals.favorites()
         val items = repository.customIngredients()
         _state.update { it.copy(loading = false, items = items) }
     }
@@ -136,19 +145,30 @@ class MyIngredientsViewModel(
     }
 
     fun onReplaceQuery(query: String) = updateReplace { replace ->
-        replace.copy(query = query, results = catalog.search(query).filter { it.id != replace.ingredient.id })
+        val typed = normalizeForSearch(query)
+        replace.copy(
+            query = query,
+            results = catalog.search(query).filter { it.id != replace.ingredient.id },
+            dishResults = if (typed.length < 2) emptyList() else dishes.filter { normalizeForSearch(it.name).contains(typed) }.take(MAX_DISHES),
+        )
     }
 
-    fun onReplaceTarget(target: IngredientInfo) = updateReplace { it.copy(target = target, query = "", results = emptyList()) }
+    fun onReplaceTarget(target: IngredientInfo) =
+        updateReplace { it.copy(target = target, targetDish = null, query = "", results = emptyList(), dishResults = emptyList()) }
+
+    fun onReplaceTargetDish(dish: FavoriteInfo) =
+        updateReplace { it.copy(targetDish = dish, target = null, query = "", results = emptyList(), dishResults = emptyList()) }
 
     fun onCancelReplace() = _state.update { it.copy(replacing = null) }
 
     fun onConfirmReplace() {
         val replace = _state.value.replacing ?: return
-        val target = replace.target ?: return
+        if (!replace.canReplace) return
         _state.update { it.copy(replacing = null) }
         viewModelScope.launch {
-            repository.replace(replace.ingredient.id, target.id)
+            val dish = replace.targetDish
+            if (dish != null) repository.replaceWithDish(replace.ingredient.id, dish.id, dish.name)
+            else replace.target?.let { repository.replace(replace.ingredient.id, it.id) }
             reload()
         }
     }
@@ -158,4 +178,8 @@ class MyIngredientsViewModel(
 
     private fun updateReplace(change: (IngredientReplace) -> IngredientReplace) =
         _state.update { state -> state.replacing?.let { state.copy(replacing = change(it)) } ?: state }
+
+    private companion object {
+        const val MAX_DISHES = 3
+    }
 }

@@ -344,8 +344,9 @@
     <string name="my_ingredients_delete">Löschen</string>
     <string name="my_ingredients_delete_question">„%1$s“ löschen? Sie wird noch nirgends verwendet.</string>
     <string name="my_ingredients_replace_title">Wodurch ersetzen?</string>
-    <string name="my_ingredients_replace_text">„%1$s“ steckt schon in deinen Einträgen. Damit nichts verloren geht, wird sie nicht einfach gelöscht: Wähle die Zutat, die stattdessen gelten soll. Deine Mahlzeiten und Gerichte zeigen dann diese.</string>
+    <string name="my_ingredients_replace_text">„%1$s“ steckt schon in deinen Einträgen. Damit nichts verloren geht, wird sie nicht einfach gelöscht: Wähle die Zutat oder das Gericht, das stattdessen gelten soll. Deine Mahlzeiten zeigen dann das.</string>
     <string name="my_ingredients_replace_with">Durch „%1$s“ ersetzen</string>
+    <string name="my_ingredients_dish_label">Gericht: %1$s</string>
     <string name="allergies_none">Keine angegeben · zum Ändern tippen</string>
     <string name="time_other">Andere Zeit …</string>
     <string name="time_pick">Wann genau?</string>
