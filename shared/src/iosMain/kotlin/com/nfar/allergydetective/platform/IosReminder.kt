@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.platform
 
+import com.nfar.allergydetective.domain.experiment.Experiment
 import androidx.compose.runtime.Composable
 import com.nfar.allergydetective.domain.reminder.ReminderScheduler
 import com.nfar.allergydetective.domain.reminder.ReminderSettings
@@ -41,8 +42,31 @@ class UserDefaultsSettingsStore : SettingsStore {
         defaults.setObject(order.joinToString(","), KEY_SYMPTOM_GROUPS)
     }
 
+    override fun experiment(): Experiment? =
+        if (defaults.objectForKey(KEY_EXP_INGREDIENT) == null) null else Experiment(
+            ingredientId = defaults.integerForKey(KEY_EXP_INGREDIENT),
+            startDay = defaults.integerForKey(KEY_EXP_START),
+            days = defaults.integerForKey(KEY_EXP_DAYS).toInt(),
+            stoppedDay = if (defaults.objectForKey(KEY_EXP_STOPPED) == null) null else defaults.integerForKey(KEY_EXP_STOPPED),
+        )
+
+    override fun saveExperiment(experiment: Experiment?) {
+        if (experiment == null) {
+            listOf(KEY_EXP_INGREDIENT, KEY_EXP_START, KEY_EXP_DAYS, KEY_EXP_STOPPED).forEach { defaults.removeObjectForKey(it) }
+            return
+        }
+        defaults.setInteger(experiment.ingredientId, KEY_EXP_INGREDIENT)
+        defaults.setInteger(experiment.startDay, KEY_EXP_START)
+        defaults.setInteger(experiment.days.toLong(), KEY_EXP_DAYS)
+        experiment.stoppedDay?.let { defaults.setInteger(it, KEY_EXP_STOPPED) } ?: defaults.removeObjectForKey(KEY_EXP_STOPPED)
+    }
+
     private companion object {
         const val KEY_SYMPTOM_GROUPS = "symptom_group_order"
+        const val KEY_EXP_INGREDIENT = "experiment_ingredient"
+        const val KEY_EXP_START = "experiment_start"
+        const val KEY_EXP_DAYS = "experiment_days"
+        const val KEY_EXP_STOPPED = "experiment_stopped"
         const val KEY_THEME = "theme_mode"
         const val KEY_ENABLED = "reminder_enabled"
         const val KEY_HOUR = "reminder_hour"

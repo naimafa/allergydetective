@@ -1,0 +1,76 @@
+package com.nfar.allergydetective.domain.experiment
+
+import com.nfar.allergydetective.domain.analysis.model.DayCheck
+import com.nfar.allergydetective.domain.analysis.model.DiaryData
+import com.nfar.allergydetective.domain.analysis.model.Meal
+import com.nfar.allergydetective.domain.analysis.model.MealItem
+import com.nfar.allergydetective.domain.analysis.model.Portion
+import com.nfar.allergydetective.domain.analysis.model.SymptomEntry
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+class ExperimentTest {
+    private val dayMs = 86_400_000L
+    private val cheese = 302L
+
+    /** Days 0..[last] finished; complaints (intensity 3) on [complaints]; cheese eaten on [cheeseDays]; [sick] days. */
+    private fun diary(last: Int, complaints: Set<Int>, cheeseDays: Set<Int> = emptySet(), sick: Set<Int> = emptySet()) = DiaryData(
+        meals = cheeseDays.map { Meal(it.toLong(), it * dayMs + 8 * 3_600_000L, 0, listOf(MealItem(cheese, Portion.MEDIUM))) },
+        symptomEntries = complaints.mapIndexed { i, d -> SymptomEntry(id = i.toLong(), symptomId = 1, startedAt = d * dayMs + 7 * 3_600_000L, tzOffsetMin = 0, intensity = 3) },
+        dayChecks = (0..last).map { DayCheck(epochDay = it.toLong(), confirmed = true, sleepHours = null, sleepQuality = null, stress = null, sick = it in sick) },
+        dayFactors = emptyList(),
+    )
+
+    @Test
+    fun fewerComplaintsWithoutTheIngredient() {
+        // User 25.11.2026: complaints nearly every morning with cheese, test without it from day 10.
+        val test = Experiment(cheese, startDay = 10, days = 10)
+        val result = evaluateExperiment(test, diary(19, complaints = (2..9).toSet() + setOf(12, 16), cheeseDays = (0..9).toSet()), today = 20)
+
+        assertEquals(PeriodStats(days = 10, complaintDays = 8), result.before)
+        // Days 10 and 11 are the washout; 12..19 count.
+        assertEquals(PeriodStats(days = 8, complaintDays = 2), result.during)
+        assertEquals(ExperimentVerdict.LESS, result.verdict)
+        assertTrue(result.over)
+    }
+
+    @Test
+    fun similarWhenItMakesNoDifference() {
+        val test = Experiment(cheese, startDay = 10, days = 10)
+        val result = evaluateExperiment(test, diary(19, complaints = setOf(1, 3, 5, 7, 9, 13, 15, 17, 19)), today = 20)
+
+        assertEquals(ExperimentVerdict.SIMILAR, result.verdict)
+    }
+
+    @Test
+    fun daysWhenItWasEatenAnywayAndSickDaysDoNotCount() {
+        val test = Experiment(cheese, startDay = 10, days = 10)
+        val result = evaluateExperiment(test, diary(19, complaints = setOf(14, 15), cheeseDays = setOf(14), sick = setOf(15)), today = 20)
+
+        assertEquals(1, result.eatenDays)
+        assertEquals(PeriodStats(days = 6, complaintDays = 0), result.during)
+    }
+
+    @Test
+    fun tooFewDaysWhileRunning() {
+        // Started yesterday: still in the washout.
+        val test = Experiment(cheese, startDay = 10, days = 14)
+        val result = evaluateExperiment(test, diary(11, complaints = (0..11).toSet()), today = 11)
+
+        assertEquals(ExperimentVerdict.TOO_FEW_DAYS, result.verdict)
+        assertEquals(2, result.dayNumber)
+        assertFalse(result.over)
+    }
+
+    @Test
+    fun stoppingEndsTheTest() {
+        val test = Experiment(cheese, startDay = 10, days = 14, stoppedDay = 15)
+        val result = evaluateExperiment(test, diary(20, complaints = emptySet()), today = 20)
+
+        assertTrue(result.over)
+        assertEquals(6, result.dayNumber)
+        assertEquals(PeriodStats(days = 4, complaintDays = 0), result.during)
+    }
+}
