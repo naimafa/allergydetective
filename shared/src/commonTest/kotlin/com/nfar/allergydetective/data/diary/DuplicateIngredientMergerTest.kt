@@ -21,4 +21,22 @@ class DuplicateIngredientMergerTest {
 
         assertEquals(listOf(100_000L to 114L), pairs)
     }
+
+    @Test
+    fun onePartOfASlashNameIsEnough() {
+        // User 25.11.2026: "Kekse" was created by hand before "Kekse / Plätzchen" shipped.
+        val biscuits = seed(115, "biscuits")
+        val seedByName = DuplicateIngredientMerger.seedByName(listOf("Kekse / Plätzchen" to biscuits, "Weißbrot / Weizenbrötchen" to seed(101, "white_bread")))
+
+        val pairs = DuplicateIngredientMerger.duplicatePairs(listOf(custom(100_000, "Kekse"), custom(100_001, "Plätzchen"), custom(100_002, "Butterkekse")), seedByName)
+
+        assertEquals(listOf(100_000L to 115L, 100_001L to 115L), pairs)
+    }
+
+    @Test
+    fun aPartSharedByTwoIngredientsIsNotMerged() {
+        val seedByName = DuplicateIngredientMerger.seedByName(listOf("Brot / Brötchen" to seed(1, "a"), "Toast / Brot" to seed(2, "b")))
+
+        assertEquals(emptyList(), DuplicateIngredientMerger.duplicatePairs(listOf(custom(100_000, "Brot")), seedByName))
+    }
 }

@@ -15,6 +15,29 @@ interface CustomIngredientRepository {
     suspend fun propertiesOf(ingredientId: Long): Set<Long>
 
     suspend fun create(name: String, categoryId: Long, baseIngredientId: Long?, propertyIds: Set<Long>): IngredientInfo
+
+    /** "Meine Zutaten" (user 25.11.2026): the user's own ingredients with how often they are used. */
+    suspend fun customIngredients(): List<CustomIngredient> = emptyList()
+
+    suspend fun update(id: Long, name: String, categoryId: Long, propertyIds: Set<Long>) = Unit
+
+    /** Only an unused ingredient can be deleted; returns whether it was. */
+    suspend fun deleteIfUnused(id: Long): Boolean = false
+
+    /** Every meal and dish with [from] gets [to] instead; [from] is deleted. Nothing logged is lost. */
+    suspend fun replace(from: Long, to: Long) = Unit
+}
+
+data class CustomIngredient(
+    val id: Long,
+    val name: String,
+    val categoryId: Long,
+    val propertyIds: Set<Long>,
+    val mealCount: Int,
+    val dishCount: Int,
+) {
+    val used: Boolean get() = mealCount > 0 || dishCount > 0
+    val info: IngredientInfo get() = IngredientInfo(id = id, key = null, customName = name, categoryId = categoryId)
 }
 
 /**

@@ -92,6 +92,8 @@ fun MainScreen(
     profileExtra: @Composable () -> Unit = {},
     profileLower: @Composable () -> Unit = {},
     onOpenAllergies: () -> Unit = {},
+    /** User 25.11.2026: own ingredients on their own page. */
+    onOpenMyIngredients: () -> Unit = {},
     initialTab: MainTab = MainTab.HOME,
 ) {
     var tab by rememberSaveable { mutableStateOf(initialTab) }
@@ -183,6 +185,7 @@ fun MainScreen(
                 extraContent = profileExtra,
                 lowerContent = profileLower,
                 onOpenAllergies = onOpenAllergies,
+                onOpenMyIngredients = onOpenMyIngredients,
             )
         }
     }

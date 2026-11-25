@@ -91,6 +91,43 @@ interface IngredientDao {
     @Query("DELETE FROM ingredients WHERE id = :id AND isCustom = 1")
     suspend fun deleteCustomIngredient(id: Long)
 
+    /** "Meine Zutaten" (user 25.11.2026). */
+    @Query("SELECT * FROM ingredients WHERE isCustom = 1 ORDER BY customName COLLATE NOCASE")
+    suspend fun customIngredients(): List<IngredientEntity>
+
+    @Query(
+        """
+        SELECT COUNT(*) FROM (SELECT mealId FROM meal_ingredients WHERE ingredientId = :id
+        UNION SELECT mealId FROM meal_item_occurrences WHERE ingredientId = :id)
+        """,
+    )
+    suspend fun mealCountOf(id: Long): Int
+
+    @Query("SELECT COUNT(DISTINCT favoriteId) FROM favorite_ingredients WHERE ingredientId = :id")
+    suspend fun dishCountOf(id: Long): Int
+
+    @Query("UPDATE ingredients SET customName = :name, categoryId = :categoryId WHERE id = :id AND isCustom = 1")
+    suspend fun renameCustom(id: Long, name: String, categoryId: Long)
+
+    @Query("DELETE FROM ingredient_properties WHERE ingredientId = :id")
+    suspend fun deleteProperties(id: Long)
+
+    /** Name, kind (and with it the picture) and contents of a custom ingredient; past entries follow. */
+    @Transaction
+    suspend fun updateCustomIngredient(id: Long, name: String, categoryId: Long, propertyIds: List<Long>) {
+        renameCustom(id, name, categoryId)
+        deleteProperties(id)
+        insertIngredientProperties(propertyIds.map { IngredientPropertyEntity(id, it) })
+    }
+
+    /** Deletes the custom ingredient only when no meal or dish uses it; returns whether it was deleted. */
+    @Transaction
+    suspend fun deleteCustomIfUnused(id: Long): Boolean {
+        if (mealCountOf(id) > 0 || dishCountOf(id) > 0) return false
+        deleteCustomIngredient(id)
+        return true
+    }
+
     /**
      * Moves every use of the custom ingredient [from] to [to] and deletes [from].
      * A meal or dish that already contains [to] keeps only that entry (primary key).

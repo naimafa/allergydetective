@@ -2,6 +2,8 @@ package com.nfar.allergydetective.ui.profile
 
 import allergydetective.shared.generated.resources.allergies_none_short
 import allergydetective.shared.generated.resources.allergies_section_title
+import allergydetective.shared.generated.resources.my_ingredients_row_hint
+import allergydetective.shared.generated.resources.my_ingredients_title
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.displayName
 import allergydetective.shared.generated.resources.profile_group_health
@@ -50,6 +52,8 @@ fun ProfileScreen(
     lowerContent: @Composable () -> Unit = {},
     /** Opens the known allergies on their own page. */
     onOpenAllergies: () -> Unit = {},
+    /** User 25.11.2026: own ingredients on their own page. */
+    onOpenMyIngredients: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     // Back from the allergies page: show what was saved there.
@@ -73,6 +77,7 @@ fun ProfileScreen(
             // User 23.11.2026: like "Datenschutz" a line with an arrow; the list is on its own page.
             val names = state.properties.filter { it.id in state.selected }.map { displayName(NamePrefix.PROPERTY, it.key) }
             GroupPart { ProfileRow(stringResource(Res.string.allergies_section_title), names.joinToString(", ").ifEmpty { stringResource(Res.string.allergies_none_short) }, onClick = onOpenAllergies) }
+            GroupPart { ProfileRow(stringResource(Res.string.my_ingredients_title), stringResource(Res.string.my_ingredients_row_hint), onClick = onOpenMyIngredients) }
         }
         lowerContent()
     }
