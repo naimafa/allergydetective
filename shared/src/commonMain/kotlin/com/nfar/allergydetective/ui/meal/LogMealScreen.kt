@@ -615,7 +615,9 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
                     HorizontalDivider(color = home.cardBorder, modifier = Modifier.padding(horizontal = 12.dp))
                     Column(modifier = Modifier.padding(start = 20.dp, end = 4.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f).padding(vertical = 4.dp))
+                            // User 25.11.2026: the same picture in front as for single ingredients.
+                            IngredientBadge(ingredient, name)
+                            Text(name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f).padding(start = 10.dp, top = 4.dp, bottom = 4.dp))
                             IconButton(
                                 onClick = { viewModel.onRemoveIngredient(ingredient.id, dish.favoriteId) },
                                 modifier = Modifier.semantics { contentDescription = "$removeIngredient: $name" },
