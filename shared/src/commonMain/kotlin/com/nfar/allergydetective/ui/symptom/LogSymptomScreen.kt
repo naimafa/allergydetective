@@ -1,5 +1,8 @@
 package com.nfar.allergydetective.ui.symptom
 
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Card
+import androidx.compose.foundation.layout.ColumnScope
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
 import allergydetective.shared.generated.resources.common_save
@@ -154,7 +157,8 @@ fun LogSymptomScreen(
 private fun SymptomGrid(state: LogSymptomState, viewModel: LogSymptomViewModel, modifier: Modifier) = BoxWithConstraints(modifier = modifier.fillMaxSize()) {
     // Feedback 19.11.: compact tiles, names in one line. One text size for all tiles: the largest at
     // which every name fits (text width = half the screen minus padding, emoji circle and gaps).
-    val textWidth = (maxWidth - 32.dp - TILE_GAP) / TILE_COLUMNS - 10.dp * 2 - EMOJI_SIZE - 8.dp - 4.dp
+    // User 25.11.2026: the areas sit in cards, which take their inner margin and border off the width.
+    val textWidth = (maxWidth - 32.dp - (AREA_PADDING + 1.dp) * 2 - TILE_GAP) / TILE_COLUMNS - 10.dp * 2 - EMOJI_SIZE - 8.dp - 4.dp
     val names = state.groups.flatMap { it.second }.map { displayName(NamePrefix.SYMPTOM, it.key) + if (it.isRedFlag) " ⚠️" else "" }
     val nameStyle = sharedNameStyle(names, textWidth)
     val listState = rememberLazyListState()
@@ -169,21 +173,22 @@ private fun SymptomGrid(state: LogSymptomState, viewModel: LogSymptomViewModel, 
         state = listState,
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item { Text(stringResource(Res.string.symptom_long_press_hint), style = MaterialTheme.typography.bodySmall) }
         if (state.favorites.isNotEmpty()) {
-            item { SectionTitle(stringResource(Res.string.symptom_favorites)) }
-            item { TileRow(state.favorites, viewModel, nameStyle) }
+            item {
+                AreaCard {
+                    SectionTitle(stringResource(Res.string.symptom_favorites))
+                    TileRow(state.favorites, viewModel, nameStyle)
+                }
+            }
         }
         state.groups.forEach { (group, symptoms) ->
             val key = GROUP_KEY + group
-            // Title and tiles in one item, so the whole area moves; the page colour keeps it opaque while lifted.
+            // Title and tiles in one card, so the whole area moves.
             item(key = key) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.reorderableItem(reorder, key).background(AppColors.extra.home.page),
-                ) {
+                AreaCard(Modifier.reorderableItem(reorder, key)) {
                     GroupTitle(group, Modifier.dragHandle(reorder, key))
                     TileRow(symptoms, viewModel, nameStyle)
                 }
@@ -191,6 +196,30 @@ private fun SymptomGrid(state: LogSymptomState, viewModel: LogSymptomViewModel, 
         }
     }
 }
+
+/**
+ * User 25.11.2026: each symptom area ("Magen & Darm" …) framed and rounded like the question areas of the forms
+ * (the same card as [com.nfar.allergydetective.ui.common.StepCard]: cream white, fine border, soft shadow).
+ */
+@Composable
+private fun AreaCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    val home = AppColors.extra.home
+    Card(
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = home.card, contentColor = home.ink),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, home.cardBorder),
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = AREA_PADDING, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            content = content,
+        )
+    }
+}
+
+private val AREA_PADDING = 12.dp
 
 /** bodyMedium (15 sp) down to 12 sp in steps of 0.5 sp: the largest size at which every name fits in one line. */
 @Composable
@@ -214,7 +243,7 @@ private const val MIN_NAME_SP = 12f
 /** Group name with a dot in the group colour, so tiles and heading belong together visibly. */
 @Composable
 private fun GroupTitle(group: String, handle: Modifier) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             Modifier.size(12.dp).background(symptomGroupColor(group), CircleShape)
                 .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
