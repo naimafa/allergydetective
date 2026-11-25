@@ -34,7 +34,15 @@ class UserDefaultsSettingsStore : SettingsStore {
         defaults.setObject(mode.name, KEY_THEME)
     }
 
+    override fun symptomGroupOrder(): List<String> =
+        defaults.stringForKey(KEY_SYMPTOM_GROUPS)?.split(',')?.filter { it.isNotBlank() }.orEmpty()
+
+    override fun saveSymptomGroupOrder(order: List<String>) {
+        defaults.setObject(order.joinToString(","), KEY_SYMPTOM_GROUPS)
+    }
+
     private companion object {
+        const val KEY_SYMPTOM_GROUPS = "symptom_group_order"
         const val KEY_THEME = "theme_mode"
         const val KEY_ENABLED = "reminder_enabled"
         const val KEY_HOUR = "reminder_hour"

@@ -295,6 +295,7 @@
     <string name="favorites_no_match">Aucun plat trouvé.</string>
     <string name="favorites_log">Noter comme repas</string>
     <string name="favorites_drag">Maintenir et glisser pour trier</string>
+    <string name="symptom_group_drag">Maintenir et glisser pour déplacer la zone</string>
     <string name="history_save_favorite">Enregistrer en favori</string>
     <string name="favorites_editor_title">Nouveau plat</string>
     <string name="favorites_name">Nom, p. ex. soupe de lentilles</string>

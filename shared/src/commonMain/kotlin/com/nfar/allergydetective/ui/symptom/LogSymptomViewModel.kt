@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nfar.allergydetective.domain.analysis.model.IllnessRelation
 import com.nfar.allergydetective.domain.diary.SymptomDuration
+import com.nfar.allergydetective.domain.reminder.SettingsStore
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
 import com.nfar.allergydetective.domain.time.AppClock
@@ -61,6 +62,7 @@ data class LogSymptomState(
 class LogSymptomViewModel(
     private val repository: SymptomRepository,
     private val clock: AppClock,
+    private val settings: SettingsStore,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LogSymptomState())
@@ -75,6 +77,7 @@ class LogSymptomViewModel(
             val groups = symptoms.groupBy { it.groupKey }
                 .toList()
                 .sortedBy { (group, _) -> GROUP_ORDER.indexOf(group).let { if (it < 0) GROUP_ORDER.size else it } }
+                .let { inAppOrder -> inUserOrder(inAppOrder, settings.symptomGroupOrder()) }
             val lastMeal = repository.lastMealAt(clock.nowMillis())
             val today = clock.today()
             val sickDays = (0..MAX_DAYS_BACK).map { today - it }.filter { repository.isSickDay(it) }.toSet()
@@ -82,6 +85,23 @@ class LogSymptomViewModel(
                 it.copy(loading = false, groups = groups, favorites = favorites(), lastMealAt = lastMeal, today = today, sickDays = sickDays)
             }
         }
+
+    /**
+     * Dragging an area (user 25.11.2026, "jeder hat seine Schwerpunkte"): [from] takes the place of [to] while the
+     * finger moves; the order is saved when it lifts ([onGroupMoveDone]).
+     */
+    fun onGroupMove(from: String, to: String) {
+        _state.update { state ->
+            val list = state.groups.toMutableList()
+            val fromIndex = list.indexOfFirst { it.first == from }
+            val toIndex = list.indexOfFirst { it.first == to }
+            if (fromIndex < 0 || toIndex < 0) return@update state
+            list.add(toIndex, list.removeAt(fromIndex))
+            state.copy(groups = list)
+        }
+    }
+
+    fun onGroupMoveDone() = settings.saveSymptomGroupOrder(_state.value.groups.map { it.first })
 
     private suspend fun favorites(): List<SymptomInfo> =
         repository.mostUsedSymptomIds(FAVORITE_COUNT).mapNotNull { symptomsById[it] }
@@ -254,4 +274,14 @@ class LogSymptomViewModel(
         const val FAVORITE_COUNT = 3
         val GROUP_ORDER = listOf("digestive", "skin", "head", "airways", "other")
     }
+}
+
+/**
+ * The areas in the order the user dragged them to (user 25.11.2026). Areas the saved order does not know (new in
+ * the catalog) keep their place after the known ones, in the app's order.
+ */
+internal fun <T> inUserOrder(groups: List<Pair<String, T>>, saved: List<String>): List<Pair<String, T>> {
+    if (saved.isEmpty()) return groups
+    val known = groups.filter { it.first in saved }.sortedBy { saved.indexOf(it.first) }
+    return known + groups.filter { it.first !in saved }
 }

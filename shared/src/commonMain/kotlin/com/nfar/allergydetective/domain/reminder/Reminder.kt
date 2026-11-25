@@ -27,6 +27,10 @@ interface SettingsStore {
     /** Evaluation goal (user 23.11.2026): how many confirmed days, an optional focus, and where the count starts. */
     fun goal(): GoalSettings = GoalSettings()
     fun saveGoal(goal: GoalSettings) = Unit
+
+    /** Symptom areas in the user's order (user 25.11.2026), group keys; empty = the app's order. */
+    fun symptomGroupOrder(): List<String> = emptyList()
+    fun saveSymptomGroupOrder(order: List<String>) = Unit
 }
 
 /**

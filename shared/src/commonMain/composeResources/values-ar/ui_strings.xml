@@ -308,6 +308,7 @@
     <string name="favorites_no_match">لم يُعثر على طبق.</string>
     <string name="favorites_log">تسجيل كوجبة</string>
     <string name="favorites_drag">اضغط مطولًا واسحب للترتيب</string>
+    <string name="symptom_group_drag">اضغط مطولًا واسحب لنقل القسم</string>
     <string name="history_save_favorite">حفظ في المفضلة</string>
     <string name="favorites_editor_title">طبق جديد</string>
     <string name="favorites_name">الاسم، مثل شوربة العدس</string>

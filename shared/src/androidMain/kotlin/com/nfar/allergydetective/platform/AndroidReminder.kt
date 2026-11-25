@@ -78,7 +78,15 @@ class SharedPreferencesSettingsStore(context: Context) : SettingsStore {
             .apply { if (goal.startDay == null) remove(KEY_GOAL_START) else putLong(KEY_GOAL_START, goal.startDay) }.apply()
     }
 
+    override fun symptomGroupOrder(): List<String> =
+        prefs.getString(KEY_SYMPTOM_GROUPS, null)?.split(',')?.filter { it.isNotBlank() }.orEmpty()
+
+    override fun saveSymptomGroupOrder(order: List<String>) {
+        prefs.edit().putString(KEY_SYMPTOM_GROUPS, order.joinToString(",")).apply()
+    }
+
     private companion object {
+        const val KEY_SYMPTOM_GROUPS = "symptom_group_order"
         const val KEY_THEME = "theme_mode"
         const val KEY_GOAL_DAYS = "goal_days"
         const val KEY_GOAL_FOCUS = "goal_focus"

@@ -299,6 +299,7 @@
     <string name="favorites_no_match">Kein Gericht gefunden.</string>
     <string name="favorites_log">Als Mahlzeit eintragen</string>
     <string name="favorites_drag">Gedrückt halten und ziehen zum Sortieren</string>
+    <string name="symptom_group_drag">Gedrückt halten und ziehen, um den Bereich zu verschieben</string>
     <string name="history_save_favorite">Als Favorit speichern</string>
     <string name="favorites_editor_title">Neues Gericht</string>
     <string name="favorites_name">Name, z.B. Linsensuppe</string>
