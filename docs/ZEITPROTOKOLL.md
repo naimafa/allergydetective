@@ -18,7 +18,7 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 3 Design | ca. 5:42 h | 17.11.: Theme hell/dunkel, Icons, Dashboard, Symptom-Kacheln, Ergebnis-Karten (0:16). 19.11.: Startseite feinjustiert, Dark Mode (1:10). 20.11.: App-Icon, HTML-Prototyp (0:39). 21.11.: Startseite nach Design-Bild, hell und dunkel (3:37) |
 | 4 Self-Test | ca. 8:14 h | 17.11.: Vorbereitung (0:11). 18.11.: Rückmeldungen aus dem Self-Test umgesetzt, inkl. 0:07 Absturz-Reparatur (2:56). 19.11.: Design-Feedback, Historie, Krankheitstage, Nachtragen (3:14). 20.11.: Getränk, Dauer, Arzt-PDF, Verschlüsselung, Feedback-Runde (1:53); der 7-Tage-Test selbst läuft |
 | Doku / Organisation | ca. 0:50 h | OFFENE_PUNKTE, PROGRESS, Zeitprotokoll, 18.11. auch GitHub-PR (sonst meist in den Phasen enthalten) |
-| **Gesamt (erfasst)** | **ca. 32:00 h** | ohne Konzeptphase; 21.11. Nachmittag bis 23.11. (ca. 11:00 h, meist Design und Testnotizen) aus den Einträgen unten nachgerechnet |
+| **Gesamt (erfasst)** | **ca. 39:35 h** | ohne Konzeptphase; 21.11. Nachmittag bis 25.11. (ca. 18:35 h, meist Design, Testnotizen, Mustererkennung und Katalog) aus den Einträgen unten nachgerechnet |
 
 ---
 
@@ -122,6 +122,13 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 24.11.2026 | 21:00–21:30 | 0:30 | 4 | Mahlzeit als Momentaufnahme (Migration 12 → 13, PR #84): Gerichte mit Name und Portion, jedes Zutaten-Vorkommen mit Herkunft; Vorschlag von ChatGPT angepasst übernommen | Migration mit echten Daten auf dem Handy geprüft |
 | 24.11.2026 | 21:30–22:05 | 0:35 | 4 | Mustererkennung neu (PR #85): Tage mit gelernter Verzögerung 0–3, schnelle Reaktionen bis 2 h, mehrtägige Beschwerden einmal, „Fast täglich gegessen“, Tipps zum Weglassen; Konzept mit Analysen von ChatGPT und Gemini | 13 alte Tests auf die neue Logik umgeschrieben |
 | 24.11.2026 | 22:05–22:15 | 0:10 | Doku | Zeitprotokoll und PROGRESS für den 24.11. | – |
+| 25.11.2026 | 19:00–19:25 | 0:25 | 4 | Offene Punkte und MDR-Einordnung erklärt; Testnotizen (PRs #87–#91): nach dem Speichern zum Dashboard, Symptom-Dauer 3–6 / 6–12 Std., Gewürze/Kräuter/Öle in Prise und Löffel, „Warum noch kein Muster?“, Bilder bei Zutaten in Gerichten | – |
+| 25.11.2026 | 19:25–19:55 | 0:30 | 3 | Symptom-Bereiche mit dem Finger verschiebbar, Ziehen überall erst nach langem Drücken (PR #92); Bereiche als abgerundete Karten wie die Formulare (PR #93) | Gerichte wurden beim Scrollen aus Versehen verschoben |
+| 25.11.2026 | 19:55–20:25 | 0:30 | 4 | Lückenliste Zutaten (KATALOG_LUECKEN.md) und 89 neue Zutaten (Migration 13 → 14, PR #94); „Meine Zutaten“: bearbeiten, unbenutzte löschen, benutzte ersetzen (PR #95); App aufs Handy | „Kekse“ fehlten im Katalog |
+| 25.11.2026 | 20:25–20:45 | 0:20 | 4 | Gerichtsnamen nicht mehr als neue Zutat angeboten (PR #96); Süßungsmittel (Xylit, Erythrit, Stevia …) und Feige (Migration 14 → 15, PR #97) | Gerichte standen als Zutaten in „Meine Zutaten“ |
+| 25.11.2026 | 20:45–21:10 | 0:25 | 4 | Zutat durch ein Gericht ersetzen (PR #98), angefangen in der ursprünglichen Sitzung, hier fertiggestellt | PC abgestürzt; danach arbeiteten zwei Claude-Sitzungen im selben Ordner und zerschossen sich gegenseitig die Gradle-Builds (Sperrdateien, gelöschte Caches); geklärt, eine Sitzung macht weiter |
+| 25.11.2026 | 21:10–21:25 | 0:15 | 4 | Getreide in drei Kategorien, Mehle, Eiernudeln, Trockenobst einzeln (Migration 15 → 16, PR #99); Auswahl „normal / glutenfrei“ für Brot, Nudeln, Kekse … (PR #100) | – |
+| 25.11.2026 | 21:25–21:35 | 0:10 | Doku | Zeitprotokoll und PROGRESS für den 25.11. | – |
 ---
 
 ## Erkenntnisse
@@ -141,3 +148,5 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 - **23.11. in ca. 5:05 h, 17 PRs (#61–#77):** fast nur Design nach Bildern und einem Video der Nutzerin. Schnell ging es, wenn auf jede Änderung sofort ein Handy-Screenshot folgte. Mehrere Runden kosteten Dinge, die nur bei Schrift 125 % sichtbar sind (Icons in Chips, Datum im Verlauf, Datums-Chip). Die Nutzerin hat zwischendurch #42–#72 nach develop gemergt.
 
 - **24.11. in ca. 5:00 h, 7 PRs (#79–#85):** Zuerst Testnotizen, dann Design-Feinschliff und die neue Mustererkennung. Die Analysen von ChatGPT und Gemini halfen als zweite Meinung; übernommen wurde, was zu den Daten passt (Momentaufnahme, mehrtägige Beschwerden, Fass-Wert), nicht die Scheingenauigkeit (Gesamtwert). Zwei PC-Abstürze während Gradle-Builds; danach liefen Builds im Hintergrund.
+
+- **25.11. in ca. 2:35 h, 14 PRs (#87–#100):** Testnotizen und Katalog. Der Zutaten-Katalog wuchs von 150 auf 270 Einträge (vier Migrationen ohne Schemaänderung). Datentabelle plus Skript für JSON, Migration und vier Sprachen hielt alles deckungsgleich; je ein Test vergleicht Migration und JSON. Der Absturz selbst kostete wenig, aber danach liefen zwei Claude-Sitzungen im selben Ordner, und ihre Gradle-Builds löschten sich gegenseitig die Zwischendateien. Lehre: nach einem Absturz zuerst prüfen, ob noch eine andere Sitzung oder ein alter Build läuft.
