@@ -407,6 +407,10 @@
     <string name="meal_portion_option_small">صغير – بضع لقيمات / نصف كوب</string>
     <string name="meal_portion_option_medium">متوسط – قبضة يد / كوب</string>
     <string name="meal_portion_option_large">كبير – قبضتان / كوبان</string>
+    <string name="meal_portion_option_small_spice">صغير – رشة / بضع قطرات</string>
+    <string name="meal_portion_option_medium_spice">متوسط – ملعقة صغيرة</string>
+    <string name="meal_portion_option_large_spice">كبير – ملعقة كبيرة أو أكثر</string>
+    <string name="meal_portion_help_spice">التوابل والأعشاب والزيوت والمكسرات والبذور: S = رشة أو بضع قطرات · M = ملعقة صغيرة · L = ملعقة كبيرة أو أكثر</string>
     <string name="meal_single_ingredients_count">مكوّنات منفردة (%1$d)</string>
     <string name="meal_portion_word">الحصة</string>
     <string name="meal_remove_question">إزالة %1$s من الوجبة؟</string>

@@ -19,6 +19,7 @@ import allergydetective.shared.generated.resources.meal_favorites
 import allergydetective.shared.generated.resources.meal_favorites_hint
 import allergydetective.shared.generated.resources.meal_no_results
 import allergydetective.shared.generated.resources.meal_portion_help
+import allergydetective.shared.generated.resources.meal_portion_help_spice
 import allergydetective.shared.generated.resources.meal_portion_large
 import allergydetective.shared.generated.resources.meal_portion_medium
 import allergydetective.shared.generated.resources.meal_portion_small
@@ -538,11 +539,15 @@ private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMea
         }
     }
     if (state.selected.isNotEmpty()) {
-        SectionHeading(stringResource(Res.string.meal_single_ingredients_count, state.selected.size), aboutDishes = false)
+        SectionHeading(
+            stringResource(Res.string.meal_single_ingredients_count, state.selected.size),
+            aboutDishes = false,
+            aboutSmallAmounts = state.selected.any { it.ingredient.id in state.minorIngredientIds },
+        )
         Column {
             state.selected.asReversed().forEachIndexed { index, item ->
                 if (index > 0) HorizontalDivider(color = AppColors.extra.home.cardBorder)
-                SelectedRow(item, item.ingredient.id in state.needsPreparation, viewModel)
+                SelectedRow(item, item.ingredient.id in state.needsPreparation, viewModel, smallAmounts = item.ingredient.id in state.minorIngredientIds)
             }
         }
     }
@@ -630,7 +635,7 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
 
 /** User 24.11.2026: "Ausgewählte Gerichte (3)" / "Einzelne Zutaten (2)" as headings (16 sp, never smaller than the names below), the S/M/L explanation behind the info icon. */
 @Composable
-private fun SectionHeading(title: String, aboutDishes: Boolean) {
+private fun SectionHeading(title: String, aboutDishes: Boolean, aboutSmallAmounts: Boolean = false) {
     var showPortionHelp by remember { mutableStateOf(false) }
     val infoLabel = stringResource(Res.string.meal_portion_info)
     Column(verticalArrangement = Arrangement.spacedBy(2.dp), modifier = Modifier.padding(top = 4.dp)) {
@@ -643,6 +648,10 @@ private fun SectionHeading(title: String, aboutDishes: Boolean) {
         }
         if (showPortionHelp) {
             Text(stringResource(Res.string.meal_portion_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            // User 25.11.2026: spices and oil by pinch and spoon.
+            if (aboutSmallAmounts) {
+                Text(stringResource(Res.string.meal_portion_help_spice), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
             if (aboutDishes) {
                 Text(stringResource(Res.string.meal_portion_help_dish), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
@@ -751,8 +760,9 @@ private fun ChipGroupTitle(title: String, hint: String) {
 }
 
 @Composable
-private fun SelectedRow(item: SelectedIngredient, needsPreparation: Boolean, viewModel: LogMealViewModel) {
+private fun SelectedRow(item: SelectedIngredient, needsPreparation: Boolean, viewModel: LogMealViewModel, smallAmounts: Boolean = false) {
     IngredientRow(
+        smallAmounts = smallAmounts,
         ingredient = item.ingredient,
         name = ingredientName(item.ingredient),
         portion = item.portion,
