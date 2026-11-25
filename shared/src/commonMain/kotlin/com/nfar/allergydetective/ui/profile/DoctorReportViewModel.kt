@@ -63,6 +63,14 @@ import allergydetective.shared.generated.resources.report_level_strong
 import allergydetective.shared.generated.resources.report_level_suspicion
 import allergydetective.shared.generated.resources.report_level_trace
 import allergydetective.shared.generated.resources.report_no_patterns
+import allergydetective.shared.generated.resources.report_no_patterns_few_complaint_days
+import allergydetective.shared.generated.resources.report_no_patterns_no_complaints
+import allergydetective.shared.generated.resources.report_no_patterns_no_good_days
+import allergydetective.shared.generated.resources.report_no_patterns_nothing
+import com.nfar.allergydetective.ui.results.NoPatternFacts
+import com.nfar.allergydetective.ui.results.NoPatternReason
+import com.nfar.allergydetective.ui.results.ResultsViewModel
+import com.nfar.allergydetective.ui.results.noPatternFacts
 import allergydetective.shared.generated.resources.report_none
 import allergydetective.shared.generated.resources.report_patterns_hint
 import allergydetective.shared.generated.resources.report_period
@@ -215,7 +223,9 @@ class DoctorReportViewModel(
                 val now = clock.nowMillis()
                 val input = analysis.loadInput(now, clock.offsetMinAt(now))
                 val result = withContext(computeContext) { engine.analyze(input) }
-                val doc = document(report, result, catalog.keys())
+                // User 25.11.2026: "no patterns" says why, like the app (counts from the same diary as the analysis).
+                val noPattern = noPatternFacts(input.diary, ResultsViewModel.FIRST_EVALUATION_DAYS)
+                val doc = document(report, result, catalog.keys(), noPattern)
                 val tables = if (options.includeEntries) entryTables(entries, fromDay, today) else emptyList()
                 val base = "allergy-detective-${clock.localDate(today)}"
                 when (options.format) {
@@ -415,7 +425,7 @@ class DoctorReportViewModel(
 
     private suspend fun symptomName(key: String) = names.name(NamePrefix.SYMPTOM, key)
 
-    private suspend fun document(report: DoctorReport, result: AnalysisResult, keys: CandidateKeys): PdfDoc {
+    private suspend fun document(report: DoctorReport, result: AnalysisResult, keys: CandidateKeys, noPattern: NoPatternFacts): PdfDoc {
         val blocks = mutableListOf<PdfBlock>()
         blocks += PdfBlock.Title(getString(Res.string.report_title))
         blocks += PdfBlock.Paragraph(getString(Res.string.report_period, date(report.fromDay), date(report.toDay), report.days))
@@ -429,7 +439,7 @@ class DoctorReportViewModel(
         } else {
             blocks += symptomBlocks(report)
         }
-        blocks += patternBlocks(result, keys)
+        blocks += patternBlocks(result, keys, noPattern)
         return PdfDoc(blocks, getString(Res.string.report_footer, date(clock.today())))
     }
 
@@ -499,7 +509,7 @@ class DoctorReportViewModel(
         return blocks
     }
 
-    private suspend fun patternBlocks(result: AnalysisResult, keys: CandidateKeys): List<PdfBlock> {
+    private suspend fun patternBlocks(result: AnalysisResult, keys: CandidateKeys, noPattern: NoPatternFacts): List<PdfBlock> {
         val blocks = mutableListOf<PdfBlock>(PdfBlock.Heading(getString(Res.string.report_h_patterns)))
         val rows = result.ranking
             .filter { it.level >= EvidenceLevel.TRACE }
@@ -513,7 +523,7 @@ class DoctorReportViewModel(
                 )
             }
         if (rows.isEmpty()) {
-            blocks += PdfBlock.Paragraph(getString(Res.string.report_no_patterns))
+            blocks += PdfBlock.Paragraph(noPatternText(noPattern))
         } else {
             blocks += PdfBlock.Paragraph(getString(Res.string.report_patterns_hint), small = true)
             blocks += PdfBlock.Table(
@@ -524,6 +534,14 @@ class DoctorReportViewModel(
             )
         }
         return blocks
+    }
+
+    private suspend fun noPatternText(facts: NoPatternFacts): String = when (facts.reason) {
+        NoPatternReason.TOO_FEW_DAYS -> getString(Res.string.report_no_patterns, facts.finishedDays, ResultsViewModel.FIRST_EVALUATION_DAYS)
+        NoPatternReason.NO_COMPLAINTS -> getString(Res.string.report_no_patterns_no_complaints)
+        NoPatternReason.FEW_COMPLAINT_DAYS -> getString(Res.string.report_no_patterns_few_complaint_days)
+        NoPatternReason.NO_GOOD_DAYS -> getString(Res.string.report_no_patterns_no_good_days, facts.complaintDays, facts.finishedDays)
+        NoPatternReason.NOTHING_STANDS_OUT -> getString(Res.string.report_no_patterns_nothing, facts.finishedDays, facts.complaintDays)
     }
 
     private suspend fun candidateName(candidate: Candidate, keys: CandidateKeys): String? = when (candidate) {

@@ -54,7 +54,7 @@
     <string name="results_why_too_few_days">Ein Muster zeigt sich erst, wenn sich etwas wiederholt. Dafür vergleicht die App deine Tage miteinander und braucht mindestens %2$d abgeschlossene Tage. Bisher sind es %1$d.</string>
     <string name="results_why_no_complaints">An deinen abgeschlossenen Tagen gab es keine deutlichen Beschwerden. Ohne sie gibt es nichts, wonach die App suchen kann, und das ist eine gute Nachricht. Wenn wieder etwas auftritt, trag es ein.</string>
     <string name="results_why_few_complaint_days">Bisher gab es nur an einem Tag Beschwerden. Ob ein Lebensmittel dahintersteckt, zeigt sich erst, wenn Beschwerden öfter auftreten und die App sehen kann, was an diesen Tagen gleich war.</string>
-    <string name="results_why_no_good_days">Du hattest an jedem abgeschlossenen Tag Beschwerden. Die App findet Auslöser, indem sie Tage mit und ohne Beschwerden vergleicht. Sobald es auch Tage ohne Beschwerden gibt, kann sie vergleichen.</string>
+    <string name="results_why_no_good_days">Du hattest an (fast) jedem abgeschlossenen Tag Beschwerden. Die App findet Auslöser, indem sie Tage mit und ohne Beschwerden vergleicht. Sobald es auch Tage ohne Beschwerden gibt, kann sie vergleichen.</string>
     <string name="results_why_nothing_stands_out">Bisher passt kein Lebensmittel deutlich öfter zu deinen Beschwerden als andere. Vielleicht braucht es noch mehr Tage, vielleicht steckt auch etwas anderes als das Essen dahinter. Einfach weiter eintragen.</string>
     <string name="results_tip_title">So hilfst du der Spurensuche</string>
     <string name="results_tip_text">Trag weiter jeden Tag ein und schließ ihn ab, auch ohne Beschwerden. Lebensmittel, die du fast täglich isst, kann die App nur prüfen, wenn du sie zwischendurch einmal ein paar Tage weglässt.</string>
@@ -216,7 +216,11 @@
     <string name="report_level_trace">Spur</string>
     <string name="report_level_suspicion">Verdacht</string>
     <string name="report_level_strong">Starker Verdacht</string>
-    <string name="report_no_patterns">Noch keine Auffälligkeiten. Dafür braucht es mehr bestätigte Tage.</string>
+    <string name="report_no_patterns">Noch keine Auffälligkeiten: erst %1$d von mindestens %2$d abgeschlossenen Tagen.</string>
+    <string name="report_no_patterns_no_complaints">Keine Auffälligkeiten: An den abgeschlossenen Tagen gab es keine deutlichen Beschwerden.</string>
+    <string name="report_no_patterns_few_complaint_days">Noch keine Auffälligkeiten: Deutliche Beschwerden bisher nur an einem Tag; ein Muster braucht Wiederholungen.</string>
+    <string name="report_no_patterns_no_good_days">Noch keine Auffälligkeiten: Beschwerden an %1$d von %2$d abgeschlossenen Tagen. Es fehlen beschwerdefreie Tage zum Vergleich, deshalb lässt sich kein Lebensmittel abgrenzen.</string>
+    <string name="report_no_patterns_nothing">Keine Auffälligkeiten: Kein Lebensmittel ging deutlich öfter mit Beschwerden einher als andere (%1$d abgeschlossene Tage, davon %2$d mit Beschwerden).</string>
     <string name="report_footer">Allergy Detective · erstellt am %1$s</string>
     <string name="language_title">Sprache</string>
     <string name="language_system">Wie Handy</string>
