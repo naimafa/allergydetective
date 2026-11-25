@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Display names for seed keys (data/seed). Generated from docs/CONTENT_*.md, keep keys in sync. -->
 <resources>
-    <string name="category_grains_bakery">Grains &amp; baked goods</string>
+    <string name="category_grains_flour">Grains &amp; flour</string>
+    <string name="category_pasta">Pasta &amp; noodles</string>
+    <string name="category_bread_bakery">Bread &amp; baked goods</string>
     <string name="category_dairy">Milk &amp; dairy products</string>
     <string name="category_cheese">Cheese</string>
     <string name="category_meat_sausage">Meat &amp; sausage</string>
@@ -321,6 +323,26 @@
     <string name="ingredient_coconut_blossom_sugar">Coconut sugar</string>
     <string name="ingredient_date_syrup">Date syrup</string>
     <string name="ingredient_rice_syrup">Rice syrup</string>
+    <string name="ingredient_wheat_flour">Wheat flour</string>
+    <string name="ingredient_wholemeal_wheat_flour">Wholemeal wheat flour</string>
+    <string name="ingredient_spelt_flour">Spelt flour</string>
+    <string name="ingredient_wholemeal_spelt_flour">Wholemeal spelt flour</string>
+    <string name="ingredient_rye_flour">Rye flour</string>
+    <string name="ingredient_semolina">Semolina</string>
+    <string name="ingredient_oat_flour">Oat flour</string>
+    <string name="ingredient_rice_flour">Rice flour</string>
+    <string name="ingredient_starch">Cornflour / starch</string>
+    <string name="ingredient_gluten_free_flour_mix">Gluten-free flour mix</string>
+    <string name="ingredient_almond_flour">Almond flour</string>
+    <string name="ingredient_chickpea_flour">Chickpea flour</string>
+    <string name="ingredient_baking_powder">Baking powder / soda</string>
+    <string name="ingredient_yeast">Yeast</string>
+    <string name="ingredient_egg_noodles">Egg noodles / spätzle</string>
+    <string name="ingredient_dates">Dates</string>
+    <string name="ingredient_raisins">Raisins</string>
+    <string name="ingredient_dried_apricots">Dried apricots</string>
+    <string name="ingredient_prunes">Prunes</string>
+    <string name="ingredient_dried_cranberries">Dried cranberries</string>
     <string name="factor_sport">Exercise</string>
     <string name="factor_menstruation">Menstruation</string>
     <string name="factor_medication">Medication</string>

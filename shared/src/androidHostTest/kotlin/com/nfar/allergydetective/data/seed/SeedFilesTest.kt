@@ -30,9 +30,9 @@ class SeedFilesTest {
 
     @Test
     fun hasExpectedCounts() {
-        assertEquals(15, entities.categories.size)
+        assertEquals(17, entities.categories.size)
         assertEquals(26, entities.properties.size)
-        assertEquals(250, entities.ingredients.size)
+        assertEquals(270, entities.ingredients.size)
         assertEquals(24, entities.symptoms.size)
         assertEquals(4, entities.lifestyleFactors.size)
     }
@@ -105,7 +105,9 @@ class SeedFilesTest {
         Migrations.CATALOG_GAPS_ROWS.forEach { row ->
             val seed = entities.ingredients.single { it.id == row.id }
             assertEquals(row.key, seed.key)
-            assertEquals(row.categoryId, seed.categoryId, "category of ${row.key} (${categoryKeys[seed.categoryId]})")
+            // Pasta and bread / baked goods moved to their own categories in 15 -> 16.
+            val moved = Migrations.CATEGORY_MOVES_16.entries.firstOrNull { row.id in it.value }?.key
+            assertEquals(moved ?: row.categoryId, seed.categoryId, "category of ${row.key} (${categoryKeys[seed.categoryId]})")
             assertEquals(
                 row.properties.toSet(),
                 entities.ingredientProperties.filter { it.ingredientId == row.id }.map { propertyKeys.getValue(it.propertyId) }.toSet(),
@@ -138,6 +140,37 @@ class SeedFilesTest {
         val withPolyols = entities.ingredientProperties.filter { it.propertyId == polyols }.map { it.ingredientId }.toSet()
         assertTrue(listOf(1223L, 1224L, 1225L, 1226L).all { it in withPolyols })
         assertTrue(1227L !in withPolyols)
+    }
+
+    /** Grains split (user 25.11.2026): migration 15 -> 16 for existing installs, JSON for new ones; both the same. */
+    @Test
+    fun grainsMigrationMatchesSeedFile() {
+        val propertyKeys = entities.properties.associate { it.id to it.key }
+        val categoryKeys = entities.categories.associate { it.id to it.key }
+        assertEquals("grains_flour", categoryKeys[Migrations.GRAINS_CATEGORY])
+        assertEquals("pasta", categoryKeys[Migrations.PASTA_CATEGORY])
+        assertEquals("bread_bakery", categoryKeys[Migrations.BREAD_CATEGORY])
+        assertEquals(20, Migrations.GRAINS_ROWS.size)
+        Migrations.GRAINS_ROWS.forEach { row ->
+            val seed = entities.ingredients.single { it.id == row.id }
+            assertEquals(row.key, seed.key)
+            assertEquals(row.categoryId, seed.categoryId)
+            assertEquals(
+                row.properties.toSet(),
+                entities.ingredientProperties.filter { it.ingredientId == row.id }.map { propertyKeys.getValue(it.propertyId) }.toSet(),
+            )
+            assertEquals(row.synonymsDe, entities.ingredientSynonyms.filter { it.ingredientId == row.id }.map { it.synonym })
+        }
+        // Every move of the migration is the category in the JSON, and nothing is left in "grains" that moved.
+        Migrations.CATEGORY_MOVES_16.forEach { (categoryId, ids) ->
+            ids.forEach { id -> assertEquals(categoryId, entities.ingredients.single { it.id == id }.categoryId, "moved $id") }
+        }
+        assertEquals(listOf("Trockenfrüchte"), entities.ingredientSynonyms.filter { it.ingredientId == Migrations.DRIED_FRUIT }.map { it.synonym })
+        // Pasta with egg is its own ingredient; plain wheat pasta stays without egg.
+        val egg = entities.properties.single { it.key == "egg" }.id
+        val eggIds = entities.ingredientProperties.filter { it.propertyId == egg }.map { it.ingredientId }.toSet()
+        assertTrue(1601L in eggIds)
+        assertTrue(105L !in eggIds)
     }
     @Test
     fun biscuitsAreInTheCatalog() {

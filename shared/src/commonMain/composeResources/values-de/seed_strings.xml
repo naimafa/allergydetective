@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Display names for seed keys (data/seed). Generated from docs/CONTENT_*.md, keep keys in sync. -->
 <resources>
-    <string name="category_grains_bakery">Getreide &amp; Backwaren</string>
+    <string name="category_grains_flour">Getreide &amp; Mehl</string>
+    <string name="category_pasta">Nudeln &amp; Teigwaren</string>
+    <string name="category_bread_bakery">Brot &amp; Backwaren</string>
     <string name="category_dairy">Milch &amp; Milchprodukte</string>
     <string name="category_cheese">Käse</string>
     <string name="category_meat_sausage">Fleisch &amp; Wurst</string>
@@ -321,6 +323,26 @@
     <string name="ingredient_coconut_blossom_sugar">Kokosblütenzucker</string>
     <string name="ingredient_date_syrup">Dattelsirup</string>
     <string name="ingredient_rice_syrup">Reissirup</string>
+    <string name="ingredient_wheat_flour">Weizenmehl</string>
+    <string name="ingredient_wholemeal_wheat_flour">Weizenvollkornmehl</string>
+    <string name="ingredient_spelt_flour">Dinkelmehl</string>
+    <string name="ingredient_wholemeal_spelt_flour">Dinkelvollkornmehl</string>
+    <string name="ingredient_rye_flour">Roggenmehl</string>
+    <string name="ingredient_semolina">Grieß</string>
+    <string name="ingredient_oat_flour">Hafermehl</string>
+    <string name="ingredient_rice_flour">Reismehl</string>
+    <string name="ingredient_starch">Speisestärke</string>
+    <string name="ingredient_gluten_free_flour_mix">Glutenfreie Mehlmischung</string>
+    <string name="ingredient_almond_flour">Mandelmehl</string>
+    <string name="ingredient_chickpea_flour">Kichererbsenmehl</string>
+    <string name="ingredient_baking_powder">Backpulver / Natron</string>
+    <string name="ingredient_yeast">Hefe</string>
+    <string name="ingredient_egg_noodles">Eiernudeln / Spätzle</string>
+    <string name="ingredient_dates">Datteln</string>
+    <string name="ingredient_raisins">Rosinen</string>
+    <string name="ingredient_dried_apricots">Getrocknete Aprikosen</string>
+    <string name="ingredient_prunes">Backpflaumen</string>
+    <string name="ingredient_dried_cranberries">Getrocknete Cranberries</string>
     <string name="factor_sport">Sport</string>
     <string name="factor_menstruation">Periode</string>
     <string name="factor_medication">Medikament</string>
