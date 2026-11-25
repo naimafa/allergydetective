@@ -4,6 +4,11 @@ import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
 import allergydetective.shared.generated.resources.ingredient_search
 import allergydetective.shared.generated.resources.experiment_title
+import allergydetective.shared.generated.resources.experiment_col_before
+import allergydetective.shared.generated.resources.experiment_col_without
+import allergydetective.shared.generated.resources.experiment_row_days
+import allergydetective.shared.generated.resources.experiment_row_complaints
+import allergydetective.shared.generated.resources.experiment_row_strength
 import allergydetective.shared.generated.resources.experiment_intro
 import allergydetective.shared.generated.resources.experiment_start
 import allergydetective.shared.generated.resources.experiment_what
@@ -17,8 +22,6 @@ import allergydetective.shared.generated.resources.experiment_begin
 import allergydetective.shared.generated.resources.experiment_focus
 import allergydetective.shared.generated.resources.experiment_running
 import allergydetective.shared.generated.resources.experiment_over
-import allergydetective.shared.generated.resources.experiment_before
-import allergydetective.shared.generated.resources.experiment_during
 import allergydetective.shared.generated.resources.experiment_rules
 import allergydetective.shared.generated.resources.experiment_eaten
 import allergydetective.shared.generated.resources.experiment_too_few
@@ -104,8 +107,28 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
         Text(stringResource(Res.string.experiment_running, name, result.dayNumber, experiment.days), style = MaterialTheme.typography.titleSmall)
         LinearProgressIndicator(progress = { result.dayNumber.toFloat() / experiment.days }, modifier = Modifier.fillMaxWidth())
     }
-    Text(stringResource(Res.string.experiment_before, result.before.complaintDays, result.before.days), style = MaterialTheme.typography.bodyMedium)
-    Text(stringResource(Res.string.experiment_during, name, result.during.complaintDays, result.during.days), style = MaterialTheme.typography.bodyMedium)
+    // User 25.11.2026: "strukturierter" - a small table before | without, with the mean strength per day.
+    val before = result.before
+    val during = result.during
+    val rows = listOf(
+        Triple(stringResource(Res.string.experiment_row_days), "${before.days}", "${during.days}"),
+        Triple(stringResource(Res.string.experiment_row_complaints), "${before.complaintDays}", "${during.complaintDays}"),
+        Triple(stringResource(Res.string.experiment_row_strength), strength(before.meanStrength, before.days), strength(during.meanStrength, during.days)),
+    )
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row {
+            Text("", modifier = Modifier.weight(1.4f))
+            Text(stringResource(Res.string.experiment_col_before), style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
+            Text(stringResource(Res.string.experiment_col_without, name), style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
+        }
+        rows.forEach { (label, b, d) ->
+            Row {
+                Text(label, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1.4f))
+                Text(b, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                Text(d, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+            }
+        }
+    }
     if (result.eatenDays > 0) {
         Text(stringResource(Res.string.experiment_eaten, name, result.eatenDays), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
     }
@@ -191,3 +214,7 @@ private fun IngredientLine(ingredient: IngredientInfo) {
         Text(name, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 10.dp))
     }
 }
+
+/** Mean strength with one decimal, "–" without counted days. */
+private fun strength(mean: Double, days: Int): String =
+    if (days == 0) "–" else ((mean * 10).toInt() / 10.0).toString().replace('.', ',')

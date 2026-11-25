@@ -16,9 +16,9 @@ class ExperimentTest {
     private val cheese = 302L
 
     /** Days 0..[last] finished; complaints (intensity 3) on [complaints]; cheese eaten on [cheeseDays]; [sick] days. */
-    private fun diary(last: Int, complaints: Set<Int>, cheeseDays: Set<Int> = emptySet(), sick: Set<Int> = emptySet()) = DiaryData(
+    private fun diary(last: Int, complaints: Set<Int>, cheeseDays: Set<Int> = emptySet(), sick: Set<Int> = emptySet(), intensity: (Int) -> Int = { 3 }) = DiaryData(
         meals = cheeseDays.map { Meal(it.toLong(), it * dayMs + 8 * 3_600_000L, 0, listOf(MealItem(cheese, Portion.MEDIUM))) },
-        symptomEntries = complaints.mapIndexed { i, d -> SymptomEntry(id = i.toLong(), symptomId = 1, startedAt = d * dayMs + 7 * 3_600_000L, tzOffsetMin = 0, intensity = 3) },
+        symptomEntries = complaints.mapIndexed { i, d -> SymptomEntry(id = i.toLong(), symptomId = 1, startedAt = d * dayMs + 7 * 3_600_000L, tzOffsetMin = 0, intensity = intensity(d)) },
         dayChecks = (0..last).map { DayCheck(epochDay = it.toLong(), confirmed = true, sleepHours = null, sleepQuality = null, stress = null, sick = it in sick) },
         dayFactors = emptyList(),
     )
@@ -29,9 +29,9 @@ class ExperimentTest {
         val test = Experiment(cheese, startDay = 10, days = 10)
         val result = evaluateExperiment(test, diary(19, complaints = (2..9).toSet() + setOf(12, 16), cheeseDays = (0..9).toSet()), today = 20)
 
-        assertEquals(PeriodStats(days = 10, complaintDays = 8), result.before)
+        assertEquals(PeriodStats(days = 10, complaintDays = 8, strengthSum = 24), result.before)
         // Days 10 and 11 are the washout; 12..19 count.
-        assertEquals(PeriodStats(days = 8, complaintDays = 2), result.during)
+        assertEquals(PeriodStats(days = 8, complaintDays = 2, strengthSum = 6), result.during)
         assertEquals(ExperimentVerdict.LESS, result.verdict)
         assertTrue(result.over)
     }
@@ -50,7 +50,7 @@ class ExperimentTest {
         val result = evaluateExperiment(test, diary(19, complaints = setOf(14, 15), cheeseDays = setOf(14), sick = setOf(15)), today = 20)
 
         assertEquals(1, result.eatenDays)
-        assertEquals(PeriodStats(days = 6, complaintDays = 0), result.during)
+        assertEquals(PeriodStats(days = 6, complaintDays = 0, strengthSum = 0), result.during)
     }
 
     @Test
@@ -71,6 +71,18 @@ class ExperimentTest {
 
         assertTrue(result.over)
         assertEquals(6, result.dayNumber)
-        assertEquals(PeriodStats(days = 4, complaintDays = 0), result.during)
+        assertEquals(PeriodStats(days = 4, complaintDays = 0, strengthSum = 0), result.during)
+    }
+
+    @Test
+    fun aMilderColdEveryDayIsAnImprovement() {
+        // User 25.11.2026: "es gab Beschwerden mit dem Schnupfen, nur weniger" - strength 3 before, 1 without cheese.
+        val test = Experiment(cheese, startDay = 10, days = 10)
+        val result = evaluateExperiment(test, diary(19, complaints = (0..19).toSet(), intensity = { if (it < 10) 3 else 1 }), today = 20)
+
+        assertEquals(PeriodStats(days = 8, complaintDays = 8, strengthSum = 8), result.during)
+        assertEquals(3.0, result.before.meanStrength)
+        assertEquals(1.0, result.during.meanStrength)
+        assertEquals(ExperimentVerdict.LESS, result.verdict)
     }
 }
