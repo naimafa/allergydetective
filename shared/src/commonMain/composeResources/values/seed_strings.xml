@@ -310,6 +310,17 @@
     <string name="ingredient_cloves">Cloves</string>
     <string name="ingredient_cardamom">Cardamom</string>
     <string name="ingredient_anise_fennel_seed">Aniseed / fennel seed</string>
+    <string name="ingredient_fig">Fig</string>
+    <string name="ingredient_xylitol">Xylitol / birch sugar</string>
+    <string name="ingredient_erythritol">Erythritol</string>
+    <string name="ingredient_sorbitol">Sorbitol</string>
+    <string name="ingredient_maltitol">Maltitol / isomalt</string>
+    <string name="ingredient_stevia">Stevia</string>
+    <string name="ingredient_sweetener">Sweetener (sucralose, aspartame …)</string>
+    <string name="ingredient_monk_fruit">Monk fruit sweetener</string>
+    <string name="ingredient_coconut_blossom_sugar">Coconut sugar</string>
+    <string name="ingredient_date_syrup">Date syrup</string>
+    <string name="ingredient_rice_syrup">Rice syrup</string>
     <string name="factor_sport">Exercise</string>
     <string name="factor_menstruation">Menstruation</string>
     <string name="factor_medication">Medication</string>

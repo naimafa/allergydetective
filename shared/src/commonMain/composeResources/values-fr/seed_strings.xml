@@ -310,6 +310,17 @@
     <string name="ingredient_cloves">Clous de girofle</string>
     <string name="ingredient_cardamom">Cardamome</string>
     <string name="ingredient_anise_fennel_seed">Anis / graines de fenouil</string>
+    <string name="ingredient_fig">Figue</string>
+    <string name="ingredient_xylitol">Xylitol / sucre de bouleau</string>
+    <string name="ingredient_erythritol">Érythritol</string>
+    <string name="ingredient_sorbitol">Sorbitol</string>
+    <string name="ingredient_maltitol">Maltitol / isomalt</string>
+    <string name="ingredient_stevia">Stévia</string>
+    <string name="ingredient_sweetener">Édulcorant (sucralose, aspartame …)</string>
+    <string name="ingredient_monk_fruit">Édulcorant au fruit du moine</string>
+    <string name="ingredient_coconut_blossom_sugar">Sucre de fleur de coco</string>
+    <string name="ingredient_date_syrup">Sirop de dattes</string>
+    <string name="ingredient_rice_syrup">Sirop de riz</string>
     <string name="factor_sport">Sport</string>
     <string name="factor_menstruation">Règles</string>
     <string name="factor_medication">Médicament</string>

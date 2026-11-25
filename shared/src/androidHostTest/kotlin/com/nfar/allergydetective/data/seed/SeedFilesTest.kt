@@ -32,7 +32,7 @@ class SeedFilesTest {
     fun hasExpectedCounts() {
         assertEquals(15, entities.categories.size)
         assertEquals(26, entities.properties.size)
-        assertEquals(239, entities.ingredients.size)
+        assertEquals(250, entities.ingredients.size)
         assertEquals(24, entities.symptoms.size)
         assertEquals(4, entities.lifestyleFactors.size)
     }
@@ -116,6 +116,29 @@ class SeedFilesTest {
         }
     }
 
+
+    /** Sweeteners and figs (user 25.11.2026): migration 14 -> 15 for existing installs, JSON for new ones; both the same. */
+    @Test
+    fun sweetenersMigrationMatchesSeedFile() {
+        val propertyKeys = entities.properties.associate { it.id to it.key }
+        assertEquals(11, Migrations.SWEETENER_ROWS.size)
+        Migrations.SWEETENER_ROWS.forEach { row ->
+            val seed = entities.ingredients.single { it.id == row.id }
+            assertEquals(row.key, seed.key)
+            assertEquals(row.categoryId, seed.categoryId)
+            assertEquals(
+                row.properties.toSet(),
+                entities.ingredientProperties.filter { it.ingredientId == row.id }.map { propertyKeys.getValue(it.propertyId) }.toSet(),
+            )
+            assertEquals(row.synonymsDe, entities.ingredientSynonyms.filter { it.ingredientId == row.id }.map { it.synonym })
+            assertEquals(row.categoryId, row.id / 100)
+        }
+        // Sugar alcohols upset the gut in larger amounts; stevia and sweeteners like sucralose count as neutral here.
+        val polyols = entities.properties.single { it.key == "polyols" }.id
+        val withPolyols = entities.ingredientProperties.filter { it.propertyId == polyols }.map { it.ingredientId }.toSet()
+        assertTrue(listOf(1223L, 1224L, 1225L, 1226L).all { it in withPolyols })
+        assertTrue(1227L !in withPolyols)
+    }
     @Test
     fun biscuitsAreInTheCatalog() {
         val biscuits = entities.ingredients.single { it.key == "biscuits" }
