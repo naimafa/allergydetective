@@ -86,6 +86,8 @@
     <string name="experiment_course_legend">Left before, right without. Bar: strongest complaint of the day. Red: eaten anyway. Pale: does not count (yet).</string>
     <string name="experiment_day_n">Day %1$d</string>
     <string name="experiment_not_yet">Not counted yet: the first %1$d days (the left-out food can still have an effect) and today (counts once the day is closed). Every complaint counts, even a light one.</string>
+    <string name="experiment_legend_eaten">eaten anyway</string>
+    <string name="experiment_legend_not_counted">not counted</string>
     <string name="experiment_mean_line">Ø before</string>
     <string name="experiment_result_from_day">Result from day %1$d</string>
     <string name="experiment_result_at_end">Result at the end of the test</string>

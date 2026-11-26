@@ -56,6 +56,8 @@ import allergydetective.shared.generated.resources.experiment_diet_hint
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.displayName
 import androidx.compose.foundation.layout.Arrangement
+import allergydetective.shared.generated.resources.experiment_legend_eaten
+import allergydetective.shared.generated.resources.experiment_legend_not_counted
 import allergydetective.shared.generated.resources.experiment_mean_line
 import allergydetective.shared.generated.resources.experiment_result_from_day
 import allergydetective.shared.generated.resources.experiment_result_at_end
@@ -225,7 +227,7 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
     if (result.daily.isNotEmpty() && reintro == null) {
         Text(stringResource(Res.string.experiment_course), style = MaterialTheme.typography.titleSmall)
         CourseChart(result, experiment.days)
-        Text(stringResource(Res.string.experiment_course_legend), style = MaterialTheme.typography.bodySmall, color = muted)
+        ChartLegend()
     }
     // User 26.11.2026: something else eaten much more or less often may be the reason, not the left-out food.
     if (result.dietChanges.isNotEmpty() && reintro == null) {
@@ -722,5 +724,27 @@ private fun WaitingStatus(experiment: Experiment, result: ExperimentResult) {
             Text(headline, style = MaterialTheme.typography.titleMedium, color = home.ink)
             Text(stringResource(Res.string.experiment_too_few), style = MaterialTheme.typography.bodySmall, color = home.inkSoft)
         }
+    }
+}
+
+/** User 26.11.2026: the legend as colour swatches, not as a sentence. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ChartLegend() {
+    val home = AppColors.extra.home
+    val faint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f)
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        LegendItem(home.heart, stringResource(Res.string.experiment_col_before))
+        LegendItem(home.accent, stringResource(Res.string.experiment_col_without))
+        LegendItem(MaterialTheme.colorScheme.error, stringResource(Res.string.experiment_legend_eaten))
+        LegendItem(faint, stringResource(Res.string.experiment_legend_not_counted))
+    }
+}
+
+@Composable
+private fun LegendItem(color: Color, label: String) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Box(Modifier.size(12.dp).clip(RoundedCornerShape(3.dp)).background(color))
+        Text(label, style = MaterialTheme.typography.bodySmall, color = AppColors.extra.home.inkSoft)
     }
 }
