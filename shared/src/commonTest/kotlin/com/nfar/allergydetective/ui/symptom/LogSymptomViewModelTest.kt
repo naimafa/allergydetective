@@ -326,4 +326,12 @@ class LogSymptomViewModelTest {
         assertEquals(listOf(1L), repository.deleted)
         assertNull(vm.state.value.savedEntryId)
     }
+
+    @Test
+    fun aNewAreaGoesAboveOtherInADraggedOrder() {
+        // User 26.11.2026: "Gelenke" came new while the areas were already dragged; it belongs above "Sonstiges".
+        val groups = listOf("digestive", "skin", "head", "airways", "joints", "other").map { it to Unit }
+        val saved = listOf("skin", "digestive", "head", "airways", "other")
+        assertEquals(listOf("skin", "digestive", "head", "airways", "joints", "other"), inUserOrder(groups, saved).map { it.first })
+    }
 }
