@@ -189,7 +189,25 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16)
+    /**
+     * User 26.11.2026: complaints of the joints and muscles (pain, swelling / inflammation). Their own group; gluten and
+     * histamine are linked to it, as joint pain is described for both.
+     */
+    val MIGRATION_16_17 = object : Migration(16, 17) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            JOINT_SYMPTOMS_17.forEach { (id, key) ->
+                connection.execSQL("INSERT OR IGNORE INTO symptoms (id, `key`, groupKey, isRedFlag) VALUES ($id, '$key', 'joints', 0)")
+            }
+            listOf(101L, 102L).forEach { propertyId ->
+                connection.execSQL("INSERT OR IGNORE INTO property_symptom_groups (propertyId, symptomGroupKey) VALUES ($propertyId, 'joints')")
+            }
+        }
+    }
+
+    /** The new symptoms of version 17; same ids and keys as symptoms.json. */
+    val JOINT_SYMPTOMS_17 = listOf(5001L to "joint_pain", 5002L to "joint_swelling", 5003L to "muscle_pain")
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17)
 
     private const val HERBS_CATEGORY = 15L
     internal const val DRIED_HERBS = 1415L

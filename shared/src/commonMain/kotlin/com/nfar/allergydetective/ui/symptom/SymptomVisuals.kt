@@ -10,6 +10,7 @@ private val SYMPTOM_EMOJI = mapOf(
     2001L to "🔴", 2002L to "🐜", 2003L to "🖐️", 2004L to "💧", 2005L to "🌵",
     3001L to "🤯", 3002L to "🌀", 3003L to "⚡", 3004L to "💤", 3005L to "🧠", 3006L to "💓",
     4001L to "🤧", 4002L to "👃", 4003L to "😤", 4004L to "🌬️", 4005L to "👄", 4006L to "👁️",
+    5001L to "🦴", 5002L to "🦵", 5003L to "💪",
     9001L to "❓",
 )
 

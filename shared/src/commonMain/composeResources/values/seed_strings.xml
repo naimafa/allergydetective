@@ -48,6 +48,7 @@
     <string name="symptom_group_skin">Skin</string>
     <string name="symptom_group_head">Head, energy &amp; circulation</string>
     <string name="symptom_group_airways">Airways, eyes &amp; mouth</string>
+    <string name="symptom_group_joints">Joints &amp; muscles</string>
     <string name="symptom_group_other">Other</string>
     <string name="symptom_nausea">Nausea</string>
     <string name="symptom_bloating">Bloating</string>
@@ -73,6 +74,9 @@
     <string name="symptom_mouth_tingling">Tingling mouth</string>
     <string name="symptom_itchy_eyes">Itchy eyes</string>
     <string name="symptom_other">Other</string>
+    <string name="symptom_joint_pain">Joint pain</string>
+    <string name="symptom_joint_swelling">Joint swelling / inflammation</string>
+    <string name="symptom_muscle_pain">Muscle pain</string>
     <string name="ingredient_white_bread">White bread / wheat roll</string>
     <string name="ingredient_wholemeal_wheat_bread">Wholemeal bread (wheat)</string>
     <string name="ingredient_rye_bread">Rye bread</string>

@@ -33,7 +33,7 @@ class SeedFilesTest {
         assertEquals(17, entities.categories.size)
         assertEquals(26, entities.properties.size)
         assertEquals(270, entities.ingredients.size)
-        assertEquals(24, entities.symptoms.size)
+        assertEquals(27, entities.symptoms.size)
         assertEquals(4, entities.lifestyleFactors.size)
     }
 
@@ -221,5 +221,14 @@ class SeedFilesTest {
             val missing = expected.filterNot { it in names }
             assertTrue(missing.isEmpty(), "Missing in $folder: $missing")
         }
+    }
+
+    /** Migration 16 -> 17 adds the same joint symptoms as symptoms.json (user 26.11.2026). */
+    @Test
+    fun jointSymptomsMatchTheMigration() {
+        val joints = entities.symptoms.filter { it.groupKey == "joints" }.map { it.id to it.key }
+        assertEquals(com.nfar.allergydetective.data.db.Migrations.JOINT_SYMPTOMS_17, joints)
+        val linked = entities.propertySymptomGroups.filter { it.symptomGroupKey == "joints" }.map { it.propertyId }.toSet()
+        assertEquals(setOf(101L, 102L), linked)
     }
 }
