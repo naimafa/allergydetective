@@ -59,9 +59,8 @@
     <string name="experiment_how_long">How long?</string>
     <string name="experiment_days_n">%1$d days</string>
     <string name="experiment_since">Since when have you left it out?</string>
-    <string name="experiment_since_today">from today</string>
-    <string name="experiment_since_yesterday">since yesterday</string>
-    <string name="experiment_since_2">since the day before</string>
+    <string name="experiment_before_days">For comparison: %1$d finished days before</string>
+    <string name="experiment_before_few">Fewer than 5 days before: the test cannot show a result this way. Choose a later start or log a few more days first.</string>
     <string name="experiment_begin">Start test</string>
     <string name="experiment_focus">Without %1$s</string>
     <string name="experiment_running">Without %1$s · day %2$d of %3$d</string>

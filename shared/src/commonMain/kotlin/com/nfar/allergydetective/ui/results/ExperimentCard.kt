@@ -11,9 +11,8 @@ import allergydetective.shared.generated.resources.experiment_suggestions
 import allergydetective.shared.generated.resources.experiment_how_long
 import allergydetective.shared.generated.resources.experiment_days_n
 import allergydetective.shared.generated.resources.experiment_since
-import allergydetective.shared.generated.resources.experiment_since_today
-import allergydetective.shared.generated.resources.experiment_since_yesterday
-import allergydetective.shared.generated.resources.experiment_since_2
+import allergydetective.shared.generated.resources.experiment_before_days
+import allergydetective.shared.generated.resources.experiment_before_few
 import allergydetective.shared.generated.resources.experiment_begin
 import allergydetective.shared.generated.resources.experiment_focus
 import allergydetective.shared.generated.resources.experiment_running
@@ -60,6 +59,8 @@ import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.experiment.Experiment
 import com.nfar.allergydetective.domain.experiment.ExperimentResult
 import com.nfar.allergydetective.domain.experiment.ExperimentVerdict
+import com.nfar.allergydetective.domain.experiment.MIN_COUNTED_DAYS
+import com.nfar.allergydetective.ui.common.DayPicker
 import com.nfar.allergydetective.ui.common.AppFilterChip
 import com.nfar.allergydetective.ui.meal.IngredientBadge
 import com.nfar.allergydetective.ui.meal.ingredientName
@@ -91,7 +92,7 @@ fun ExperimentCard(viewModel: ExperimentViewModel = koinViewModel()) {
             }
         }
     }
-    state.setup?.let { SetupDialog(it, state.suggestions, viewModel) }
+    state.setup?.let { SetupDialog(it, state.suggestions, state.today, viewModel) }
 }
 
 @Composable
@@ -125,7 +126,7 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SetupDialog(setup: ExperimentSetup, suggestions: List<IngredientInfo>, viewModel: ExperimentViewModel) {
+private fun SetupDialog(setup: ExperimentSetup, suggestions: List<IngredientInfo>, today: Long, viewModel: ExperimentViewModel) {
     val chosen = setup.chosen
     val focus = chosen?.let { stringResource(Res.string.experiment_focus, ingredientName(it)) }
     AlertDialog(
@@ -158,10 +159,20 @@ private fun SetupDialog(setup: ExperimentSetup, suggestions: List<IngredientInfo
                     }
                 }
                 Text(stringResource(Res.string.experiment_since), style = MaterialTheme.typography.titleSmall)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(Res.string.experiment_since_today, Res.string.experiment_since_yesterday, Res.string.experiment_since_2).forEachIndexed { daysAgo, label ->
-                        AppFilterChip(selected = setup.sinceDaysAgo == daysAgo, onClick = { viewModel.onSince(daysAgo) }, label = { Text(stringResource(label)) })
-                    }
+                // User 25.11.2026: any day of the last two weeks, with the same day row as the forms.
+                DayPicker(
+                    daysAgo = setup.sinceDaysAgo,
+                    today = today,
+                    onSelect = viewModel::onSince,
+                    maxDaysBack = ExperimentViewModel.MAX_START_DAYS_BACK,
+                )
+                Text(
+                    stringResource(Res.string.experiment_before_days, setup.beforeDays),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                if (setup.beforeDays < MIN_COUNTED_DAYS) {
+                    Text(stringResource(Res.string.experiment_before_few), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                 }
             }
         },
