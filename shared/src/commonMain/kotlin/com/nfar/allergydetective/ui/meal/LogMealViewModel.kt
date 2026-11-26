@@ -552,6 +552,8 @@ class LogMealViewModel(
                 saveAsFavorite = false,
                 favoriteName = "",
                 saving = false,
+                // User 25.11.2026: after saving the dashboard opens; the history serves for correcting.
+                finished = true,
                 savedMealId = savedMealId,
                 addedTo = addedTo,
                 recent = recent,

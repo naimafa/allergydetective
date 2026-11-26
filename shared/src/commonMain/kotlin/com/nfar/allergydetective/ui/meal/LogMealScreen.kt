@@ -193,6 +193,8 @@ fun LogMealScreen(
     favoriteId: Long? = null,
     /** Add for an earlier day from the history (feedback 19.11.). */
     daysAgo: Int? = null,
+    /** Saved: leave the form (the app opens the dashboard). */
+    onFinished: () -> Unit = onBack,
     viewModel: LogMealViewModel = koinViewModel(),
     customViewModel: CustomIngredientViewModel = koinViewModel(),
 ) {
@@ -202,7 +204,7 @@ fun LogMealScreen(
     LaunchedEffect(editMealId) { editMealId?.let(viewModel::startEditing) }
     LaunchedEffect(favoriteId) { favoriteId?.let(viewModel::startWithFavorite) }
     LaunchedEffect(daysAgo) { daysAgo?.let(viewModel::startForDay) }
-    LaunchedEffect(state.finished) { if (state.finished) onBack() }
+    LaunchedEffect(state.finished) { if (state.finished) onFinished() }
     SavedSnackbarEffect(state.savedMealId, snackbarHostState, viewModel::onUndo, viewModel::onSavedShown)
     state.addedTo?.let { slot ->
         val message = stringResource(Res.string.meal_added, mealSlotLabel(slot))

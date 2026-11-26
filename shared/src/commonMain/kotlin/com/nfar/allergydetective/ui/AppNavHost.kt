@@ -129,6 +129,8 @@ fun AppNavHost(
     val completed = onboardingCompleted ?: return
     val navController = rememberNavController()
     val back: () -> Unit = { navController.popBackStack() }
+    // User 25.11.2026: after saving, always the dashboard (a fresh home entry starts on the home tab).
+    val goHome: () -> Unit = { navController.navigate(HomeRoute()) { popUpTo<HomeRoute> { inclusive = true } } }
     // Tapping the evening reminder opens the day check directly (UX 4).
     LaunchedEffect(openDayCheck) {
         if (openDayCheck && completed) {
@@ -203,9 +205,9 @@ fun AppNavHost(
             )
         }
 composable<IntroRoute> {            OnboardingScreen(                replay = true,                onFinished = { openDishes ->                    if (openDishes) {                        navController.navigate(HomeRoute(openFavorites = true)) { popUpTo<HomeRoute> { inclusive = true } }                    } else {                        navController.popBackStack()                    }                },            )        }
-        composable<LogMealRoute> { entry -> entry.toRoute<LogMealRoute>().let { route -> LogMealScreen(onBack = back, editMealId = route.editMealId, favoriteId = route.favoriteId, daysAgo = route.daysAgo) } }
+        composable<LogMealRoute> { entry -> entry.toRoute<LogMealRoute>().let { route -> LogMealScreen(onBack = back, onFinished = goHome, editMealId = route.editMealId, favoriteId = route.favoriteId, daysAgo = route.daysAgo) } }
         composable<LogSymptomRoute> { entry ->
-            entry.toRoute<LogSymptomRoute>().let { route -> LogSymptomScreen(onBack = back, editEntryId = route.editEntryId, daysAgo = route.daysAgo) }
+            entry.toRoute<LogSymptomRoute>().let { route -> LogSymptomScreen(onBack = back, onFinished = goHome, editEntryId = route.editEntryId, daysAgo = route.daysAgo) }
         }
         composable<DayCheckRoute> { entry ->
             DayCheckScreen(

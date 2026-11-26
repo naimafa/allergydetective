@@ -114,6 +114,8 @@ fun LogSymptomScreen(
     editEntryId: Long? = null,
     /** Add for an earlier day (from the history): 1 = yesterday, 2 = the day before. */
     daysAgo: Int? = null,
+    /** Saved: leave the form (the app opens the dashboard). */
+    onFinished: () -> Unit = onBack,
     viewModel: LogSymptomViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -121,7 +123,7 @@ fun LogSymptomScreen(
     SavedSnackbarEffect(state.savedEntryId, snackbarHostState, viewModel::onUndo, viewModel::onSavedShown)
     LaunchedEffect(editEntryId) { editEntryId?.let(viewModel::startEditing) }
     LaunchedEffect(daysAgo) { daysAgo?.let(viewModel::startForDay) }
-    LaunchedEffect(state.finished) { if (state.finished) onBack() }
+    LaunchedEffect(state.finished) { if (state.finished) onFinished() }
 
     ScreenScaffold(
         title = when {
