@@ -61,7 +61,7 @@
     <string name="results_why_too_few_days">لا يظهر النمط إلا عندما يتكرر شيء ما. لذلك يقارن التطبيق أيامك ببعضها ويحتاج إلى %2$d يومًا مكتملًا على الأقل. حتى الآن لديك %1$d.</string>
     <string name="results_why_no_complaints">لم تكن هناك أعراض واضحة في أيامك المكتملة. بدونها لا يوجد ما يبحث عنه التطبيق، وهذا خبر جيد. إذا ظهر شيء مجددًا، سجّله.</string>
     <string name="results_why_few_complaint_days">حتى الآن كانت لديك أعراض في يوم واحد فقط. لا يتضح إن كان طعام ما وراءها إلا عندما تتكرر الأعراض ويرى التطبيق ما المشترك بين تلك الأيام.</string>
-    <string name="results_why_no_good_days">كانت لديك أعراض في كل يوم مكتمل. يجد التطبيق المحفزات بمقارنة الأيام مع الأعراض وبدونها. عندما تكون هناك أيام بلا أعراض، يستطيع المقارنة.</string>
+    <string name="results_why_no_good_days">كانت لديك أعراض في كل يوم مكتمل تقريبًا. يجد التطبيق المحفزات بمقارنة الأيام مع الأعراض وبدونها. عندما تكون هناك أيام بلا أعراض، يستطيع المقارنة.</string>
     <string name="results_why_nothing_stands_out">حتى الآن لا يرتبط أي طعام بأعراضك أكثر من غيره بشكل واضح. ربما يحتاج الأمر إلى أيام أكثر، وربما يكون السبب شيئًا غير الطعام. استمر في التسجيل.</string>
     <string name="results_tip_title">كيف تساعد البحث</string>
     <string name="results_tip_text">واصل التسجيل كل يوم واختمه، حتى بدون أعراض. الأطعمة التي تأكلها كل يوم تقريبًا لا يمكن فحصها إلا إذا تركتها بضعة أيام من حين لآخر.</string>
@@ -222,7 +222,11 @@
     <string name="report_level_trace">أثر</string>
     <string name="report_level_suspicion">اشتباه</string>
     <string name="report_level_strong">اشتباه قوي</string>
-    <string name="report_no_patterns">لا توجد أنماط بعد. نحتاج إلى أيام مؤكَّدة أكثر.</string>
+    <string name="report_no_patterns">لا توجد أنماط بعد: %1$d فقط من %2$d يومًا مكتملًا على الأقل.</string>
+    <string name="report_no_patterns_no_complaints">لا توجد أنماط: لم تكن هناك أعراض واضحة في الأيام المكتملة.</string>
+    <string name="report_no_patterns_few_complaint_days">لا توجد أنماط بعد: أعراض واضحة في يوم واحد فقط؛ النمط يحتاج إلى تكرار.</string>
+    <string name="report_no_patterns_no_good_days">لا توجد أنماط بعد: أعراض في %1$d من %2$d يومًا مكتملًا. تنقص أيام بلا أعراض للمقارنة، لذا لا يمكن تمييز أي طعام.</string>
+    <string name="report_no_patterns_nothing">لا توجد أنماط: لم يرتبط أي طعام بالأعراض أكثر من غيره بوضوح (%1$d يومًا مكتملًا، منها %2$d بأعراض).</string>
     <string name="report_footer">Allergy Detective · أُنشئ في %1$s</string>
     <string name="language_title">اللغة</string>
     <string name="language_system">مثل الهاتف</string>

@@ -39,4 +39,16 @@ class NoPatternReasonTest {
 
     @Test
     fun enoughOfBothKinds() = assertEquals(NoPatternReason.NOTHING_STANDS_OUT, noPatternReason(diary(7, listOf(1, 4)), 7))
+
+    @Test
+    fun twoGoodDaysOutOfTenAreTooFewToCompare() {
+        // User data 25.11.2026: complaints on 8 of 10 finished days.
+        val facts = noPatternFacts(diary(10, (0 until 8).toList()), 7)
+
+        assertEquals(NoPatternFacts(NoPatternReason.NO_GOOD_DAYS, finishedDays = 10, complaintDays = 8), facts)
+    }
+
+    @Test
+    fun threeGoodDaysAreEnoughToCompare() =
+        assertEquals(NoPatternReason.NOTHING_STANDS_OUT, noPatternReason(diary(10, (0 until 7).toList()), 7))
 }

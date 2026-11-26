@@ -18,7 +18,7 @@ enum class NoPatternReason {
     /** Complaints on only one day: a pattern needs something that happens more than once. */
     FEW_COMPLAINT_DAYS,
 
-    /** Complaints on every finished day: no good days to compare with. */
+    /** Complaints on (almost) every finished day: too few good days to compare with (user data 25.11.2026: 2 of 10). */
     NO_GOOD_DAYS,
 
     /** Enough days of both kinds, but no food stands out. */
@@ -28,23 +28,36 @@ enum class NoPatternReason {
 /** Complaint days needed before a pattern is possible (as `minRealHits` in the analysis). */
 internal const val MIN_COMPLAINT_DAYS = 2
 
+/** Days without complaints needed to compare with; fewer, and every food looks the same. */
+internal const val MIN_GOOD_DAYS = 3
+
+/** The reason with the counts behind it, for the report ("complaints on 8 of 10 days"). */
+data class NoPatternFacts(val reason: NoPatternReason, val finishedDays: Int, val complaintDays: Int)
+
 internal fun noPatternReason(
     diary: DiaryData,
     firstEvaluationDays: Int,
     minIntensity: Int = AnalysisConfig().dayLag.minIntensity,
-): NoPatternReason {
+): NoPatternReason = noPatternFacts(diary, firstEvaluationDays, minIntensity).reason
+
+internal fun noPatternFacts(
+    diary: DiaryData,
+    firstEvaluationDays: Int,
+    minIntensity: Int = AnalysisConfig().dayLag.minIntensity,
+): NoPatternFacts {
     val finished = diary.dayChecks.filter { it.confirmed }.map { it.epochDay }.toSet()
-    if (finished.size < firstEvaluationDays) return NoPatternReason.TOO_FEW_DAYS
     val complaintDays = diary.symptomEntries
         // The same bar as the day analysis: very light complaints do not make a complaint day.
         .filter { it.intensity >= minIntensity }
         .map { localEpochDay(it.startedAt, it.tzOffsetMin) }
         .filter { it in finished }
         .toSet()
-    return when {
+    val reason = when {
+        finished.size < firstEvaluationDays -> NoPatternReason.TOO_FEW_DAYS
         complaintDays.isEmpty() -> NoPatternReason.NO_COMPLAINTS
         complaintDays.size < MIN_COMPLAINT_DAYS -> NoPatternReason.FEW_COMPLAINT_DAYS
-        complaintDays.size == finished.size -> NoPatternReason.NO_GOOD_DAYS
+        finished.size - complaintDays.size < MIN_GOOD_DAYS -> NoPatternReason.NO_GOOD_DAYS
         else -> NoPatternReason.NOTHING_STANDS_OUT
     }
+    return NoPatternFacts(reason, finished.size, complaintDays.size)
 }

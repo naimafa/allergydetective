@@ -54,7 +54,7 @@
     <string name="results_why_too_few_days">A pattern only shows when something repeats. To see it, the app compares your days with each other and needs at least %2$d finished days. So far there are %1$d.</string>
     <string name="results_why_no_complaints">Your finished days had no clear complaints. Without them there is nothing for the app to look for, and that is good news. If something comes up again, log it.</string>
     <string name="results_why_few_complaint_days">So far you had complaints on one day only. Whether a food is behind them shows only when complaints happen more often and the app can see what those days had in common.</string>
-    <string name="results_why_no_good_days">You had complaints on every finished day. The app finds triggers by comparing days with and without complaints. As soon as there are days without complaints, it can compare.</string>
+    <string name="results_why_no_good_days">You had complaints on (almost) every finished day. The app finds triggers by comparing days with and without complaints. As soon as there are days without complaints, it can compare.</string>
     <string name="results_why_nothing_stands_out">So far no food goes along with your complaints clearly more often than others. Maybe it needs more days, maybe something other than food is behind them. Just keep logging.</string>
     <string name="results_tip_title">How to help the search</string>
     <string name="results_tip_text">Keep logging every day and finish it, also without complaints. Food you eat almost daily can only be tested if you leave it out for a few days now and then.</string>
@@ -216,7 +216,11 @@
     <string name="report_level_trace">Trace</string>
     <string name="report_level_suspicion">Suspicion</string>
     <string name="report_level_strong">Strong suspicion</string>
-    <string name="report_no_patterns">No patterns yet. More confirmed days are needed.</string>
+    <string name="report_no_patterns">No patterns yet: only %1$d of at least %2$d finished days.</string>
+    <string name="report_no_patterns_no_complaints">No patterns: the finished days had no clear complaints.</string>
+    <string name="report_no_patterns_few_complaint_days">No patterns yet: clear complaints on one day only; a pattern needs repetition.</string>
+    <string name="report_no_patterns_no_good_days">No patterns yet: complaints on %1$d of %2$d finished days. Days without complaints are missing for comparison, so no food can be singled out.</string>
+    <string name="report_no_patterns_nothing">No patterns: no food went along with complaints clearly more often than others (%1$d finished days, %2$d with complaints).</string>
     <string name="report_footer">Allergy Detective · created on %1$s</string>
     <string name="language_title">Language</string>
     <string name="language_system">Like the phone</string>

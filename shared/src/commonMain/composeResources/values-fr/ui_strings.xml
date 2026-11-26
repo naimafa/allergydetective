@@ -54,7 +54,7 @@
     <string name="results_why_too_few_days">Un schéma n’apparaît que lorsque quelque chose se répète. Pour cela, l’app compare tes jours entre eux et a besoin d’au moins %2$d jours clôturés. Pour l’instant, il y en a %1$d.</string>
     <string name="results_why_no_complaints">Tes jours clôturés n’ont pas eu de symptômes marqués. Sans eux, l’app n’a rien à chercher, et c’est une bonne nouvelle. Si quelque chose revient, note-le.</string>
     <string name="results_why_few_complaint_days">Jusqu’ici, tu as eu des symptômes un seul jour. On ne voit si un aliment en est la cause que lorsque les symptômes reviennent plus souvent et que l’app peut voir ce que ces jours ont en commun.</string>
-    <string name="results_why_no_good_days">Tu as eu des symptômes chaque jour clôturé. L’app trouve les déclencheurs en comparant les jours avec et sans symptômes. Dès qu’il y aura des jours sans symptômes, elle pourra comparer.</string>
+    <string name="results_why_no_good_days">Tu as eu des symptômes (presque) chaque jour clôturé. L’app trouve les déclencheurs en comparant les jours avec et sans symptômes. Dès qu’il y aura des jours sans symptômes, elle pourra comparer.</string>
     <string name="results_why_nothing_stands_out">Jusqu’ici, aucun aliment n’accompagne tes symptômes nettement plus souvent que les autres. Il faut peut-être plus de jours, ou autre chose que l’alimentation est en cause. Continue simplement à noter.</string>
     <string name="results_tip_title">Comment aider la recherche</string>
     <string name="results_tip_text">Continue à tout noter chaque jour et à clôturer la journée, même sans symptômes. Les aliments que tu manges presque tous les jours ne peuvent être testés que si tu les évites de temps en temps quelques jours.</string>
@@ -212,7 +212,11 @@
     <string name="report_level_trace">Piste</string>
     <string name="report_level_suspicion">Soupçon</string>
     <string name="report_level_strong">Fort soupçon</string>
-    <string name="report_no_patterns">Pas encore de tendances. Il faut plus de jours confirmés.</string>
+    <string name="report_no_patterns">Pas encore de tendances : seulement %1$d jours clôturés sur au moins %2$d.</string>
+    <string name="report_no_patterns_no_complaints">Aucune tendance : les jours clôturés n’ont pas eu de symptômes marqués.</string>
+    <string name="report_no_patterns_few_complaint_days">Pas encore de tendances : symptômes marqués un seul jour ; une tendance demande des répétitions.</string>
+    <string name="report_no_patterns_no_good_days">Pas encore de tendances : symptômes %1$d jours sur %2$d jours clôturés. Il manque des jours sans symptômes pour comparer, aucun aliment ne peut donc être distingué.</string>
+    <string name="report_no_patterns_nothing">Aucune tendance : aucun aliment n’a accompagné les symptômes nettement plus souvent que les autres (%1$d jours clôturés, dont %2$d avec symptômes).</string>
     <string name="report_footer">Allergy Detective · créé le %1$s</string>
     <string name="language_title">Langue</string>
     <string name="language_system">Comme le téléphone</string>
