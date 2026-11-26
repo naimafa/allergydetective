@@ -41,6 +41,7 @@ private fun AnalysisRows.toReferenceData(): ReferenceData {
                 symptomGroups = groupsByProperty[it.id].orEmpty().toSet(),
                 heatLabile = it.key in HEAT_LABILE_PROPERTY_KEYS,
                 gluten = it.key == GLUTEN_PROPERTY_KEY,
+                allergen = it.groupKey.startsWith("allergen"),
             )
         },
         ingredients = ingredients.map { IngredientRef(it.id, propertiesByIngredient[it.id].orEmpty().toSet()) },

@@ -2,6 +2,10 @@ package com.nfar.allergydetective.domain.experiment
 
 import com.nfar.allergydetective.domain.analysis.model.DayCheck
 import com.nfar.allergydetective.domain.analysis.model.DiaryData
+import com.nfar.allergydetective.domain.analysis.model.IngredientRef
+import com.nfar.allergydetective.domain.analysis.model.Preparation
+import com.nfar.allergydetective.domain.analysis.model.ReferenceData
+import com.nfar.allergydetective.domain.analysis.model.TriggerProperty
 import com.nfar.allergydetective.domain.analysis.model.Meal
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Portion
@@ -84,5 +88,134 @@ class ExperimentTest {
         assertEquals(3.0, result.before.meanStrength)
         assertEquals(1.0, result.during.meanStrength)
         assertEquals(ExperimentVerdict.LESS, result.verdict)
+    }
+
+    private val milkProtein = 117L
+    private val glutenId = 102L
+    private val yoghurt = 303L
+    private val bread = 401L
+    private val reference = ReferenceData(
+        properties = listOf(TriggerProperty(milkProtein, emptyList(), emptySet()), TriggerProperty(glutenId, emptyList(), emptySet(), gluten = true)),
+        ingredients = listOf(IngredientRef(cheese, setOf(milkProtein)), IngredientRef(yoghurt, setOf(milkProtein)), IngredientRef(bread, setOf(glutenId))),
+        symptoms = emptyList(),
+    )
+
+    @Test
+    fun aGroupCountsEveryIngredientOfIt() {
+        // User 26.11.2026: leaving out milk protein - yoghurt on day 14 breaks it like cheese would.
+        val test = Experiment(0, startDay = 10, days = 10, propertyId = milkProtein)
+        val base = diary(19, complaints = emptySet())
+        val withYoghurt = base.copy(meals = listOf(Meal(1, 14 * dayMs + 8 * 3_600_000L, 0, listOf(MealItem(yoghurt, Portion.MEDIUM)))))
+        val result = evaluateExperiment(test, withYoghurt, today = 20, leftOut = leftOutMatcher(test, reference))
+
+        assertEquals(1, result.eatenDays)
+        assertEquals(TestDayStatus.EATEN, result.daily.first { it.number == 5 }.status)
+    }
+
+    @Test
+    fun glutenFreeBreadDoesNotBreakAGlutenTest() {
+        val test = Experiment(0, startDay = 10, days = 10, propertyId = glutenId)
+        val matcher = leftOutMatcher(test, reference)
+
+        assertTrue(matcher(MealItem(bread, Portion.MEDIUM)))
+        assertFalse(matcher(MealItem(bread, Portion.MEDIUM, Preparation.GLUTEN_FREE)))
+        assertFalse(matcher(MealItem(cheese, Portion.MEDIUM)))
+    }
+
+    @Test
+    fun everyDayOfTheTestIsInTheCourse() {
+        val test = Experiment(cheese, startDay = 10, days = 14)
+        val result = evaluateExperiment(test, diary(13, complaints = setOf(12), sick = setOf(13), intensity = { 4 }), today = 14)
+
+        assertEquals(listOf(1, 2, 3, 4, 5), result.daily.map { it.number })
+        assertEquals(TestDayStatus.WASHOUT, result.daily[0].status)
+        assertEquals(TestDay(3, TestDayStatus.COUNTED, 4), result.daily[2])
+        assertEquals(TestDay(4, TestDayStatus.NOT_COUNTED, null), result.daily[3])
+        // Today is not finished yet.
+        assertEquals(TestDay(5, TestDayStatus.NOT_COUNTED, null), result.daily[4])
+    }
+
+    @Test
+    fun theDaysBeforeAreInTheCourseToo() {
+        val test = Experiment(cheese, startDay = 10, days = 5)
+        val result = evaluateExperiment(test, diary(12, complaints = setOf(6, 8), sick = setOf(7), intensity = { 2 }), today = 13)
+
+        assertEquals(listOf(-5, -4, -3, -2, -1), result.beforeDaily.map { it.number })
+        assertEquals(TestDay(-4, TestDayStatus.COUNTED, 2), result.beforeDaily[1])
+        assertEquals(TestDay(-3, TestDayStatus.NOT_COUNTED, null), result.beforeDaily[2])
+        assertEquals(TestDay(-1, TestDayStatus.COUNTED, 0), result.beforeDaily[4])
+    }
+
+    private fun meal(day: Int, vararg items: MealItem) = Meal(day.toLong() * 100 + items.size, day * dayMs + 12 * 3_600_000L, 0, items.toList())
+
+    @Test
+    fun otherFoodEatenMuchLessIsReported() {
+        // Bread every day before, hardly during the cheese test: the change may come from the bread.
+        val test = Experiment(cheese, startDay = 10, days = 10)
+        val base = diary(19, complaints = emptySet())
+        val meals = (0..9).map { meal(it, MealItem(bread, Portion.MEDIUM)) } + meal(15, MealItem(bread, Portion.MEDIUM))
+        val result = evaluateExperiment(test, base.copy(meals = meals), today = 20, reference = reference, groupIds = listOf(milkProtein, glutenId))
+
+        assertEquals(listOf(DietChange(glutenId, beforeDays = 10, beforeTotal = 10, duringDays = 1, duringTotal = 8)), result.dietChanges)
+    }
+
+    @Test
+    fun whatTheLeftOutFoodCarriesIsNoChange() {
+        // Yoghurt before, none during a milk protein test: that is the test itself, not another change.
+        val test = Experiment(0, startDay = 10, days = 10, propertyId = milkProtein)
+        val meals = (0..9).map { meal(it, MealItem(yoghurt, Portion.MEDIUM), MealItem(bread, Portion.MEDIUM)) } +
+            (12..19).map { meal(it, MealItem(bread, Portion.MEDIUM)) }
+        val result = evaluateExperiment(
+            test, diary(19, complaints = emptySet()).copy(meals = meals), today = 20,
+            leftOut = leftOutMatcher(test, reference), reference = reference, groupIds = listOf(milkProtein, glutenId),
+        )
+
+        assertEquals(emptyList(), result.dietChanges)
+    }
+
+    @Test
+    fun glutenFreeBreadCountsAsLessGluten() {
+        val test = Experiment(cheese, startDay = 10, days = 10)
+        val meals = (0..9).map { meal(it, MealItem(bread, Portion.MEDIUM)) } +
+            (12..19).map { meal(it, MealItem(bread, Portion.MEDIUM, Preparation.GLUTEN_FREE)) }
+        val result = evaluateExperiment(test, diary(19, complaints = emptySet()).copy(meals = meals), today = 20, reference = reference, groupIds = listOf(glutenId))
+
+        assertEquals(glutenId, result.dietChanges.single().propertyId)
+    }
+
+    @Test
+    fun complaintsBackWhenEatenAgain() {
+        // No complaints without cheese (days 12-19), eaten again from day 20: complaints come back.
+        val test = Experiment(cheese, startDay = 10, days = 10, reintroStartDay = 20)
+        val result = evaluateExperiment(test, diary(26, complaints = (20..26).toSet(), cheeseDays = (20..26).toSet()), today = 27)
+
+        assertEquals(PeriodStats(days = 8, complaintDays = 0, strengthSum = 0), result.during)
+        val reintro = result.reintro!!
+        assertEquals(ReintroVerdict.BACK, reintro.verdict)
+        assertEquals(7, reintro.eatenDays)
+        assertTrue(reintro.over)
+    }
+
+    @Test
+    fun eatenTooRarelyAgainSaysNothing() {
+        val test = Experiment(cheese, startDay = 10, days = 10, reintroStartDay = 20)
+        val result = evaluateExperiment(test, diary(26, complaints = emptySet(), cheeseDays = setOf(21)), today = 27)
+
+        assertEquals(ReintroVerdict.NOT_EATEN, result.reintro!!.verdict)
+    }
+
+    @Test
+    fun noGuidedReintroductionForAllergens() {
+        val refWithAllergen = reference.copy(
+            properties = listOf(
+                TriggerProperty(milkProtein, emptyList(), emptySet(), allergen = true),
+                TriggerProperty(glutenId, emptyList(), emptySet(), gluten = true),
+            ),
+        )
+        assertFalse(reintroAllowed(Experiment(0, 10, 10, propertyId = milkProtein), refWithAllergen))
+        assertFalse(reintroAllowed(Experiment(cheese, 10, 10), refWithAllergen))
+        assertTrue(reintroAllowed(Experiment(0, 10, 10, propertyId = glutenId), refWithAllergen))
+        // A known allergy from the profile blocks it, too.
+        assertFalse(reintroAllowed(Experiment(bread, 10, 10), refWithAllergen.copy(knownAllergyPropertyIds = setOf(glutenId))))
     }
 }
