@@ -154,7 +154,17 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13)
+    /**
+     * User 25.11.2026: "Kekse" were missing. 89 everyday ingredients (baked goods, sweets, processed food, snacks,
+     * gluten-free grains and more, docs/KATALOG_LUECKEN.md). No schema change; same rows as the seed JSON.
+     */
+    val MIGRATION_13_14 = object : Migration(13, 14) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            CATALOG_GAPS_ROWS.forEach { connection.insertSeedIngredient(it) }
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14)
 
     private const val HERBS_CATEGORY = 15L
     internal const val DRIED_HERBS = 1415L
@@ -206,6 +216,99 @@ object Migrations {
         SeedRow(1307, "peanut_oil", OILS_CATEGORY, listOf("peanut", "high_fat"), emptyList()),
         SeedRow(1308, "margarine", OILS_CATEGORY, listOf("high_fat"), emptyList()),
         SeedRow(1309, "olives", OILS_CATEGORY, listOf("histamine"), listOf("Olive", "grüne Oliven", "schwarze Oliven")),
+    )
+
+    /** Catalog gaps (user 25.11.2026), migration 13 -> 14. Category ids as in categories.json. */
+    internal val CATALOG_GAPS_ROWS = listOf(
+        SeedRow(115, "biscuits", 1L, listOf("gluten", "fructans", "milk_protein", "lactose", "egg", "high_fat"), listOf("Plätzchen", "Butterkekse", "Cookies", "Gebäck", "Biskuit")),
+        SeedRow(116, "waffles", 1L, listOf("gluten", "fructans", "egg", "milk_protein", "lactose", "high_fat"), listOf("Waffel", "Eiswaffel")),
+        SeedRow(117, "rusk", 1L, listOf("gluten", "fructans"), emptyList()),
+        SeedRow(118, "crispbread", 1L, listOf("gluten", "fructans"), emptyList()),
+        SeedRow(119, "crackers_pretzel_sticks", 1L, listOf("gluten", "fructans"), listOf("Salzbrezeln", "Kräcker", "Salzstangen")),
+        SeedRow(120, "lye_pastry", 1L, listOf("gluten", "fructans"), listOf("Brezel", "Laugenbrötchen", "Laugenstange")),
+        SeedRow(121, "flatbread", 1L, listOf("gluten", "fructans"), listOf("Pide", "Naan", "Pita")),
+        SeedRow(122, "tortilla_wrap", 1L, listOf("gluten", "fructans"), listOf("Wrap", "Burrito", "Weizentortilla")),
+        SeedRow(123, "sweet_yeast_pastry", 1L, listOf("gluten", "fructans", "egg", "milk_protein", "lactose"), listOf("Hefezopf", "Rosinenbrötchen", "Brioche", "Rosinenschnecke")),
+        SeedRow(124, "doughnut", 1L, listOf("gluten", "egg", "milk_protein", "high_fat"), listOf("Krapfen", "Donut", "Kreppel")),
+        SeedRow(125, "cream_cake", 1L, listOf("gluten", "egg", "milk_protein", "lactose", "high_fat"), listOf("Torte", "Cremetorte")),
+        SeedRow(126, "pancakes_crepes", 1L, listOf("gluten", "egg", "milk_protein", "lactose"), listOf("Eierkuchen", "Pancakes", "Crêpes", "Palatschinken")),
+        SeedRow(127, "breadcrumbs_coating", 1L, listOf("gluten", "fructans", "egg"), listOf("Semmelbrösel", "Paniermehl", "paniert")),
+        SeedRow(128, "gnocchi", 1L, listOf("gluten"), emptyList()),
+        SeedRow(129, "muesli", 1L, listOf("gluten", "fructans", "tree_nuts"), listOf("Granola", "Knuspermüsli", "Müslimischung")),
+        SeedRow(130, "cornflakes", 1L, listOf("gluten"), listOf("Frühstücksflocken", "Cerealien")),
+        SeedRow(131, "rice_cakes", 1L, emptyList(), listOf("Reiscracker")),
+        SeedRow(132, "quinoa", 1L, emptyList(), emptyList()),
+        SeedRow(133, "millet", 1L, emptyList(), emptyList()),
+        SeedRow(134, "buckwheat", 1L, emptyList(), emptyList()),
+        SeedRow(135, "gluten_free_pasta", 1L, emptyList(), listOf("Reisnudeln", "Linsennudeln", "Maisnudeln")),
+        SeedRow(211, "pudding", 2L, listOf("milk_protein", "lactose"), listOf("Vanillepudding", "Schokopudding")),
+        SeedRow(212, "rice_pudding", 2L, listOf("milk_protein", "lactose"), listOf("Grießbrei")),
+        SeedRow(213, "sour_cream", 2L, listOf("milk_protein", "lactose", "high_fat"), listOf("Schmand", "Crème fraîche", "Sauerrahm")),
+        SeedRow(214, "buttermilk", 2L, listOf("milk_protein", "lactose"), emptyList()),
+        SeedRow(215, "soy_yogurt", 2L, listOf("soy"), listOf("Soja-Dessert")),
+        SeedRow(216, "ghee", 2L, listOf("milk_protein", "high_fat"), listOf("Butterschmalz")),
+        SeedRow(308, "blue_cheese", 3L, listOf("milk_protein", "histamine"), listOf("Gorgonzola", "Roquefort")),
+        SeedRow(309, "processed_cheese", 3L, listOf("milk_protein", "lactose"), listOf("Scheiblettenkäse", "Burgerkäse")),
+        SeedRow(310, "goat_cheese", 3L, listOf("milk_protein"), emptyList()),
+        SeedRow(311, "halloumi", 3L, listOf("milk_protein"), listOf("Grillkäse")),
+        SeedRow(408, "cold_cuts", 4L, listOf("high_fat"), listOf("Lyoner", "Mortadella", "Fleischwurst", "Geflügelwurst", "Aufschnitt")),
+        SeedRow(409, "frankfurters", 4L, listOf("high_fat"), listOf("Wiener", "Frankfurter", "Hot Dog")),
+        SeedRow(410, "liver_sausage", 4L, listOf("high_fat"), listOf("Pastete", "Leberpastete")),
+        SeedRow(411, "breaded_meat", 4L, listOf("gluten", "fructans", "egg", "high_fat"), listOf("Chicken Nuggets", "Schnitzel paniert", "Cordon bleu")),
+        SeedRow(507, "fish_fingers", 5L, listOf("fish", "gluten", "fructans"), listOf("panierter Fisch")),
+        SeedRow(508, "pickled_herring", 5L, listOf("fish", "histamine"), listOf("Matjes", "Bismarckhering", "Rollmops")),
+        SeedRow(509, "surimi", 5L, listOf("fish", "egg"), listOf("Krebsfleischimitat")),
+        SeedRow(719, "broccoli", 7L, listOf("fructans"), emptyList()),
+        SeedRow(720, "cabbage", 7L, listOf("fructans", "polyols"), listOf("Weißkohl", "Rotkohl", "Wirsing", "Kraut")),
+        SeedRow(721, "brussels_sprouts", 7L, listOf("fructans", "galactans"), emptyList()),
+        SeedRow(722, "asparagus", 7L, listOf("fructose", "fructans"), emptyList()),
+        SeedRow(723, "beetroot", 7L, listOf("fructans", "galactans"), listOf("Rote Rübe")),
+        SeedRow(724, "sweet_potato", 7L, listOf("polyols"), emptyList()),
+        SeedRow(725, "pumpkin", 7L, emptyList(), listOf("Hokkaido", "Butternut")),
+        SeedRow(726, "fennel", 7L, emptyList(), emptyList()),
+        SeedRow(727, "rocket_radish", 7L, emptyList(), listOf("Rauke", "Radieschen")),
+        SeedRow(728, "pickled_gherkins", 7L, listOf("histamine"), listOf("Gewürzgurken", "Cornichons", "saure Gurken")),
+        SeedRow(729, "fries", 7L, listOf("high_fat"), listOf("Pommes", "Kroketten")),
+        SeedRow(730, "potato_chips", 7L, listOf("high_fat"), listOf("Chips")),
+        SeedRow(731, "tomato_sauce", 7L, listOf("histamine", "histamine_liberator"), listOf("passierte Tomaten", "Pizzasoße", "Tomatenmark")),
+        SeedRow(815, "grapes", 8L, listOf("fructose"), listOf("Trauben")),
+        SeedRow(816, "apricot", 8L, listOf("polyols", "birch_pollen_cross"), listOf("Marille")),
+        SeedRow(817, "melon", 8L, emptyList(), listOf("Honigmelone", "Cantaloupe")),
+        SeedRow(818, "papaya", 8L, listOf("histamine_liberator"), emptyList()),
+        SeedRow(819, "currants_gooseberries", 8L, emptyList(), listOf("Johannisbeeren", "Stachelbeeren")),
+        SeedRow(820, "pomegranate", 8L, emptyList(), emptyList()),
+        SeedRow(821, "coconut", 8L, listOf("high_fat"), listOf("Kokosmilch", "Kokosraspeln", "Kokosnuss")),
+        SeedRow(908, "brazil_nut", 9L, listOf("tree_nuts"), emptyList()),
+        SeedRow(909, "macadamia", 9L, listOf("tree_nuts"), emptyList()),
+        SeedRow(910, "pecan", 9L, listOf("tree_nuts"), emptyList()),
+        SeedRow(911, "sunflower_pumpkin_seeds", 9L, emptyList(), listOf("Sonnenblumenkerne", "Kürbiskerne", "Kerne")),
+        SeedRow(912, "linseed_chia", 9L, emptyList(), listOf("Leinsamen", "Chiasamen")),
+        SeedRow(913, "poppy_seed", 9L, emptyList(), emptyList()),
+        SeedRow(1008, "peas", 10L, listOf("galactans", "fructans"), listOf("grüne Erbsen", "Zuckerschoten")),
+        SeedRow(1009, "edamame", 10L, listOf("soy", "galactans"), listOf("Sojabohnen")),
+        SeedRow(1010, "tempeh", 10L, listOf("soy"), emptyList()),
+        SeedRow(1111, "hot_chocolate", 11L, listOf("milk_protein", "lactose", "histamine_liberator"), listOf("Kakaogetränk", "Schokomilch", "heiße Schokolade")),
+        SeedRow(1112, "milk_coffee", 11L, listOf("caffeine", "milk_protein", "lactose"), listOf("Cappuccino", "Latte macchiato", "Milchkaffee")),
+        SeedRow(1113, "soft_drink", 11L, listOf("fructose"), listOf("Limo", "Fanta", "Sprite", "Eistee", "Limonade")),
+        SeedRow(1114, "smoothie", 11L, listOf("fructose", "polyols"), emptyList()),
+        SeedRow(1115, "alcohol_free_beer", 11L, listOf("gluten", "histamine"), listOf("alkoholfreies Bier")),
+        SeedRow(1116, "kombucha", 11L, listOf("histamine", "caffeine"), emptyList()),
+        SeedRow(1212, "jam", 12L, listOf("fructose"), listOf("Konfitüre", "Gelee", "Fruchtaufstrich")),
+        SeedRow(1213, "nut_nougat_spread", 12L, listOf("tree_nuts", "milk_protein", "lactose", "high_fat"), listOf("Nutella", "Schokocreme", "Nougatcreme")),
+        SeedRow(1214, "marzipan", 12L, listOf("tree_nuts"), listOf("Persipan")),
+        SeedRow(1215, "fruit_gums", 12L, emptyList(), listOf("Gummibärchen", "Weingummi")),
+        SeedRow(1216, "cereal_bar", 12L, listOf("gluten", "tree_nuts"), listOf("Müsliriegel", "Schokoriegel", "Proteinriegel")),
+        SeedRow(1217, "popcorn", 12L, emptyList(), emptyList()),
+        SeedRow(1218, "sorbet", 12L, listOf("fructose"), listOf("Wassereis")),
+        SeedRow(1219, "maple_syrup", 12L, emptyList(), emptyList()),
+        SeedRow(1220, "stock_cube", 12L, listOf("celery", "histamine_liberator"), listOf("Brühwürfel", "Bouillon", "Suppenwürze", "Gemüsebrühe")),
+        SeedRow(1221, "remoulade_sauce", 12L, listOf("egg", "mustard"), listOf("Grillsoße", "Burgersoße", "Cocktailsoße")),
+        SeedRow(1222, "instant_noodles", 12L, listOf("gluten", "high_fat", "celery"), listOf("Tütensuppe", "Ramen", "Fertigsuppe", "Instantnudeln")),
+        SeedRow(1416, "salt", 14L, emptyList(), listOf("Kräutersalz", "Meersalz", "Speisesalz")),
+        SeedRow(1417, "vanilla", 14L, emptyList(), listOf("Vanillezucker", "Vanilleschote")),
+        SeedRow(1418, "cloves", 14L, emptyList(), listOf("Gewürznelken")),
+        SeedRow(1419, "cardamom", 14L, emptyList(), emptyList()),
+        SeedRow(1420, "anise_fennel_seed", 14L, emptyList(), listOf("Sternanis", "Fenchelsamen", "Anis")),
     )
 
     internal class SeedRow(

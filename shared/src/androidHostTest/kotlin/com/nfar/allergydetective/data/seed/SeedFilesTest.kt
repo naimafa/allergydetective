@@ -32,7 +32,7 @@ class SeedFilesTest {
     fun hasExpectedCounts() {
         assertEquals(15, entities.categories.size)
         assertEquals(26, entities.properties.size)
-        assertEquals(150, entities.ingredients.size)
+        assertEquals(239, entities.ingredients.size)
         assertEquals(24, entities.symptoms.size)
         assertEquals(4, entities.lifestyleFactors.size)
     }
@@ -69,7 +69,7 @@ class SeedFilesTest {
             assertEquals(row.synonymsDe, entities.ingredientSynonyms.filter { it.ingredientId == row.id }.map { it.synonym })
         }
         assertEquals(14L, entities.categories.single { it.key == "spices_herbs" }.id)
-        assertEquals(14, entities.ingredients.count { it.categoryId == 14L })
+        assertEquals(19, entities.ingredients.count { it.categoryId == 14L })  // + 5 in 13 -> 14
     }
 
 
@@ -94,6 +94,37 @@ class SeedFilesTest {
             entities.ingredientSynonyms.filter { it.ingredientId == Migrations.DRIED_HERBS }.map { it.synonym },
         )
         assertEquals(14, entities.ingredients.count { it.categoryId == 15L })
+    }
+
+    /** Catalog gaps (user 25.11.2026): migration 13 -> 14 for existing installs, JSON for new ones; both the same. */
+    @Test
+    fun catalogGapsMigrationMatchesSeedFile() {
+        val propertyKeys = entities.properties.associate { it.id to it.key }
+        val categoryKeys = entities.categories.associate { it.id to it.key }
+        assertEquals(89, Migrations.CATALOG_GAPS_ROWS.size)
+        Migrations.CATALOG_GAPS_ROWS.forEach { row ->
+            val seed = entities.ingredients.single { it.id == row.id }
+            assertEquals(row.key, seed.key)
+            assertEquals(row.categoryId, seed.categoryId, "category of ${row.key} (${categoryKeys[seed.categoryId]})")
+            assertEquals(
+                row.properties.toSet(),
+                entities.ingredientProperties.filter { it.ingredientId == row.id }.map { propertyKeys.getValue(it.propertyId) }.toSet(),
+            )
+            assertEquals(row.synonymsDe, entities.ingredientSynonyms.filter { it.ingredientId == row.id }.map { it.synonym })
+            // Ids follow category x 100 + n, below the custom ingredients.
+            assertEquals(row.categoryId, row.id / 100)
+        }
+    }
+
+    @Test
+    fun biscuitsAreInTheCatalog() {
+        val biscuits = entities.ingredients.single { it.key == "biscuits" }
+        val keys = entities.properties.associate { it.id to it.key }
+        assertEquals(
+            setOf("gluten", "fructans", "milk_protein", "lactose", "egg", "high_fat"),
+            entities.ingredientProperties.filter { it.ingredientId == biscuits.id }.map { keys.getValue(it.propertyId) }.toSet(),
+        )
+        assertTrue(entities.ingredientSynonyms.any { it.ingredientId == biscuits.id && it.synonym == "Plätzchen" })
     }
     @Test
     fun onlySwellingAndShortnessOfBreathAreRedFlags() {
