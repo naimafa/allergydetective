@@ -16,6 +16,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.StarOutline
@@ -24,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import org.jetbrains.compose.resources.stringResource
@@ -54,6 +57,12 @@ fun IngredientPicker(
                         selected = true,
                         onClick = { onRemove(ingredient) },
                         label = { Text("${ingredientName(ingredient)}  ✕") },
+                        // User 25.11.2026: the ingredients of a dish with their picture, like single ones (scaled down).
+                        leadingIcon = {
+                            Box(contentAlignment = Alignment.Center, modifier = Modifier.size(24.dp)) {
+                                Box(Modifier.requiredSize(40.dp).scale(0.6f)) { IngredientBadge(ingredient, ingredientName(ingredient)) }
+                            }
+                        },
                     )
                 }
             }
