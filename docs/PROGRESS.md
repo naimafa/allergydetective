@@ -63,6 +63,7 @@
 - [x] Testnotizen und Katalog vom 25.11.2026 (PRs #87–#100, offen): nach dem Speichern zum Dashboard, Symptom-Dauer feiner, Gewürze in Prise/Löffel, „Warum noch kein Muster?“, Symptom-Bereiche verschiebbar und als Karten, Ziehen erst nach langem Drücken, „Meine Zutaten“ (bearbeiten, löschen, durch Zutat oder Gericht ersetzen), Katalog 150 → 270 Zutaten mit drei Getreide-Kategorien, Mehlen, Süßungsmitteln und Trockenobst (Migrationen 13 → 16), Auswahl „normal / glutenfrei“, Lückenliste in [KATALOG_LUECKEN.md](KATALOG_LUECKEN.md)
 - [x] Weglass-Test vom 25.11.2026 abends (PRs #102–#106, offen): ein Lebensmittel weglassen, Start an einem der letzten 14 Tage, mittlere Stärke pro Tag „vorher / ohne“ als Tabelle; dazu zwei Fixes (weitere Zutat, Grund „kein Muster“ im Bericht). Offen: Handytest
 - [x] Weglass-Test am 26.11.2026 (PR #107, offen): ganze Gruppen, Verlauf mit den Tagen vorher, Zöliakie-Hinweis, andere Ernährungs-Veränderungen, Wiedereinführung (nicht bei Allergenen), Karte im Stil der Skizze; auf dem Handy geprüft
+- [x] Testnotizen vom 26.11.2026 abends (PRs #108–#114, offen): Legende als Farbfelder, Handy-Sprache und Fokus in App-Sprache, Arabisch gespiegelt, Gelenke & Muskeln (Migration 16 → 17), Kräuter-Gericht in Prise/Löffel, Spanisch und Türkisch, Stress/Schlaf im Weglass-Test, neue Symptom-Bereiche an der richtigen Stelle
 - [ ] 7+ Tage selbst nutzen, Notizen führen (SELFTEST.md, Kapitel 3)
 - [ ] Export + Notizen auswerten, Schwellenwerte in `AnalysisConfig` kalibrieren
 

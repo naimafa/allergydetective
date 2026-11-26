@@ -18,7 +18,7 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 3 Design | ca. 5:42 h | 17.11.: Theme hell/dunkel, Icons, Dashboard, Symptom-Kacheln, Ergebnis-Karten (0:16). 19.11.: Startseite feinjustiert, Dark Mode (1:10). 20.11.: App-Icon, HTML-Prototyp (0:39). 21.11.: Startseite nach Design-Bild, hell und dunkel (3:37) |
 | 4 Self-Test | ca. 8:14 h | 17.11.: Vorbereitung (0:11). 18.11.: Rückmeldungen aus dem Self-Test umgesetzt, inkl. 0:07 Absturz-Reparatur (2:56). 19.11.: Design-Feedback, Historie, Krankheitstage, Nachtragen (3:14). 20.11.: Getränk, Dauer, Arzt-PDF, Verschlüsselung, Feedback-Runde (1:53); der 7-Tage-Test selbst läuft |
 | Doku / Organisation | ca. 0:50 h | OFFENE_PUNKTE, PROGRESS, Zeitprotokoll, 18.11. auch GitHub-PR (sonst meist in den Phasen enthalten) |
-| **Gesamt (erfasst)** | **ca. 41:55 h** | ohne Konzeptphase; 21.11. Nachmittag bis 26.11. (ca. 20:55 h, meist Design, Testnotizen, Mustererkennung, Katalog und Weglass-Test) aus den Einträgen unten nachgerechnet |
+| **Gesamt (erfasst)** | **ca. 42:50 h** | ohne Konzeptphase; 21.11. Nachmittag bis 26.11. (ca. 21:50 h, meist Design, Testnotizen, Mustererkennung, Katalog und Weglass-Test) aus den Einträgen unten nachgerechnet |
 
 ---
 
@@ -135,6 +135,11 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 26.11.2026 | 09:35–10:05 | 0:30 | 4 | Wiedereinführung als dritte Phase (7 Tage, „ohne“ gegen „wieder mit“), gesperrt für EU-14-Allergene, Kreuzreaktionen und bekannte Allergien; Karte im Stil der Skizze der Nutzerin | – |
 | 26.11.2026 | 10:05–10:35 | 0:30 | 3 | Feinschliff nach Handy-Screenshots: Tag als Pill, Zahlen in Inter, kürzere Beschriftungen, Regeln zum Aufklappen, „Ø vorher“ an der Linie, Warten als Status mit „Ergebnis zum Testende“, aktueller Schritt hervorgehoben | Playfair zeigte die 0 wie ein o |
 | 26.11.2026 | 10:35–10:45 | 0:10 | Doku | Zeitprotokoll und PROGRESS für den 26.11. | – |
+| 26.11.2026 | 17:30–17:55 | 0:25 | 4 | Testnotizen: Legende im Verlauf als Farbfelder (PR #108); Handy-Sprache wird jedes Mal neu gelesen, Fokus in der App-Sprache, Blätterzweig auf Arabisch gespiegelt (PR #109); Gelenke & Muskeln als neue Symptom-Gruppe (Migration 16 → 17, PR #110) | Handy auf Türkisch, App blieb Deutsch: die Handy-Sprache war vom ersten Start gemerkt |
+| 26.11.2026 | 17:55–18:00 | 0:05 | 4 | Gericht nur aus Kräutern in Prise / Löffel (PR #111) | „Kräutermischung“ war ein Gericht, keine eigene Zutat |
+| 26.11.2026 | 18:00–18:12 | 0:12 | 4 | Spanisch und Türkisch: rund 940 Texte je Sprache, Sprachauswahl, Suche mit ı/İ/ş/ğ (PR #112) | – |
+| 26.11.2026 | 18:12–18:20 | 0:08 | 4 | Weglass-Test zeigt veränderten Stress, Schlaf und Tages-Faktoren (PR #113); neuer Symptom-Bereich über „Sonstiges“ auch nach eigenem Sortieren (PR #114) | – |
+| 26.11.2026 | 18:20–18:25 | 0:05 | Doku | Zeitprotokoll und PROGRESS für den Nachmittag | – |
 ---
 
 ## Erkenntnisse
@@ -158,3 +163,5 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 - **25.11. in ca. 3:15 h, 20 PRs (#87–#106):** Testnotizen, Katalog und zum Schluss der Weglass-Test. Der Zutaten-Katalog wuchs von 150 auf 270 Einträge (vier Migrationen ohne Schemaänderung). Datentabelle plus Skript für JSON, Migration und vier Sprachen hielt alles deckungsgleich; je ein Test vergleicht Migration und JSON. Der Absturz selbst kostete wenig, aber danach liefen zwei Claude-Sitzungen im selben Ordner, und ihre Gradle-Builds löschten sich gegenseitig die Zwischendateien. Lehre: nach einem Absturz zuerst prüfen, ob noch eine andere Sitzung oder ein alter Build läuft.
 
 - **26.11. (Vormittag) in ca. 1:45 h, 1 PR (#107) mit 10 Commits:** Der Weglass-Test wurde aus Entwürfen von ChatGPT zu einem geführten Ablauf in drei Schritten. Übernommen wurde, was zu den Daten passt (Gruppen statt einzelner Zutaten, Verlauf, andere Ernährungs-Veränderungen, Wiedereinführung); nicht übernommen wurden die Prozentangabe und eine geführte Wiedereinführung bei Allergenen. Der Zöliakie-Hinweis fehlte in den Entwürfen ganz. Schnell ging es wieder mit Screenshot nach jeder Runde: Zwei Runden fanden Dinge, die nur auf dem Handy auffallen (Playfair-Ziffern, Umbrüche bei 125 %).
+
+- **26.11. (Abend) in ca. 0:55 h, 7 PRs (#108–#114):** Sechs Testnotizen auf einmal, je ein PR. Die zwei Ursachen, die nicht offensichtlich waren, fanden sich im Code schnell: die beim ersten Start gemerkte Handy-Sprache und die Kräutermischung als Gericht statt Zutat (eine Rückfrage an die Nutzerin klärte das). Die Übersetzung ins Spanische und Türkische ging zügig, weil Schlüssel und Platzhalter per Skript gegen Englisch geprüft wurden; sie braucht trotzdem eine Durchsicht durch Muttersprachler.
