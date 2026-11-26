@@ -287,7 +287,8 @@ private fun GroupTile(group: TestGroup, selected: Boolean, onClick: () -> Unit, 
 
 /**
  * User 26.11.2026 (sketch "Symptomverlauf"): one bar per day of the test with the strongest complaint (0-5), the
- * dashed line is the mean before. Real values, no smoothed curve. Days to come stay empty.
+ * dashed line is the mean before. Real values, no smoothed curve. Days to come stay empty. User 26.11.2026: the days
+ * before are drawn too, left of the start line, so the difference shows at a glance.
  */
 @Composable
 private fun CourseChart(result: ExperimentResult, plannedDays: Int) {
@@ -297,23 +298,27 @@ private fun CourseChart(result: ExperimentResult, plannedDays: Int) {
     val eaten = colors.error
     val grid = colors.outlineVariant
     val beforeMean = if (result.before.days == 0) null else result.before.meanStrength
-    val byNumber = result.daily.associateBy { it.number }
+    val before = colors.tertiary
+    val beforeCount = result.beforeDaily.size
+    val byNumber = (result.beforeDaily + result.daily).associateBy { it.number }
     Canvas(modifier = Modifier.fillMaxWidth().height(110.dp)) {
         val maxStrength = 5f
-        val slot = size.width / plannedDays
+        val slot = size.width / (beforeCount + plannedDays)
         val barWidth = slot * 0.6f
         val dot = 3.dp.toPx()
         drawLine(grid, Offset(0f, size.height), Offset(size.width, size.height), strokeWidth = 1.dp.toPx())
-        for (n in 1..plannedDays) {
+        for (n in -beforeCount..plannedDays) {
+            if (n == 0) continue
             val day = byNumber[n] ?: continue
-            val x = slot * (n - 1) + (slot - barWidth) / 2
+            val index = if (n < 0) n + beforeCount else n - 1 + beforeCount
+            val x = slot * index + (slot - barWidth) / 2
             val strength = day.strength
             if (strength == null) {
                 drawCircle(faint, radius = dot, center = Offset(x + barWidth / 2, size.height - dot * 2))
                 continue
             }
             val color = when (day.status) {
-                TestDayStatus.COUNTED -> counted
+                TestDayStatus.COUNTED -> if (n < 0) before else counted
                 TestDayStatus.EATEN -> eaten
                 else -> faint
             }
@@ -323,6 +328,10 @@ private fun CourseChart(result: ExperimentResult, plannedDays: Int) {
             } else {
                 drawRect(color, Offset(x, size.height - h), Size(barWidth, h))
             }
+        }
+        if (beforeCount > 0) {
+            val startX = slot * beforeCount
+            drawLine(colors.onSurfaceVariant, Offset(startX, 0f), Offset(startX, size.height), strokeWidth = 1.5.dp.toPx())
         }
         beforeMean?.let { mean ->
             val y = size.height - (mean.toFloat() / maxStrength) * (size.height - dot * 2)
@@ -336,7 +345,10 @@ private fun CourseChart(result: ExperimentResult, plannedDays: Int) {
         }
     }
     Row(modifier = Modifier.fillMaxWidth()) {
-        Text(stringResource(Res.string.experiment_day_n, 1), style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant, modifier = Modifier.weight(1f))
+        if (beforeCount > 0) {
+            Text(stringResource(Res.string.experiment_col_before), style = MaterialTheme.typography.labelSmall, color = before, modifier = Modifier.weight(beforeCount.toFloat()))
+        }
+        Text(stringResource(Res.string.experiment_day_n, 1), style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant, modifier = Modifier.weight(plannedDays.toFloat()))
         Text(stringResource(Res.string.experiment_day_n, plannedDays), style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant)
     }
 }

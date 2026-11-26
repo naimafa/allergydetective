@@ -83,7 +83,7 @@
     <string name="experiment_group_days">eaten on %1$d of %2$d days</string>
     <string name="experiment_or_single">Or a single ingredient:</string>
     <string name="experiment_course">Course: strongest complaint per day</string>
-    <string name="experiment_course_legend">Dashed line: average before. Red: eaten anyway. Pale: does not count (yet).</string>
+    <string name="experiment_course_legend">Left before, right without. Dashed line: average before. Red: eaten anyway. Pale: does not count (yet).</string>
     <string name="experiment_day_n">Day %1$d</string>
     <string name="experiment_not_yet">Not counted yet: the first %1$d days (the left-out food can still have an effect) and today (counts once the day is closed). Every complaint counts, even a light one.</string>
     <string name="results_why_too_few_days">A pattern only shows when something repeats. To see it, the app compares your days with each other and needs at least %2$d finished days. So far there are %1$d.</string>

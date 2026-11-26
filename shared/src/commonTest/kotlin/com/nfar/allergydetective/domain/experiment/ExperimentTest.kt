@@ -134,4 +134,15 @@ class ExperimentTest {
         // Today is not finished yet.
         assertEquals(TestDay(5, TestDayStatus.NOT_COUNTED, null), result.daily[4])
     }
+
+    @Test
+    fun theDaysBeforeAreInTheCourseToo() {
+        val test = Experiment(cheese, startDay = 10, days = 5)
+        val result = evaluateExperiment(test, diary(12, complaints = setOf(6, 8), sick = setOf(7), intensity = { 2 }), today = 13)
+
+        assertEquals(listOf(-5, -4, -3, -2, -1), result.beforeDaily.map { it.number })
+        assertEquals(TestDay(-4, TestDayStatus.COUNTED, 2), result.beforeDaily[1])
+        assertEquals(TestDay(-3, TestDayStatus.NOT_COUNTED, null), result.beforeDaily[2])
+        assertEquals(TestDay(-1, TestDayStatus.COUNTED, 0), result.beforeDaily[4])
+    }
 }

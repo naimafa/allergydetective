@@ -83,7 +83,7 @@
     <string name="experiment_group_days">mangé %1$d jours sur %2$d</string>
     <string name="experiment_or_single">Ou un seul ingrédient :</string>
     <string name="experiment_course">Évolution : symptôme le plus fort par jour</string>
-    <string name="experiment_course_legend">Pointillés : moyenne avant. Rouge : mangé quand même. Clair : ne compte pas (encore).</string>
+    <string name="experiment_course_legend">À gauche avant, à droite sans. Pointillés : moyenne avant. Rouge : mangé quand même. Clair : ne compte pas (encore).</string>
     <string name="experiment_day_n">Jour %1$d</string>
     <string name="experiment_not_yet">Pas encore comptés : les %1$d premiers jours (l’aliment supprimé peut encore agir) et aujourd’hui (compte une fois la journée clôturée). Chaque symptôme compte, même léger.</string>
     <string name="results_why_too_few_days">Un schéma n’apparaît que lorsque quelque chose se répète. Pour cela, l’app compare tes jours entre eux et a besoin d’au moins %2$d jours clôturés. Pour l’instant, il y en a %1$d.</string>

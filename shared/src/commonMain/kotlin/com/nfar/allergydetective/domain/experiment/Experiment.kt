@@ -66,6 +66,8 @@ data class ExperimentResult(
     val verdict: ExperimentVerdict,
     /** Every day of the test up to today, for the course (user 26.11.2026). */
     val daily: List<TestDay> = emptyList(),
+    /** The days before the test it is compared with, oldest first (number -N..-1; user 26.11.2026). */
+    val beforeDaily: List<TestDay> = emptyList(),
 )
 
 /** Why a day of the test counts or not. */
@@ -123,6 +125,10 @@ fun evaluateExperiment(
         dayNumber = (end - experiment.startDay + 1).toInt().coerceIn(0, experiment.days),
         over = experiment.isOver(today),
         verdict = verdict,
+        beforeDaily = ((experiment.startDay - experiment.days) until experiment.startDay).map { day ->
+            val counted = day in usable
+            TestDay((day - experiment.startDay).toInt(), if (counted) TestDayStatus.COUNTED else TestDayStatus.NOT_COUNTED, if (counted) strongest[day] ?: 0 else null)
+        },
         daily = (experiment.startDay..end).map { day ->
             val status = when {
                 day !in usable -> TestDayStatus.NOT_COUNTED
