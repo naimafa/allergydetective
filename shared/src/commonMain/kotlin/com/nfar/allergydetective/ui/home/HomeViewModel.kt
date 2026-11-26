@@ -1,5 +1,8 @@
 package com.nfar.allergydetective.ui.home
 
+import com.nfar.allergydetective.domain.diary.IngredientInfo
+import com.nfar.allergydetective.domain.diary.MealRepository
+import com.nfar.allergydetective.ui.results.ExperimentViewModel
 import com.nfar.allergydetective.ui.meal.splitExamples
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,6 +33,9 @@ data class HomeState(
     val goalDays: Int = GoalSettings.DEFAULT_DAYS,
     /** Optional focus of the stretch, e.g. "Milchprodukte weglassen". */
     val goalFocus: String = "",
+    /** A running Weglass-Test, so the focus is shown in the current language (user 26.11.2026: in Arabic it stayed German). */
+    val focusGroupKey: String? = null,
+    val focusIngredient: IngredientInfo? = null,
 ) {
     val greeting: Greeting get() = HomeViewModel.greeting(hour)
 }
@@ -42,6 +48,7 @@ class HomeViewModel(
     private val history: HistoryRepository,
     private val clock: AppClock,
     private val settings: SettingsStore,
+    private val meals: MealRepository? = null,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -59,11 +66,16 @@ class HomeViewModel(
             val today = clock.today()
             val entries = history.entriesSince(clock.startOfDayMillis(today))
             val goal = settings.goal()
+            val experiment = settings.experiment()?.takeIf { it.startDay == goal.startDay && goal.focus.isNotBlank() }
+            val focusGroupKey = experiment?.propertyId?.let { id -> ExperimentViewModel.GROUPS.firstOrNull { it.propertyId == id }?.key }
+            val focusIngredient = if (experiment != null && experiment.propertyId == null) meals?.ingredients()?.firstOrNull { it.id == experiment.ingredientId } else null
             _state.value = HomeState(
                 // Only the days of the current stretch count; a new stretch starts with "Neuen Abschnitt starten".
                 confirmedDays = goal.startDay?.let { dayChecks.confirmedDayCountSince(it) } ?: dayChecks.confirmedDayCount(),
                 goalDays = goal.days,
                 goalFocus = splitExamples(goal.focus).first, // older tests saved the long name with examples
+                focusGroupKey = focusGroupKey,
+                focusIngredient = focusIngredient,
                 today = today,
                 todayOpen = dayChecks.load(today)?.isConfirmed != true,
                 mealsToday = entries.count { it is HistoryEntry.MealEntry },

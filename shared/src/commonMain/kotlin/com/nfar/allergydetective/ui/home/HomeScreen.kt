@@ -1,5 +1,15 @@
 package com.nfar.allergydetective.ui.home
 
+import allergydetective.shared.generated.resources.experiment_focus
+import com.nfar.allergydetective.ui.common.NamePrefix
+import com.nfar.allergydetective.ui.common.displayName
+import com.nfar.allergydetective.ui.meal.ingredientName
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.geometry.Size
 import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.draw.paint
@@ -143,7 +153,7 @@ fun HomeScreen(
                         Header(state.greeting, showDot = state.confirmedDays != null && state.todayOpen, onBell = onOpenReminders)
                         banner()
                         state.confirmedDays?.let {
-                            HomeProgress(it, state.goalDays, state.goalFocus, onNewStretch)
+                            HomeProgress(it, state.goalDays, focusText(state), onNewStretch)
                             HomeToday(state, onClick = onOpenToday)
                         }
                     }
@@ -180,12 +190,21 @@ private val SECTION_GAP = 12.dp
 @Composable
 fun Modifier.homeBackground(): Modifier {
     val home = AppColors.extra.home
-    return background(home.page).paint(
-        painterResource(home.leafPicture),
-        sizeToIntrinsics = false,
-        alignment = Alignment.TopCenter,
-        contentScale = ContentScale.FillWidth,
-    )
+    val painter = painterResource(home.leafPicture)
+    // User 26.11.2026: in Arabic the logo moves to the right, so the branch is mirrored to the other side as well.
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    return background(home.page).drawBehind {
+        val picture = painter.intrinsicSize
+        val width = size.width
+        val height = if (picture.width > 0f) width * picture.height / picture.width else 0f
+        clipRect {
+            if (rtl) {
+                scale(-1f, 1f, pivot = Offset(width / 2f, 0f)) { with(painter) { draw(Size(width, height)) } }
+            } else {
+                with(painter) { draw(Size(width, height)) }
+            }
+        }
+    }
 }
 
 @Composable
@@ -431,4 +450,12 @@ private fun tileColors(action: HomeAction): TileColors {
         HomeAction.DAY_CHECK -> TileColors(home.dayCheckTile, home.onWarmTile, home.moon)
         HomeAction.RESULTS -> TileColors(home.resultsTile, home.onSageTile, home.icon)
     }
+}
+
+/** The focus in the current language while a Weglass-Test runs; else the text from the profile. */
+@Composable
+private fun focusText(state: HomeState): String = when {
+    state.focusGroupKey != null -> stringResource(Res.string.experiment_focus, displayName(NamePrefix.PROPERTY, state.focusGroupKey))
+    state.focusIngredient != null -> stringResource(Res.string.experiment_focus, ingredientName(state.focusIngredient))
+    else -> state.goalFocus
 }
