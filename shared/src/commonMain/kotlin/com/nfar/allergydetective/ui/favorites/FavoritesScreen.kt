@@ -303,7 +303,7 @@ private fun DishEditorDialog(
                     findsDishes = true,
                 )
                 // Not found: create it here, the duplicate check runs in the dialog.
-                if (state.query.isNotBlank()) {
+                if (state.query.isNotBlank() && !state.nameExists) {
                     TextButton(onClick = {
                         customViewModel.start(state.query)
                         showCustom = true
