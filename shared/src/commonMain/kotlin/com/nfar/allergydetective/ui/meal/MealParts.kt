@@ -1,8 +1,11 @@
 package com.nfar.allergydetective.ui.meal
 import androidx.compose.foundation.layout.widthIn
 import allergydetective.shared.generated.resources.meal_portion_option_large
+import allergydetective.shared.generated.resources.meal_portion_option_large_spice
 import allergydetective.shared.generated.resources.meal_portion_option_medium
+import allergydetective.shared.generated.resources.meal_portion_option_medium_spice
 import allergydetective.shared.generated.resources.meal_portion_option_small
+import allergydetective.shared.generated.resources.meal_portion_option_small_spice
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material3.DropdownMenuItem
@@ -279,7 +282,13 @@ private val DELETE_SIZE = 40.dp
  * restless). A tap opens S / M / L, each with what it means.
  */
 @Composable
-fun PortionLine(portion: Portion, onPortion: (Portion) -> Unit, modifier: Modifier = Modifier) {
+fun PortionLine(
+    portion: Portion,
+    onPortion: (Portion) -> Unit,
+    modifier: Modifier = Modifier,
+    /** User 25.11.2026: spices, herbs, oils, nuts and seeds are not eaten by bites or glasses but by pinch or spoon. */
+    smallAmounts: Boolean = false,
+) {
     var open by remember { mutableStateOf(false) }
     val scheme = MaterialTheme.colorScheme
     val description = "${stringResource(Res.string.meal_portion_word)}: ${portionLabel(portion)}"
@@ -304,9 +313,9 @@ fun PortionLine(portion: Portion, onPortion: (Portion) -> Unit, modifier: Modifi
                     text = {
                         val (word, amount) = stringResource(
                             when (option) {
-                                Portion.SMALL -> Res.string.meal_portion_option_small
-                                Portion.MEDIUM -> Res.string.meal_portion_option_medium
-                                Portion.LARGE -> Res.string.meal_portion_option_large
+                                Portion.SMALL -> if (smallAmounts) Res.string.meal_portion_option_small_spice else Res.string.meal_portion_option_small
+                                Portion.MEDIUM -> if (smallAmounts) Res.string.meal_portion_option_medium_spice else Res.string.meal_portion_option_medium
+                                Portion.LARGE -> if (smallAmounts) Res.string.meal_portion_option_large_spice else Res.string.meal_portion_option_large
                             },
                         ).split(" – ", limit = 2).let { it[0] to it.getOrElse(1) { "" } }
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
@@ -378,6 +387,7 @@ fun IngredientRow(
     onPortion: (Portion) -> Unit,
     onRemove: () -> Unit,
     preparation: @Composable (() -> Unit)?,
+    smallAmounts: Boolean = false,
 ) {
     val nameStyle = MaterialTheme.typography.bodyMedium.merge(
         TextStyle(fontWeight = FontWeight.Medium, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
@@ -387,7 +397,7 @@ fun IngredientRow(
         Row(verticalAlignment = Alignment.CenterVertically) {
             IngredientBadge(ingredient, name)
             Text(name, style = nameStyle, modifier = Modifier.weight(1f).padding(start = 10.dp, end = 8.dp))
-            PortionLine(portion, onPortion)
+            PortionLine(portion, onPortion, smallAmounts = smallAmounts)
             Spacer(Modifier.width(4.dp))
             DeleteButton(name, onRemove)
         }

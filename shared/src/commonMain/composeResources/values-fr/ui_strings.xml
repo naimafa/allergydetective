@@ -394,6 +394,10 @@
     <string name="meal_portion_option_small">petit – quelques bouchées / ½ verre</string>
     <string name="meal_portion_option_medium">moyen – un poing / 1 verre</string>
     <string name="meal_portion_option_large">grand – deux poings / 2 verres</string>
+    <string name="meal_portion_option_small_spice">petit – une pincée / quelques gouttes</string>
+    <string name="meal_portion_option_medium_spice">moyen – 1 cuillère à café</string>
+    <string name="meal_portion_option_large_spice">grand – 1 cuillère à soupe ou plus</string>
+    <string name="meal_portion_help_spice">Épices, herbes, huiles, noix et graines : S = une pincée ou quelques gouttes · M = 1 cuillère à café · L = 1 cuillère à soupe ou plus</string>
     <string name="meal_single_ingredients_count">Ingrédients seuls (%1$d)</string>
     <string name="meal_portion_word">Portion</string>
     <string name="meal_remove_question">Retirer %1$s du repas ?</string>
