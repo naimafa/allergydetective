@@ -86,6 +86,11 @@
     <string name="experiment_course_legend">À gauche avant, à droite sans. Pointillés : moyenne avant. Rouge : mangé quand même. Clair : ne compte pas (encore).</string>
     <string name="experiment_day_n">Jour %1$d</string>
     <string name="experiment_not_yet">Pas encore comptés : les %1$d premiers jours (l’aliment supprimé peut encore agir) et aujourd’hui (compte une fois la journée clôturée). Chaque symptôme compte, même léger.</string>
+    <string name="experiment_mean_line">Ø avant</string>
+    <string name="experiment_result_from_day">Résultat à partir du jour %1$d</string>
+    <string name="experiment_result_at_end">Résultat à la fin du test</string>
+    <string name="experiment_before_too_few">Seulement %1$d jours comptés avant</string>
+    <string name="experiment_step1_hint">Maintenant : supprimer et noter chaque jour</string>
     <string name="experiment_title_too_few">Pas encore assez de jours</string>
     <string name="experiment_title_less">Première amélioration</string>
     <string name="experiment_title_similar">Pas de différence nette</string>

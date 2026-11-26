@@ -93,6 +93,11 @@
     <string name="experiment_course_legend">يسارًا قبل، يمينًا بدون. الخط المتقطع: المتوسط قبل الاختبار. الأحمر: تم تناوله رغم ذلك. الفاتح: لا يُحتسب (بعد).</string>
     <string name="experiment_day_n">اليوم %1$d</string>
     <string name="experiment_not_yet">لا تُحتسب بعد: أول %1$d يومين (قد يستمر تأثير ما تم استبعاده) واليوم (يُحتسب بعد إغلاق اليوم). كل عرض يُحتسب، حتى الخفيف.</string>
+    <string name="experiment_mean_line">Ø قبل</string>
+    <string name="experiment_result_from_day">النتيجة ابتداءً من اليوم %1$d</string>
+    <string name="experiment_result_at_end">النتيجة في نهاية الاختبار</string>
+    <string name="experiment_before_too_few">فقط %1$d أيام محسوبة قبل الاختبار</string>
+    <string name="experiment_step1_hint">الآن: استبعده وسجّل كل يوم</string>
     <string name="experiment_title_too_few">الأيام غير كافية بعد</string>
     <string name="experiment_title_less">أول تحسّن</string>
     <string name="experiment_title_similar">لا فرق واضح</string>

@@ -56,6 +56,13 @@ import allergydetective.shared.generated.resources.experiment_diet_hint
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.displayName
 import androidx.compose.foundation.layout.Arrangement
+import allergydetective.shared.generated.resources.experiment_mean_line
+import allergydetective.shared.generated.resources.experiment_result_from_day
+import allergydetective.shared.generated.resources.experiment_result_at_end
+import allergydetective.shared.generated.resources.experiment_before_too_few
+import allergydetective.shared.generated.resources.experiment_step1_hint
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import allergydetective.shared.generated.resources.experiment_how
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
@@ -204,6 +211,8 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
         result.over -> PhaseLine(stringResource(Res.string.experiment_over, name), 0, 0, false)
         else -> PhaseLine(stringResource(Res.string.experiment_focus, name), result.dayNumber, experiment.days, true)
     }
+    // User 26.11.2026: waiting is a status of its own, right under the progress, and says when the result comes.
+    if (reintro == null && result.verdict == ExperimentVerdict.TOO_FEW_DAYS) WaitingStatus(experiment, result)
     // Two boxes and the bars: before | without (and, in the third phase, without | with again).
     if (reintro == null) {
         CompareBoxes(stringResource(Res.string.experiment_col_before), result.before, home.heart, stringResource(Res.string.experiment_col_without), result.during, home.accent)
@@ -239,7 +248,7 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
     }
     if (reintro == null) {
         when (result.verdict) {
-            ExperimentVerdict.TOO_FEW_DAYS -> VerdictBox(Icons.Outlined.HourglassEmpty, stringResource(Res.string.experiment_title_too_few), stringResource(Res.string.experiment_too_few))
+            ExperimentVerdict.TOO_FEW_DAYS -> Unit
             ExperimentVerdict.LESS -> VerdictBox(Icons.AutoMirrored.Outlined.TrendingDown, stringResource(Res.string.experiment_title_less), stringResource(Res.string.experiment_less, name))
             ExperimentVerdict.SIMILAR -> VerdictBox(Icons.AutoMirrored.Outlined.TrendingFlat, stringResource(Res.string.experiment_title_similar), stringResource(Res.string.experiment_similar, name))
             ExperimentVerdict.MORE -> VerdictBox(Icons.AutoMirrored.Outlined.TrendingUp, stringResource(Res.string.experiment_title_more), stringResource(Res.string.experiment_more, name))
@@ -420,10 +429,16 @@ private fun NextSteps(result: ExperimentResult, name: String) {
             val number = i + 1
             val done = number < current || (number == 3 && reintro?.over == true)
             val active = number == current && !done
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            // User 26.11.2026: the current step stands out (sage row, bold, what to do now); the next ones stay faint.
+            val rowModifier = if (active) {
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(home.todayCard).padding(horizontal = 10.dp, vertical = 10.dp)
+            } else {
+                Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 2.dp)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = rowModifier) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.size(30.dp).clip(CircleShape)
+                    modifier = Modifier.size(if (active) 32.dp else 26.dp).clip(CircleShape)
                         .background(if (done || active) home.accent else home.progressTrack),
                 ) {
                     if (done) {
@@ -432,7 +447,24 @@ private fun NextSteps(result: ExperimentResult, name: String) {
                         Text("$number", style = MaterialTheme.typography.labelLarge, color = if (active) Color.White else home.inkSoft)
                     }
                 }
-                Text(step, style = if (active) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium, color = if (done) home.inkSoft else home.ink)
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        step,
+                        style = if (active) MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold) else MaterialTheme.typography.bodyMedium,
+                        color = when {
+                            active -> home.ink
+                            done -> home.inkSoft
+                            else -> home.inkSoft.copy(alpha = 0.7f)
+                        },
+                    )
+                    val hint = when {
+                        !active -> null
+                        number == 1 -> stringResource(Res.string.experiment_step1_hint)
+                        number == 3 && reintro != null -> stringResource(Res.string.home_progress_badge, reintro.dayNumber, Experiment.REINTRO_DAYS)
+                        else -> null
+                    }
+                    hint?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = home.accent) }
+                }
             }
         }
     }
@@ -572,6 +604,10 @@ private fun CourseChart(result: ExperimentResult, plannedDays: Int) {
     val eaten = colors.error
     val grid = colors.outlineVariant
     val beforeMean = if (result.before.days == 0) null else result.before.meanStrength
+    val textMeasurer = rememberTextMeasurer()
+    val meanLabel = stringResource(Res.string.experiment_mean_line)
+    val labelStyle = MaterialTheme.typography.labelSmall.copy(color = colors.onSurface)
+    val cardColor = AppColors.extra.home.card
     val before = AppColors.extra.home.heart
     val beforeCount = result.beforeDaily.size
     val byNumber = (result.beforeDaily + result.daily).associateBy { it.number }
@@ -616,6 +652,11 @@ private fun CourseChart(result: ExperimentResult, plannedDays: Int) {
                 strokeWidth = 1.5.dp.toPx(),
                 pathEffect = PathEffect.dashPathEffect(floatArrayOf(6.dp.toPx(), 4.dp.toPx())),
             )
+            // User 26.11.2026: say on the line what it is.
+            val label = textMeasurer.measure(meanLabel, labelStyle)
+            val labelY = if (y - label.size.height - 2.dp.toPx() >= 0f) y - label.size.height - 2.dp.toPx() else y + 2.dp.toPx()
+            drawRect(cardColor, Offset(size.width - label.size.width - 6.dp.toPx(), labelY), Size(label.size.width + 6.dp.toPx(), label.size.height.toFloat()))
+            drawText(label, topLeft = Offset(size.width - label.size.width - 3.dp.toPx(), labelY))
         }
     }
     Row(modifier = Modifier.fillMaxWidth()) {
@@ -645,5 +686,41 @@ private fun RulesToggle() {
             Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, tint = home.accent)
         }
         if (open) Text(stringResource(Res.string.experiment_rules), style = MaterialTheme.typography.bodySmall, color = home.inkSoft)
+    }
+}
+
+/**
+ * The day of the test from which the comparison has enough days, or null when the test is too short for it or the
+ * days before are too few (they cannot grow any more).
+ */
+private fun resultDay(experiment: Experiment, result: ExperimentResult): Int? {
+    if (result.before.days < MIN_COUNTED_DAYS) return null
+    val missing = MIN_COUNTED_DAYS - result.during.days
+    // Today is counted once closed; the first days never count.
+    val day = maxOf(result.dayNumber, WASHOUT_DAYS + 1) + missing
+    return day.takeIf { it <= experiment.days + 1 }
+}
+
+@Composable
+private fun WaitingStatus(experiment: Experiment, result: ExperimentResult) {
+    val home = AppColors.extra.home
+    val day = if (result.over) null else resultDay(experiment, result)
+    val headline = when {
+        result.before.days < MIN_COUNTED_DAYS -> stringResource(Res.string.experiment_before_too_few, result.before.days)
+        day != null && day > experiment.days -> stringResource(Res.string.experiment_result_at_end)
+        day != null -> stringResource(Res.string.experiment_result_from_day, day)
+        else -> stringResource(Res.string.experiment_title_too_few)
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(home.heart.copy(alpha = 0.16f))
+            .border(1.dp, home.heart.copy(alpha = 0.35f), RoundedCornerShape(16.dp)).padding(12.dp),
+    ) {
+        Icon(Icons.Outlined.HourglassEmpty, contentDescription = null, tint = home.heart, modifier = Modifier.size(26.dp))
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(headline, style = MaterialTheme.typography.titleMedium, color = home.ink)
+            Text(stringResource(Res.string.experiment_too_few), style = MaterialTheme.typography.bodySmall, color = home.inkSoft)
+        }
     }
 }

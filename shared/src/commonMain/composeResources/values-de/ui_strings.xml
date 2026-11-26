@@ -83,9 +83,14 @@
     <string name="experiment_group_days">an %1$d von %2$d Tagen gegessen</string>
     <string name="experiment_or_single">Oder eine einzelne Zutat:</string>
     <string name="experiment_course">Verlauf pro Tag</string>
-    <string name="experiment_course_legend">Links vorher, rechts ohne. Balken: stärkste Beschwerde des Tages. Gestrichelt: Ø vorher. Rot: trotzdem gegessen. Hell: zählt (noch) nicht.</string>
+    <string name="experiment_course_legend">Links vorher, rechts ohne. Balken: stärkste Beschwerde des Tages. Rot: trotzdem gegessen. Hell: zählt (noch) nicht.</string>
     <string name="experiment_day_n">Tag %1$d</string>
     <string name="experiment_not_yet">Noch nicht gezählt: die ersten %1$d Tage (das Weggelassene kann noch nachwirken) und heute (zählt, sobald der Tag abgeschlossen ist). Jede Beschwerde zählt, auch eine leichte.</string>
+    <string name="experiment_mean_line">Ø vorher</string>
+    <string name="experiment_result_from_day">Ergebnis ab Tag %1$d</string>
+    <string name="experiment_result_at_end">Ergebnis zum Testende</string>
+    <string name="experiment_before_too_few">Vorher nur %1$d gezählte Tage</string>
+    <string name="experiment_step1_hint">Jetzt: weglassen und jeden Tag eintragen</string>
     <string name="experiment_title_too_few">Noch zu wenige Tage</string>
     <string name="experiment_title_less">Erste Verbesserung</string>
     <string name="experiment_title_similar">Kein deutlicher Unterschied</string>

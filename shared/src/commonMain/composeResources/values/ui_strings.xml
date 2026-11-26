@@ -83,9 +83,14 @@
     <string name="experiment_group_days">eaten on %1$d of %2$d days</string>
     <string name="experiment_or_single">Or a single ingredient:</string>
     <string name="experiment_course">Course per day</string>
-    <string name="experiment_course_legend">Left before, right without. Bar: strongest complaint of the day. Dashed line: average before. Red: eaten anyway. Pale: does not count (yet).</string>
+    <string name="experiment_course_legend">Left before, right without. Bar: strongest complaint of the day. Red: eaten anyway. Pale: does not count (yet).</string>
     <string name="experiment_day_n">Day %1$d</string>
     <string name="experiment_not_yet">Not counted yet: the first %1$d days (the left-out food can still have an effect) and today (counts once the day is closed). Every complaint counts, even a light one.</string>
+    <string name="experiment_mean_line">Ø before</string>
+    <string name="experiment_result_from_day">Result from day %1$d</string>
+    <string name="experiment_result_at_end">Result at the end of the test</string>
+    <string name="experiment_before_too_few">Only %1$d counted days before</string>
+    <string name="experiment_step1_hint">Now: leave it out and log every day</string>
     <string name="experiment_title_too_few">Not enough days yet</string>
     <string name="experiment_title_less">First improvement</string>
     <string name="experiment_title_similar">No clear difference</string>
