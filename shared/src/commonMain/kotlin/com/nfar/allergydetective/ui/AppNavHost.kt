@@ -1,6 +1,7 @@
 package com.nfar.allergydetective.ui
 
 import com.nfar.allergydetective.ui.profile.KnownAllergiesScreen
+import com.nfar.allergydetective.ui.profile.MyIngredientsScreen
 import com.nfar.allergydetective.ui.profile.GroupPart
 import allergydetective.shared.generated.resources.common_done
 import allergydetective.shared.generated.resources.onboarding_purpose
@@ -178,6 +179,7 @@ fun AppNavHost(
                     }
                 },
                 onOpenAllergies = { navController.navigate(AllergiesRoute) },
+                onOpenMyIngredients = { navController.navigate(MyIngredientsRoute) },
                 profileLower = {
                     // User 23.11.2026: privacy, intro and purpose as lines of one card "App-Info & Rechtliches".
                     // A long press on "Was die App ist und was nicht" opens the hidden payment test view.
@@ -224,5 +226,10 @@ composable<IntroRoute> {            OnboardingScreen(                replay = tr
         composable<PrivacyRoute> { PrivacyScreen(onBack = back) }
         composable<PaywallPreviewRoute> { PaywallPreviewScreen(onBack = back) }
         composable<AllergiesRoute> { KnownAllergiesScreen(onBack = back) }
+        composable<MyIngredientsRoute> { MyIngredientsScreen(onBack = back) }
     }
 }
+
+/** Own ingredients: edit, delete or replace (user 25.11.2026). */
+@Serializable
+data object MyIngredientsRoute
