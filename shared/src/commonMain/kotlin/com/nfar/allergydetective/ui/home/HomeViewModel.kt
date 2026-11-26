@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.ui.home
 
+import com.nfar.allergydetective.ui.meal.splitExamples
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nfar.allergydetective.domain.diary.DayCheckRepository
@@ -62,7 +63,7 @@ class HomeViewModel(
                 // Only the days of the current stretch count; a new stretch starts with "Neuen Abschnitt starten".
                 confirmedDays = goal.startDay?.let { dayChecks.confirmedDayCountSince(it) } ?: dayChecks.confirmedDayCount(),
                 goalDays = goal.days,
-                goalFocus = goal.focus,
+                goalFocus = splitExamples(goal.focus).first, // older tests saved the long name with examples
                 today = today,
                 todayOpen = dayChecks.load(today)?.isConfirmed != true,
                 mealsToday = entries.count { it is HistoryEntry.MealEntry },

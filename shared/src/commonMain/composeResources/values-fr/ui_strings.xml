@@ -53,7 +53,7 @@
     <string name="results_why_title">Pourquoi pas encore de schéma ?</string>
     <string name="experiment_title">Test d’éviction</string>
     <string name="experiment_col_before">Avant</string>
-    <string name="experiment_col_without">Sans %1$s</string>
+    <string name="experiment_col_without">Sans</string>
     <string name="experiment_row_days">Jours comptés</string>
     <string name="experiment_row_complaints">Avec symptômes</string>
     <string name="experiment_row_strength">Intensité moy. (0–5)</string>

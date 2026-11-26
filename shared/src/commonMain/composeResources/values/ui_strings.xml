@@ -53,7 +53,7 @@
     <string name="results_why_title">Why no pattern yet?</string>
     <string name="experiment_title">Elimination test</string>
     <string name="experiment_col_before">Before</string>
-    <string name="experiment_col_without">Without %1$s</string>
+    <string name="experiment_col_without">Without</string>
     <string name="experiment_row_days">Days counted</string>
     <string name="experiment_row_complaints">With complaints</string>
     <string name="experiment_row_strength">Mean strength (0–5)</string>

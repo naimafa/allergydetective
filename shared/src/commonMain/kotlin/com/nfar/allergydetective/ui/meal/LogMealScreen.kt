@@ -471,6 +471,9 @@ private fun WhatStep(
                     .padding(vertical = 10.dp),
             ) {
                 Text(ingredientName(ingredient))
+                ingredientExamples(ingredient)?.let { examples ->
+                    Text(examples, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
                 // Found through another name (e.g. "Topfen" for Quark): say so, like "contains …" for dishes.
                 viewModel.synonymReason(ingredient.id, state.query)?.let { synonym ->
                     Text(stringResource(Res.string.meal_also_called, synonym), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -810,8 +813,29 @@ fun portionLabel(portion: Portion): String = stringResource(
 )
 
 @Composable
-fun ingredientName(ingredient: IngredientInfo): String =
+fun ingredientName(ingredient: IngredientInfo): String = splitExamples(ingredientFullName(ingredient)).first
+
+/** Catalog name with examples, e.g. "Schnittkäse jung (junger Gouda, Edamer)". */
+@Composable
+fun ingredientFullName(ingredient: IngredientInfo): String =
     ingredient.key?.let { displayName(NamePrefix.INGREDIENT, it) } ?: ingredient.customName.orEmpty()
+
+/** The examples of a catalog name ("junger Gouda, Edamer"), shown under the name when choosing it; null without. */
+@Composable
+fun ingredientExamples(ingredient: IngredientInfo): String? = splitExamples(ingredientFullName(ingredient)).second
+
+/**
+ * User 26.11.2026: "Schnittkäse jung (junger Gouda, Edamer)" was far too long in the test, the table and the chips.
+ * A bracket with a list ("," or "…") holds examples: the name is the part before it. A bracket that tells
+ * ingredients apart ("Nudeln (Weizen)", "Koriander (frisch)") stays in the name.
+ */
+internal fun splitExamples(name: String): Pair<String, String?> {
+    val open = name.lastIndexOf(" (")
+    if (open < 0 || !name.endsWith(")")) return name to null
+    val inside = name.substring(open + 2, name.length - 1)
+    if (',' !in inside && '…' !in inside && "..." !in inside && '،' !in inside) return name to null
+    return name.substring(0, open) to inside
+}
 
 @Composable
 fun mealSlotLabel(slot: MealSlot): String = stringResource(

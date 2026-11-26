@@ -53,7 +53,7 @@
     <string name="results_why_title">Warum noch kein Muster?</string>
     <string name="experiment_title">Weglass-Test</string>
     <string name="experiment_col_before">Vorher</string>
-    <string name="experiment_col_without">Ohne %1$s</string>
+    <string name="experiment_col_without">Ohne</string>
     <string name="experiment_row_days">Gezählte Tage</string>
     <string name="experiment_row_complaints">Mit Beschwerden</string>
     <string name="experiment_row_strength">Ø Stärke (0–5)</string>

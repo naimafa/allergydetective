@@ -84,6 +84,7 @@ import com.nfar.allergydetective.domain.experiment.MIN_COUNTED_DAYS
 import com.nfar.allergydetective.ui.common.DayPicker
 import com.nfar.allergydetective.ui.common.AppFilterChip
 import com.nfar.allergydetective.ui.meal.IngredientBadge
+import com.nfar.allergydetective.ui.meal.ingredientExamples
 import com.nfar.allergydetective.ui.meal.ingredientName
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -137,7 +138,7 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
         Row {
             Text("", modifier = Modifier.weight(1.4f))
             Text(stringResource(Res.string.experiment_col_before), style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
-            Text(stringResource(Res.string.experiment_col_without, name), style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
+            Text(stringResource(Res.string.experiment_col_without), style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
         }
         rows.forEach { (label, b, d) ->
             Row {
@@ -246,7 +247,12 @@ private fun IngredientLine(ingredient: IngredientInfo) {
     val name = ingredientName(ingredient)
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         IngredientBadge(ingredient, name)
-        Text(name, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 10.dp))
+        Column(modifier = Modifier.padding(start = 10.dp)) {
+            Text(name, style = MaterialTheme.typography.bodyLarge)
+            ingredientExamples(ingredient)?.let {
+                Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
     }
 }
 

@@ -60,7 +60,7 @@
     <string name="results_why_title">لماذا لا يوجد نمط بعد؟</string>
     <string name="experiment_title">اختبار الاستبعاد</string>
     <string name="experiment_col_before">قبل</string>
-    <string name="experiment_col_without">بدون %1$s</string>
+    <string name="experiment_col_without">بدون</string>
     <string name="experiment_row_days">الأيام المحتسبة</string>
     <string name="experiment_row_complaints">مع أعراض</string>
     <string name="experiment_row_strength">متوسط الشدة (0–5)</string>
