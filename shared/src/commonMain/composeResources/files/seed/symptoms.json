@@ -22,5 +22,8 @@
   {"id": 4004, "key": "shortness_of_breath", "group": "airways", "isRedFlag": true},
   {"id": 4005, "key": "mouth_tingling", "group": "airways"},
   {"id": 4006, "key": "itchy_eyes", "group": "airways"},
+  {"id": 5001, "key": "joint_pain", "group": "joints"},
+  {"id": 5002, "key": "joint_swelling", "group": "joints"},
+  {"id": 5003, "key": "muscle_pain", "group": "joints"},
   {"id": 9001, "key": "other", "group": "other"}
 ]

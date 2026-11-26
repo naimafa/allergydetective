@@ -1,7 +1,7 @@
 [
-  {"id": 101, "key": "histamine", "group": "intolerance", "windows": [{"startMin": 0, "endMin": 240}], "symptomGroups": ["digestive", "skin", "head", "airways"]},
+  {"id": 101, "key": "histamine", "group": "intolerance", "windows": [{"startMin": 0, "endMin": 240}], "symptomGroups": ["digestive", "skin", "head", "airways", "joints"]},
   {"id": 106, "key": "histamine_liberator", "group": "intolerance", "windows": [{"startMin": 0, "endMin": 240}], "symptomGroups": ["digestive", "skin", "head", "airways"]},
-  {"id": 102, "key": "gluten", "group": "intolerance", "windows": [{"startMin": 60, "endMin": 2880}], "symptomGroups": ["digestive", "skin", "head"]},
+  {"id": 102, "key": "gluten", "group": "intolerance", "windows": [{"startMin": 60, "endMin": 2880}], "symptomGroups": ["digestive", "skin", "head", "joints"]},
   {"id": 103, "key": "lactose", "group": "intolerance", "windows": [{"startMin": 15, "endMin": 360}], "symptomGroups": ["digestive"]},
   {"id": 104, "key": "fructose", "group": "intolerance", "windows": [{"startMin": 30, "endMin": 480}], "symptomGroups": ["digestive"]},
   {"id": 105, "key": "polyols", "group": "intolerance", "windows": [{"startMin": 30, "endMin": 480}], "symptomGroups": ["digestive"]},

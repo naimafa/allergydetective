@@ -48,6 +48,7 @@
     <string name="symptom_group_skin">الجلد</string>
     <string name="symptom_group_head">الرأس والطاقة والدورة الدموية</string>
     <string name="symptom_group_airways">المجاري التنفسية والعيون والفم</string>
+    <string name="symptom_group_joints">المفاصل والعضلات</string>
     <string name="symptom_group_other">أخرى</string>
     <string name="symptom_nausea">غثيان</string>
     <string name="symptom_bloating">انتفاخ</string>
@@ -73,6 +74,9 @@
     <string name="symptom_mouth_tingling">وخز في الفم</string>
     <string name="symptom_itchy_eyes">حكة في العينين</string>
     <string name="symptom_other">أخرى</string>
+    <string name="symptom_joint_pain">ألم المفاصل</string>
+    <string name="symptom_joint_swelling">تورّم / التهاب المفاصل</string>
+    <string name="symptom_muscle_pain">ألم العضلات</string>
     <string name="ingredient_white_bread">خبز أبيض / خبز قمح صغير</string>
     <string name="ingredient_wholemeal_wheat_bread">خبز أسمر (قمح كامل)</string>
     <string name="ingredient_rye_bread">خبز الجاودار</string>

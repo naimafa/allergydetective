@@ -48,6 +48,7 @@
     <string name="symptom_group_skin">Peau</string>
     <string name="symptom_group_head">Tête, énergie &amp; circulation</string>
     <string name="symptom_group_airways">Voies respiratoires, yeux &amp; bouche</string>
+    <string name="symptom_group_joints">Articulations &amp; muscles</string>
     <string name="symptom_group_other">Autres</string>
     <string name="symptom_nausea">Nausée</string>
     <string name="symptom_bloating">Ballonnements</string>
@@ -73,6 +74,9 @@
     <string name="symptom_mouth_tingling">Picotements dans la bouche</string>
     <string name="symptom_itchy_eyes">Yeux qui démangent</string>
     <string name="symptom_other">Autre</string>
+    <string name="symptom_joint_pain">Douleurs articulaires</string>
+    <string name="symptom_joint_swelling">Gonflement / inflammation articulaire</string>
+    <string name="symptom_muscle_pain">Douleurs musculaires</string>
     <string name="ingredient_white_bread">Pain blanc / petit pain de blé</string>
     <string name="ingredient_wholemeal_wheat_bread">Pain complet (blé)</string>
     <string name="ingredient_rye_bread">Pain de seigle</string>

@@ -272,7 +272,7 @@ class LogSymptomViewModel(
         val TODAY_ONLY_PARTS = setOf(SymptomDayPart.NOW, SymptomDayPart.AFTER_MEAL)
         const val MAX_INTENSITY = 5
         const val FAVORITE_COUNT = 3
-        val GROUP_ORDER = listOf("digestive", "skin", "head", "airways", "other")
+        val GROUP_ORDER = listOf("digestive", "skin", "head", "airways", "joints", "other")
     }
 }
 

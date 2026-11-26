@@ -48,6 +48,7 @@
     <string name="symptom_group_skin">Haut</string>
     <string name="symptom_group_head">Kopf, Energie &amp; Kreislauf</string>
     <string name="symptom_group_airways">Atemwege, Augen &amp; Mund</string>
+    <string name="symptom_group_joints">Gelenke &amp; Muskeln</string>
     <string name="symptom_group_other">Sonstiges</string>
     <string name="symptom_nausea">Übelkeit</string>
     <string name="symptom_bloating">Blähbauch</string>
@@ -73,6 +74,9 @@
     <string name="symptom_mouth_tingling">Kribbeln im Mund</string>
     <string name="symptom_itchy_eyes">Juckende Augen</string>
     <string name="symptom_other">Sonstiges</string>
+    <string name="symptom_joint_pain">Gelenkschmerzen</string>
+    <string name="symptom_joint_swelling">Gelenkschwellung / Entzündung</string>
+    <string name="symptom_muscle_pain">Muskelschmerzen</string>
     <string name="ingredient_white_bread">Weißbrot / Weizenbrötchen</string>
     <string name="ingredient_wholemeal_wheat_bread">Vollkornbrot (Weizen)</string>
     <string name="ingredient_rye_bread">Roggenbrot</string>
