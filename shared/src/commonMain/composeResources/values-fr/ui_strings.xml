@@ -82,7 +82,7 @@
     <string name="experiment_groups">Supprimer tout un groupe :</string>
     <string name="experiment_group_days">mangé %1$d jours sur %2$d</string>
     <string name="experiment_or_single">Ou un seul ingrédient :</string>
-    <string name="experiment_course">Évolution : symptôme le plus fort par jour</string>
+    <string name="experiment_course">Évolution par jour</string>
     <string name="experiment_course_legend">À gauche avant, à droite sans. Pointillés : moyenne avant. Rouge : mangé quand même. Clair : ne compte pas (encore).</string>
     <string name="experiment_day_n">Jour %1$d</string>
     <string name="experiment_not_yet">Pas encore comptés : les %1$d premiers jours (l’aliment supprimé peut encore agir) et aujourd’hui (compte une fois la journée clôturée). Chaque symptôme compte, même léger.</string>
@@ -90,7 +90,7 @@
     <string name="experiment_title_less">Première amélioration</string>
     <string name="experiment_title_similar">Pas de différence nette</string>
     <string name="experiment_title_more">Plutôt plus fort</string>
-    <string name="experiment_box_complaints">Symptômes %1$d jours</string>
+    <string name="experiment_box_complaints">%1$d avec symptômes</string>
     <string name="experiment_mean_of_five">Ø %1$s / 5</string>
     <string name="experiment_next_step">Étape suivante</string>
     <string name="experiment_step_leave_out">Se passer de %1$s</string>

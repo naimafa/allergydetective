@@ -89,7 +89,7 @@
     <string name="experiment_groups">استبعاد مجموعة كاملة:</string>
     <string name="experiment_group_days">تم تناوله في %1$d من %2$d يومًا</string>
     <string name="experiment_or_single">أو مكوّن واحد فقط:</string>
-    <string name="experiment_course">المسار: أقوى عرض في كل يوم</string>
+    <string name="experiment_course">المسار اليومي</string>
     <string name="experiment_course_legend">يسارًا قبل، يمينًا بدون. الخط المتقطع: المتوسط قبل الاختبار. الأحمر: تم تناوله رغم ذلك. الفاتح: لا يُحتسب (بعد).</string>
     <string name="experiment_day_n">اليوم %1$d</string>
     <string name="experiment_not_yet">لا تُحتسب بعد: أول %1$d يومين (قد يستمر تأثير ما تم استبعاده) واليوم (يُحتسب بعد إغلاق اليوم). كل عرض يُحتسب، حتى الخفيف.</string>
@@ -97,7 +97,7 @@
     <string name="experiment_title_less">أول تحسّن</string>
     <string name="experiment_title_similar">لا فرق واضح</string>
     <string name="experiment_title_more">أقوى نوعًا ما</string>
-    <string name="experiment_box_complaints">أعراض في %1$d أيام</string>
+    <string name="experiment_box_complaints">%1$d بأعراض</string>
     <string name="experiment_mean_of_five">Ø %1$s / 5</string>
     <string name="experiment_next_step">الخطوة التالية</string>
     <string name="experiment_step_leave_out">الاستغناء عن %1$s</string>
