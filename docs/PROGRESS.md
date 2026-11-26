@@ -1,7 +1,7 @@
 # Fortschritt: Allergie-Detektiv
 
 **Aktuelle Phase:** Konzept ✅ → Setup ✅ → Phase 1: Daten-Herz ✅ → Phase 2: Skelett ✅ → Phase 3: Design ✅ → Phase 4: Self-Test ⏳ (alles auf `main`, PR #5)
-**Letztes Update:** 18.11.2026
+**Letztes Update:** 26.11.2026
 **Zeiterfassung:** [ZEITPROTOKOLL.md](ZEITPROTOKOLL.md)
 
 ---
@@ -60,6 +60,10 @@
 - [x] Datenbank bis Version 9 (8: Art der Mahlzeit, 9: Dauer); Umstellung auf Verschlüsselung auf dem Handy mit echten Daten geprüft
 - [x] Klickbarer HTML-Prototyp [docs/prototype](prototype/allergy-detective-prototype.html), Screen für Screen mit dem Handy abgeglichen
 - [x] Testnotizen und Mustererkennung vom 24.11.2026 (PRs #79–#85, offen): Gerichte mit eigener Portion als Momentaufnahme (Migration 12 → 13), eine Schriftskala für alle Formulare, Mustererkennung nach Tagen mit gelernter Verzögerung und schnellen Reaktionen, Konzept in [KONZEPT_MUSTERERKENNUNG.md](KONZEPT_MUSTERERKENNUNG.md)
+- [x] Testnotizen und Katalog vom 25.11.2026 (PRs #87–#100, offen): nach dem Speichern zum Dashboard, Symptom-Dauer feiner, Gewürze in Prise/Löffel, „Warum noch kein Muster?“, Symptom-Bereiche verschiebbar und als Karten, Ziehen erst nach langem Drücken, „Meine Zutaten“ (bearbeiten, löschen, durch Zutat oder Gericht ersetzen), Katalog 150 → 270 Zutaten mit drei Getreide-Kategorien, Mehlen, Süßungsmitteln und Trockenobst (Migrationen 13 → 16), Auswahl „normal / glutenfrei“, Lückenliste in [KATALOG_LUECKEN.md](KATALOG_LUECKEN.md)
+- [x] Weglass-Test vom 25.11.2026 abends (PRs #102–#106, offen): ein Lebensmittel weglassen, Start an einem der letzten 14 Tage, mittlere Stärke pro Tag „vorher / ohne“ als Tabelle; dazu zwei Fixes (weitere Zutat, Grund „kein Muster“ im Bericht). Offen: Handytest
+- [x] Weglass-Test am 26.11.2026 (PR #107, offen): ganze Gruppen, Verlauf mit den Tagen vorher, Zöliakie-Hinweis, andere Ernährungs-Veränderungen, Wiedereinführung (nicht bei Allergenen), Karte im Stil der Skizze; auf dem Handy geprüft
+- [x] Testnotizen vom 26.11.2026 abends (PRs #108–#114, offen): Legende als Farbfelder, Handy-Sprache und Fokus in App-Sprache, Arabisch gespiegelt, Gelenke & Muskeln (Migration 16 → 17), Kräuter-Gericht in Prise/Löffel, Spanisch und Türkisch, Stress/Schlaf im Weglass-Test, neue Symptom-Bereiche an der richtigen Stelle
 - [ ] 7+ Tage selbst nutzen, Notizen führen (SELFTEST.md, Kapitel 3)
 - [ ] Export + Notizen auswerten, Schwellenwerte in `AnalysisConfig` kalibrieren
 
@@ -99,3 +103,4 @@
 | 22.11.2026 | Abends: Stil der Startseite auf allen Masken (PR #60): Blätter-Hintergrund, Playfair-Titel, cremefarbene Karten, keine reine weiße Farbe, Essen-Maske in Schritten, Verlauf/Favoriten/Profil umgebaut, eine Schriftskala, Auswahl-Pillen in einer Zeile. Auf dem Handy bei Schrift 125 % geprüft; Symptome, Tagesabschluss, Muster, Einführung und Datenschutz noch nicht angeschaut |
 | 23.11.2026 | 17 PRs nach `develop` (#61–#77), aufeinander aufbauend: Essen-Maske nach Design-Bild (mehrere Gerichte, zusammengeführte Zutaten, Kategorie-Bilder), Testnotizen (Abwählen, Uhrzeit in Schritt 1, Suche, vorhandene Mahlzeit öffnen, Gerichte, Kräuter-Kategorie mit Migration 11 → 12, Tagesabschluss, Verlauf, Glocke, Sprache, Symptome in Schritten), Ziel im Profil mit neuem Abschnitt, Muster mit Erklärung und Maßnahmen, Bericht mit eigenem Zeitraum, lebendigere Einführung, Bezahlseite nur als versteckte Testansicht, Profil in fünf Gruppen. Tests grün, jeweils auf dem Handy geprüft; offen: Widerspruch „nicht unterscheidbar“ / „gut vertragen“ in der Auswertung |
 | 24.11.2026 | 7 PRs (#79–#85), gestapelt auf develop: Testnotizen (Popups, doppeltes Frühstück, Symptome, Tagesabschluss, Excel-Tagebuch), Gerichte mit eigener Portion und Fragen bei doppelten Zutaten, Schriftskala 30/18/16/14/12 sp mit Portion-Feld „M ▾“, keine Spur ohne echte Beschwerden, Verlauf-Blatt scrollt, Mahlzeit als Momentaufnahme (Migration 12 → 13, mit echten Daten geprüft), Mustererkennung nach Tagen (Verzögerung 0–3 Tage, schnelle Reaktionen bis 2 h, „fast täglich gegessen“). Tests grün, jeweils auf dem Handy. Offen: Fass-Wert, Faktoren Medikamente/Periode, Spurensuche-Zeitleiste, Experimente |
+| 25.11.2026 | 14 PRs (#87–#100), gestapelt auf develop: Testnotizen (Dashboard nach Speichern, Dauer 3–6/6–12 Std., Gewürze in Prise/Löffel, Grund bei „kein Muster“, Bilder bei Zutaten in Gerichten), Symptom-Bereiche verschiebbar (Ziehen nach langem Drücken) und als Karten, „Meine Zutaten“ mit Bearbeiten/Löschen/Ersetzen (auch durch ein Gericht), Gerichtsnamen nicht mehr als Zutat, Katalog 150 → 270 (Alltags-Zutaten, Süßungsmittel, Getreide & Mehl / Nudeln & Teigwaren / Brot & Backwaren, Trockenobst einzeln; Migrationen 13 → 16, auf dem Handy gelaufen), „normal / glutenfrei“. Tests grün. PC-Absturz, danach zwei Sitzungen im selben Ordner. Offen: Handytest der neuen Funktionen, eigene Zutaten aufräumen |
