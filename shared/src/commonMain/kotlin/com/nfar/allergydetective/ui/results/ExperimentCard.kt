@@ -450,7 +450,7 @@ private fun NextSteps(result: ExperimentResult, name: String) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         step,
-                        style = if (active) MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold) else MaterialTheme.typography.bodyMedium,
+                        style = if (active) MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold) else MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp, lineHeight = 20.sp),
                         color = when {
                             active -> home.ink
                             done -> home.inkSoft
