@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Daily quotes on the home screen (UX 2), Spanish. Encouraging, no healing promises (REVIEW 6.4). -->
+<resources>
+    <string-array name="daily_quotes">
+        <item>Cada entrada es una pieza del rompecabezas.</item>
+        <item>Pequeñas notas hoy, patrones más claros mañana.</item>
+        <item>No tienes que ser perfecto. Solo sigue adelante.</item>
+        <item>Saltarse un día no pasa nada. La próxima entrada cuenta igual.</item>
+        <item>Escuchar a tu cuerpo es una habilidad. La estás practicando.</item>
+        <item>Los patrones necesitan tiempo. Tú se lo estás dando.</item>
+        <item>Diez segundos hoy pueden ahorrarte conjeturas después.</item>
+        <item>La curiosidad es una buena compañera en este camino.</item>
+        <item>Los días buenos también son pistas.</item>
+        <item>Anótalo y luego suéltalo.</item>
+        <item>Conoces tu cuerpo mejor que cualquier app. Esta solo toma notas.</item>
+        <item>Cada día confirmado hace la imagen más nítida.</item>
+        <item>Sin presión, sin rachas. Solo pistas.</item>
+        <item>Lo que notas hoy puede importar la semana que viene.</item>
+        <item>Ser constante vale más que ser completo.</item>
+        <item>Mirar los hechos con calma ayuda más que preocuparse.</item>
+        <item>Estás reuniendo pistas, no juzgándote.</item>
+        <item>Una comida cada vez.</item>
+        <item>El sueño y el estrés también forman parte de la historia.</item>
+        <item>Tus notas se quedan contigo. Solo en este móvil.</item>
+        <item>El trabajo de detective es silencioso, pero suma.</item>
+        <item>Incluso «no pasó nada» es información útil.</item>
+        <item>Unos toques ahora, una mejor conversación con tu médico después.</item>
+        <item>Lo haces por ti. Eso cuenta.</item>
+        <item>Las pistas no tienen que ser grandes para ayudar.</item>
+        <item>Hoy es un buen día para una entrada corta.</item>
+        <item>Notar, anotar, seguir.</item>
+        <item>Tu yo del futuro te agradecerá estas notas.</item>
+        <item>La paciencia convierte muchas notas pequeñas en un patrón claro.</item>
+        <item>Sentirse bien también merece una nota.</item>
+        <item>Cada día que registras es un día con más certeza.</item>
+        <item>No hay entradas equivocadas. Solo más información.</item>
+        <item>Respira. Luego toma nota.</item>
+        <item>Paso a paso, la imagen se aclara.</item>
+        <item>Tus observaciones son valiosas.</item>
+        <item>Está bien volver a empezar cualquier día.</item>
+        <item>Un buen detective lo apunta todo.</item>
+        <item>Despacio y con constancia se encuentran las pistas.</item>
+        <item>Ser amable contigo forma parte del proceso.</item>
+        <item>Hoy cuenta, traiga lo que traiga.</item>
+    </string-array>
+</resources>

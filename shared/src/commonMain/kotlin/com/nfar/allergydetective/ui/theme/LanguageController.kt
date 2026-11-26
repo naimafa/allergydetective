@@ -20,7 +20,7 @@ class LanguageController(private val store: SettingsStore) {
 
     companion object {
         /** Languages the app has texts for, in the order of the profile. */
-        val SUPPORTED = listOf("de", "en", "fr", "ar")
+        val SUPPORTED = listOf("de", "en", "fr", "es", "tr", "ar")
 
         /** Written right to left. */
         fun isRtl(language: String): Boolean = language == "ar"

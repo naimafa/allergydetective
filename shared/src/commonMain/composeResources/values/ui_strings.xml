@@ -293,7 +293,7 @@
     <string name="report_footer">Allergy Detective · created on %1$s</string>
     <string name="language_title">Language</string>
     <string name="language_system">Like the phone</string>
-    <string name="language_hint">French and Arabic are newly translated. If a text looks wrong to you, let us know.</string>
+    <string name="language_hint">French, Arabic, Spanish and Turkish are newly translated. If a text looks wrong to you, let us know.</string>
     <string name="goal_title">Evaluation interval</string>
     <string name="goal_hint">After how many confirmed days a stretch is done, e.g. to leave out one food.</string>
     <string name="goal_days">%1$d days</string>

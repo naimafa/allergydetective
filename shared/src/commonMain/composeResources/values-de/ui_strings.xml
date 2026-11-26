@@ -293,7 +293,7 @@
     <string name="report_footer">Allergy Detective · erstellt am %1$s</string>
     <string name="language_title">Sprache</string>
     <string name="language_system">Wie Handy</string>
-    <string name="language_hint">Französisch und Arabisch sind neu übersetzt. Wenn dir ein Text falsch vorkommt, sag uns Bescheid.</string>
+    <string name="language_hint">Französisch, Arabisch, Spanisch und Türkisch sind neu übersetzt. Wenn dir ein Text falsch vorkommt, sag uns Bescheid.</string>
     <string name="goal_title">Auswertungs-Intervall</string>
     <string name="goal_hint">Nach wie vielen bestätigten Tagen ein Abschnitt abgeschlossen ist, z. B. um ein Lebensmittel wegzulassen.</string>
     <string name="goal_days">%1$d Tage</string>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Daily quotes on the home screen (UX 2), Turkish. Encouraging, no healing promises (REVIEW 6.4). -->
+<resources>
+    <string-array name="daily_quotes">
+        <item>Her kayıt yapbozun bir parçası.</item>
+        <item>Bugün küçük notlar, yarın daha net örüntüler.</item>
+        <item>Mükemmel olmak zorunda değilsin. Sadece devam et.</item>
+        <item>Bir günü kaçırmak sorun değil. Sonraki kayıt da aynı değerde.</item>
+        <item>Bedenini dinlemek bir beceri. Onu çalışıyorsun.</item>
+        <item>Örüntüler zaman ister. Sen de onlara bu zamanı veriyorsun.</item>
+        <item>Bugünkü on saniye seni sonra tahminlerden kurtarabilir.</item>
+        <item>Merak bu yolda iyi bir yol arkadaşı.</item>
+        <item>İyi günler de birer ipucu.</item>
+        <item>Yaz, sonra bırak gitsin.</item>
+        <item>Bedenini her uygulamadan iyi tanırsın. Bu uygulama sadece not alır.</item>
+        <item>Onaylanan her gün resmi daha netleştirir.</item>
+        <item>Baskı yok, seri yok. Sadece ipuçları.</item>
+        <item>Bugün fark ettiğin şey gelecek hafta önemli olabilir.</item>
+        <item>Düzenli olmak eksiksiz olmaktan iyidir.</item>
+        <item>Gerçeklere sakin bakmak endişelenmekten daha çok yardımcı olur.</item>
+        <item>Kendini yargılamıyorsun, kanıt topluyorsun.</item>
+        <item>Her seferinde bir öğün.</item>
+        <item>Uyku ve stres de hikâyenin parçası.</item>
+        <item>Notların seninle kalır. Yalnızca bu telefonda.</item>
+        <item>Dedektiflik sessiz bir iş ama birikiyor.</item>
+        <item>“Hiçbir şey olmadı” bile faydalı bir bilgi.</item>
+        <item>Şimdi birkaç dokunuş, sonra doktorunla daha iyi bir konuşma.</item>
+        <item>Bunu kendin için yapıyorsun. Bu önemli.</item>
+        <item>İpuçlarının faydalı olması için büyük olması gerekmez.</item>
+        <item>Bugün kısa bir kayıt için iyi bir gün.</item>
+        <item>Fark et, not al, devam et.</item>
+        <item>Gelecekteki sen bu notlar için sana teşekkür edecek.</item>
+        <item>Sabır, birçok küçük notu net bir örüntüye dönüştürür.</item>
+        <item>İyi hissetmek de not etmeye değer.</item>
+        <item>Kaydettiğin her gün daha fazla kesinlik demek.</item>
+        <item>Yanlış kayıt yoktur. Sadece daha fazla bilgi vardır.</item>
+        <item>Bir nefes al. Sonra not al.</item>
+        <item>Adım adım resim netleşiyor.</item>
+        <item>Gözlemlerin değerli.</item>
+        <item>Her gün yeniden başlamak olur.</item>
+        <item>İyi bir dedektif her şeyi yazar.</item>
+        <item>Yavaş ama istikrarlı olan ipuçlarını bulur.</item>
+        <item>Kendine nazik olmak da sürecin parçası.</item>
+        <item>Bugün ne getirirse getirsin, bugün önemli.</item>
+    </string-array>
+</resources>
