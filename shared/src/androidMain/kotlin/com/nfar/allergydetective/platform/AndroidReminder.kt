@@ -93,18 +93,20 @@ class SharedPreferencesSettingsStore(context: Context) : SettingsStore {
             days = prefs.getInt(KEY_EXP_DAYS, Experiment.DEFAULT_DAYS),
             stoppedDay = if (prefs.contains(KEY_EXP_STOPPED)) prefs.getLong(KEY_EXP_STOPPED, 0) else null,
             propertyId = if (prefs.contains(KEY_EXP_PROPERTY)) prefs.getLong(KEY_EXP_PROPERTY, 0) else null,
+            reintroStartDay = if (prefs.contains(KEY_EXP_REINTRO)) prefs.getLong(KEY_EXP_REINTRO, 0) else null,
         )
 
     override fun saveExperiment(experiment: Experiment?) {
         prefs.edit().apply {
             if (experiment == null) {
-                remove(KEY_EXP_INGREDIENT); remove(KEY_EXP_START); remove(KEY_EXP_DAYS); remove(KEY_EXP_STOPPED); remove(KEY_EXP_PROPERTY)
+                remove(KEY_EXP_INGREDIENT); remove(KEY_EXP_START); remove(KEY_EXP_DAYS); remove(KEY_EXP_STOPPED); remove(KEY_EXP_PROPERTY); remove(KEY_EXP_REINTRO)
             } else {
                 putLong(KEY_EXP_INGREDIENT, experiment.ingredientId)
                 putLong(KEY_EXP_START, experiment.startDay)
                 putInt(KEY_EXP_DAYS, experiment.days)
                 if (experiment.stoppedDay == null) remove(KEY_EXP_STOPPED) else putLong(KEY_EXP_STOPPED, experiment.stoppedDay)
                 if (experiment.propertyId == null) remove(KEY_EXP_PROPERTY) else putLong(KEY_EXP_PROPERTY, experiment.propertyId)
+                if (experiment.reintroStartDay == null) remove(KEY_EXP_REINTRO) else putLong(KEY_EXP_REINTRO, experiment.reintroStartDay)
             }
         }.apply()
     }
@@ -116,6 +118,7 @@ class SharedPreferencesSettingsStore(context: Context) : SettingsStore {
         const val KEY_EXP_DAYS = "experiment_days"
         const val KEY_EXP_STOPPED = "experiment_stopped"
         const val KEY_EXP_PROPERTY = "experiment_property"
+        const val KEY_EXP_REINTRO = "experiment_reintro"
         const val KEY_THEME = "theme_mode"
         const val KEY_GOAL_DAYS = "goal_days"
         const val KEY_GOAL_FOCUS = "goal_focus"

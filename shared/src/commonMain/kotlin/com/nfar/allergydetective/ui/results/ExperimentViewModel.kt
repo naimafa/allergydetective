@@ -158,6 +158,13 @@ class ExperimentViewModel(
         refresh()
     }
 
+    /** Third phase (user 26.11.2026): eat it again from today, after a clear improvement. */
+    fun onStartReintro() {
+        val experiment = _state.value.experiment ?: return
+        settings.saveExperiment(experiment.copy(reintroStartDay = clock.today()))
+        refresh()
+    }
+
     /** After a finished test: clear it and choose the next one. */
     fun onNew() {
         settings.saveExperiment(null)

@@ -20,16 +20,21 @@ data class Experiment(
     val days: Int,
     val stoppedDay: Long? = null,
     val propertyId: Long? = null,
+    /** Day the food is eaten again after a clear improvement (user 26.11.2026); runs [REINTRO_DAYS] days. */
+    val reintroStartDay: Long? = null,
 ) {
     val lastDay: Long get() = startDay + days - 1
 
     /** The last day that counts: today while running, the planned or the stop day once over. */
-    fun endDay(today: Long): Long = minOf(stoppedDay ?: lastDay, lastDay, today)
+    fun endDay(today: Long): Long = minOf(stoppedDay ?: lastDay, lastDay, today, (reintroStartDay ?: Long.MAX_VALUE) - 1)
+
+    val reintroLastDay: Long? get() = reintroStartDay?.let { it + REINTRO_DAYS - 1 }
 
     fun isOver(today: Long): Boolean = stoppedDay != null || today > lastDay
 
     companion object {
         val DURATIONS = listOf(7, 14, 21)
+        const val REINTRO_DAYS = 7
         const val DEFAULT_DAYS = 14
     }
 }
@@ -70,6 +75,10 @@ data class ExperimentResult(
     val beforeDaily: List<TestDay> = emptyList(),
     /** Other groups eaten clearly more or less often during the test (user 26.11.2026). */
     val dietChanges: List<DietChange> = emptyList(),
+    /** Whether the app may guide eating it again: not for allergens or known allergies. */
+    val reintroAllowed: Boolean = false,
+    /** The third phase, once started. */
+    val reintro: ReintroResult? = null,
 )
 
 /** Why a day of the test counts or not. */
@@ -131,6 +140,8 @@ fun evaluateExperiment(
         over = experiment.isOver(today),
         verdict = verdict,
         dietChanges = if (reference == null) emptyList() else dietChanges(diary, reference, groupIds, leftOut, beforeDays, duringDays),
+        reintroAllowed = reference != null && reintroAllowed(experiment, reference),
+        reintro = experiment.reintroStartDay?.let { start -> evaluateReintro(experiment, start, during, usable, strongest, diary, leftOut, today) },
         beforeDaily = ((experiment.startDay - experiment.days) until experiment.startDay).map { day ->
             val counted = day in usable
             TestDay((day - experiment.startDay).toInt(), if (counted) TestDayStatus.COUNTED else TestDayStatus.NOT_COUNTED, if (counted) strongest[day] ?: 0 else null)
@@ -201,4 +212,77 @@ private fun dietChanges(
             duringTotal = duringDays.size,
         )
     }.filter { kotlin.math.abs(it.beforeShare - it.duringShare) >= DIET_CHANGE }
+}
+
+enum class ReintroVerdict {
+    /** Fewer than [MIN_COUNTED_DAYS] counted days yet. */
+    TOO_FEW_DAYS,
+
+    /** Eaten on fewer than [MIN_REINTRO_EATEN] days: the phase says nothing. */
+    NOT_EATEN,
+
+    /** Complaints clearly back: a strong hint. */
+    BACK,
+    NOT_BACK,
+}
+
+/** Third phase: the days with the food again, compared with the days without it. */
+data class ReintroResult(
+    val stats: PeriodStats,
+    val eatenDays: Int,
+    val dayNumber: Int,
+    val over: Boolean,
+    val verdict: ReintroVerdict,
+    val daily: List<TestDay>,
+)
+
+/** It has to be eaten on a few days for the phase to say anything. */
+const val MIN_REINTRO_EATEN = 3
+
+/**
+ * User 26.11.2026: after a clear improvement the app offers to eat it again - but never for an EU-14 allergen, a
+ * cross-reaction or a known allergy: there a reaction can be dangerous, that belongs to a doctor.
+ */
+fun reintroAllowed(experiment: Experiment, reference: ReferenceData): Boolean {
+    val involved = experiment.propertyId?.let { setOf(it) }
+        ?: reference.ingredients.firstOrNull { it.id == experiment.ingredientId }?.propertyIds.orEmpty()
+    val allergens = reference.properties.filter { it.allergen }.map { it.id }.toSet()
+    return involved.none { it in allergens || it in reference.knownAllergyPropertyIds }
+}
+
+private fun evaluateReintro(
+    experiment: Experiment,
+    start: Long,
+    during: PeriodStats,
+    usable: Set<Long>,
+    strongest: Map<Long, Int>,
+    diary: DiaryData,
+    leftOut: (MealItem) -> Boolean,
+    today: Long,
+): ReintroResult {
+    val last = start + Experiment.REINTRO_DAYS - 1
+    val end = minOf(last, today)
+    val days = usable.filter { it in start..end }
+    val eatenOn = diary.meals
+        .filter { meal -> meal.items.any(leftOut) }
+        .map { localEpochDay(it.eatenAt, it.tzOffsetMin) }
+        .filter { it in start..end }
+        .toSet()
+    val stats = PeriodStats(days.size, days.count { it in strongest }, days.sumOf { strongest[it] ?: 0 })
+    val verdict = when {
+        stats.days < MIN_COUNTED_DAYS -> ReintroVerdict.TOO_FEW_DAYS
+        eatenOn.size < MIN_REINTRO_EATEN -> ReintroVerdict.NOT_EATEN
+        stats.meanStrength >= during.meanStrength + CLEAR_DIFFERENCE -> ReintroVerdict.BACK
+        else -> ReintroVerdict.NOT_BACK
+    }
+    return ReintroResult(
+        stats = stats,
+        eatenDays = eatenOn.size,
+        dayNumber = (end - start + 1).toInt().coerceIn(0, Experiment.REINTRO_DAYS),
+        over = today > last,
+        verdict = verdict,
+        daily = (start..end).map { day ->
+            TestDay((day - start + 1).toInt(), if (day in usable) TestDayStatus.COUNTED else TestDayStatus.NOT_COUNTED, if (day in usable) strongest[day] ?: 0 else null)
+        },
+    )
 }

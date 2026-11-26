@@ -49,11 +49,12 @@ class UserDefaultsSettingsStore : SettingsStore {
             days = defaults.integerForKey(KEY_EXP_DAYS).toInt(),
             stoppedDay = if (defaults.objectForKey(KEY_EXP_STOPPED) == null) null else defaults.integerForKey(KEY_EXP_STOPPED),
             propertyId = if (defaults.objectForKey(KEY_EXP_PROPERTY) == null) null else defaults.integerForKey(KEY_EXP_PROPERTY),
+            reintroStartDay = if (defaults.objectForKey(KEY_EXP_REINTRO) == null) null else defaults.integerForKey(KEY_EXP_REINTRO),
         )
 
     override fun saveExperiment(experiment: Experiment?) {
         if (experiment == null) {
-            listOf(KEY_EXP_INGREDIENT, KEY_EXP_START, KEY_EXP_DAYS, KEY_EXP_STOPPED, KEY_EXP_PROPERTY).forEach { defaults.removeObjectForKey(it) }
+            listOf(KEY_EXP_INGREDIENT, KEY_EXP_START, KEY_EXP_DAYS, KEY_EXP_STOPPED, KEY_EXP_PROPERTY, KEY_EXP_REINTRO).forEach { defaults.removeObjectForKey(it) }
             return
         }
         defaults.setInteger(experiment.ingredientId, KEY_EXP_INGREDIENT)
@@ -61,6 +62,7 @@ class UserDefaultsSettingsStore : SettingsStore {
         defaults.setInteger(experiment.days.toLong(), KEY_EXP_DAYS)
         experiment.stoppedDay?.let { defaults.setInteger(it, KEY_EXP_STOPPED) } ?: defaults.removeObjectForKey(KEY_EXP_STOPPED)
         experiment.propertyId?.let { defaults.setInteger(it, KEY_EXP_PROPERTY) } ?: defaults.removeObjectForKey(KEY_EXP_PROPERTY)
+        experiment.reintroStartDay?.let { defaults.setInteger(it, KEY_EXP_REINTRO) } ?: defaults.removeObjectForKey(KEY_EXP_REINTRO)
     }
 
     private companion object {
@@ -70,6 +72,7 @@ class UserDefaultsSettingsStore : SettingsStore {
         const val KEY_EXP_DAYS = "experiment_days"
         const val KEY_EXP_STOPPED = "experiment_stopped"
         const val KEY_EXP_PROPERTY = "experiment_property"
+        const val KEY_EXP_REINTRO = "experiment_reintro"
         const val KEY_THEME = "theme_mode"
         const val KEY_ENABLED = "reminder_enabled"
         const val KEY_HOUR = "reminder_hour"

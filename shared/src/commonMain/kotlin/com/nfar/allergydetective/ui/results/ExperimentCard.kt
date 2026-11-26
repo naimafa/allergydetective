@@ -56,6 +56,55 @@ import allergydetective.shared.generated.resources.experiment_diet_hint
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.displayName
 import androidx.compose.foundation.layout.Arrangement
+import allergydetective.shared.generated.resources.reintro_running
+import allergydetective.shared.generated.resources.reintro_col
+import allergydetective.shared.generated.resources.reintro_hint
+import allergydetective.shared.generated.resources.reintro_title_not_eaten
+import allergydetective.shared.generated.resources.reintro_not_eaten
+import allergydetective.shared.generated.resources.reintro_title_back
+import allergydetective.shared.generated.resources.reintro_back
+import allergydetective.shared.generated.resources.reintro_title_not_back
+import allergydetective.shared.generated.resources.reintro_not_back
+import allergydetective.shared.generated.resources.reintro_start
+import allergydetective.shared.generated.resources.reintro_pill_ok
+import allergydetective.shared.generated.resources.reintro_pill_doctor
+import allergydetective.shared.generated.resources.experiment_title_too_few
+import allergydetective.shared.generated.resources.experiment_title_less
+import allergydetective.shared.generated.resources.experiment_title_similar
+import allergydetective.shared.generated.resources.experiment_title_more
+import allergydetective.shared.generated.resources.experiment_box_complaints
+import allergydetective.shared.generated.resources.experiment_mean_of_five
+import allergydetective.shared.generated.resources.experiment_next_step
+import allergydetective.shared.generated.resources.experiment_step_leave_out
+import allergydetective.shared.generated.resources.experiment_step_compare
+import allergydetective.shared.generated.resources.experiment_step_reintro
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.TrendingDown
+import androidx.compose.material.icons.automirrored.outlined.TrendingFlat
+import androidx.compose.material.icons.automirrored.outlined.TrendingUp
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.HourglassEmpty
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material3.Icon
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import com.nfar.allergydetective.domain.experiment.MIN_REINTRO_EATEN
+import com.nfar.allergydetective.domain.experiment.PeriodStats
+import com.nfar.allergydetective.domain.experiment.ReintroVerdict
+import com.nfar.allergydetective.ui.theme.AppColors
+import com.nfar.allergydetective.ui.theme.AppFonts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -105,15 +154,26 @@ fun ExperimentCard(viewModel: ExperimentViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { viewModel.refresh() }
     if (state.loading) return
-    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer), modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(stringResource(Res.string.experiment_title), style = MaterialTheme.typography.titleMedium)
+    val home = AppColors.extra.home
+    // User 26.11.2026: in the style of the sketch - cream card, Playfair title, before in coral, without in green.
+    Card(
+        colors = CardDefaults.cardColors(containerColor = home.card, contentColor = home.ink),
+        border = BorderStroke(1.dp, home.cardBorder),
+        shape = RoundedCornerShape(24.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(
+                stringResource(Res.string.experiment_title),
+                style = MaterialTheme.typography.headlineSmall.copy(fontFamily = AppFonts.playfair, fontWeight = FontWeight.SemiBold, fontSize = 24.sp, lineHeight = 30.sp),
+                color = home.ink,
+            )
             val experiment = state.experiment
             val result = state.result
             val name = state.group?.let { displayName(NamePrefix.PROPERTY, it.key) } ?: state.ingredient?.let { ingredientName(it) }
             if (experiment == null || result == null || name == null) {
                 Text(stringResource(Res.string.experiment_intro), style = MaterialTheme.typography.bodyMedium)
-                Button(onClick = viewModel::onOpenSetup, shape = CircleShape, modifier = Modifier.heightIn(min = 48.dp)) {
+                Button(onClick = viewModel::onOpenSetup, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
                     Text(stringResource(Res.string.experiment_start))
                 }
             } else {
@@ -126,46 +186,34 @@ fun ExperimentCard(viewModel: ExperimentViewModel = koinViewModel()) {
 
 @Composable
 private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name: String, viewModel: ExperimentViewModel) {
-    val muted = MaterialTheme.colorScheme.onSurfaceVariant
-    if (result.over) {
-        Text(stringResource(Res.string.experiment_over, name), style = MaterialTheme.typography.titleSmall)
+    val home = AppColors.extra.home
+    val muted = home.inkSoft
+    val reintro = result.reintro
+    // Phase line with progress: the reintroduction once it runs, else the test.
+    when {
+        reintro != null -> PhaseLine(
+            stringResource(Res.string.reintro_running, name, reintro.dayNumber, Experiment.REINTRO_DAYS),
+            if (reintro.over) null else reintro.dayNumber.toFloat() / Experiment.REINTRO_DAYS,
+        )
+        result.over -> PhaseLine(stringResource(Res.string.experiment_over, name), null)
+        else -> PhaseLine(stringResource(Res.string.experiment_running, name, result.dayNumber, experiment.days), result.dayNumber.toFloat() / experiment.days)
+    }
+    // Two boxes and the bars: before | without (and, in the third phase, without | with again).
+    if (reintro == null) {
+        CompareBoxes(stringResource(Res.string.experiment_col_before), result.before, home.heart, stringResource(Res.string.experiment_col_without), result.during, home.accent)
     } else {
-        Text(stringResource(Res.string.experiment_running, name, result.dayNumber, experiment.days), style = MaterialTheme.typography.titleSmall)
-        LinearProgressIndicator(progress = { result.dayNumber.toFloat() / experiment.days }, modifier = Modifier.fillMaxWidth())
+        CompareBoxes(stringResource(Res.string.experiment_col_without), result.during, home.accent, stringResource(Res.string.reintro_col), reintro.stats, home.heart)
     }
-    // User 25.11.2026: "strukturierter" - a small table before | without, with the mean strength per day.
-    val before = result.before
-    val during = result.during
-    val rows = listOf(
-        Triple(stringResource(Res.string.experiment_row_days), "${before.days}", "${during.days}"),
-        Triple(stringResource(Res.string.experiment_row_complaints), "${before.complaintDays}", "${during.complaintDays}"),
-        Triple(stringResource(Res.string.experiment_row_strength), strength(before.meanStrength, before.days), strength(during.meanStrength, during.days)),
-    )
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Row {
-            Text("", modifier = Modifier.weight(1.4f))
-            Text(stringResource(Res.string.experiment_col_before), style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
-            Text(stringResource(Res.string.experiment_col_without), style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
-        }
-        rows.forEach { (label, b, d) ->
-            Row {
-                Text(label, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1.4f))
-                Text(b, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-                Text(d, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
-            }
-        }
-    }
-    // User 26.11.2026: "Ohne 0" looked wrong while the first days had complaints - say which days do not count yet.
     if (!result.over) {
         Text(stringResource(Res.string.experiment_not_yet, WASHOUT_DAYS), style = MaterialTheme.typography.bodySmall, color = muted)
     }
-    if (result.daily.isNotEmpty()) {
+    if (result.daily.isNotEmpty() && reintro == null) {
         Text(stringResource(Res.string.experiment_course), style = MaterialTheme.typography.titleSmall)
         CourseChart(result, experiment.days)
         Text(stringResource(Res.string.experiment_course_legend), style = MaterialTheme.typography.bodySmall, color = muted)
     }
     // User 26.11.2026: something else eaten much more or less often may be the reason, not the left-out food.
-    if (result.dietChanges.isNotEmpty()) {
+    if (result.dietChanges.isNotEmpty() && reintro == null) {
         Text(stringResource(Res.string.experiment_diet_title), style = MaterialTheme.typography.titleSmall)
         result.dietChanges.forEach { change ->
             val group = ExperimentViewModel.GROUPS.firstOrNull { it.propertyId == change.propertyId } ?: return@forEach
@@ -180,21 +228,203 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
         }
         Text(stringResource(Res.string.experiment_diet_hint), style = MaterialTheme.typography.bodySmall, color = muted)
     }
-    if (result.eatenDays > 0) {
+    if (result.eatenDays > 0 && reintro == null) {
         Text(stringResource(Res.string.experiment_eaten, name, result.eatenDays), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
     }
-    val verdict = when (result.verdict) {
-        ExperimentVerdict.TOO_FEW_DAYS -> stringResource(Res.string.experiment_too_few)
-        ExperimentVerdict.LESS -> stringResource(Res.string.experiment_less, name)
-        ExperimentVerdict.SIMILAR -> stringResource(Res.string.experiment_similar, name)
-        ExperimentVerdict.MORE -> stringResource(Res.string.experiment_more, name)
-    }
-    Text(verdict, style = MaterialTheme.typography.bodyMedium)
-    Text(stringResource(Res.string.experiment_rules), style = MaterialTheme.typography.bodySmall, color = muted)
-    if (result.over) {
-        Button(onClick = viewModel::onNew, shape = CircleShape, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(Res.string.experiment_new)) }
+    if (reintro == null) {
+        when (result.verdict) {
+            ExperimentVerdict.TOO_FEW_DAYS -> VerdictBox(Icons.Outlined.HourglassEmpty, stringResource(Res.string.experiment_title_too_few), stringResource(Res.string.experiment_too_few))
+            ExperimentVerdict.LESS -> VerdictBox(Icons.AutoMirrored.Outlined.TrendingDown, stringResource(Res.string.experiment_title_less), stringResource(Res.string.experiment_less, name))
+            ExperimentVerdict.SIMILAR -> VerdictBox(Icons.AutoMirrored.Outlined.TrendingFlat, stringResource(Res.string.experiment_title_similar), stringResource(Res.string.experiment_similar, name))
+            ExperimentVerdict.MORE -> VerdictBox(Icons.AutoMirrored.Outlined.TrendingUp, stringResource(Res.string.experiment_title_more), stringResource(Res.string.experiment_more, name))
+        }
     } else {
-        OutlinedButton(onClick = viewModel::onStop, shape = CircleShape, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(Res.string.experiment_stop)) }
+        when (reintro.verdict) {
+            ReintroVerdict.TOO_FEW_DAYS -> VerdictBox(Icons.Outlined.HourglassEmpty, stringResource(Res.string.experiment_title_too_few), stringResource(Res.string.reintro_hint, name))
+            ReintroVerdict.NOT_EATEN -> VerdictBox(Icons.Outlined.Restaurant, stringResource(Res.string.reintro_title_not_eaten), stringResource(Res.string.reintro_not_eaten, name, MIN_REINTRO_EATEN))
+            ReintroVerdict.BACK -> VerdictBox(Icons.AutoMirrored.Outlined.TrendingUp, stringResource(Res.string.reintro_title_back), stringResource(Res.string.reintro_back, name))
+            ReintroVerdict.NOT_BACK -> VerdictBox(Icons.AutoMirrored.Outlined.TrendingFlat, stringResource(Res.string.reintro_title_not_back), stringResource(Res.string.reintro_not_back, name))
+        }
+    }
+    NextSteps(result, name)
+    Text(stringResource(Res.string.experiment_rules), style = MaterialTheme.typography.bodySmall, color = muted)
+    val canReintro = result.over && reintro == null && result.verdict == ExperimentVerdict.LESS && result.reintroAllowed
+    if (canReintro) {
+        Button(onClick = viewModel::onStartReintro, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
+            Text(stringResource(Res.string.reintro_start, name))
+        }
+    }
+    when {
+        reintro != null && !reintro.over -> OutlinedButton(onClick = viewModel::onNew, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+            Text(stringResource(Res.string.experiment_stop))
+        }
+        result.over -> {
+            val modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+            if (canReintro) {
+                OutlinedButton(onClick = viewModel::onNew, shape = CircleShape, modifier = modifier) { Text(stringResource(Res.string.experiment_new)) }
+            } else {
+                Button(onClick = viewModel::onNew, shape = CircleShape, modifier = modifier) { Text(stringResource(Res.string.experiment_new)) }
+            }
+        }
+        else -> OutlinedButton(onClick = viewModel::onStop, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+            Text(stringResource(Res.string.experiment_stop))
+        }
+    }
+}
+
+@Composable
+private fun PhaseLine(text: String, progress: Float?) {
+    val home = AppColors.extra.home
+    Text(text, style = MaterialTheme.typography.titleMedium, color = home.ink)
+    if (progress != null) {
+        LinearProgressIndicator(
+            progress = { progress },
+            color = home.accent,
+            trackColor = home.progressTrack,
+            strokeCap = StrokeCap.Round,
+            modifier = Modifier.fillMaxWidth().height(8.dp),
+        )
+    }
+}
+
+/** Sketch 26.11.2026: two boxes with a coloured header, then one bar each for the mean strength (0-5). */
+@Composable
+private fun CompareBoxes(leftLabel: String, left: PeriodStats, leftColor: Color, rightLabel: String, right: PeriodStats, rightColor: Color) {
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+        StatBox(leftLabel, left, leftColor, Modifier.weight(1f).fillMaxHeight())
+        StatBox(rightLabel, right, rightColor, Modifier.weight(1f).fillMaxHeight())
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        MeanBar(leftLabel, left, leftColor)
+        MeanBar(rightLabel, right, rightColor)
+    }
+}
+
+@Composable
+private fun StatBox(label: String, stats: PeriodStats, color: Color, modifier: Modifier) {
+    val home = AppColors.extra.home
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(color.copy(alpha = 0.10f))
+            .border(1.dp, color.copy(alpha = 0.25f), RoundedCornerShape(16.dp)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            label,
+            style = MaterialTheme.typography.titleSmall,
+            color = home.ink,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().background(color.copy(alpha = 0.28f)).padding(horizontal = 8.dp, vertical = 6.dp),
+        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)) {
+            Text(
+                stringResource(Res.string.experiment_days_n, stats.days),
+                style = MaterialTheme.typography.titleLarge.copy(fontFamily = AppFonts.playfair, fontWeight = FontWeight.SemiBold, fontSize = 22.sp, lineHeight = 28.sp),
+                color = home.ink,
+            )
+            Text(
+                stringResource(Res.string.experiment_box_complaints, stats.complaintDays),
+                style = MaterialTheme.typography.bodySmall,
+                color = home.inkSoft,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Composable
+private fun MeanBar(label: String, stats: PeriodStats, color: Color) {
+    val home = AppColors.extra.home
+    val value = if (stats.days == 0) null else stats.meanStrength
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Text(label, style = MaterialTheme.typography.bodySmall, color = home.inkSoft, modifier = Modifier.weight(1f))
+            Text(stringResource(Res.string.experiment_mean_of_five, strength(stats.meanStrength, stats.days)), style = MaterialTheme.typography.labelLarge, color = home.ink)
+        }
+        Box(modifier = Modifier.fillMaxWidth().height(14.dp).clip(CircleShape).background(home.progressTrack)) {
+            if (value != null && value > 0) {
+                Box(Modifier.fillMaxWidth((value / 5.0).toFloat().coerceIn(0.03f, 1f)).fillMaxHeight().clip(CircleShape).background(color))
+            }
+        }
+    }
+}
+
+/** Sage box with an icon in a circle, like "Erste Verbesserung" in the sketch. */
+@Composable
+private fun VerdictBox(icon: ImageVector, title: String, text: String) {
+    val home = AppColors.extra.home
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        verticalAlignment = Alignment.Top,
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(home.todayCard).padding(14.dp),
+    ) {
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.size(48.dp).clip(CircleShape).background(home.accent.copy(alpha = 0.15f))) {
+            Icon(icon, contentDescription = null, tint = home.accent, modifier = Modifier.size(28.dp))
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.weight(1f)) {
+            Text(
+                title,
+                style = MaterialTheme.typography.titleLarge.copy(fontFamily = AppFonts.playfair, fontWeight = FontWeight.SemiBold),
+                color = home.ink,
+            )
+            Text(text, style = MaterialTheme.typography.bodyMedium, color = home.ink)
+        }
+    }
+}
+
+/**
+ * "Nächster Schritt" from the sketch: leave out, compare, eat again. The third step says whether the app may guide it
+ * (user 26.11.2026: never for allergens or known allergies).
+ */
+@Composable
+private fun NextSteps(result: ExperimentResult, name: String) {
+    val home = AppColors.extra.home
+    val reintro = result.reintro
+    val current = when {
+        reintro != null -> 3
+        result.over -> 2
+        else -> 1
+    }
+    Text(
+        stringResource(Res.string.experiment_next_step),
+        style = MaterialTheme.typography.titleLarge.copy(fontFamily = AppFonts.playfair, fontWeight = FontWeight.SemiBold),
+        color = home.ink,
+    )
+    val steps = listOf(
+        stringResource(Res.string.experiment_step_leave_out, name),
+        stringResource(Res.string.experiment_step_compare),
+        stringResource(Res.string.experiment_step_reintro, name),
+    )
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        steps.forEachIndexed { i, step ->
+            val number = i + 1
+            val done = number < current || (number == 3 && reintro?.over == true)
+            val active = number == current && !done
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.size(30.dp).clip(CircleShape)
+                        .background(if (done || active) home.accent else home.progressTrack),
+                ) {
+                    if (done) {
+                        Icon(Icons.Outlined.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                    } else {
+                        Text("$number", style = MaterialTheme.typography.labelLarge, color = if (active) Color.White else home.inkSoft)
+                    }
+                }
+                Text(step, style = if (active) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium, color = if (done) home.inkSoft else home.ink)
+            }
+        }
+    }
+    val pill = if (result.reintroAllowed) stringResource(Res.string.reintro_pill_ok) else stringResource(Res.string.reintro_pill_doctor, name)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(home.heart.copy(alpha = 0.14f)).padding(horizontal = 12.dp, vertical = 10.dp),
+    ) {
+        Icon(Icons.Outlined.Info, contentDescription = null, tint = home.heart, modifier = Modifier.size(22.dp))
+        Text(pill, style = MaterialTheme.typography.bodySmall, color = home.ink)
     }
 }
 
@@ -318,12 +548,12 @@ private fun GroupTile(group: TestGroup, selected: Boolean, onClick: () -> Unit, 
 @Composable
 private fun CourseChart(result: ExperimentResult, plannedDays: Int) {
     val colors = MaterialTheme.colorScheme
-    val counted = colors.primary
+    val counted = AppColors.extra.home.accent
     val faint = colors.onSurfaceVariant.copy(alpha = 0.35f)
     val eaten = colors.error
     val grid = colors.outlineVariant
     val beforeMean = if (result.before.days == 0) null else result.before.meanStrength
-    val before = colors.tertiary
+    val before = AppColors.extra.home.heart
     val beforeCount = result.beforeDaily.size
     val byNumber = (result.beforeDaily + result.daily).associateBy { it.number }
     Canvas(modifier = Modifier.fillMaxWidth().height(110.dp)) {

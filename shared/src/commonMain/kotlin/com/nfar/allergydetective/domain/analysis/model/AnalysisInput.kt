@@ -34,6 +34,8 @@ data class TriggerProperty(
     val heatLabile: Boolean = false,
     /** Gluten: not counted for an item eaten in its gluten-free version (user 25.11.2026). */
     val gluten: Boolean = false,
+    /** EU-14 allergen or a cross-reaction: never reintroduced without a doctor (user 26.11.2026). */
+    val allergen: Boolean = false,
 )
 
 data class IngredientRef(val id: Long, val propertyIds: Set<Long>)

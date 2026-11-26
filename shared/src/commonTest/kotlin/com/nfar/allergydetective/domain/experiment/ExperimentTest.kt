@@ -182,4 +182,40 @@ class ExperimentTest {
 
         assertEquals(glutenId, result.dietChanges.single().propertyId)
     }
+
+    @Test
+    fun complaintsBackWhenEatenAgain() {
+        // No complaints without cheese (days 12-19), eaten again from day 20: complaints come back.
+        val test = Experiment(cheese, startDay = 10, days = 10, reintroStartDay = 20)
+        val result = evaluateExperiment(test, diary(26, complaints = (20..26).toSet(), cheeseDays = (20..26).toSet()), today = 27)
+
+        assertEquals(PeriodStats(days = 8, complaintDays = 0, strengthSum = 0), result.during)
+        val reintro = result.reintro!!
+        assertEquals(ReintroVerdict.BACK, reintro.verdict)
+        assertEquals(7, reintro.eatenDays)
+        assertTrue(reintro.over)
+    }
+
+    @Test
+    fun eatenTooRarelyAgainSaysNothing() {
+        val test = Experiment(cheese, startDay = 10, days = 10, reintroStartDay = 20)
+        val result = evaluateExperiment(test, diary(26, complaints = emptySet(), cheeseDays = setOf(21)), today = 27)
+
+        assertEquals(ReintroVerdict.NOT_EATEN, result.reintro!!.verdict)
+    }
+
+    @Test
+    fun noGuidedReintroductionForAllergens() {
+        val refWithAllergen = reference.copy(
+            properties = listOf(
+                TriggerProperty(milkProtein, emptyList(), emptySet(), allergen = true),
+                TriggerProperty(glutenId, emptyList(), emptySet(), gluten = true),
+            ),
+        )
+        assertFalse(reintroAllowed(Experiment(0, 10, 10, propertyId = milkProtein), refWithAllergen))
+        assertFalse(reintroAllowed(Experiment(cheese, 10, 10), refWithAllergen))
+        assertTrue(reintroAllowed(Experiment(0, 10, 10, propertyId = glutenId), refWithAllergen))
+        // A known allergy from the profile blocks it, too.
+        assertFalse(reintroAllowed(Experiment(bread, 10, 10), refWithAllergen.copy(knownAllergyPropertyIds = setOf(glutenId))))
+    }
 }
