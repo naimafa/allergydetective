@@ -56,6 +56,8 @@ import allergydetective.shared.generated.resources.experiment_diet_hint
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.displayName
 import androidx.compose.foundation.layout.Arrangement
+import allergydetective.shared.generated.resources.home_progress_badge
+import androidx.compose.material3.Surface
 import allergydetective.shared.generated.resources.reintro_running
 import allergydetective.shared.generated.resources.reintro_col
 import allergydetective.shared.generated.resources.reintro_hint
@@ -191,12 +193,9 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
     val reintro = result.reintro
     // Phase line with progress: the reintroduction once it runs, else the test.
     when {
-        reintro != null -> PhaseLine(
-            stringResource(Res.string.reintro_running, name, reintro.dayNumber, Experiment.REINTRO_DAYS),
-            if (reintro.over) null else reintro.dayNumber.toFloat() / Experiment.REINTRO_DAYS,
-        )
-        result.over -> PhaseLine(stringResource(Res.string.experiment_over, name), null)
-        else -> PhaseLine(stringResource(Res.string.experiment_running, name, result.dayNumber, experiment.days), result.dayNumber.toFloat() / experiment.days)
+        reintro != null -> PhaseLine("${stringResource(Res.string.reintro_col)} $name", reintro.dayNumber, Experiment.REINTRO_DAYS, !reintro.over)
+        result.over -> PhaseLine(stringResource(Res.string.experiment_over, name), 0, 0, false)
+        else -> PhaseLine(stringResource(Res.string.experiment_focus, name), result.dayNumber, experiment.days, true)
     }
     // Two boxes and the bars: before | without (and, in the third phase, without | with again).
     if (reintro == null) {
@@ -273,12 +272,24 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
 }
 
 @Composable
-private fun PhaseLine(text: String, progress: Float?) {
+private fun PhaseLine(text: String, day: Int, total: Int, running: Boolean) {
     val home = AppColors.extra.home
-    Text(text, style = MaterialTheme.typography.titleMedium, color = home.ink)
-    if (progress != null) {
+    // Like "Dein Fortschritt" on the start screen: the day as a pill on the right, so the line does not wrap.
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text(text, style = MaterialTheme.typography.titleMedium, color = home.ink, modifier = Modifier.weight(1f))
+        if (running) {
+            Surface(shape = CircleShape, color = home.badge, contentColor = home.accent) {
+                Text(
+                    stringResource(Res.string.home_progress_badge, day, total),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                )
+            }
+        }
+    }
+    if (running) {
         LinearProgressIndicator(
-            progress = { progress },
+            progress = { day.toFloat() / total },
             color = home.accent,
             trackColor = home.progressTrack,
             strokeCap = StrokeCap.Round,
@@ -320,7 +331,8 @@ private fun StatBox(label: String, stats: PeriodStats, color: Color, modifier: M
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)) {
             Text(
                 stringResource(Res.string.experiment_days_n, stats.days),
-                style = MaterialTheme.typography.titleLarge.copy(fontFamily = AppFonts.playfair, fontWeight = FontWeight.SemiBold, fontSize = 22.sp, lineHeight = 28.sp),
+                // Inter, not Playfair: its old-style figures made the 0 look like an o.
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, fontSize = 22.sp, lineHeight = 28.sp),
                 color = home.ink,
             )
             Text(
@@ -340,7 +352,7 @@ private fun MeanBar(label: String, stats: PeriodStats, color: Color) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(label, style = MaterialTheme.typography.bodySmall, color = home.inkSoft, modifier = Modifier.weight(1f))
-            Text(stringResource(Res.string.experiment_mean_of_five, strength(stats.meanStrength, stats.days)), style = MaterialTheme.typography.labelLarge, color = home.ink)
+            Text(if (stats.days == 0) "–" else stringResource(Res.string.experiment_mean_of_five, strength(stats.meanStrength, stats.days)), style = MaterialTheme.typography.labelLarge, color = home.ink)
         }
         Box(modifier = Modifier.fillMaxWidth().height(14.dp).clip(CircleShape).background(home.progressTrack)) {
             if (value != null && value > 0) {
