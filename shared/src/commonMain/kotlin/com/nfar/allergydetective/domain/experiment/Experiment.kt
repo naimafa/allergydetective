@@ -2,6 +2,7 @@ package com.nfar.allergydetective.domain.experiment
 
 import com.nfar.allergydetective.domain.analysis.localEpochDay
 import com.nfar.allergydetective.domain.analysis.model.DiaryData
+import com.nfar.allergydetective.domain.analysis.model.DayCheck
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Preparation
 import com.nfar.allergydetective.domain.analysis.model.ReferenceData
@@ -75,6 +76,8 @@ data class ExperimentResult(
     val beforeDaily: List<TestDay> = emptyList(),
     /** Other groups eaten clearly more or less often during the test (user 26.11.2026). */
     val dietChanges: List<DietChange> = emptyList(),
+    /** Stress, sleep or day factors clearly different during the test (user 26.11.2026). */
+    val strainChanges: List<StrainChange> = emptyList(),
     /** Whether the app may guide eating it again: not for allergens or known allergies. */
     val reintroAllowed: Boolean = false,
     /** The third phase, once started. */
@@ -140,6 +143,7 @@ fun evaluateExperiment(
         over = experiment.isOver(today),
         verdict = verdict,
         dietChanges = if (reference == null) emptyList() else dietChanges(diary, reference, groupIds, leftOut, beforeDays, duringDays),
+        strainChanges = strainChanges(diary, beforeDays, duringDays),
         reintroAllowed = reference != null && reintroAllowed(experiment, reference),
         reintro = experiment.reintroStartDay?.let { start -> evaluateReintro(experiment, start, during, usable, strongest, diary, leftOut, today) },
         beforeDaily = ((experiment.startDay - experiment.days) until experiment.startDay).map { day ->
@@ -285,4 +289,61 @@ private fun evaluateReintro(
             TestDay((day - start + 1).toInt(), if (day in usable) TestDayStatus.COUNTED else TestDayStatus.NOT_COUNTED, if (day in usable) strongest[day] ?: 0 else null)
         },
     )
+}
+
+enum class StrainKind { STRESS, SLEEP_HOURS, SLEEP_QUALITY, FACTOR }
+
+/**
+ * A strain that was clearly different while the food was left out: the mean stress (1-5), sleep (hours) or sleep
+ * quality (1-5), or for a day factor ([factorId], e.g. menstruation) the number of days out of [beforeTotal] and
+ * [duringTotal] counted days.
+ */
+data class StrainChange(
+    val kind: StrainKind,
+    val before: Double,
+    val during: Double,
+    val factorId: Long? = null,
+    val beforeTotal: Int = 0,
+    val duringTotal: Int = 0,
+)
+
+/** Difference in mean stress, sleep hours or sleep quality that counts as clearly different. */
+const val STRAIN_DIFFERENCE = 1.0
+
+/** The day factor "sick": sick days are left out anyway. */
+private const val SICK_FACTOR_ID = 4L
+
+/**
+ * User 26.11.2026 ("ungewöhnliche Belastungen"): less stress or better sleep while leaving the food out can be the
+ * reason, too. Shown as a hint, the days still count - otherwise too few would be left.
+ */
+private fun strainChanges(diary: DiaryData, beforeDays: List<Long>, duringDays: List<Long>): List<StrainChange> {
+    if (beforeDays.size < MIN_COUNTED_DAYS || duringDays.size < MIN_COUNTED_DAYS) return emptyList()
+    val checks = diary.dayChecks.associateBy { it.epochDay }
+    fun mean(days: List<Long>, value: (DayCheck) -> Number?): Double? {
+        val values = days.mapNotNull { checks[it]?.let(value)?.toDouble() }
+        return if (values.size < MIN_COUNTED_DAYS) null else values.average()
+    }
+    val changes = mutableListOf<StrainChange>()
+    listOf<Pair<StrainKind, (DayCheck) -> Number?>>(
+        StrainKind.STRESS to { it.stress },
+        StrainKind.SLEEP_HOURS to { it.sleepHours },
+        StrainKind.SLEEP_QUALITY to { it.sleepQuality },
+    ).forEach { (kind, value) ->
+        val before = mean(beforeDays, value)
+        val during = mean(duringDays, value)
+        if (before != null && during != null && kotlin.math.abs(before - during) >= STRAIN_DIFFERENCE) {
+            changes += StrainChange(kind, before, during)
+        }
+    }
+    val factorDays = diary.dayFactors.filter { it.factorId != SICK_FACTOR_ID }.groupBy({ it.factorId }, { it.epochDay })
+    factorDays.forEach { (factorId, days) ->
+        val set = days.toSet()
+        val before = beforeDays.count { it in set }
+        val during = duringDays.count { it in set }
+        if (kotlin.math.abs(before.toDouble() / beforeDays.size - during.toDouble() / duringDays.size) >= DIET_CHANGE) {
+            changes += StrainChange(StrainKind.FACTOR, before.toDouble(), during.toDouble(), factorId, beforeDays.size, duringDays.size)
+        }
+    }
+    return changes
 }

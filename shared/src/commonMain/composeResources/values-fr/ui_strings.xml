@@ -120,6 +120,10 @@
     <string name="experiment_diet_less">%1$s : avant %2$d jours sur %3$d, pendant le test %4$d sur %5$d</string>
     <string name="experiment_diet_more">%1$s : avant %2$d jours sur %3$d, pendant le test %4$d sur %5$d (plus souvent)</string>
     <string name="experiment_diet_hint">Un tel changement peut aussi expliquer pourquoi tes symptômes ont changé.</string>
+    <string name="experiment_strain_title">Également différent pendant le test :</string>
+    <string name="experiment_strain_stress">Stress : avant Ø %1$s, pendant le test Ø %2$s</string>
+    <string name="experiment_strain_sleep">Sommeil : avant Ø %1$s h, pendant le test Ø %2$s h</string>
+    <string name="experiment_strain_sleep_quality">Qualité du sommeil : avant Ø %1$s, pendant le test Ø %2$s</string>
     <string name="results_why_too_few_days">Un schéma n’apparaît que lorsque quelque chose se répète. Pour cela, l’app compare tes jours entre eux et a besoin d’au moins %2$d jours clôturés. Pour l’instant, il y en a %1$d.</string>
     <string name="results_why_no_complaints">Tes jours clôturés n’ont pas eu de symptômes marqués. Sans eux, l’app n’a rien à chercher, et c’est une bonne nouvelle. Si quelque chose revient, note-le.</string>
     <string name="results_why_few_complaint_days">Jusqu’ici, tu as eu des symptômes un seul jour. On ne voit si un aliment en est la cause que lorsque les symptômes reviennent plus souvent et que l’app peut voir ce que ces jours ont en commun.</string>

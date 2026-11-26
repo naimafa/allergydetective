@@ -127,6 +127,10 @@
     <string name="experiment_diet_less">%1$s: قبل ذلك في %2$d من %3$d أيام، أثناء الاختبار في %4$d من %5$d</string>
     <string name="experiment_diet_more">%1$s: قبل ذلك في %2$d من %3$d أيام، أثناء الاختبار في %4$d من %5$d (أكثر)</string>
     <string name="experiment_diet_hint">قد يكون مثل هذا التغيير أيضًا سبب تغيّر أعراضك.</string>
+    <string name="experiment_strain_title">اختلف أيضًا أثناء الاختبار:</string>
+    <string name="experiment_strain_stress">التوتر: قبل Ø %1$s، أثناء الاختبار Ø %2$s</string>
+    <string name="experiment_strain_sleep">النوم: قبل Ø %1$s س، أثناء الاختبار Ø %2$s س</string>
+    <string name="experiment_strain_sleep_quality">جودة النوم: قبل Ø %1$s، أثناء الاختبار Ø %2$s</string>
     <string name="results_why_too_few_days">لا يظهر النمط إلا عندما يتكرر شيء ما. لذلك يقارن التطبيق أيامك ببعضها ويحتاج إلى %2$d يومًا مكتملًا على الأقل. حتى الآن لديك %1$d.</string>
     <string name="results_why_no_complaints">لم تكن هناك أعراض واضحة في أيامك المكتملة. بدونها لا يوجد ما يبحث عنه التطبيق، وهذا خبر جيد. إذا ظهر شيء مجددًا، سجّله.</string>
     <string name="results_why_few_complaint_days">حتى الآن كانت لديك أعراض في يوم واحد فقط. لا يتضح إن كان طعام ما وراءها إلا عندما تتكرر الأعراض ويرى التطبيق ما المشترك بين تلك الأيام.</string>

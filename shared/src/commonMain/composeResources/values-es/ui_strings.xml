@@ -119,6 +119,10 @@
     <string name="experiment_diet_less">%1$s: antes %2$d de %3$d días, durante la prueba %4$d de %5$d</string>
     <string name="experiment_diet_more">%1$s: antes %2$d de %3$d días, durante la prueba %4$d de %5$d (más a menudo)</string>
     <string name="experiment_diet_hint">Un cambio así también puede ser la razón de que tus molestias cambiaran.</string>
+    <string name="experiment_strain_title">También distinto durante la prueba:</string>
+    <string name="experiment_strain_stress">Estrés: antes Ø %1$s, durante la prueba Ø %2$s</string>
+    <string name="experiment_strain_sleep">Sueño: antes Ø %1$s h, durante la prueba Ø %2$s h</string>
+    <string name="experiment_strain_sleep_quality">Calidad del sueño: antes Ø %1$s, durante la prueba Ø %2$s</string>
     <string name="results_why_too_few_days">Un patrón solo aparece cuando algo se repite. Para verlo, la app compara tus días entre sí y necesita al menos %2$d días cerrados. Hasta ahora hay %1$d.</string>
     <string name="results_why_no_complaints">Tus días cerrados no tuvieron molestias claras. Sin ellas la app no tiene nada que buscar, y eso es una buena noticia. Si vuelve a aparecer algo, regístralo.</string>
     <string name="results_why_few_complaint_days">Hasta ahora tuviste molestias solo un día. Si un alimento está detrás solo se ve cuando las molestias aparecen más a menudo y la app puede ver qué tenían en común esos días.</string>
