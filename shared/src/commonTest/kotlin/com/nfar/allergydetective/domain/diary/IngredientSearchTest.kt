@@ -78,4 +78,13 @@ class IngredientSearchTest {
         assertEquals(null, search.matchedSynonym(WHITE_BREAD, "weiss"))
         assertEquals(null, search.matchedSynonym(WHOLEMEAL_BREAD, "sem"))
     }
+
+    @Test
+    fun turkishLettersAreFoundWithoutTheirMarks() {
+        // User 26.11.2026: app in Turkish; İ and ı must not break a word or block a match.
+        assertEquals("isirgan", normalizeForSearch("Isırgan"))
+        assertEquals("incir", normalizeForSearch("İncir"))
+        assertEquals("seker", normalizeForSearch("Şeker"))
+        assertEquals("yogurt", normalizeForSearch("Yoğurt"))
+    }
 }

@@ -299,7 +299,7 @@
     <string name="report_footer">Allergy Detective · أُنشئ في %1$s</string>
     <string name="language_title">اللغة</string>
     <string name="language_system">مثل الهاتف</string>
-    <string name="language_hint">الفرنسية والعربية ترجمتان جديدتان. إن بدا لك نص غير صحيح، أخبرنا.</string>
+    <string name="language_hint">الفرنسية والعربية والإسبانية والتركية ترجمات جديدة. إن بدا لك نص غير صحيح، أخبرنا.</string>
     <string name="goal_title">فترة التقييم</string>
     <string name="goal_hint">بعد كم يومًا مؤكدًا تنتهي المرحلة، مثلًا لتجنّب طعام معيّن.</string>
     <string name="goal_days">%1$d أيام</string>

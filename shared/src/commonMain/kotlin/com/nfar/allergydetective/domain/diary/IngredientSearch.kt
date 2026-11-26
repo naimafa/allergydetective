@@ -94,6 +94,11 @@ fun normalizeForSearch(text: String): String {
             in "ùúû" -> builder.append('u')
             'ç' -> builder.append('c')
             'ñ' -> builder.append('n')
+            // Turkish (26.11.2026): dotless i, s and g with cedilla / breve; 'İ'.lowercase() leaves a combining dot.
+            'ı' -> builder.append('i')
+            'ş' -> builder.append('s')
+            'ğ' -> builder.append('g')
+            '̇' -> Unit
             else -> builder.append(if (char.isLetterOrDigit()) char else ' ')
         }
     }

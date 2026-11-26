@@ -68,7 +68,7 @@ fun LanguageSection(controller: LanguageController = koinInject()) {
 /** The language shown when the phone has none of ours (the default resources are English). */
 private const val FALLBACK_LANGUAGE = "en"
 
-private val OWN_NAMES = mapOf("de" to "Deutsch", "en" to "English", "fr" to "Français", "ar" to "العربية")
+private val OWN_NAMES = mapOf("de" to "Deutsch", "en" to "English", "fr" to "Français", "es" to "Español", "tr" to "Türkçe", "ar" to "العربية")
 
 /**
  * Grouped profile (user 23.11.2026): the language as one line "Sprache · Wie Handy (Deutsch)" – it is rarely
