@@ -623,7 +623,10 @@ private fun DishCard(state: LogMealState, dish: ChosenDish, viewModel: LogMealVi
             Column(modifier = Modifier.padding(start = 12.dp, end = 4.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     nameArea(Modifier.weight(1f))
-                    PortionLine(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) })
+                    // User 26.11.2026: a dish of herbs only ("Kräutermischung") is taken by pinch and spoon, not by bite and glass.
+                    val dishItems = dish.items.filter { it.ingredientId !in dish.removed }
+                    val herbsOnly = dishItems.isNotEmpty() && dishItems.all { it.ingredientId in state.minorIngredientIds }
+                    PortionLine(dish.portion, { viewModel.onDishPortionChange(dish.favoriteId, it) }, smallAmounts = herbsOnly)
                     bin()
                 }
             }
