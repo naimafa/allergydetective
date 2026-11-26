@@ -145,4 +145,41 @@ class ExperimentTest {
         assertEquals(TestDay(-3, TestDayStatus.NOT_COUNTED, null), result.beforeDaily[2])
         assertEquals(TestDay(-1, TestDayStatus.COUNTED, 0), result.beforeDaily[4])
     }
+
+    private fun meal(day: Int, vararg items: MealItem) = Meal(day.toLong() * 100 + items.size, day * dayMs + 12 * 3_600_000L, 0, items.toList())
+
+    @Test
+    fun otherFoodEatenMuchLessIsReported() {
+        // Bread every day before, hardly during the cheese test: the change may come from the bread.
+        val test = Experiment(cheese, startDay = 10, days = 10)
+        val base = diary(19, complaints = emptySet())
+        val meals = (0..9).map { meal(it, MealItem(bread, Portion.MEDIUM)) } + meal(15, MealItem(bread, Portion.MEDIUM))
+        val result = evaluateExperiment(test, base.copy(meals = meals), today = 20, reference = reference, groupIds = listOf(milkProtein, glutenId))
+
+        assertEquals(listOf(DietChange(glutenId, beforeDays = 10, beforeTotal = 10, duringDays = 1, duringTotal = 8)), result.dietChanges)
+    }
+
+    @Test
+    fun whatTheLeftOutFoodCarriesIsNoChange() {
+        // Yoghurt before, none during a milk protein test: that is the test itself, not another change.
+        val test = Experiment(0, startDay = 10, days = 10, propertyId = milkProtein)
+        val meals = (0..9).map { meal(it, MealItem(yoghurt, Portion.MEDIUM), MealItem(bread, Portion.MEDIUM)) } +
+            (12..19).map { meal(it, MealItem(bread, Portion.MEDIUM)) }
+        val result = evaluateExperiment(
+            test, diary(19, complaints = emptySet()).copy(meals = meals), today = 20,
+            leftOut = leftOutMatcher(test, reference), reference = reference, groupIds = listOf(milkProtein, glutenId),
+        )
+
+        assertEquals(emptyList(), result.dietChanges)
+    }
+
+    @Test
+    fun glutenFreeBreadCountsAsLessGluten() {
+        val test = Experiment(cheese, startDay = 10, days = 10)
+        val meals = (0..9).map { meal(it, MealItem(bread, Portion.MEDIUM)) } +
+            (12..19).map { meal(it, MealItem(bread, Portion.MEDIUM, Preparation.GLUTEN_FREE)) }
+        val result = evaluateExperiment(test, diary(19, complaints = emptySet()).copy(meals = meals), today = 20, reference = reference, groupIds = listOf(glutenId))
+
+        assertEquals(glutenId, result.dietChanges.single().propertyId)
+    }
 }

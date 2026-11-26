@@ -68,6 +68,8 @@ data class ExperimentResult(
     val daily: List<TestDay> = emptyList(),
     /** The days before the test it is compared with, oldest first (number -N..-1; user 26.11.2026). */
     val beforeDaily: List<TestDay> = emptyList(),
+    /** Other groups eaten clearly more or less often during the test (user 26.11.2026). */
+    val dietChanges: List<DietChange> = emptyList(),
 )
 
 /** Why a day of the test counts or not. */
@@ -95,6 +97,9 @@ fun evaluateExperiment(
     diary: DiaryData,
     today: Long,
     leftOut: (MealItem) -> Boolean = { it.ingredientId == experiment.ingredientId },
+    /** For other changes in what was eaten: the groups to compare and which ingredients belong to them. */
+    reference: ReferenceData? = null,
+    groupIds: List<Long> = emptyList(),
 ): ExperimentResult {
     val usable = diary.dayChecks.filter { it.confirmed && !it.sick }.map { it.epochDay }.toSet()
     val strongest: Map<Long, Int> = diary.symptomEntries
@@ -125,6 +130,7 @@ fun evaluateExperiment(
         dayNumber = (end - experiment.startDay + 1).toInt().coerceIn(0, experiment.days),
         over = experiment.isOver(today),
         verdict = verdict,
+        dietChanges = if (reference == null) emptyList() else dietChanges(diary, reference, groupIds, leftOut, beforeDays, duringDays),
         beforeDaily = ((experiment.startDay - experiment.days) until experiment.startDay).map { day ->
             val counted = day in usable
             TestDay((day - experiment.startDay).toInt(), if (counted) TestDayStatus.COUNTED else TestDayStatus.NOT_COUNTED, if (counted) strongest[day] ?: 0 else null)
@@ -150,4 +156,49 @@ fun leftOutMatcher(experiment: Experiment, reference: ReferenceData): (MealItem)
     val members = reference.ingredients.filter { propertyId in it.propertyIds }.map { it.id }.toSet()
     val gluten = reference.properties.any { it.id == propertyId && it.gluten }
     return { item -> item.ingredientId in members && !(gluten && item.preparation == Preparation.GLUTEN_FREE) }
+}
+
+/** A group eaten on [beforeDays] of [beforeTotal] counted days before and on [duringDays] of [duringTotal] without. */
+data class DietChange(val propertyId: Long, val beforeDays: Int, val beforeTotal: Int, val duringDays: Int, val duringTotal: Int) {
+    val beforeShare: Double get() = beforeDays.toDouble() / beforeTotal
+    val duringShare: Double get() = duringDays.toDouble() / duringTotal
+}
+
+/** Difference in the share of days a group was eaten on (0 to 1) that counts as a change of diet. */
+const val DIET_CHANGE = 0.4
+
+/**
+ * User 26.11.2026 ("andere Veränderungen in der Ernährung"): if something else was also eaten much more or less often
+ * while the food was left out, that may be the reason for the change. What the left-out food itself carries does not
+ * count (no milk protein = less lactose, of course): only the other ingredients of a meal are looked at.
+ */
+private fun dietChanges(
+    diary: DiaryData,
+    reference: ReferenceData,
+    groupIds: List<Long>,
+    leftOut: (MealItem) -> Boolean,
+    beforeDays: List<Long>,
+    duringDays: List<Long>,
+): List<DietChange> {
+    if (beforeDays.size < MIN_COUNTED_DAYS || duringDays.size < MIN_COUNTED_DAYS) return emptyList()
+    val propertiesOf = reference.ingredients.associate { it.id to it.propertyIds }
+    val glutenIds = reference.properties.filter { it.gluten }.map { it.id }.toSet()
+    // Groups eaten per day, without the left-out items; a gluten-free version carries no gluten.
+    val groupsByDay: Map<Long, Set<Long>> = diary.meals
+        .groupBy { localEpochDay(it.eatenAt, it.tzOffsetMin) }
+        .mapValues { (_, meals) ->
+            meals.flatMap { it.items }.filterNot(leftOut).flatMap { item ->
+                val props = propertiesOf[item.ingredientId].orEmpty()
+                if (item.preparation == Preparation.GLUTEN_FREE) props - glutenIds else props
+            }.toSet()
+        }
+    return groupIds.map { id ->
+        DietChange(
+            propertyId = id,
+            beforeDays = beforeDays.count { id in groupsByDay[it].orEmpty() },
+            beforeTotal = beforeDays.size,
+            duringDays = duringDays.count { id in groupsByDay[it].orEmpty() },
+            duringTotal = duringDays.size,
+        )
+    }.filter { kotlin.math.abs(it.beforeShare - it.duringShare) >= DIET_CHANGE }
 }

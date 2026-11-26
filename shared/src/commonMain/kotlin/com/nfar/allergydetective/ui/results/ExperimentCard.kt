@@ -48,6 +48,11 @@ import androidx.compose.ui.unit.sp
 import com.nfar.allergydetective.domain.experiment.TestDayStatus
 import com.nfar.allergydetective.domain.experiment.WASHOUT_DAYS
 import allergydetective.shared.generated.resources.experiment_not_yet
+import allergydetective.shared.generated.resources.experiment_gluten_hint
+import allergydetective.shared.generated.resources.experiment_diet_title
+import allergydetective.shared.generated.resources.experiment_diet_less
+import allergydetective.shared.generated.resources.experiment_diet_more
+import allergydetective.shared.generated.resources.experiment_diet_hint
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.displayName
 import androidx.compose.foundation.layout.Arrangement
@@ -159,6 +164,22 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
         CourseChart(result, experiment.days)
         Text(stringResource(Res.string.experiment_course_legend), style = MaterialTheme.typography.bodySmall, color = muted)
     }
+    // User 26.11.2026: something else eaten much more or less often may be the reason, not the left-out food.
+    if (result.dietChanges.isNotEmpty()) {
+        Text(stringResource(Res.string.experiment_diet_title), style = MaterialTheme.typography.titleSmall)
+        result.dietChanges.forEach { change ->
+            val group = ExperimentViewModel.GROUPS.firstOrNull { it.propertyId == change.propertyId } ?: return@forEach
+            Text(
+                stringResource(
+                    if (change.duringShare < change.beforeShare) Res.string.experiment_diet_less else Res.string.experiment_diet_more,
+                    displayName(NamePrefix.PROPERTY, group.key),
+                    change.beforeDays, change.beforeTotal, change.duringDays, change.duringTotal,
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+        Text(stringResource(Res.string.experiment_diet_hint), style = MaterialTheme.typography.bodySmall, color = muted)
+    }
     if (result.eatenDays > 0) {
         Text(stringResource(Res.string.experiment_eaten, name, result.eatenDays), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
     }
@@ -198,6 +219,10 @@ private fun SetupDialog(setup: ExperimentSetup, groups: List<TestGroup>, suggest
                         }
                         if (pair.size == 1) Spacer(Modifier.weight(1f))
                     }
+                }
+                // Leaving out gluten before a coeliac test can make the test miss it (user 26.11.2026).
+                if (setup.chosenGroup?.key == "gluten") {
+                    Text(stringResource(Res.string.experiment_gluten_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
                 }
                 Text(stringResource(Res.string.experiment_or_single), style = MaterialTheme.typography.bodySmall)
                 chosen?.let { IngredientLine(it) }

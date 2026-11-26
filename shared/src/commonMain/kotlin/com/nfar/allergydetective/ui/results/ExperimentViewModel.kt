@@ -107,7 +107,7 @@ class ExperimentViewModel(
                     experiment = experiment,
                     ingredient = experiment?.let { e -> catalog.byId[e.ingredientId] },
                     group = experiment?.propertyId?.let { id -> GROUPS.firstOrNull { it.propertyId == id } },
-                    result = experiment?.let { e -> evaluateExperiment(e, diary, today, leftOutMatcher(e, input.reference)) },
+                    result = experiment?.let { e -> evaluateExperiment(e, diary, today, leftOutMatcher(e, input.reference), input.reference, GROUPS.map { it.propertyId }) },
                     suggestions = suggestions,
                     groups = groups,
                     today = today,
