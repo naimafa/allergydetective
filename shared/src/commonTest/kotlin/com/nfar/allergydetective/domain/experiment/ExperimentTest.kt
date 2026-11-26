@@ -2,6 +2,7 @@ package com.nfar.allergydetective.domain.experiment
 
 import com.nfar.allergydetective.domain.analysis.model.DayCheck
 import com.nfar.allergydetective.domain.analysis.model.DiaryData
+import com.nfar.allergydetective.domain.analysis.model.DayFactor
 import com.nfar.allergydetective.domain.analysis.model.IngredientRef
 import com.nfar.allergydetective.domain.analysis.model.Preparation
 import com.nfar.allergydetective.domain.analysis.model.ReferenceData
@@ -217,5 +218,42 @@ class ExperimentTest {
         assertTrue(reintroAllowed(Experiment(0, 10, 10, propertyId = glutenId), refWithAllergen))
         // A known allergy from the profile blocks it, too.
         assertFalse(reintroAllowed(Experiment(bread, 10, 10), refWithAllergen.copy(knownAllergyPropertyIds = setOf(glutenId))))
+    }
+
+    /** Every day finished, with [stress] and [sleep] per day. */
+    private fun diaryWith(last: Int, stress: (Int) -> Int?, sleep: (Int) -> Float? = { 7f }) = DiaryData(
+        meals = emptyList(),
+        symptomEntries = emptyList(),
+        dayChecks = (0..last).map { DayCheck(epochDay = it.toLong(), confirmed = true, sleepHours = sleep(it), sleepQuality = null, stress = stress(it)) },
+        dayFactors = emptyList(),
+    )
+
+    @Test
+    fun muchLessStressDuringTheTestIsReported() {
+        // User 26.11.2026: holidays during the test - stress 4 before, 2 without the food.
+        val test = Experiment(cheese, startDay = 10, days = 10)
+        val result = evaluateExperiment(test, diaryWith(19, stress = { if (it < 10) 4 else 2 }), today = 20)
+
+        assertEquals(listOf(StrainChange(StrainKind.STRESS, before = 4.0, during = 2.0)), result.strainChanges)
+    }
+
+    @Test
+    fun aSmallDifferenceAndMissingValuesSayNothing() {
+        val test = Experiment(cheese, startDay = 10, days = 10)
+        // Stress 3 vs 2.5 is not clearly different; sleep entered on only 3 days during the test.
+        val diary = diaryWith(19, stress = { if (it < 10) 3 else if (it % 2 == 0) 2 else 3 }, sleep = { if (it < 10 || it > 16) 6f else null })
+        val result = evaluateExperiment(test, diary, today = 20)
+
+        assertEquals(emptyList(), result.strainChanges)
+    }
+
+    @Test
+    fun aDayFactorOnManyMoreDaysIsReported() {
+        // Medication (factor 3) on every day of the test, never before; "sick" (4) does not count here.
+        val test = Experiment(cheese, startDay = 10, days = 10)
+        val factors = (12..19).map { DayFactor(it.toLong(), 3) } + (12..19).map { DayFactor(it.toLong(), 4) }
+        val result = evaluateExperiment(test, diaryWith(19, stress = { null }).copy(dayFactors = factors), today = 20)
+
+        assertEquals(listOf(StrainChange(StrainKind.FACTOR, before = 0.0, during = 8.0, factorId = 3, beforeTotal = 10, duringTotal = 8)), result.strainChanges)
     }
 }

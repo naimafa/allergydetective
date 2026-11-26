@@ -119,6 +119,10 @@
     <string name="experiment_diet_less">%1$s: önce %3$d günün %2$d gününde, test sırasında %5$d günün %4$d gününde</string>
     <string name="experiment_diet_more">%1$s: önce %3$d günün %2$d gününde, test sırasında %5$d günün %4$d gününde (daha sık)</string>
     <string name="experiment_diet_hint">Böyle bir değişiklik de şikâyetlerinin değişmesinin nedeni olabilir.</string>
+    <string name="experiment_strain_title">Test sırasında farklı olanlar:</string>
+    <string name="experiment_strain_stress">Stres: önce Ø %1$s, test sırasında Ø %2$s</string>
+    <string name="experiment_strain_sleep">Uyku: önce Ø %1$s sa, test sırasında Ø %2$s sa</string>
+    <string name="experiment_strain_sleep_quality">Uyku kalitesi: önce Ø %1$s, test sırasında Ø %2$s</string>
     <string name="results_why_too_few_days">Bir örüntü ancak bir şey tekrarlandığında görünür. Bunu görmek için uygulama günlerini birbiriyle karşılaştırır ve en az %2$d tamamlanmış güne ihtiyaç duyar. Şu ana kadar %1$d gün var.</string>
     <string name="results_why_no_complaints">Tamamlanmış günlerinde belirgin şikâyet yoktu. Şikâyet olmadan uygulamanın arayacağı bir şey yok, bu da iyi haber. Yeniden bir şey olursa kaydet.</string>
     <string name="results_why_few_complaint_days">Şu ana kadar yalnızca bir gün şikâyetin oldu. Arkasında bir yiyecek olup olmadığı ancak şikâyetler daha sık olunca ve uygulama o günlerin ortak noktasını görünce anlaşılır.</string>

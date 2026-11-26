@@ -56,6 +56,11 @@ import allergydetective.shared.generated.resources.experiment_diet_hint
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.displayName
 import androidx.compose.foundation.layout.Arrangement
+import allergydetective.shared.generated.resources.experiment_strain_title
+import allergydetective.shared.generated.resources.experiment_strain_stress
+import allergydetective.shared.generated.resources.experiment_strain_sleep
+import allergydetective.shared.generated.resources.experiment_strain_sleep_quality
+import com.nfar.allergydetective.domain.experiment.StrainKind
 import allergydetective.shared.generated.resources.experiment_legend_eaten
 import allergydetective.shared.generated.resources.experiment_legend_not_counted
 import allergydetective.shared.generated.resources.experiment_mean_line
@@ -242,6 +247,24 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
                 ),
                 style = MaterialTheme.typography.bodyMedium,
             )
+        }
+        Text(stringResource(Res.string.experiment_diet_hint), style = MaterialTheme.typography.bodySmall, color = muted)
+    }
+    // User 26.11.2026: less stress or better sleep during the test can be the reason as well.
+    if (result.strainChanges.isNotEmpty() && reintro == null) {
+        Text(stringResource(Res.string.experiment_strain_title), style = MaterialTheme.typography.titleSmall)
+        result.strainChanges.forEach { change ->
+            val text = when (change.kind) {
+                StrainKind.STRESS -> stringResource(Res.string.experiment_strain_stress, oneDecimal(change.before), oneDecimal(change.during))
+                StrainKind.SLEEP_HOURS -> stringResource(Res.string.experiment_strain_sleep, oneDecimal(change.before), oneDecimal(change.during))
+                StrainKind.SLEEP_QUALITY -> stringResource(Res.string.experiment_strain_sleep_quality, oneDecimal(change.before), oneDecimal(change.during))
+                StrainKind.FACTOR -> stringResource(
+                    Res.string.experiment_diet_less,
+                    displayName(NamePrefix.FACTOR, FACTOR_KEYS[change.factorId] ?: return@forEach),
+                    change.before.toInt(), change.beforeTotal, change.during.toInt(), change.duringTotal,
+                )
+            }
+            Text(text, style = MaterialTheme.typography.bodyMedium)
         }
         Text(stringResource(Res.string.experiment_diet_hint), style = MaterialTheme.typography.bodySmall, color = muted)
     }
@@ -748,3 +771,9 @@ private fun LegendItem(color: Color, label: String) {
         Text(label, style = MaterialTheme.typography.bodySmall, color = AppColors.extra.home.inkSoft)
     }
 }
+
+/** Keys of the day factors (lifestyle_factors.json); "sick" never shows here. */
+private val FACTOR_KEYS = mapOf(1L to "sport", 2L to "menstruation", 3L to "medication")
+
+/** One decimal with a comma, like the mean strength. */
+private fun oneDecimal(value: Double): String = (kotlin.math.round(value * 10) / 10.0).toString().replace('.', ',')

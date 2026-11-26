@@ -120,6 +120,10 @@
     <string name="experiment_diet_less">%1$s: vorher an %2$d von %3$d Tagen, während des Tests an %4$d von %5$d</string>
     <string name="experiment_diet_more">%1$s: vorher an %2$d von %3$d Tagen, während des Tests an %4$d von %5$d (öfter)</string>
     <string name="experiment_diet_hint">Auch so eine Veränderung kann der Grund sein, warum sich deine Beschwerden verändert haben.</string>
+    <string name="experiment_strain_title">Auch anders während des Tests:</string>
+    <string name="experiment_strain_stress">Stress: vorher Ø %1$s, während des Tests Ø %2$s</string>
+    <string name="experiment_strain_sleep">Schlaf: vorher Ø %1$s Std., während des Tests Ø %2$s Std.</string>
+    <string name="experiment_strain_sleep_quality">Schlafqualität: vorher Ø %1$s, während des Tests Ø %2$s</string>
     <string name="results_why_too_few_days">Ein Muster zeigt sich erst, wenn sich etwas wiederholt. Dafür vergleicht die App deine Tage miteinander und braucht mindestens %2$d abgeschlossene Tage. Bisher sind es %1$d.</string>
     <string name="results_why_no_complaints">An deinen abgeschlossenen Tagen gab es keine deutlichen Beschwerden. Ohne sie gibt es nichts, wonach die App suchen kann, und das ist eine gute Nachricht. Wenn wieder etwas auftritt, trag es ein.</string>
     <string name="results_why_few_complaint_days">Bisher gab es nur an einem Tag Beschwerden. Ob ein Lebensmittel dahintersteckt, zeigt sich erst, wenn Beschwerden öfter auftreten und die App sehen kann, was an diesen Tagen gleich war.</string>
