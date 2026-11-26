@@ -134,6 +134,8 @@ private fun ResultsContent(state: ResultsState, modifier: Modifier, onSetFocus: 
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
+        // User 25.11.2026: the Weglass-Test on top; with foods eaten every day it is the only way to check them.
+        item { ExperimentCard() }
         if (state.confirmedDays < ResultsViewModel.FIRST_EVALUATION_DAYS) {
             item {
                 InfoCard(

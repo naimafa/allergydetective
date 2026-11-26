@@ -31,6 +31,10 @@ interface SettingsStore {
     /** Symptom areas in the user's order (user 25.11.2026), group keys; empty = the app's order. */
     fun symptomGroupOrder(): List<String> = emptyList()
     fun saveSymptomGroupOrder(order: List<String>) = Unit
+
+    /** The current or last Weglass-Test (user 25.11.2026); null = none. */
+    fun experiment(): com.nfar.allergydetective.domain.experiment.Experiment? = null
+    fun saveExperiment(experiment: com.nfar.allergydetective.domain.experiment.Experiment?) = Unit
 }
 
 /**

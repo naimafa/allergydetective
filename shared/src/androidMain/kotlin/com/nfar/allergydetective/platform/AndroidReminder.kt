@@ -1,5 +1,6 @@
 package com.nfar.allergydetective.platform
 
+import com.nfar.allergydetective.domain.experiment.Experiment
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.reminder_channel
 import allergydetective.shared.generated.resources.reminder_text
@@ -85,8 +86,33 @@ class SharedPreferencesSettingsStore(context: Context) : SettingsStore {
         prefs.edit().putString(KEY_SYMPTOM_GROUPS, order.joinToString(",")).apply()
     }
 
+    override fun experiment(): Experiment? =
+        if (!prefs.contains(KEY_EXP_INGREDIENT)) null else Experiment(
+            ingredientId = prefs.getLong(KEY_EXP_INGREDIENT, 0),
+            startDay = prefs.getLong(KEY_EXP_START, 0),
+            days = prefs.getInt(KEY_EXP_DAYS, Experiment.DEFAULT_DAYS),
+            stoppedDay = if (prefs.contains(KEY_EXP_STOPPED)) prefs.getLong(KEY_EXP_STOPPED, 0) else null,
+        )
+
+    override fun saveExperiment(experiment: Experiment?) {
+        prefs.edit().apply {
+            if (experiment == null) {
+                remove(KEY_EXP_INGREDIENT); remove(KEY_EXP_START); remove(KEY_EXP_DAYS); remove(KEY_EXP_STOPPED)
+            } else {
+                putLong(KEY_EXP_INGREDIENT, experiment.ingredientId)
+                putLong(KEY_EXP_START, experiment.startDay)
+                putInt(KEY_EXP_DAYS, experiment.days)
+                if (experiment.stoppedDay == null) remove(KEY_EXP_STOPPED) else putLong(KEY_EXP_STOPPED, experiment.stoppedDay)
+            }
+        }.apply()
+    }
+
     private companion object {
         const val KEY_SYMPTOM_GROUPS = "symptom_group_order"
+        const val KEY_EXP_INGREDIENT = "experiment_ingredient"
+        const val KEY_EXP_START = "experiment_start"
+        const val KEY_EXP_DAYS = "experiment_days"
+        const val KEY_EXP_STOPPED = "experiment_stopped"
         const val KEY_THEME = "theme_mode"
         const val KEY_GOAL_DAYS = "goal_days"
         const val KEY_GOAL_FOCUS = "goal_focus"
