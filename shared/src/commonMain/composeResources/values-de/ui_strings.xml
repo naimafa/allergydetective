@@ -76,7 +76,7 @@
     <string name="experiment_running">Ohne %1$s · Tag %2$d von %3$d</string>
     <string name="experiment_over">Test beendet: ohne %1$s</string>
     <string name="experiment_eaten">%1$s trotzdem gegessen: an %2$d Tagen. Diese Tage zählen nicht.</string>
-    <string name="experiment_too_few">Noch zu wenige Tage zum Vergleichen: Es braucht mindestens 5 Tage vorher und 5 Tage ohne, ohne Krankheitstage.</string>
+    <string name="experiment_too_few">Es braucht mindestens 5 gezählte Tage vorher und 5 ohne, Krankheitstage nicht mitgerechnet.</string>
     <string name="experiment_stop">Test beenden</string>
     <string name="experiment_new">Neuen Test starten</string>
     <string name="experiment_groups">Eine ganze Gruppe weglassen:</string>
@@ -107,7 +107,7 @@
     <string name="reintro_title_not_back">Nicht deutlich zurück</string>
     <string name="reintro_not_back">Auch mit %1$s blieben deine Beschwerden ähnlich wie ohne. Die Verbesserung hatte vielleicht einen anderen Grund.</string>
     <string name="reintro_pill_ok">Nur wenn medizinisch vertretbar. Bei starken Beschwerden sofort aufhören.</string>
-    <string name="reintro_pill_doctor">%1$s kann eine Allergie auslösen: wieder essen nur nach Rücksprache mit dem Arzt. Das führt die App hier nicht.</string>
+    <string name="reintro_pill_doctor">Bei %1$s ist eine Allergie möglich: wieder essen nur nach Rücksprache mit dem Arzt. Diesen Schritt führt die App nicht.</string>
     <string name="experiment_gluten_hint">Wichtig: Wenn eine Zöliakie geklärt werden soll, erst testen lassen und danach Gluten weglassen. Ohne Gluten kann der Test sie übersehen.</string>
     <string name="experiment_diet_title">Auch anders gegessen:</string>
     <string name="experiment_diet_less">%1$s: vorher an %2$d von %3$d Tagen, während des Tests an %4$d von %5$d</string>

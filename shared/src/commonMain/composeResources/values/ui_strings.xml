@@ -76,7 +76,7 @@
     <string name="experiment_running">Without %1$s · day %2$d of %3$d</string>
     <string name="experiment_over">Test finished: without %1$s</string>
     <string name="experiment_eaten">%1$s eaten anyway: on %2$d days. These days do not count.</string>
-    <string name="experiment_too_few">Too few days to compare yet: it needs at least 5 days before and 5 days without, not counting sick days.</string>
+    <string name="experiment_too_few">At least 5 counted days before and 5 without are needed, sick days not included.</string>
     <string name="experiment_stop">End test</string>
     <string name="experiment_new">Start a new test</string>
     <string name="experiment_groups">Leave out a whole group:</string>
@@ -107,7 +107,7 @@
     <string name="reintro_title_not_back">Not clearly back</string>
     <string name="reintro_not_back">With %1$s your complaints stayed similar to the days without. The improvement may have had another reason.</string>
     <string name="reintro_pill_ok">Only if medically reasonable. Stop at once if complaints get strong.</string>
-    <string name="reintro_pill_doctor">%1$s can cause an allergy: eat it again only after talking to your doctor. The app does not guide this.</string>
+    <string name="reintro_pill_doctor">With %1$s an allergy is possible: eat it again only after talking to your doctor. The app does not guide this step.</string>
     <string name="experiment_gluten_hint">Important: if coeliac disease should be checked, get tested first and only then leave out gluten. Without gluten the test can miss it.</string>
     <string name="experiment_diet_title">Also changed in what you ate:</string>
     <string name="experiment_diet_less">%1$s: before on %2$d of %3$d days, during the test on %4$d of %5$d</string>

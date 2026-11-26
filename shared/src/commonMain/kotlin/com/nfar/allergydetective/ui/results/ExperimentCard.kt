@@ -56,6 +56,13 @@ import allergydetective.shared.generated.resources.experiment_diet_hint
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.displayName
 import androidx.compose.foundation.layout.Arrangement
+import allergydetective.shared.generated.resources.experiment_how
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import allergydetective.shared.generated.resources.home_progress_badge
 import androidx.compose.material3.Surface
 import allergydetective.shared.generated.resources.reintro_running
@@ -246,7 +253,7 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
         }
     }
     NextSteps(result, name)
-    Text(stringResource(Res.string.experiment_rules), style = MaterialTheme.typography.bodySmall, color = muted)
+    RulesToggle()
     val canReintro = result.over && reintro == null && result.verdict == ExperimentVerdict.LESS && result.reintroAllowed
     if (canReintro) {
         Button(onClick = viewModel::onStartReintro, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
@@ -366,22 +373,22 @@ private fun MeanBar(label: String, stats: PeriodStats, color: Color) {
 @Composable
 private fun VerdictBox(icon: ImageVector, title: String, text: String) {
     val home = AppColors.extra.home
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
-        verticalAlignment = Alignment.Top,
+    // Phone test 26.11.2026: the icon next to the title, so the text gets the full width.
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(home.todayCard).padding(14.dp),
     ) {
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.size(48.dp).clip(CircleShape).background(home.accent.copy(alpha = 0.15f))) {
-            Icon(icon, contentDescription = null, tint = home.accent, modifier = Modifier.size(28.dp))
-        }
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.weight(1f)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.size(36.dp).clip(CircleShape).background(home.accent.copy(alpha = 0.15f))) {
+                Icon(icon, contentDescription = null, tint = home.accent, modifier = Modifier.size(22.dp))
+            }
             Text(
                 title,
                 style = MaterialTheme.typography.titleLarge.copy(fontFamily = AppFonts.playfair, fontWeight = FontWeight.SemiBold),
                 color = home.ink,
             )
-            Text(text, style = MaterialTheme.typography.bodyMedium, color = home.ink)
         }
+        Text(text, style = MaterialTheme.typography.bodyMedium, color = home.ink)
     }
 }
 
@@ -623,3 +630,20 @@ private fun CourseChart(result: ExperimentResult, plannedDays: Int) {
 /** Mean strength with one decimal, "–" without counted days. */
 private fun strength(mean: Double, days: Int): String =
     if (days == 0) "–" else ((mean * 10).toInt() / 10.0).toString().replace('.', ',')
+
+/** The rules folded away (phone test 26.11.2026: the paragraph was long); open on a tap. */
+@Composable
+private fun RulesToggle() {
+    val home = AppColors.extra.home
+    var open by remember { mutableStateOf(false) }
+    Column {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).clickable { open = !open },
+        ) {
+            Text(stringResource(Res.string.experiment_how), style = MaterialTheme.typography.titleSmall, color = home.accent, modifier = Modifier.weight(1f))
+            Icon(if (open) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, contentDescription = null, tint = home.accent)
+        }
+        if (open) Text(stringResource(Res.string.experiment_rules), style = MaterialTheme.typography.bodySmall, color = home.inkSoft)
+    }
+}

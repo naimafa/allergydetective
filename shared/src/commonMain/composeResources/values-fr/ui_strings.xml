@@ -76,7 +76,7 @@
     <string name="experiment_running">Sans %1$s · jour %2$d sur %3$d</string>
     <string name="experiment_over">Test terminé : sans %1$s</string>
     <string name="experiment_eaten">%1$s mangé quand même : %2$d jours. Ces jours ne comptent pas.</string>
-    <string name="experiment_too_few">Pas encore assez de jours pour comparer : il faut au moins 5 jours avant et 5 jours sans, sans les jours de maladie.</string>
+    <string name="experiment_too_few">Il faut au moins 5 jours comptés avant et 5 sans, sans les jours de maladie.</string>
     <string name="experiment_stop">Terminer le test</string>
     <string name="experiment_new">Démarrer un nouveau test</string>
     <string name="experiment_groups">Supprimer tout un groupe :</string>
@@ -107,7 +107,7 @@
     <string name="reintro_title_not_back">Pas nettement revenus</string>
     <string name="reintro_not_back">Avec %1$s, tes symptômes sont restés proches des jours sans. L’amélioration avait peut-être une autre cause.</string>
     <string name="reintro_pill_ok">Seulement si c’est médicalement raisonnable. Arrête tout de suite si les symptômes sont forts.</string>
-    <string name="reintro_pill_doctor">%1$s peut provoquer une allergie : ne le remange qu’après avoir parlé à ton médecin. L’app ne guide pas cette étape.</string>
+    <string name="reintro_pill_doctor">Avec %1$s, une allergie est possible : ne le remange qu’après avoir parlé à ton médecin. L’app ne guide pas cette étape.</string>
     <string name="experiment_gluten_hint">Important : si une maladie cœliaque doit être recherchée, fais d’abord le test, puis supprime le gluten. Sans gluten, le test peut passer à côté.</string>
     <string name="experiment_diet_title">Autres changements dans ton alimentation :</string>
     <string name="experiment_diet_less">%1$s : avant %2$d jours sur %3$d, pendant le test %4$d sur %5$d</string>

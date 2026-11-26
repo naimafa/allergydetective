@@ -83,7 +83,7 @@
     <string name="experiment_running">بدون %1$s · اليوم %2$d من %3$d</string>
     <string name="experiment_over">انتهى الاختبار: بدون %1$s</string>
     <string name="experiment_eaten">تم تناول %1$s رغم ذلك: في %2$d أيام. هذه الأيام لا تُحتسب.</string>
-    <string name="experiment_too_few">الأيام غير كافية للمقارنة بعد: يلزم 5 أيام قبل و5 أيام بدون على الأقل، دون أيام المرض.</string>
+    <string name="experiment_too_few">يلزم 5 أيام محسوبة على الأقل قبل و5 بدون، دون احتساب أيام المرض.</string>
     <string name="experiment_stop">إنهاء الاختبار</string>
     <string name="experiment_new">بدء اختبار جديد</string>
     <string name="experiment_groups">استبعاد مجموعة كاملة:</string>
@@ -114,7 +114,7 @@
     <string name="reintro_title_not_back">لم تعد بوضوح</string>
     <string name="reintro_not_back">مع %1$s بقيت أعراضك مشابهة للأيام بدونه. ربما كان للتحسن سبب آخر.</string>
     <string name="reintro_pill_ok">فقط إذا كان ذلك مقبولًا طبيًا. توقف فورًا إذا اشتدت الأعراض.</string>
-    <string name="reintro_pill_doctor">قد يسبب %1$s حساسية: تناوله مجددًا فقط بعد استشارة الطبيب. التطبيق لا يرشد في هذه الخطوة.</string>
+    <string name="reintro_pill_doctor">مع %1$s قد تكون هناك حساسية: تناوله مجددًا فقط بعد استشارة الطبيب. التطبيق لا يرشد في هذه الخطوة.</string>
     <string name="experiment_gluten_hint">مهم: إذا كان يجب فحص الداء البطني (السيلياك)، فقم بالفحص أولاً ثم استبعد الغلوتين. بدون الغلوتين قد لا يكشفه الفحص.</string>
     <string name="experiment_diet_title">تغيّر أيضًا في طعامك:</string>
     <string name="experiment_diet_less">%1$s: قبل ذلك في %2$d من %3$d أيام، أثناء الاختبار في %4$d من %5$d</string>
