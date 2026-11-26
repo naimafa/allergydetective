@@ -277,11 +277,18 @@ class LogSymptomViewModel(
 }
 
 /**
- * The areas in the order the user dragged them to (user 25.11.2026). Areas the saved order does not know (new in
- * the catalog) keep their place after the known ones, in the app's order.
+ * The areas in the order the user dragged them to (user 25.11.2026). An area the saved order does not know (new in
+ * the catalog) goes in front of the area that follows it in the app's order - user 26.11.2026: "Gelenke" above
+ * "Sonstiges", not at the very end. [groups] is in the app's order.
  */
 internal fun <T> inUserOrder(groups: List<Pair<String, T>>, saved: List<String>): List<Pair<String, T>> {
     if (saved.isEmpty()) return groups
-    val known = groups.filter { it.first in saved }.sortedBy { saved.indexOf(it.first) }
-    return known + groups.filter { it.first !in saved }
+    val result = groups.filter { it.first in saved }.sortedBy { saved.indexOf(it.first) }.toMutableList()
+    groups.forEachIndexed { index, group ->
+        if (group.first in saved) return@forEachIndexed
+        val next = groups.drop(index + 1).firstOrNull { it.first in saved }
+        val at = next?.let { n -> result.indexOfFirst { it.first == n.first } } ?: -1
+        if (at < 0) result += group else result.add(at, group)
+    }
+    return result
 }
