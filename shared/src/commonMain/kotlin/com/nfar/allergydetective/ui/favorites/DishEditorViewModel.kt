@@ -134,6 +134,11 @@ class DishEditorViewModel(
         it.copy(preparations = it.preparations + (ingredientId to preparation))
     }
 
+    /** User 25.11.2026: a dish can be the gluten-free version ("meine glutenfreie Pizza"); normal by default. */
+    fun onGlutenFreeChange(ingredientId: Long, glutenFree: Boolean) = _state.update {
+        it.copy(preparations = if (glutenFree) it.preparations + (ingredientId to Preparation.GLUTEN_FREE) else it.preparations - ingredientId)
+    }
+
     /** A custom ingredient was created from the search text: make it findable and add it. */
     fun onIngredientCreated(ingredient: IngredientInfo) {
         viewModelScope.launch {

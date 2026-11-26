@@ -38,4 +38,17 @@ class PreparationTest {
     fun withoutPreparationEverythingCounts() {
         assertEquals(setOf(114L, 118L), catalog.propertiesOf(MealItem(712, Portion.MEDIUM)))
     }
+
+    @Test
+    fun glutenFreeBreadCountsWithoutGlutenButKeepsTheRest() {
+        // User 25.11.2026: bread eaten in its gluten-free version.
+        val gluten = TriggerProperty(102, listOf(TimeWindow(60, 2880)), setOf("digestive"), gluten = true)
+        val fructans = TriggerProperty(107, listOf(TimeWindow(60, 720)), setOf("digestive"))
+        val breads = FoodCatalog(
+            ReferenceData(properties = listOf(gluten, fructans), ingredients = listOf(IngredientRef(101, setOf(102, 107))), symptoms = emptyList()),
+        )
+
+        assertEquals(setOf(102L, 107L), breads.propertiesOf(MealItem(101, Portion.MEDIUM)))
+        assertEquals(setOf(107L), breads.propertiesOf(MealItem(101, Portion.MEDIUM, Preparation.GLUTEN_FREE)))
+    }
 }

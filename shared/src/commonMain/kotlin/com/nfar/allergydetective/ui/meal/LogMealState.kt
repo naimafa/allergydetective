@@ -4,6 +4,7 @@ import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.analysis.model.Preparation
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
+import com.nfar.allergydetective.domain.diary.GLUTEN_FREE_OPTION_IDS
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.MealSnapshot
 import com.nfar.allergydetective.domain.diary.SnapshotDish
@@ -108,6 +109,8 @@ data class LogMealState(
     private val allergyIngredientIds: Set<Long> = emptySet(),
     /** Ingredients with a heat-labile trigger (birch pollen): raw or cooked is mandatory. */
     val needsPreparation: Set<Long> = emptySet(),
+    /** Products with a gluten-free version: "normal / glutenfrei" is offered, normal by default (user 25.11.2026). */
+    val glutenFreeOption: Set<Long> = GLUTEN_FREE_OPTION_IDS,
 ) {
     val canSave: Boolean get() =
         mealItems.isNotEmpty() && !saving && !missingPreparation && (!saveAsFavorite || favoriteName.isNotBlank())
@@ -119,6 +122,14 @@ data class LogMealState(
 
     /** UX 3.1: a gentle hint, saving stays possible. */
     val containsKnownAllergy: Boolean get() = mealItems.any { it.ingredientId in allergyIngredientIds }
+
+    /** Raw / cooked only where it was asked; gluten-free only for products that have that version. */
+    private fun kept(ingredientId: Long, preparation: Preparation?): Preparation? = when {
+        preparation == null -> null
+        ingredientId in needsPreparation -> preparation.takeIf { it != Preparation.GLUTEN_FREE }
+        preparation == Preparation.GLUTEN_FREE && ingredientId in glutenFreeOption -> preparation
+        else -> null
+    }
 
     /** The ingredients of a chosen dish that stay in this meal. */
     fun dishItems(dish: ChosenDish): List<MealItem> =
@@ -136,7 +147,7 @@ data class LogMealState(
             MealItem(
                 ingredientId = id,
                 portion = same.maxOf { it.portion },
-                preparation = if (id in needsPreparation) same.firstNotNullOfOrNull { it.preparation } else null,
+                preparation = kept(id, same.firstNotNullOfOrNull { it.preparation }),
             )
         }
     }
@@ -148,7 +159,7 @@ data class LogMealState(
         val hasMainPart = items.any { it.ingredientId !in minorIngredientIds }
         return items.map { item ->
             val portion = if (hasMainPart && item.ingredientId in minorIngredientIds) dish.portion.smaller() else dish.portion
-            val preparation = (dish.preparations[item.ingredientId] ?: item.preparation).takeIf { item.ingredientId in needsPreparation }
+            val preparation = kept(item.ingredientId, dish.preparations[item.ingredientId] ?: item.preparation)
             MealItem(item.ingredientId, portion, preparation)
         }
     }
@@ -156,7 +167,7 @@ data class LogMealState(
     /** What gets stored besides the merged list: the dishes as logged and the single ingredients (user 24.11.2026). */
     val snapshot: MealSnapshot get() = MealSnapshot(
         dishes = dishes.map { SnapshotDish(it.originFavoriteId, it.name, it.portion, countedItems(it)) },
-        singles = selected.map { MealItem(it.ingredient.id, it.portion, it.preparation.takeIf { _ -> it.ingredient.id in needsPreparation }) },
+        singles = selected.map { MealItem(it.ingredient.id, it.portion, kept(it.ingredient.id, it.preparation)) },
     )
 
     /** Where the ingredient sits in this meal: on its own and/or in which chosen dishes. */

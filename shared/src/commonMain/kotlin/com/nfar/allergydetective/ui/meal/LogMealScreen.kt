@@ -167,6 +167,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.nfar.allergydetective.domain.analysis.model.Preparation
 import com.nfar.allergydetective.domain.analysis.model.Portion
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.FavoriteInfo
@@ -547,7 +548,13 @@ private fun ColumnScope.ChosenIngredients(state: LogMealState, viewModel: LogMea
         Column {
             state.selected.asReversed().forEachIndexed { index, item ->
                 if (index > 0) HorizontalDivider(color = AppColors.extra.home.cardBorder)
-                SelectedRow(item, item.ingredient.id in state.needsPreparation, viewModel, smallAmounts = item.ingredient.id in state.minorIngredientIds)
+                SelectedRow(
+                    item,
+                    item.ingredient.id in state.needsPreparation,
+                    viewModel,
+                    smallAmounts = item.ingredient.id in state.minorIngredientIds,
+                    glutenFreeOption = item.ingredient.id in state.glutenFreeOption,
+                )
             }
         }
     }
@@ -762,7 +769,13 @@ private fun ChipGroupTitle(title: String, hint: String) {
 }
 
 @Composable
-private fun SelectedRow(item: SelectedIngredient, needsPreparation: Boolean, viewModel: LogMealViewModel, smallAmounts: Boolean = false) {
+private fun SelectedRow(
+    item: SelectedIngredient,
+    needsPreparation: Boolean,
+    viewModel: LogMealViewModel,
+    smallAmounts: Boolean = false,
+    glutenFreeOption: Boolean = false,
+) {
     IngredientRow(
         smallAmounts = smallAmounts,
         ingredient = item.ingredient,
@@ -770,10 +783,11 @@ private fun SelectedRow(item: SelectedIngredient, needsPreparation: Boolean, vie
         portion = item.portion,
         onPortion = { viewModel.onPortionChange(item.ingredient.id, it) },
         onRemove = { viewModel.onRemoveIngredient(item.ingredient.id, null) },
-        preparation = if (needsPreparation) {
-            { PreparationChoice(item.preparation) { viewModel.onPreparationChange(item.ingredient.id, it) } }
-        } else {
-            null
+        preparation = when {
+            needsPreparation -> { { PreparationChoice(item.preparation) { viewModel.onPreparationChange(item.ingredient.id, it) } } }
+            // User 25.11.2026: bread, pasta, biscuits … also come gluten-free.
+            glutenFreeOption -> { { GlutenFreeChoice(item.preparation == Preparation.GLUTEN_FREE) { viewModel.onGlutenFreeChange(item.ingredient.id, it) } } }
+            else -> null
         },
     )
 }

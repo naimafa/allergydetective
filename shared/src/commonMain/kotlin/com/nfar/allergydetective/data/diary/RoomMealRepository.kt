@@ -144,9 +144,11 @@ internal fun Portion.toEntity(): PortionSize = when (this) {
 internal fun PreparationKind.toDomain(): Preparation = when (this) {
     PreparationKind.RAW -> Preparation.RAW
     PreparationKind.COOKED -> Preparation.COOKED
+    PreparationKind.GLUTEN_FREE -> Preparation.GLUTEN_FREE
 }
 
 internal fun Preparation.toEntity(): PreparationKind = when (this) {
     Preparation.RAW -> PreparationKind.RAW
     Preparation.COOKED -> PreparationKind.COOKED
+    Preparation.GLUTEN_FREE -> PreparationKind.GLUTEN_FREE
 }

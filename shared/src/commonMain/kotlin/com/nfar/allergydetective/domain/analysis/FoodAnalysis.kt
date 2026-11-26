@@ -23,11 +23,16 @@ internal class FoodCatalog(reference: ReferenceData) {
     private val propertiesById = reference.properties.associateBy { it.id }
     private val known = reference.knownAllergyPropertyIds
     private val heatLabile = reference.properties.filter { it.heatLabile }.map { it.id }.toSet()
+    private val gluten = reference.properties.filter { it.gluten }.map { it.id }.toSet()
 
-    /** Triggers of this item; a cooked item loses its heat-labile ones. */
+    /** Triggers of this item; a cooked item loses its heat-labile ones, a gluten-free one its gluten (user 25.11.2026). */
     fun propertiesOf(item: MealItem): Set<Long> {
         val properties = propertiesByIngredient[item.ingredientId].orEmpty()
-        return if (item.preparation == Preparation.COOKED) properties - heatLabile else properties
+        return when (item.preparation) {
+            Preparation.COOKED -> properties - heatLabile
+            Preparation.GLUTEN_FREE -> properties - gluten
+            else -> properties
+        }
     }
 
     fun hasKnownAllergy(ingredientId: Long): Boolean =

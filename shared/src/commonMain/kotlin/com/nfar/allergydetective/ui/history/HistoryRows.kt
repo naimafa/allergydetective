@@ -15,6 +15,7 @@ import allergydetective.shared.generated.resources.meal_portion_medium
 import allergydetective.shared.generated.resources.meal_portion_small
 import allergydetective.shared.generated.resources.meal_prep_cooked
 import allergydetective.shared.generated.resources.meal_prep_raw
+import allergydetective.shared.generated.resources.meal_variant_gluten_free
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -224,6 +225,7 @@ fun EntrySheet(
                         val preparation = when (entry.preparations[ingredient.id]) {
                             Preparation.RAW -> stringResource(Res.string.meal_prep_raw)
                             Preparation.COOKED -> stringResource(Res.string.meal_prep_cooked)
+                            Preparation.GLUTEN_FREE -> stringResource(Res.string.meal_variant_gluten_free)
                             null -> null
                         }
                         Text(listOfNotNull(ingredientName(ingredient), portionLabel(portion), preparation).joinToString(" · "), style = MaterialTheme.typography.bodyLarge)

@@ -140,6 +140,22 @@ class LogMealViewModelTest {
     }
 
     @Test
+    fun breadCanBeLoggedGlutenFree() {
+        // User 25.11.2026: "normal / glutenfrei" for products that are also sold gluten-free; milk has no such choice.
+        val vm = viewModel()
+        vm.onToggleIngredient(bread)
+        vm.onToggleIngredient(milk)
+        vm.onGlutenFreeChange(bread.id, true)
+        vm.onGlutenFreeChange(milk.id, true)
+
+        assertEquals(Preparation.GLUTEN_FREE, vm.state.value.mealItems.single { it.ingredientId == bread.id }.preparation)
+        assertNull(vm.state.value.mealItems.single { it.ingredientId == milk.id }.preparation)
+
+        vm.onGlutenFreeChange(bread.id, false)
+        assertNull(vm.state.value.mealItems.single { it.ingredientId == bread.id }.preparation)
+    }
+
+    @Test
     fun theNameOfADishIsNotOfferedAsANewIngredient() {
         // User 25.11.2026: dishes ended up in "Meine Zutaten" because their name could be created as an ingredient.
         repository.favorites += FavoriteInfo(7, "Linsensuppe", listOf(MealItem(bread.id, Portion.MEDIUM)))
