@@ -171,7 +171,25 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15)
+    /**
+     * User 25.11.2026: "Getreide & Backwaren" split into "Getreide & Mehl", "Nudeln & Teigwaren" (pasta often has egg)
+     * and "Brot & Backwaren"; flours, baking agents, egg noodles and single dried fruits (dates, raisins …) added.
+     * "Rosinen" and "Datteln" move from the dried fruit synonyms to their own ingredients. Same as the seed JSON.
+     */
+    val MIGRATION_15_16 = object : Migration(15, 16) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("UPDATE categories SET `key` = 'grains_flour' WHERE id = $GRAINS_CATEGORY")
+            connection.execSQL("INSERT OR IGNORE INTO categories (id, `key`) VALUES ($PASTA_CATEGORY, 'pasta')")
+            connection.execSQL("INSERT OR IGNORE INTO categories (id, `key`) VALUES ($BREAD_CATEGORY, 'bread_bakery')")
+            CATEGORY_MOVES_16.forEach { (categoryId, ids) ->
+                connection.execSQL("UPDATE ingredients SET categoryId = $categoryId WHERE id IN (${ids.joinToString(", ")}) AND isCustom = 0")
+            }
+            connection.execSQL("DELETE FROM ingredient_synonyms WHERE ingredientId = $DRIED_FRUIT AND synonym IN ('Rosinen', 'Datteln')")
+            GRAINS_ROWS.forEach { connection.insertSeedIngredient(it) }
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16)
 
     private const val HERBS_CATEGORY = 15L
     internal const val DRIED_HERBS = 1415L
@@ -331,6 +349,41 @@ object Migrations {
         SeedRow(1230, "coconut_blossom_sugar", 12L, emptyList(), listOf("Kokoszucker")),
         SeedRow(1231, "date_syrup", 12L, listOf("fructose", "fructans"), listOf("Dattelsüße", "Dattelpaste")),
         SeedRow(1232, "rice_syrup", 12L, emptyList(), listOf("Reissüße")),
+    )
+
+    internal const val GRAINS_CATEGORY = 1L
+    internal const val PASTA_CATEGORY = 16L
+    internal const val BREAD_CATEGORY = 17L
+    internal const val DRIED_FRUIT = 813L
+
+    /** Category of existing ingredients after 15 -> 16: pasta and bread / baked goods leave "grains". */
+    internal val CATEGORY_MOVES_16: Map<Long, List<Long>> = mapOf(
+        PASTA_CATEGORY to listOf(105L, 106L, 128L, 135L, 1222L),
+        BREAD_CATEGORY to listOf(101L, 102L, 103L, 104L, 109L, 110L, 113L, 114L, 115L, 116L, 117L, 118L, 119L, 120L, 121L, 122L, 123L, 124L, 125L, 126L, 131L),
+    )
+
+    /** Flours, baking agents, egg noodles and single dried fruits (user 25.11.2026), migration 15 -> 16. */
+    internal val GRAINS_ROWS = listOf(
+        SeedRow(136, "wheat_flour", 1L, listOf("gluten", "fructans"), listOf("Mehl", "Weißmehl", "Type 405", "Type 550")),
+        SeedRow(137, "wholemeal_wheat_flour", 1L, listOf("gluten", "fructans"), listOf("Vollkornmehl", "Type 1050")),
+        SeedRow(138, "spelt_flour", 1L, listOf("gluten", "fructans"), listOf("Dinkel", "Type 630")),
+        SeedRow(139, "wholemeal_spelt_flour", 1L, listOf("gluten", "fructans"), listOf("Dinkelvollkorn")),
+        SeedRow(140, "rye_flour", 1L, listOf("gluten", "fructans"), listOf("Roggen", "Roggenvollkornmehl")),
+        SeedRow(141, "semolina", 1L, listOf("gluten", "fructans"), listOf("Hartweizengrieß", "Weichweizengrieß")),
+        SeedRow(142, "oat_flour", 1L, listOf("gluten"), listOf("Haferkleie")),
+        SeedRow(143, "rice_flour", 1L, emptyList(), listOf("Reisstärke")),
+        SeedRow(144, "starch", 1L, emptyList(), listOf("Maisstärke", "Kartoffelstärke", "Stärke", "Mondamin")),
+        SeedRow(145, "gluten_free_flour_mix", 1L, emptyList(), listOf("glutenfreies Mehl", "Mehlmischung glutenfrei")),
+        SeedRow(146, "almond_flour", 1L, listOf("tree_nuts"), listOf("gemahlene Mandeln")),
+        SeedRow(147, "chickpea_flour", 1L, listOf("galactans"), listOf("Besan")),
+        SeedRow(148, "baking_powder", 1L, emptyList(), listOf("Natron", "Weinsteinbackpulver", "Backsoda")),
+        SeedRow(149, "yeast", 1L, emptyList(), listOf("Trockenhefe", "Frischhefe", "Germ")),
+        SeedRow(1601, "egg_noodles", 16L, listOf("gluten", "fructans", "egg"), listOf("Spätzle", "Bandnudeln", "Tagliatelle", "Eierspätzle", "Maultaschen", "Eiernudeln")),
+        SeedRow(823, "dates", 8L, listOf("fructose", "fructans"), listOf("Dattel", "Medjool")),
+        SeedRow(824, "raisins", 8L, listOf("fructose"), listOf("Rosine", "Sultaninen", "Korinthen")),
+        SeedRow(825, "dried_apricots", 8L, listOf("sulfites", "polyols"), listOf("Trockenaprikosen", "getrocknete Marillen")),
+        SeedRow(826, "prunes", 8L, listOf("polyols"), listOf("Trockenpflaumen", "Dörrpflaumen", "getrocknete Pflaumen")),
+        SeedRow(827, "dried_cranberries", 8L, listOf("fructose"), listOf("Cranberries getrocknet", "Moosbeeren")),
     )
 
     internal class SeedRow(

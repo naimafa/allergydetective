@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- أسماء العرض لمفاتيح البيانات الأساسية (data/seed). ترجمة عربية بتاريخ 22.11.2026، تحتاج مراجعة من متحدث بالعربية. -->
 <resources>
-    <string name="category_grains_bakery">حبوب ومخبوزات</string>
+    <string name="category_grains_flour">الحبوب والدقيق</string>
+    <string name="category_pasta">المعكرونة والعجائن</string>
+    <string name="category_bread_bakery">الخبز والمخبوزات</string>
     <string name="category_dairy">حليب ومشتقاته</string>
     <string name="category_cheese">جبن</string>
     <string name="category_meat_sausage">لحوم ونقانق</string>
@@ -321,6 +323,26 @@
     <string name="ingredient_coconut_blossom_sugar">سكر زهر جوز الهند</string>
     <string name="ingredient_date_syrup">دبس التمر</string>
     <string name="ingredient_rice_syrup">شراب الأرز</string>
+    <string name="ingredient_wheat_flour">دقيق القمح</string>
+    <string name="ingredient_wholemeal_wheat_flour">دقيق القمح الكامل</string>
+    <string name="ingredient_spelt_flour">دقيق الحنطة (سبلت)</string>
+    <string name="ingredient_wholemeal_spelt_flour">دقيق الحنطة الكامل (سبلت)</string>
+    <string name="ingredient_rye_flour">دقيق الجاودار</string>
+    <string name="ingredient_semolina">سميد</string>
+    <string name="ingredient_oat_flour">دقيق الشوفان</string>
+    <string name="ingredient_rice_flour">دقيق الأرز</string>
+    <string name="ingredient_starch">نشا</string>
+    <string name="ingredient_gluten_free_flour_mix">خليط دقيق خالٍ من الغلوتين</string>
+    <string name="ingredient_almond_flour">دقيق اللوز</string>
+    <string name="ingredient_chickpea_flour">دقيق الحمص</string>
+    <string name="ingredient_baking_powder">بيكنج باودر / بيكربونات</string>
+    <string name="ingredient_yeast">خميرة</string>
+    <string name="ingredient_egg_noodles">معكرونة بالبيض / شبيتسله</string>
+    <string name="ingredient_dates">تمر</string>
+    <string name="ingredient_raisins">زبيب</string>
+    <string name="ingredient_dried_apricots">مشمش مجفف</string>
+    <string name="ingredient_prunes">برقوق مجفف</string>
+    <string name="ingredient_dried_cranberries">توت بري مجفف</string>
     <string name="factor_sport">رياضة</string>
     <string name="factor_menstruation">الدورة الشهرية</string>
     <string name="factor_medication">دواء</string>

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Noms affichés des clés de base (data/seed). Traduction française du 22.11.2026, à relire par une personne francophone. -->
 <resources>
-    <string name="category_grains_bakery">Céréales &amp; boulangerie</string>
+    <string name="category_grains_flour">Céréales &amp; farines</string>
+    <string name="category_pasta">Pâtes &amp; nouilles</string>
+    <string name="category_bread_bakery">Pain &amp; pâtisserie</string>
     <string name="category_dairy">Lait &amp; produits laitiers</string>
     <string name="category_cheese">Fromage</string>
     <string name="category_meat_sausage">Viande &amp; charcuterie</string>
@@ -321,6 +323,26 @@
     <string name="ingredient_coconut_blossom_sugar">Sucre de fleur de coco</string>
     <string name="ingredient_date_syrup">Sirop de dattes</string>
     <string name="ingredient_rice_syrup">Sirop de riz</string>
+    <string name="ingredient_wheat_flour">Farine de blé</string>
+    <string name="ingredient_wholemeal_wheat_flour">Farine de blé complète</string>
+    <string name="ingredient_spelt_flour">Farine d’épeautre</string>
+    <string name="ingredient_wholemeal_spelt_flour">Farine d’épeautre complète</string>
+    <string name="ingredient_rye_flour">Farine de seigle</string>
+    <string name="ingredient_semolina">Semoule</string>
+    <string name="ingredient_oat_flour">Farine d’avoine</string>
+    <string name="ingredient_rice_flour">Farine de riz</string>
+    <string name="ingredient_starch">Fécule / amidon</string>
+    <string name="ingredient_gluten_free_flour_mix">Mélange de farines sans gluten</string>
+    <string name="ingredient_almond_flour">Poudre d’amande</string>
+    <string name="ingredient_chickpea_flour">Farine de pois chiches</string>
+    <string name="ingredient_baking_powder">Levure chimique / bicarbonate</string>
+    <string name="ingredient_yeast">Levure de boulanger</string>
+    <string name="ingredient_egg_noodles">Pâtes aux œufs / spätzle</string>
+    <string name="ingredient_dates">Dattes</string>
+    <string name="ingredient_raisins">Raisins secs</string>
+    <string name="ingredient_dried_apricots">Abricots secs</string>
+    <string name="ingredient_prunes">Pruneaux</string>
+    <string name="ingredient_dried_cranberries">Canneberges séchées</string>
     <string name="factor_sport">Sport</string>
     <string name="factor_menstruation">Règles</string>
     <string name="factor_medication">Médicament</string>

@@ -1,5 +1,5 @@
 [
-  {"id": 1, "key": "grains_bakery"},
+  {"id": 1, "key": "grains_flour"},
   {"id": 2, "key": "dairy"},
   {"id": 3, "key": "cheese"},
   {"id": 4, "key": "meat_sausage"},
@@ -13,5 +13,7 @@
   {"id": 12, "key": "condiments_sweets"},
   {"id": 13, "key": "oils_fats"},
   {"id": 14, "key": "spices_herbs"},
-  {"id": 15, "key": "herbs"}
+  {"id": 15, "key": "herbs"},
+  {"id": 16, "key": "pasta"},
+  {"id": 17, "key": "bread_bakery"}
 ]

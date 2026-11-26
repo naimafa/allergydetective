@@ -38,7 +38,7 @@ class MyIngredientsViewModelTest {
         )
         val replaced = mutableListOf<Pair<Long, Long>>()
         val replacedByDish = mutableListOf<Triple<Long, Long, String>>()
-        override suspend fun categories() = listOf(CategoryInfo(1, "grains_bakery"), CategoryInfo(12, "condiments_sweets"))
+        override suspend fun categories() = listOf(CategoryInfo(1, "grains_flour"), CategoryInfo(12, "condiments_sweets"))
         override suspend fun properties() = listOf(PropertyInfo(102, "gluten"), PropertyInfo(117, "milk_protein"), PropertyInfo(118, "egg"))
         override suspend fun categoryOf(ingredientId: Long) = 1L
         override suspend fun propertiesOf(ingredientId: Long) = if (ingredientId == 115L) setOf(102L, 117L, 118L) else setOf(102L)
