@@ -26,6 +26,9 @@ interface CustomIngredientRepository {
 
     /** Every meal and dish with [from] gets [to] instead; [from] is deleted. Nothing logged is lost. */
     suspend fun replace(from: Long, to: Long) = Unit
+
+    /** User 25.11.2026: the ingredient was really a dish - every meal gets that dish, then it is deleted. */
+    suspend fun replaceWithDish(from: Long, favoriteId: Long, dishName: String) = Unit
 }
 
 data class CustomIngredient(

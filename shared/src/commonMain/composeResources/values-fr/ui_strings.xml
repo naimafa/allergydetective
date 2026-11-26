@@ -340,8 +340,9 @@
     <string name="my_ingredients_delete">Supprimer</string>
     <string name="my_ingredients_delete_question">Supprimer « %1$s » ? Il n’est encore utilisé nulle part.</string>
     <string name="my_ingredients_replace_title">Remplacer par quoi ?</string>
-    <string name="my_ingredients_replace_text">« %1$s » figure déjà dans tes entrées. Pour ne rien perdre, il n’est pas simplement supprimé : choisis l’ingrédient qui doit compter à sa place. Tes repas et plats afficheront alors celui-ci.</string>
+    <string name="my_ingredients_replace_text">« %1$s » figure déjà dans tes entrées. Pour ne rien perdre, il n’est pas simplement supprimé : choisis l’ingrédient ou le plat qui doit compter à sa place. Tes repas l’afficheront alors.</string>
     <string name="my_ingredients_replace_with">Remplacer par « %1$s »</string>
+    <string name="my_ingredients_dish_label">Plat : %1$s</string>
     <string name="allergies_none">Aucune indiquée · touche pour modifier</string>
     <string name="time_other">Autre heure …</string>
     <string name="time_pick">À quelle heure exactement ?</string>

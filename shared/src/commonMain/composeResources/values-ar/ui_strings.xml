@@ -353,8 +353,9 @@
     <string name="my_ingredients_delete">حذف</string>
     <string name="my_ingredients_delete_question">حذف «%1$s»؟ لم يُستخدم في أي مكان بعد.</string>
     <string name="my_ingredients_replace_title">الاستبدال بماذا؟</string>
-    <string name="my_ingredients_replace_text">«%1$s» موجود بالفعل في إدخالاتك. حتى لا يضيع شيء، لا يُحذف ببساطة: اختر المكون الذي يحل محله. ستعرض وجباتك وأطباقك هذا المكون عندها.</string>
+    <string name="my_ingredients_replace_text">«%1$s» موجود بالفعل في إدخالاتك. حتى لا يضيع شيء، لا يُحذف ببساطة: اختر المكون أو الطبق الذي يحل محله. ستعرضه وجباتك عندها.</string>
     <string name="my_ingredients_replace_with">الاستبدال بـ «%1$s»</string>
+    <string name="my_ingredients_dish_label">طبق: %1$s</string>
     <string name="allergies_none">لم يُحدَّد شيء · المس للتعديل</string>
     <string name="time_other">وقت آخر …</string>
     <string name="time_pick">متى بالضبط؟</string>

@@ -5,6 +5,9 @@ import androidx.room3.Insert
 import androidx.room3.Query
 import androidx.room3.Transaction
 import com.nfar.allergydetective.data.db.entity.CategoryEntity
+import com.nfar.allergydetective.data.db.entity.FavoriteIngredientEntity
+import com.nfar.allergydetective.data.db.entity.MealDishEntity
+import com.nfar.allergydetective.data.db.entity.MealItemOccurrenceEntity
 import com.nfar.allergydetective.data.db.entity.IngredientEntity
 import com.nfar.allergydetective.data.db.entity.IngredientPropertyEntity
 import com.nfar.allergydetective.data.db.entity.PropertyEntity
@@ -118,6 +121,79 @@ interface IngredientDao {
         renameCustom(id, name, categoryId)
         deleteProperties(id)
         insertIngredientProperties(propertyIds.map { IngredientPropertyEntity(id, it) })
+    }
+
+    /** Occurrences of an ingredient in logged meals, for replacing it by a dish. */
+    @Query("SELECT * FROM meal_item_occurrences WHERE ingredientId = :id ORDER BY mealId, id")
+    suspend fun occurrencesOf(id: Long): List<MealItemOccurrenceEntity>
+
+    @Query("SELECT * FROM favorite_ingredients WHERE favoriteId = :favoriteId")
+    suspend fun dishItems(favoriteId: Long): List<FavoriteIngredientEntity>
+
+    @Query("SELECT COALESCE(MAX(position) + 1, 0) FROM meal_dishes WHERE mealId = :mealId")
+    suspend fun nextDishPosition(mealId: Long): Int
+
+    @Insert
+    suspend fun insertMealDish(dish: MealDishEntity): Long
+
+    @Insert
+    suspend fun insertOccurrences(items: List<MealItemOccurrenceEntity>)
+
+    @Query("DELETE FROM meal_item_occurrences WHERE id = :occurrenceId")
+    suspend fun deleteOccurrence(occurrenceId: Long)
+
+    /** The merged list for the analysis: the dish's ingredients with the portion the replaced one had. */
+    @Query(
+        """
+        INSERT OR IGNORE INTO meal_ingredients (mealId, ingredientId, portion, preparation)
+        SELECT mi.mealId, fi.ingredientId, mi.portion, fi.preparation FROM meal_ingredients mi
+        JOIN favorite_ingredients fi ON fi.favoriteId = :favoriteId AND fi.ingredientId != :from
+        WHERE mi.ingredientId = :from
+        """,
+    )
+    suspend fun addDishToMealIngredients(from: Long, favoriteId: Long)
+
+    @Query("DELETE FROM meal_ingredients WHERE ingredientId = :id")
+    suspend fun deleteMealIngredients(id: Long)
+
+    /** Other dishes that contain the ingredient get the dish's ingredients instead. */
+    @Query(
+        """
+        INSERT OR IGNORE INTO favorite_ingredients (favoriteId, ingredientId, defaultPortion, preparation)
+        SELECT f.favoriteId, fi.ingredientId, f.defaultPortion, fi.preparation FROM favorite_ingredients f
+        JOIN favorite_ingredients fi ON fi.favoriteId = :favoriteId AND fi.ingredientId != :from
+        WHERE f.ingredientId = :from AND f.favoriteId != :favoriteId
+        """,
+    )
+    suspend fun addDishToOtherDishes(from: Long, favoriteId: Long)
+
+    @Query("DELETE FROM favorite_ingredients WHERE ingredientId = :id")
+    suspend fun deleteFavoriteItems(id: Long)
+
+    @Query("UPDATE ingredients SET baseIngredientId = NULL WHERE baseIngredientId = :id")
+    suspend fun clearBaseIngredient(id: Long)
+
+    /**
+     * User 25.11.2026: a custom ingredient that is really a dish ("Feigen-Datteln-Marmelade") is replaced by that dish.
+     * In every logged meal it becomes the dish with its ingredients (a dish of its own, or flattened into the dish it
+     * was part of), keeping the portion it had; other dishes get the dish's ingredients. Then it is deleted.
+     */
+    @Transaction
+    suspend fun replaceCustomWithDish(from: Long, favoriteId: Long, dishName: String) {
+        val items = dishItems(favoriteId).filter { it.ingredientId != from }
+        occurrencesOf(from).forEach { occurrence ->
+            val dishId = occurrence.mealDishId ?: insertMealDish(
+                MealDishEntity(mealId = occurrence.mealId, favoriteId = favoriteId, name = dishName, portion = occurrence.portion, position = nextDishPosition(occurrence.mealId)),
+            )
+            insertOccurrences(items.map { MealItemOccurrenceEntity(mealId = occurrence.mealId, mealDishId = dishId, ingredientId = it.ingredientId, portion = occurrence.portion, preparation = it.preparation) })
+            deleteOccurrence(occurrence.id)
+        }
+        addDishToMealIngredients(from, favoriteId)
+        deleteMealIngredients(from)
+        addDishToOtherDishes(from, favoriteId)
+        deleteFavoriteItems(from)
+        clearBaseIngredient(from)
+        deleteCustomIngredient(from)
     }
 
     /** Deletes the custom ingredient only when no meal or dish uses it; returns whether it was deleted. */

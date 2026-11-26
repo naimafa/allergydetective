@@ -6,18 +6,19 @@ import allergydetective.shared.generated.resources.common_save
 import allergydetective.shared.generated.resources.custom_duplicate
 import allergydetective.shared.generated.resources.custom_name
 import allergydetective.shared.generated.resources.favorites_edit
-import allergydetective.shared.generated.resources.ingredient_search
 import allergydetective.shared.generated.resources.my_ingredients_add_contents
 import allergydetective.shared.generated.resources.my_ingredients_contains
 import allergydetective.shared.generated.resources.my_ingredients_contains_none
 import allergydetective.shared.generated.resources.my_ingredients_delete
 import allergydetective.shared.generated.resources.my_ingredients_delete_question
+import allergydetective.shared.generated.resources.my_ingredients_dish_label
 import allergydetective.shared.generated.resources.my_ingredients_edit
 import allergydetective.shared.generated.resources.my_ingredients_empty
 import allergydetective.shared.generated.resources.my_ingredients_intro
 import allergydetective.shared.generated.resources.my_ingredients_kind
 import allergydetective.shared.generated.resources.my_ingredients_replace_text
 import allergydetective.shared.generated.resources.my_ingredients_replace_title
+import allergydetective.shared.generated.resources.meal_search
 import allergydetective.shared.generated.resources.my_ingredients_replace_with
 import allergydetective.shared.generated.resources.my_ingredients_title
 import allergydetective.shared.generated.resources.my_ingredients_unused
@@ -107,7 +108,7 @@ fun MyIngredientsScreen(onBack: () -> Unit, viewModel: MyIngredientsViewModel = 
             dismissButton = { TextButton(onClick = viewModel::onCancelDelete) { Text(stringResource(Res.string.common_cancel)) } },
         )
     }
-    state.replacing?.let { ReplaceDialog(it.ingredient, it.query, it.results, it.target, viewModel) }
+    state.replacing?.let { ReplaceDialog(it, viewModel) }
 }
 
 @Composable
@@ -180,13 +181,9 @@ private fun EditDialog(state: MyIngredientsState, viewModel: MyIngredientsViewMo
 }
 
 @Composable
-private fun ReplaceDialog(
-    ingredient: CustomIngredient,
-    query: String,
-    results: List<IngredientInfo>,
-    target: IngredientInfo?,
-    viewModel: MyIngredientsViewModel,
-) {
+private fun ReplaceDialog(replace: IngredientReplace, viewModel: MyIngredientsViewModel) {
+    val ingredient = replace.ingredient
+    val target = replace.target
     AlertDialog(
         onDismissRequest = viewModel::onCancelReplace,
         title = { Text(stringResource(Res.string.my_ingredients_replace_title)) },
@@ -199,12 +196,28 @@ private fun ReplaceDialog(
                         Text(ingredientName(chosen), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(start = 10.dp))
                     }
                 }
-                SearchField(query, stringResource(Res.string.ingredient_search), results, viewModel::onReplaceQuery, viewModel::onReplaceTarget)
+                replace.targetDish?.let { dish ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Outlined.Restaurant, contentDescription = null, modifier = Modifier.size(28.dp))
+                        Text(dish.name, style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(start = 10.dp))
+                    }
+                }
+                SearchField(replace.query, stringResource(Res.string.meal_search), replace.results, viewModel::onReplaceQuery, viewModel::onReplaceTarget)
+                // User 25.11.2026: an ingredient that was really a dish is replaced by the dish.
+                replace.dishResults.forEach { dish ->
+                    TextButton(onClick = { viewModel.onReplaceTargetDish(dish) }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                            Icon(Icons.Outlined.Restaurant, contentDescription = null, modifier = Modifier.size(28.dp))
+                            Text(stringResource(Res.string.my_ingredients_dish_label, dish.name), modifier = Modifier.padding(start = 10.dp))
+                        }
+                    }
+                }
             }
         },
         confirmButton = {
-            Button(onClick = viewModel::onConfirmReplace, enabled = target != null) {
-                Text(target?.let { stringResource(Res.string.my_ingredients_replace_with, ingredientName(it)) } ?: stringResource(Res.string.my_ingredients_delete))
+            Button(onClick = viewModel::onConfirmReplace, enabled = replace.canReplace) {
+                val chosen = replace.targetDish?.name ?: target?.let { ingredientName(it) }
+                Text(chosen?.let { stringResource(Res.string.my_ingredients_replace_with, it) } ?: stringResource(Res.string.my_ingredients_delete))
             }
         },
         dismissButton = { TextButton(onClick = viewModel::onCancelReplace) { Text(stringResource(Res.string.common_cancel)) } },

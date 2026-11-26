@@ -39,4 +39,6 @@ class RoomCustomIngredientRepository(private val dao: IngredientDao) : CustomIng
     override suspend fun deleteIfUnused(id: Long): Boolean = dao.deleteCustomIfUnused(id)
 
     override suspend fun replace(from: Long, to: Long) = dao.mergeCustomInto(from, to)
+
+    override suspend fun replaceWithDish(from: Long, favoriteId: Long, dishName: String) = dao.replaceCustomWithDish(from, favoriteId, dishName)
 }
