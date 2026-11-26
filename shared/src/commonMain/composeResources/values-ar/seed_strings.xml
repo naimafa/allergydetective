@@ -310,6 +310,17 @@
     <string name="ingredient_cloves">قرنفل</string>
     <string name="ingredient_cardamom">هيل</string>
     <string name="ingredient_anise_fennel_seed">يانسون / بذور الشمر</string>
+    <string name="ingredient_fig">تين</string>
+    <string name="ingredient_xylitol">إكسيليتول (سكر البتولا)</string>
+    <string name="ingredient_erythritol">إريثريتول</string>
+    <string name="ingredient_sorbitol">سوربيتول</string>
+    <string name="ingredient_maltitol">مالتيتول / إيزومالت</string>
+    <string name="ingredient_stevia">ستيفيا</string>
+    <string name="ingredient_sweetener">محلي صناعي (سكرالوز، أسبارتام …)</string>
+    <string name="ingredient_monk_fruit">محلي فاكهة الراهب</string>
+    <string name="ingredient_coconut_blossom_sugar">سكر زهر جوز الهند</string>
+    <string name="ingredient_date_syrup">دبس التمر</string>
+    <string name="ingredient_rice_syrup">شراب الأرز</string>
     <string name="factor_sport">رياضة</string>
     <string name="factor_menstruation">الدورة الشهرية</string>
     <string name="factor_medication">دواء</string>

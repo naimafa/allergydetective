@@ -164,7 +164,14 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14)
+    /** User 25.11.2026: the newer sweeteners (xylitol, erythritol, stevia …) and figs. No schema change. */
+    val MIGRATION_14_15 = object : Migration(14, 15) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            SWEETENER_ROWS.forEach { connection.insertSeedIngredient(it) }
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15)
 
     private const val HERBS_CATEGORY = 15L
     internal const val DRIED_HERBS = 1415L
@@ -309,6 +316,21 @@ object Migrations {
         SeedRow(1418, "cloves", 14L, emptyList(), listOf("Gewürznelken")),
         SeedRow(1419, "cardamom", 14L, emptyList(), emptyList()),
         SeedRow(1420, "anise_fennel_seed", 14L, emptyList(), listOf("Sternanis", "Fenchelsamen", "Anis")),
+    )
+
+    /** Sweeteners and figs (user 25.11.2026), migration 14 -> 15. */
+    internal val SWEETENER_ROWS = listOf(
+        SeedRow(822, "fig", 8L, listOf("fructose", "fructans"), listOf("Feigen", "getrocknete Feigen")),
+        SeedRow(1223, "xylitol", 12L, listOf("polyols"), listOf("Xylit", "Xylitol", "Birkenzucker")),
+        SeedRow(1224, "erythritol", 12L, listOf("polyols"), listOf("Erythritol", "Sukrin")),
+        SeedRow(1225, "sorbitol", 12L, listOf("polyols"), listOf("Sorbitol", "Zuckeraustauschstoff")),
+        SeedRow(1226, "maltitol", 12L, listOf("polyols"), listOf("Maltit", "Maltitol", "Isomalt")),
+        SeedRow(1227, "stevia", 12L, emptyList(), listOf("Steviolglycoside", "Stevia-Tabs", "Steviapulver")),
+        SeedRow(1228, "sweetener", 12L, emptyList(), listOf("Sucralose", "Aspartam", "Saccharin", "Cyclamat", "Süßstofftabletten", "Flüssigsüße")),
+        SeedRow(1229, "monk_fruit", 12L, emptyList(), listOf("Mönchsfrucht", "Luo Han Guo", "Monk Fruit")),
+        SeedRow(1230, "coconut_blossom_sugar", 12L, emptyList(), listOf("Kokoszucker")),
+        SeedRow(1231, "date_syrup", 12L, listOf("fructose", "fructans"), listOf("Dattelsüße", "Dattelpaste")),
+        SeedRow(1232, "rice_syrup", 12L, emptyList(), listOf("Reissüße")),
     )
 
     internal class SeedRow(

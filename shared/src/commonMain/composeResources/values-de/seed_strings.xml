@@ -310,6 +310,17 @@
     <string name="ingredient_cloves">Nelken</string>
     <string name="ingredient_cardamom">Kardamom</string>
     <string name="ingredient_anise_fennel_seed">Anis / Fenchelsamen</string>
+    <string name="ingredient_fig">Feige</string>
+    <string name="ingredient_xylitol">Xylit / Birkenzucker</string>
+    <string name="ingredient_erythritol">Erythrit</string>
+    <string name="ingredient_sorbitol">Sorbit</string>
+    <string name="ingredient_maltitol">Maltit / Isomalt</string>
+    <string name="ingredient_stevia">Stevia</string>
+    <string name="ingredient_sweetener">Süßstoff (Sucralose, Aspartam …)</string>
+    <string name="ingredient_monk_fruit">Mönchsfrucht-Süße</string>
+    <string name="ingredient_coconut_blossom_sugar">Kokosblütenzucker</string>
+    <string name="ingredient_date_syrup">Dattelsirup</string>
+    <string name="ingredient_rice_syrup">Reissirup</string>
     <string name="factor_sport">Sport</string>
     <string name="factor_menstruation">Periode</string>
     <string name="factor_medication">Medikament</string>
