@@ -85,6 +85,7 @@
     <string name="experiment_course">Verlauf: stärkste Beschwerde pro Tag</string>
     <string name="experiment_course_legend">Gestrichelt: Ø vorher. Rot: trotzdem gegessen. Hell: zählt (noch) nicht.</string>
     <string name="experiment_day_n">Tag %1$d</string>
+    <string name="experiment_not_yet">Noch nicht gezählt: die ersten %1$d Tage (das Weggelassene kann noch nachwirken) und heute (zählt, sobald der Tag abgeschlossen ist). Jede Beschwerde zählt, auch eine leichte.</string>
     <string name="results_why_too_few_days">Ein Muster zeigt sich erst, wenn sich etwas wiederholt. Dafür vergleicht die App deine Tage miteinander und braucht mindestens %2$d abgeschlossene Tage. Bisher sind es %1$d.</string>
     <string name="results_why_no_complaints">An deinen abgeschlossenen Tagen gab es keine deutlichen Beschwerden. Ohne sie gibt es nichts, wonach die App suchen kann, und das ist eine gute Nachricht. Wenn wieder etwas auftritt, trag es ein.</string>
     <string name="results_why_few_complaint_days">Bisher gab es nur an einem Tag Beschwerden. Ob ein Lebensmittel dahintersteckt, zeigt sich erst, wenn Beschwerden öfter auftreten und die App sehen kann, was an diesen Tagen gleich war.</string>

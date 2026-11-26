@@ -85,6 +85,7 @@
     <string name="experiment_course">Course: strongest complaint per day</string>
     <string name="experiment_course_legend">Dashed line: average before. Red: eaten anyway. Pale: does not count (yet).</string>
     <string name="experiment_day_n">Day %1$d</string>
+    <string name="experiment_not_yet">Not counted yet: the first %1$d days (the left-out food can still have an effect) and today (counts once the day is closed). Every complaint counts, even a light one.</string>
     <string name="results_why_too_few_days">A pattern only shows when something repeats. To see it, the app compares your days with each other and needs at least %2$d finished days. So far there are %1$d.</string>
     <string name="results_why_no_complaints">Your finished days had no clear complaints. Without them there is nothing for the app to look for, and that is good news. If something comes up again, log it.</string>
     <string name="results_why_few_complaint_days">So far you had complaints on one day only. Whether a food is behind them shows only when complaints happen more often and the app can see what those days had in common.</string>

@@ -46,6 +46,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.unit.sp
 import com.nfar.allergydetective.domain.experiment.TestDayStatus
+import com.nfar.allergydetective.domain.experiment.WASHOUT_DAYS
+import allergydetective.shared.generated.resources.experiment_not_yet
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.displayName
 import androidx.compose.foundation.layout.Arrangement
@@ -147,6 +149,10 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
                 Text(d, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
             }
         }
+    }
+    // User 26.11.2026: "Ohne 0" looked wrong while the first days had complaints - say which days do not count yet.
+    if (!result.over) {
+        Text(stringResource(Res.string.experiment_not_yet, WASHOUT_DAYS), style = MaterialTheme.typography.bodySmall, color = muted)
     }
     if (result.daily.isNotEmpty()) {
         Text(stringResource(Res.string.experiment_course), style = MaterialTheme.typography.titleSmall)
