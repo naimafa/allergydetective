@@ -2,6 +2,10 @@ package com.nfar.allergydetective.domain.experiment
 
 import com.nfar.allergydetective.domain.analysis.model.DayCheck
 import com.nfar.allergydetective.domain.analysis.model.DiaryData
+import com.nfar.allergydetective.domain.analysis.model.IngredientRef
+import com.nfar.allergydetective.domain.analysis.model.Preparation
+import com.nfar.allergydetective.domain.analysis.model.ReferenceData
+import com.nfar.allergydetective.domain.analysis.model.TriggerProperty
 import com.nfar.allergydetective.domain.analysis.model.Meal
 import com.nfar.allergydetective.domain.analysis.model.MealItem
 import com.nfar.allergydetective.domain.analysis.model.Portion
@@ -84,5 +88,50 @@ class ExperimentTest {
         assertEquals(3.0, result.before.meanStrength)
         assertEquals(1.0, result.during.meanStrength)
         assertEquals(ExperimentVerdict.LESS, result.verdict)
+    }
+
+    private val milkProtein = 117L
+    private val glutenId = 102L
+    private val yoghurt = 303L
+    private val bread = 401L
+    private val reference = ReferenceData(
+        properties = listOf(TriggerProperty(milkProtein, emptyList(), emptySet()), TriggerProperty(glutenId, emptyList(), emptySet(), gluten = true)),
+        ingredients = listOf(IngredientRef(cheese, setOf(milkProtein)), IngredientRef(yoghurt, setOf(milkProtein)), IngredientRef(bread, setOf(glutenId))),
+        symptoms = emptyList(),
+    )
+
+    @Test
+    fun aGroupCountsEveryIngredientOfIt() {
+        // User 26.11.2026: leaving out milk protein - yoghurt on day 14 breaks it like cheese would.
+        val test = Experiment(0, startDay = 10, days = 10, propertyId = milkProtein)
+        val base = diary(19, complaints = emptySet())
+        val withYoghurt = base.copy(meals = listOf(Meal(1, 14 * dayMs + 8 * 3_600_000L, 0, listOf(MealItem(yoghurt, Portion.MEDIUM)))))
+        val result = evaluateExperiment(test, withYoghurt, today = 20, leftOut = leftOutMatcher(test, reference))
+
+        assertEquals(1, result.eatenDays)
+        assertEquals(TestDayStatus.EATEN, result.daily.first { it.number == 5 }.status)
+    }
+
+    @Test
+    fun glutenFreeBreadDoesNotBreakAGlutenTest() {
+        val test = Experiment(0, startDay = 10, days = 10, propertyId = glutenId)
+        val matcher = leftOutMatcher(test, reference)
+
+        assertTrue(matcher(MealItem(bread, Portion.MEDIUM)))
+        assertFalse(matcher(MealItem(bread, Portion.MEDIUM, Preparation.GLUTEN_FREE)))
+        assertFalse(matcher(MealItem(cheese, Portion.MEDIUM)))
+    }
+
+    @Test
+    fun everyDayOfTheTestIsInTheCourse() {
+        val test = Experiment(cheese, startDay = 10, days = 14)
+        val result = evaluateExperiment(test, diary(13, complaints = setOf(12), sick = setOf(13), intensity = { 4 }), today = 14)
+
+        assertEquals(listOf(1, 2, 3, 4, 5), result.daily.map { it.number })
+        assertEquals(TestDayStatus.WASHOUT, result.daily[0].status)
+        assertEquals(TestDay(3, TestDayStatus.COUNTED, 4), result.daily[2])
+        assertEquals(TestDay(4, TestDayStatus.NOT_COUNTED, null), result.daily[3])
+        // Today is not finished yet.
+        assertEquals(TestDay(5, TestDayStatus.NOT_COUNTED, null), result.daily[4])
     }
 }

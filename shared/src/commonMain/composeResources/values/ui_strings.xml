@@ -79,6 +79,12 @@
     <string name="experiment_too_few">Too few days to compare yet: it needs at least 5 days before and 5 days without, not counting sick days.</string>
     <string name="experiment_stop">End test</string>
     <string name="experiment_new">Start a new test</string>
+    <string name="experiment_groups">Leave out a whole group:</string>
+    <string name="experiment_group_days">eaten on %1$d of %2$d days</string>
+    <string name="experiment_or_single">Or a single ingredient:</string>
+    <string name="experiment_course">Course: strongest complaint per day</string>
+    <string name="experiment_course_legend">Dashed line: average before. Red: eaten anyway. Pale: does not count (yet).</string>
+    <string name="experiment_day_n">Day %1$d</string>
     <string name="results_why_too_few_days">A pattern only shows when something repeats. To see it, the app compares your days with each other and needs at least %2$d finished days. So far there are %1$d.</string>
     <string name="results_why_no_complaints">Your finished days had no clear complaints. Without them there is nothing for the app to look for, and that is good news. If something comes up again, log it.</string>
     <string name="results_why_few_complaint_days">So far you had complaints on one day only. Whether a food is behind them shows only when complaints happen more often and the app can see what those days had in common.</string>

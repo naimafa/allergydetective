@@ -30,6 +30,24 @@ import allergydetective.shared.generated.resources.experiment_similar
 import allergydetective.shared.generated.resources.experiment_more
 import allergydetective.shared.generated.resources.experiment_stop
 import allergydetective.shared.generated.resources.experiment_new
+import allergydetective.shared.generated.resources.experiment_groups
+import allergydetective.shared.generated.resources.experiment_group_days
+import allergydetective.shared.generated.resources.experiment_or_single
+import allergydetective.shared.generated.resources.experiment_course
+import allergydetective.shared.generated.resources.experiment_course_legend
+import allergydetective.shared.generated.resources.experiment_day_n
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.unit.sp
+import com.nfar.allergydetective.domain.experiment.TestDayStatus
+import com.nfar.allergydetective.ui.common.NamePrefix
+import com.nfar.allergydetective.ui.common.displayName
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -84,18 +102,18 @@ fun ExperimentCard(viewModel: ExperimentViewModel = koinViewModel()) {
             Text(stringResource(Res.string.experiment_title), style = MaterialTheme.typography.titleMedium)
             val experiment = state.experiment
             val result = state.result
-            val ingredient = state.ingredient
-            if (experiment == null || result == null || ingredient == null) {
+            val name = state.group?.let { displayName(NamePrefix.PROPERTY, it.key) } ?: state.ingredient?.let { ingredientName(it) }
+            if (experiment == null || result == null || name == null) {
                 Text(stringResource(Res.string.experiment_intro), style = MaterialTheme.typography.bodyMedium)
                 Button(onClick = viewModel::onOpenSetup, shape = CircleShape, modifier = Modifier.heightIn(min = 48.dp)) {
                     Text(stringResource(Res.string.experiment_start))
                 }
             } else {
-                RunningOrDone(experiment, result, ingredientName(ingredient), viewModel)
+                RunningOrDone(experiment, result, name, viewModel)
             }
         }
     }
-    state.setup?.let { SetupDialog(it, state.suggestions, state.today, viewModel) }
+    state.setup?.let { SetupDialog(it, state.groups, state.suggestions, state.today, viewModel) }
 }
 
 @Composable
@@ -129,6 +147,11 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
             }
         }
     }
+    if (result.daily.isNotEmpty()) {
+        Text(stringResource(Res.string.experiment_course), style = MaterialTheme.typography.titleSmall)
+        CourseChart(result, experiment.days)
+        Text(stringResource(Res.string.experiment_course_legend), style = MaterialTheme.typography.bodySmall, color = muted)
+    }
     if (result.eatenDays > 0) {
         Text(stringResource(Res.string.experiment_eaten, name, result.eatenDays), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
     }
@@ -149,15 +172,27 @@ private fun RunningOrDone(experiment: Experiment, result: ExperimentResult, name
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SetupDialog(setup: ExperimentSetup, suggestions: List<IngredientInfo>, today: Long, viewModel: ExperimentViewModel) {
+private fun SetupDialog(setup: ExperimentSetup, groups: List<TestGroup>, suggestions: List<IngredientInfo>, today: Long, viewModel: ExperimentViewModel) {
     val chosen = setup.chosen
-    val focus = chosen?.let { stringResource(Res.string.experiment_focus, ingredientName(it)) }
+    val chosenName = setup.chosenGroup?.let { displayName(NamePrefix.PROPERTY, it.key) } ?: chosen?.let { ingredientName(it) }
+    val focus = chosenName?.let { stringResource(Res.string.experiment_focus, it) }
     AlertDialog(
         onDismissRequest = viewModel::onCancelSetup,
         title = { Text(stringResource(Res.string.experiment_start)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.verticalScroll(rememberScrollState())) {
                 Text(stringResource(Res.string.experiment_what), style = MaterialTheme.typography.titleSmall)
+                // User 26.11.2026: a whole group as tiles, as leaving out milk while eating cheese says nothing.
+                Text(stringResource(Res.string.experiment_groups), style = MaterialTheme.typography.bodySmall)
+                groups.take(MAX_GROUP_TILES).chunked(2).forEach { pair ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        pair.forEach { group ->
+                            GroupTile(group, selected = setup.chosenGroup == group, onClick = { viewModel.onChooseGroup(group) }, modifier = Modifier.weight(1f))
+                        }
+                        if (pair.size == 1) Spacer(Modifier.weight(1f))
+                    }
+                }
+                Text(stringResource(Res.string.experiment_or_single), style = MaterialTheme.typography.bodySmall)
                 chosen?.let { IngredientLine(it) }
                 if (chosen == null && suggestions.isNotEmpty()) {
                     Text(stringResource(Res.string.experiment_suggestions), style = MaterialTheme.typography.bodySmall)
@@ -200,7 +235,7 @@ private fun SetupDialog(setup: ExperimentSetup, suggestions: List<IngredientInfo
             }
         },
         confirmButton = {
-            Button(onClick = { focus?.let(viewModel::onBegin) }, enabled = chosen != null, shape = CircleShape) { Text(stringResource(Res.string.experiment_begin)) }
+            Button(onClick = { focus?.let(viewModel::onBegin) }, enabled = chosenName != null, shape = CircleShape) { Text(stringResource(Res.string.experiment_begin)) }
         },
         dismissButton = { TextButton(onClick = viewModel::onCancelSetup) { Text(stringResource(Res.string.common_cancel)) } },
     )
@@ -212,6 +247,85 @@ private fun IngredientLine(ingredient: IngredientInfo) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         IngredientBadge(ingredient, name)
         Text(name, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 10.dp))
+    }
+}
+
+private const val MAX_GROUP_TILES = 6
+
+@Composable
+private fun GroupTile(group: TestGroup, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val colors = MaterialTheme.colorScheme
+    OutlinedCard(
+        onClick = onClick,
+        border = BorderStroke(if (selected) 2.dp else 1.dp, if (selected) colors.primary else colors.outlineVariant),
+        colors = CardDefaults.outlinedCardColors(containerColor = if (selected) colors.primaryContainer else colors.surface),
+        modifier = modifier.heightIn(min = 48.dp),
+    ) {
+        Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(group.emoji, fontSize = 26.sp)
+            Text(displayName(NamePrefix.PROPERTY, group.key), style = MaterialTheme.typography.titleSmall)
+            Text(
+                stringResource(Res.string.experiment_group_days, group.daysEaten, ExperimentViewModel.SUGGESTION_DAYS),
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/**
+ * User 26.11.2026 (sketch "Symptomverlauf"): one bar per day of the test with the strongest complaint (0-5), the
+ * dashed line is the mean before. Real values, no smoothed curve. Days to come stay empty.
+ */
+@Composable
+private fun CourseChart(result: ExperimentResult, plannedDays: Int) {
+    val colors = MaterialTheme.colorScheme
+    val counted = colors.primary
+    val faint = colors.onSurfaceVariant.copy(alpha = 0.35f)
+    val eaten = colors.error
+    val grid = colors.outlineVariant
+    val beforeMean = if (result.before.days == 0) null else result.before.meanStrength
+    val byNumber = result.daily.associateBy { it.number }
+    Canvas(modifier = Modifier.fillMaxWidth().height(110.dp)) {
+        val maxStrength = 5f
+        val slot = size.width / plannedDays
+        val barWidth = slot * 0.6f
+        val dot = 3.dp.toPx()
+        drawLine(grid, Offset(0f, size.height), Offset(size.width, size.height), strokeWidth = 1.dp.toPx())
+        for (n in 1..plannedDays) {
+            val day = byNumber[n] ?: continue
+            val x = slot * (n - 1) + (slot - barWidth) / 2
+            val strength = day.strength
+            if (strength == null) {
+                drawCircle(faint, radius = dot, center = Offset(x + barWidth / 2, size.height - dot * 2))
+                continue
+            }
+            val color = when (day.status) {
+                TestDayStatus.COUNTED -> counted
+                TestDayStatus.EATEN -> eaten
+                else -> faint
+            }
+            val h = (strength / maxStrength) * (size.height - dot * 2)
+            if (h <= 0f) {
+                drawRect(color, Offset(x, size.height - dot), Size(barWidth, dot))
+            } else {
+                drawRect(color, Offset(x, size.height - h), Size(barWidth, h))
+            }
+        }
+        beforeMean?.let { mean ->
+            val y = size.height - (mean.toFloat() / maxStrength) * (size.height - dot * 2)
+            drawLine(
+                colors.onSurface,
+                Offset(0f, y),
+                Offset(size.width, y),
+                strokeWidth = 1.5.dp.toPx(),
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(6.dp.toPx(), 4.dp.toPx())),
+            )
+        }
+    }
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Text(stringResource(Res.string.experiment_day_n, 1), style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant, modifier = Modifier.weight(1f))
+        Text(stringResource(Res.string.experiment_day_n, plannedDays), style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant)
     }
 }
 

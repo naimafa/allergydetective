@@ -86,6 +86,12 @@
     <string name="experiment_too_few">الأيام غير كافية للمقارنة بعد: يلزم 5 أيام قبل و5 أيام بدون على الأقل، دون أيام المرض.</string>
     <string name="experiment_stop">إنهاء الاختبار</string>
     <string name="experiment_new">بدء اختبار جديد</string>
+    <string name="experiment_groups">استبعاد مجموعة كاملة:</string>
+    <string name="experiment_group_days">تم تناوله في %1$d من %2$d يومًا</string>
+    <string name="experiment_or_single">أو مكوّن واحد فقط:</string>
+    <string name="experiment_course">المسار: أقوى عرض في كل يوم</string>
+    <string name="experiment_course_legend">الخط المتقطع: المتوسط قبل الاختبار. الأحمر: تم تناوله رغم ذلك. الفاتح: لا يُحتسب (بعد).</string>
+    <string name="experiment_day_n">اليوم %1$d</string>
     <string name="results_why_too_few_days">لا يظهر النمط إلا عندما يتكرر شيء ما. لذلك يقارن التطبيق أيامك ببعضها ويحتاج إلى %2$d يومًا مكتملًا على الأقل. حتى الآن لديك %1$d.</string>
     <string name="results_why_no_complaints">لم تكن هناك أعراض واضحة في أيامك المكتملة. بدونها لا يوجد ما يبحث عنه التطبيق، وهذا خبر جيد. إذا ظهر شيء مجددًا، سجّله.</string>
     <string name="results_why_few_complaint_days">حتى الآن كانت لديك أعراض في يوم واحد فقط. لا يتضح إن كان طعام ما وراءها إلا عندما تتكرر الأعراض ويرى التطبيق ما المشترك بين تلك الأيام.</string>

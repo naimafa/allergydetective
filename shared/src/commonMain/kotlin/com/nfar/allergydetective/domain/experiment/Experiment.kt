@@ -2,17 +2,24 @@ package com.nfar.allergydetective.domain.experiment
 
 import com.nfar.allergydetective.domain.analysis.localEpochDay
 import com.nfar.allergydetective.domain.analysis.model.DiaryData
+import com.nfar.allergydetective.domain.analysis.model.MealItem
+import com.nfar.allergydetective.domain.analysis.model.Preparation
+import com.nfar.allergydetective.domain.analysis.model.ReferenceData
 
 /**
  * Weglass-Test (user 25.11.2026, KONZEPT_MUSTERERKENNUNG D): one ingredient is left out for [days] days from
  * [startDay] (local epoch day). The only way to check what is eaten almost every day. [stoppedDay] is set when the
  * test was ended early.
+ *
+ * User 26.11.2026: or a whole group ([propertyId], e.g. milk protein) - leaving out only milk while still eating cheese
+ * and yoghurt says nothing. Then [ingredientId] is 0.
  */
 data class Experiment(
     val ingredientId: Long,
     val startDay: Long,
     val days: Int,
     val stoppedDay: Long? = null,
+    val propertyId: Long? = null,
 ) {
     val lastDay: Long get() = startDay + days - 1
 
@@ -57,7 +64,15 @@ data class ExperimentResult(
     val dayNumber: Int,
     val over: Boolean,
     val verdict: ExperimentVerdict,
+    /** Every day of the test up to today, for the course (user 26.11.2026). */
+    val daily: List<TestDay> = emptyList(),
 )
+
+/** Why a day of the test counts or not. */
+enum class TestDayStatus { COUNTED, WASHOUT, EATEN, NOT_COUNTED }
+
+/** [number] 1 = start day; [strength] the strongest complaint (0 = none), null when not entered. */
+data class TestDay(val number: Int, val status: TestDayStatus, val strength: Int?)
 
 /** The first days without the ingredient do not count yet: reactions can come up to 2-3 days late. */
 const val WASHOUT_DAYS = 2
@@ -77,6 +92,7 @@ fun evaluateExperiment(
     experiment: Experiment,
     diary: DiaryData,
     today: Long,
+    leftOut: (MealItem) -> Boolean = { it.ingredientId == experiment.ingredientId },
 ): ExperimentResult {
     val usable = diary.dayChecks.filter { it.confirmed && !it.sick }.map { it.epochDay }.toSet()
     val strongest: Map<Long, Int> = diary.symptomEntries
@@ -85,7 +101,7 @@ fun evaluateExperiment(
         .mapValues { (_, intensities) -> intensities.max() }
     val end = experiment.endDay(today)
     val eatenOn = diary.meals
-        .filter { meal -> meal.items.any { it.ingredientId == experiment.ingredientId } }
+        .filter { meal -> meal.items.any(leftOut) }
         .map { localEpochDay(it.eatenAt, it.tzOffsetMin) }
         .filter { it in experiment.startDay..end }
         .toSet()
@@ -107,5 +123,25 @@ fun evaluateExperiment(
         dayNumber = (end - experiment.startDay + 1).toInt().coerceIn(0, experiment.days),
         over = experiment.isOver(today),
         verdict = verdict,
+        daily = (experiment.startDay..end).map { day ->
+            val status = when {
+                day !in usable -> TestDayStatus.NOT_COUNTED
+                day in eatenOn -> TestDayStatus.EATEN
+                day < experiment.startDay + WASHOUT_DAYS -> TestDayStatus.WASHOUT
+                else -> TestDayStatus.COUNTED
+            }
+            TestDay((day - experiment.startDay + 1).toInt(), status, if (day in usable) strongest[day] ?: 0 else null)
+        },
     )
+}
+
+/**
+ * What the test leaves out: the one ingredient, or every ingredient of the group. A product eaten in its gluten-free
+ * version does not count for gluten (user 25.11.2026).
+ */
+fun leftOutMatcher(experiment: Experiment, reference: ReferenceData): (MealItem) -> Boolean {
+    val propertyId = experiment.propertyId ?: return { it.ingredientId == experiment.ingredientId }
+    val members = reference.ingredients.filter { propertyId in it.propertyIds }.map { it.id }.toSet()
+    val gluten = reference.properties.any { it.id == propertyId && it.gluten }
+    return { item -> item.ingredientId in members && !(gluten && item.preparation == Preparation.GLUTEN_FREE) }
 }

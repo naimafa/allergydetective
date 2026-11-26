@@ -79,6 +79,12 @@
     <string name="experiment_too_few">Pas encore assez de jours pour comparer : il faut au moins 5 jours avant et 5 jours sans, sans les jours de maladie.</string>
     <string name="experiment_stop">Terminer le test</string>
     <string name="experiment_new">Démarrer un nouveau test</string>
+    <string name="experiment_groups">Supprimer tout un groupe :</string>
+    <string name="experiment_group_days">mangé %1$d jours sur %2$d</string>
+    <string name="experiment_or_single">Ou un seul ingrédient :</string>
+    <string name="experiment_course">Évolution : symptôme le plus fort par jour</string>
+    <string name="experiment_course_legend">Pointillés : moyenne avant. Rouge : mangé quand même. Clair : ne compte pas (encore).</string>
+    <string name="experiment_day_n">Jour %1$d</string>
     <string name="results_why_too_few_days">Un schéma n’apparaît que lorsque quelque chose se répète. Pour cela, l’app compare tes jours entre eux et a besoin d’au moins %2$d jours clôturés. Pour l’instant, il y en a %1$d.</string>
     <string name="results_why_no_complaints">Tes jours clôturés n’ont pas eu de symptômes marqués. Sans eux, l’app n’a rien à chercher, et c’est une bonne nouvelle. Si quelque chose revient, note-le.</string>
     <string name="results_why_few_complaint_days">Jusqu’ici, tu as eu des symptômes un seul jour. On ne voit si un aliment en est la cause que lorsque les symptômes reviennent plus souvent et que l’app peut voir ce que ces jours ont en commun.</string>
