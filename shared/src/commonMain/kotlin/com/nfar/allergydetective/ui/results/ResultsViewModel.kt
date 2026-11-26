@@ -55,6 +55,8 @@ data class ResultsState(
     val dailyFoods: List<CandidateLabel> = emptyList(),
     /** Ingredients with a known allergy that were eaten (TRD 2.6). */
     val knownAllergyIngredients: List<CandidateLabel> = emptyList(),
+    /** Why there is nothing to show yet (only read when [items] is empty). */
+    val noPatternReason: NoPatternReason = NoPatternReason.TOO_FEW_DAYS,
 )
 
 /** Simple result screen (UX 5): ranking by evidence level, groups, safe list. */
@@ -93,6 +95,7 @@ class ResultsViewModel(
                 .map { it.ingredientId }
                 .distinct()
                 .mapNotNull { label(Candidate.Ingredient(it)) },
+            noPatternReason = noPatternReason(input.diary, FIRST_EVALUATION_DAYS),
         )
     }
 
