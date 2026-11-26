@@ -102,6 +102,12 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import com.nfar.allergydetective.ui.common.StepCard
 import com.nfar.allergydetective.ui.theme.AppColors
+import com.nfar.allergydetective.ui.favorites.dragHandle
+import com.nfar.allergydetective.ui.favorites.rememberDragToReorderState
+import com.nfar.allergydetective.ui.favorites.reorderableItem
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.outlined.DragIndicator
+import allergydetective.shared.generated.resources.symptom_group_drag
 import allergydetective.shared.generated.resources.illness_question
 import allergydetective.shared.generated.resources.symptom_duration_title
 import org.koin.compose.viewmodel.koinViewModel
@@ -151,7 +157,16 @@ private fun SymptomGrid(state: LogSymptomState, viewModel: LogSymptomViewModel, 
     val textWidth = (maxWidth - 32.dp - TILE_GAP) / TILE_COLUMNS - 10.dp * 2 - EMOJI_SIZE - 8.dp - 4.dp
     val names = state.groups.flatMap { it.second }.map { displayName(NamePrefix.SYMPTOM, it.key) + if (it.isRedFlag) " ⚠️" else "" }
     val nameStyle = sharedNameStyle(names, textWidth)
+    val listState = rememberLazyListState()
+    // User 25.11.2026: each area can be dragged by its handle; the order stays for the next time.
+    val reorder = rememberDragToReorderState(
+        listState,
+        onMove = { from, to -> viewModel.onGroupMove(from.removePrefix(GROUP_KEY), to.removePrefix(GROUP_KEY)) },
+        onDone = viewModel::onGroupMoveDone,
+        accepts = { it.startsWith(GROUP_KEY) },
+    )
     LazyColumn(
+        state = listState,
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -162,8 +177,17 @@ private fun SymptomGrid(state: LogSymptomState, viewModel: LogSymptomViewModel, 
             item { TileRow(state.favorites, viewModel, nameStyle) }
         }
         state.groups.forEach { (group, symptoms) ->
-            item(key = group) { GroupTitle(group) }
-            item(key = "$group-tiles") { TileRow(symptoms, viewModel, nameStyle) }
+            val key = GROUP_KEY + group
+            // Title and tiles in one item, so the whole area moves; the page colour keeps it opaque while lifted.
+            item(key = key) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.reorderableItem(reorder, key).background(AppColors.extra.home.page),
+                ) {
+                    GroupTitle(group, Modifier.dragHandle(reorder, key))
+                    TileRow(symptoms, viewModel, nameStyle)
+                }
+            }
         }
     }
 }
@@ -189,7 +213,7 @@ private const val MIN_NAME_SP = 12f
 
 /** Group name with a dot in the group colour, so tiles and heading belong together visibly. */
 @Composable
-private fun GroupTitle(group: String) {
+private fun GroupTitle(group: String, handle: Modifier) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
         Box(
             Modifier.size(12.dp).background(symptomGroupColor(group), CircleShape)
@@ -198,10 +222,20 @@ private fun GroupTitle(group: String) {
         Text(
             displayName(NamePrefix.SYMPTOM_GROUP, group),
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(start = 8.dp),
+            modifier = Modifier.weight(1f).padding(start = 8.dp),
+        )
+        // The same handle as for the dishes: drag to move the area up or down.
+        Icon(
+            Icons.Outlined.DragIndicator,
+            contentDescription = stringResource(Res.string.symptom_group_drag),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = handle.size(40.dp).padding(8.dp),
         )
     }
 }
+
+/** Keys of the area items: separate from the other items of the list. */
+private const val GROUP_KEY = "group:"
 
 /**
  * Self-test 18.11.: tiles had different widths and looked restless.

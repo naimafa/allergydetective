@@ -5,6 +5,8 @@ import com.nfar.allergydetective.domain.diary.LoggedSymptom
 import com.nfar.allergydetective.domain.diary.SymptomDuration
 import com.nfar.allergydetective.domain.diary.SymptomInfo
 import com.nfar.allergydetective.domain.diary.SymptomRepository
+import com.nfar.allergydetective.domain.reminder.ReminderSettings
+import com.nfar.allergydetective.domain.reminder.SettingsStore
 import com.nfar.allergydetective.domain.time.AppClock
 import com.nfar.allergydetective.domain.time.SymptomDayPart
 import com.nfar.allergydetective.ui.common.ExactTime
@@ -174,9 +176,19 @@ class LogSymptomViewModelTest {
 
     private val repository = FakeRepository()
 
+    /** Remembers the dragged order of the symptom areas. */
+    private val settings = object : SettingsStore {
+        var order: List<String> = emptyList()
+        override fun reminder() = ReminderSettings()
+        override fun saveReminder(settings: ReminderSettings) = Unit
+        override fun symptomGroupOrder() = order
+        override fun saveSymptomGroupOrder(order: List<String>) { this.order = order }
+    }
+
     private fun viewModel() = LogSymptomViewModel(
         repository = repository,
         clock = AppClock(clock = object : Clock { override fun now() = now }, zone = { TimeZone.of("Europe/Berlin") }),
+        settings = settings,
     )
 
     @BeforeTest
@@ -191,6 +203,23 @@ class LogSymptomViewModelTest {
 
         assertEquals(listOf("digestive", "skin", "head"), groups.map { it.first })
         assertEquals(listOf(hives, swelling), groups[1].second)
+    }
+
+    @Test
+    fun draggedAreaOrderIsSavedAndUsedNextTime() {
+        val vm = viewModel()
+        vm.onGroupMove(from = "head", to = "digestive")
+        vm.onGroupMoveDone()
+
+        assertEquals(listOf("head", "digestive", "skin"), settings.order)
+        assertEquals(listOf("head", "digestive", "skin"), viewModel().state.value.groups.map { it.first })
+    }
+
+    @Test
+    fun areasUnknownToTheSavedOrderFollowInAppOrder() {
+        val groups = listOf("digestive" to 1, "skin" to 2, "head" to 3)
+        assertEquals(listOf("skin", "digestive", "head"), inUserOrder(groups, listOf("skin", "digestive")).map { it.first })
+        assertEquals(groups, inUserOrder(groups, emptyList()))
     }
 
     @Test
