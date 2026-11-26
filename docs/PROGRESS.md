@@ -1,7 +1,7 @@
 # Fortschritt: Allergie-Detektiv
 
 **Aktuelle Phase:** Konzept ✅ → Setup ✅ → Phase 1: Daten-Herz ✅ → Phase 2: Skelett ✅ → Phase 3: Design ✅ → Phase 4: Self-Test ⏳ (alles auf `main`, PR #5)
-**Letztes Update:** 18.11.2026
+**Letztes Update:** 26.11.2026
 **Zeiterfassung:** [ZEITPROTOKOLL.md](ZEITPROTOKOLL.md)
 
 ---
@@ -61,6 +61,7 @@
 - [x] Klickbarer HTML-Prototyp [docs/prototype](prototype/allergy-detective-prototype.html), Screen für Screen mit dem Handy abgeglichen
 - [x] Testnotizen und Mustererkennung vom 24.11.2026 (PRs #79–#85, offen): Gerichte mit eigener Portion als Momentaufnahme (Migration 12 → 13), eine Schriftskala für alle Formulare, Mustererkennung nach Tagen mit gelernter Verzögerung und schnellen Reaktionen, Konzept in [KONZEPT_MUSTERERKENNUNG.md](KONZEPT_MUSTERERKENNUNG.md)
 - [x] Testnotizen und Katalog vom 25.11.2026 (PRs #87–#100, offen): nach dem Speichern zum Dashboard, Symptom-Dauer feiner, Gewürze in Prise/Löffel, „Warum noch kein Muster?“, Symptom-Bereiche verschiebbar und als Karten, Ziehen erst nach langem Drücken, „Meine Zutaten“ (bearbeiten, löschen, durch Zutat oder Gericht ersetzen), Katalog 150 → 270 Zutaten mit drei Getreide-Kategorien, Mehlen, Süßungsmitteln und Trockenobst (Migrationen 13 → 16), Auswahl „normal / glutenfrei“, Lückenliste in [KATALOG_LUECKEN.md](KATALOG_LUECKEN.md)
+- [x] Weglass-Test vom 25.11.2026 abends (PRs #102–#106, offen): ein Lebensmittel weglassen, Start an einem der letzten 14 Tage, mittlere Stärke pro Tag „vorher / ohne“ als Tabelle; dazu zwei Fixes (weitere Zutat, Grund „kein Muster“ im Bericht). Offen: Handytest
 - [ ] 7+ Tage selbst nutzen, Notizen führen (SELFTEST.md, Kapitel 3)
 - [ ] Export + Notizen auswerten, Schwellenwerte in `AnalysisConfig` kalibrieren
 

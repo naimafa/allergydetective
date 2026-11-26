@@ -18,7 +18,7 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 3 Design | ca. 5:42 h | 17.11.: Theme hell/dunkel, Icons, Dashboard, Symptom-Kacheln, Ergebnis-Karten (0:16). 19.11.: Startseite feinjustiert, Dark Mode (1:10). 20.11.: App-Icon, HTML-Prototyp (0:39). 21.11.: Startseite nach Design-Bild, hell und dunkel (3:37) |
 | 4 Self-Test | ca. 8:14 h | 17.11.: Vorbereitung (0:11). 18.11.: Rückmeldungen aus dem Self-Test umgesetzt, inkl. 0:07 Absturz-Reparatur (2:56). 19.11.: Design-Feedback, Historie, Krankheitstage, Nachtragen (3:14). 20.11.: Getränk, Dauer, Arzt-PDF, Verschlüsselung, Feedback-Runde (1:53); der 7-Tage-Test selbst läuft |
 | Doku / Organisation | ca. 0:50 h | OFFENE_PUNKTE, PROGRESS, Zeitprotokoll, 18.11. auch GitHub-PR (sonst meist in den Phasen enthalten) |
-| **Gesamt (erfasst)** | **ca. 39:35 h** | ohne Konzeptphase; 21.11. Nachmittag bis 25.11. (ca. 18:35 h, meist Design, Testnotizen, Mustererkennung und Katalog) aus den Einträgen unten nachgerechnet |
+| **Gesamt (erfasst)** | **ca. 40:20 h** | ohne Konzeptphase; 21.11. Nachmittag bis 25.11. (ca. 19:20 h, meist Design, Testnotizen, Mustererkennung, Katalog und Weglass-Test) aus den Einträgen unten nachgerechnet |
 
 ---
 
@@ -129,6 +129,8 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 | 25.11.2026 | 20:45–21:10 | 0:25 | 4 | Zutat durch ein Gericht ersetzen (PR #98), angefangen in der ursprünglichen Sitzung, hier fertiggestellt | PC abgestürzt; danach arbeiteten zwei Claude-Sitzungen im selben Ordner und zerschossen sich gegenseitig die Gradle-Builds (Sperrdateien, gelöschte Caches); geklärt, eine Sitzung macht weiter |
 | 25.11.2026 | 21:10–21:25 | 0:15 | 4 | Getreide in drei Kategorien, Mehle, Eiernudeln, Trockenobst einzeln (Migration 15 → 16, PR #99); Auswahl „normal / glutenfrei“ für Brot, Nudeln, Kekse … (PR #100) | – |
 | 25.11.2026 | 21:25–21:35 | 0:10 | Doku | Zeitprotokoll und PROGRESS für den 25.11. | – |
+| 25.11.2026 | 21:35–22:15 | 0:40 | 4 | „+ Weitere Zutat hinzufügen“ klappt jedes Mal (PR #102); Bericht sagt wie die App, warum es kein Muster gibt (PR #103); Weglass-Test: ein Lebensmittel weglassen und „vorher / ohne“ vergleichen (PR #104), Start an jedem Tag der letzten zwei Wochen (PR #105), mittlere Stärke pro Tag als Tabelle (PR #106) | – |
+| 26.11.2026 | 09:00–09:10 | 0:10 | Doku | Zeitprotokoll für den Abend des 25.11. nachgetragen; Entwürfe für den Auslass-Test (ChatGPT) gesichtet | – |
 ---
 
 ## Erkenntnisse
@@ -149,4 +151,4 @@ Die Dauer ist **verstrichene Zeit** (inkl. kurzer Pausen), keine reine Arbeitsze
 
 - **24.11. in ca. 5:00 h, 7 PRs (#79–#85):** Zuerst Testnotizen, dann Design-Feinschliff und die neue Mustererkennung. Die Analysen von ChatGPT und Gemini halfen als zweite Meinung; übernommen wurde, was zu den Daten passt (Momentaufnahme, mehrtägige Beschwerden, Fass-Wert), nicht die Scheingenauigkeit (Gesamtwert). Zwei PC-Abstürze während Gradle-Builds; danach liefen Builds im Hintergrund.
 
-- **25.11. in ca. 2:35 h, 14 PRs (#87–#100):** Testnotizen und Katalog. Der Zutaten-Katalog wuchs von 150 auf 270 Einträge (vier Migrationen ohne Schemaänderung). Datentabelle plus Skript für JSON, Migration und vier Sprachen hielt alles deckungsgleich; je ein Test vergleicht Migration und JSON. Der Absturz selbst kostete wenig, aber danach liefen zwei Claude-Sitzungen im selben Ordner, und ihre Gradle-Builds löschten sich gegenseitig die Zwischendateien. Lehre: nach einem Absturz zuerst prüfen, ob noch eine andere Sitzung oder ein alter Build läuft.
+- **25.11. in ca. 3:15 h, 20 PRs (#87–#106):** Testnotizen, Katalog und zum Schluss der Weglass-Test. Der Zutaten-Katalog wuchs von 150 auf 270 Einträge (vier Migrationen ohne Schemaänderung). Datentabelle plus Skript für JSON, Migration und vier Sprachen hielt alles deckungsgleich; je ein Test vergleicht Migration und JSON. Der Absturz selbst kostete wenig, aber danach liefen zwei Claude-Sitzungen im selben Ordner, und ihre Gradle-Builds löschten sich gegenseitig die Zwischendateien. Lehre: nach einem Absturz zuerst prüfen, ob noch eine andere Sitzung oder ein alter Build läuft.
