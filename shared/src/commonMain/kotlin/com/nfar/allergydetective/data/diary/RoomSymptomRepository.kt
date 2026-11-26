@@ -52,6 +52,8 @@ class RoomSymptomRepository(private val dao: SymptomDao) : SymptomRepository {
 internal fun DurationKind.toDomain(): SymptomDuration = when (this) {
     DurationKind.UNDER_1H -> SymptomDuration.UNDER_1H
     DurationKind.H1_TO_3 -> SymptomDuration.H1_TO_3
+    DurationKind.H3_TO_6 -> SymptomDuration.H3_TO_6
+    DurationKind.H6_TO_12 -> SymptomDuration.H6_TO_12
     DurationKind.H3_TO_12 -> SymptomDuration.H3_TO_12
     DurationKind.OVER_12H -> SymptomDuration.OVER_12H
 }
@@ -59,6 +61,8 @@ internal fun DurationKind.toDomain(): SymptomDuration = when (this) {
 internal fun SymptomDuration.toEntity(): DurationKind = when (this) {
     SymptomDuration.UNDER_1H -> DurationKind.UNDER_1H
     SymptomDuration.H1_TO_3 -> DurationKind.H1_TO_3
+    SymptomDuration.H3_TO_6 -> DurationKind.H3_TO_6
+    SymptomDuration.H6_TO_12 -> DurationKind.H6_TO_12
     SymptomDuration.H3_TO_12 -> DurationKind.H3_TO_12
     SymptomDuration.OVER_12H -> DurationKind.OVER_12H
 }

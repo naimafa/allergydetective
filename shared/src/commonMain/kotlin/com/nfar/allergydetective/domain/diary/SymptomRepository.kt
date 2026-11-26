@@ -53,4 +53,14 @@ data class LoggedSymptom(
 )
 
 /** How long a complaint lasted, optional (feedback 20.11.). Shown in the history and the report for the doctor. */
-enum class SymptomDuration { UNDER_1H, H1_TO_3, H3_TO_12, OVER_12H }
+enum class SymptomDuration {
+    UNDER_1H, H1_TO_3, H3_TO_6, H6_TO_12, OVER_12H,
+
+    /** Before 25.11.2026: one step 3–12 h. Shown for old entries, no longer offered. */
+    H3_TO_12;
+
+    companion object {
+        /** The steps the form offers. */
+        val offered: List<SymptomDuration> = listOf(UNDER_1H, H1_TO_3, H3_TO_6, H6_TO_12, OVER_12H)
+    }
+}

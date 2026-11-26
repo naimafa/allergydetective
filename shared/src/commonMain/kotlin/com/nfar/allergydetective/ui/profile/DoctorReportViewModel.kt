@@ -73,10 +73,6 @@ import allergydetective.shared.generated.resources.report_week_value
 import allergydetective.shared.generated.resources.results_bad_sleep
 import allergydetective.shared.generated.resources.results_high_stress
 import allergydetective.shared.generated.resources.results_reason
-import allergydetective.shared.generated.resources.symptom_duration_h1_to_3
-import allergydetective.shared.generated.resources.symptom_duration_h3_to_12
-import allergydetective.shared.generated.resources.symptom_duration_over_12h
-import allergydetective.shared.generated.resources.symptom_duration_under_1h
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nfar.allergydetective.platform.Sheet
@@ -96,6 +92,7 @@ import com.nfar.allergydetective.domain.analysis.model.EvidenceLevel
 import com.nfar.allergydetective.domain.diary.HistoryRepository
 import com.nfar.allergydetective.domain.diary.LanguageProvider
 import com.nfar.allergydetective.domain.diary.SymptomDuration
+import com.nfar.allergydetective.ui.symptom.durationLabelRes
 import com.nfar.allergydetective.domain.report.DoctorReport
 import com.nfar.allergydetective.domain.report.ReportDayTime
 import com.nfar.allergydetective.domain.report.buildDoctorReport
@@ -477,7 +474,8 @@ class DoctorReportViewModel(
             blocks += PdfBlock.Heading(getString(Res.string.report_h_duration))
             val maxDuration = report.durations.values.max().toDouble()
             blocks += PdfBlock.Bars(
-                rows = SymptomDuration.entries.map { duration ->
+                // The old step "3–12 h" only when entries still carry it.
+                rows = SymptomDuration.entries.filter { it in SymptomDuration.offered || it in report.durations }.map { duration ->
                     val count = report.durations[duration] ?: 0
                     BarRow(durationLabel(duration), count.toDouble(), count.toString())
                 },
@@ -554,14 +552,7 @@ class DoctorReportViewModel(
         },
     )
 
-    private suspend fun durationLabel(duration: SymptomDuration): String = getString(
-        when (duration) {
-            SymptomDuration.UNDER_1H -> Res.string.symptom_duration_under_1h
-            SymptomDuration.H1_TO_3 -> Res.string.symptom_duration_h1_to_3
-            SymptomDuration.H3_TO_12 -> Res.string.symptom_duration_h3_to_12
-            SymptomDuration.OVER_12H -> Res.string.symptom_duration_over_12h
-        },
-    )
+    private suspend fun durationLabel(duration: SymptomDuration): String = getString(durationLabelRes(duration))
 
     companion object {
         /** Periods to choose from, in days. */
