@@ -518,6 +518,9 @@
     <string name="meal_step_what">¿Qué comiste?</string>
     <string name="meal_quick">Ingredientes elegidos hace poco</string>
     <string name="meal_quick_hint">Ingredientes sueltos que comiste hace poco</string>
+    <string name="meal_copy_title">¿Como ayer?</string>
+    <string name="meal_copy_hint">Repetir una comida de ayer o anteayer</string>
+    <string name="meal_copy_chip">%1$s · %2$s</string>
     <string name="meal_favorites_hint">Platos guardados: un toque añade todos sus ingredientes</string>
     <string name="meal_slot_missing">Elige primero la comida.</string>
     <string name="meal_save_slot">Guardar %1$s</string>

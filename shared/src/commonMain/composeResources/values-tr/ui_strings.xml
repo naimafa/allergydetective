@@ -518,6 +518,9 @@
     <string name="meal_step_what">Ne yedin?</string>
     <string name="meal_quick">Son seçilen malzemeler</string>
     <string name="meal_quick_hint">Son zamanlarda yediğin tek malzemeler</string>
+    <string name="meal_copy_title">Dünkü gibi mi?</string>
+    <string name="meal_copy_hint">Dünden veya evvelki günden bir öğünü al</string>
+    <string name="meal_copy_chip">%1$s · %2$s</string>
     <string name="meal_favorites_hint">Kayıtlı yemekler – bir dokunuş tüm malzemelerini ekler</string>
     <string name="meal_slot_missing">Lütfen önce öğünü seç.</string>
     <string name="meal_save_slot">%1$s kaydet</string>

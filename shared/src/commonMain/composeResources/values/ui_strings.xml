@@ -519,6 +519,9 @@
     <string name="meal_step_what">What did you eat?</string>
     <string name="meal_quick">Recently chosen ingredients</string>
     <string name="meal_quick_hint">Single ingredients you ate recently</string>
+    <string name="meal_copy_title">Same as before?</string>
+    <string name="meal_copy_hint">Take over a meal from yesterday or the day before</string>
+    <string name="meal_copy_chip">%1$s · %2$s</string>
     <string name="meal_favorites_hint">Saved dishes – a tap adds all their ingredients</string>
     <string name="meal_slot_missing">Please choose the meal first.</string>
     <string name="meal_save_slot">Save %1$s</string>

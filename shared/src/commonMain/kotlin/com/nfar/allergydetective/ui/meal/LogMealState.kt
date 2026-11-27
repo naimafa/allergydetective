@@ -44,6 +44,9 @@ sealed interface Place {
     data class InDish(val favoriteId: Long) : Place
 }
 
+/** A logged meal of an earlier day that can be copied into the form. */
+data class EarlierMeal(val mealId: Long, val daysAgo: Int, val slot: MealSlot)
+
 /** "Tomate steckt schon in …": the ingredient is already in the chosen dishes; the user decides whether to add it too. */
 data class PendingAdd(val ingredient: IngredientInfo, val dishIds: List<Long>)
 
@@ -57,6 +60,8 @@ data class LogMealState(
     /** Dishes matching the search by name or ingredient. */
     val dishResults: List<FavoriteInfo> = emptyList(),
     val recent: List<IngredientInfo> = emptyList(),
+    /** Meals of yesterday and the day before, to take over again ("Wie gestern?", user 27.11.2026). */
+    val earlierMeals: List<EarlierMeal> = emptyList(),
     val favorites: List<FavoriteInfo> = emptyList(),
     /** Ingredients picked on their own; the ingredients of dishes are in [dishes]. */
     val selected: List<SelectedIngredient> = emptyList(),
