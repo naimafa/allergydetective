@@ -39,6 +39,13 @@ class PackageIngredientsTest {
     }
 
     @Test
+    fun aBlurredListKeepsItsPartsAndTurnsMilkPowderIntoMilk() {
+        val text = "ZUTATEN: WEIZENMEHL, Zucker, 12 % Rosinen,\nStärke, MAGERMILCHPULVER, Backtriebmittel\n(Glucono-delta-lacton, Natriumcarbonate),\nSalz, Aroma (enthält GERSTE).\nKann enthalten: SOJA"
+
+        assertEquals("WEIZENMEHL, Zucker, Rosinen, Stärke, Milch, Salz, Aroma, enthält GERSTE", PackageIngredients.clean(text))
+    }
+
+    @Test
     fun theFrontOfAPackageWithoutAListGivesNothing() {
         assertEquals("", PackageIngredients.clean("REWE Bio\nDinkel Kaiserschmarrn\nBackmischung mit Grieß\nFür deinen bewussten Lebensstil"))
     }

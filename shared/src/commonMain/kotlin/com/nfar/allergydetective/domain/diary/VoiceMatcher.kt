@@ -76,7 +76,9 @@ class VoiceMatcher(
 
     /** Tries "spinatpizza" as "spinat" + "pizza", both parts must match well. */
     private fun splitCompound(word: String): List<Long>? {
-        for (cut in MIN_WORD_LENGTH..word.length - MIN_WORD_LENGTH) {
+        // "Gerste" is not "Ger" + "ste" (Hefe + Stevia): on a package both parts need a real length.
+        val minPart = if (strictTypos) MIN_STRICT_PART_LENGTH else MIN_WORD_LENGTH
+        for (cut in minPart..word.length - minPart) {
             val first = search.bestMatch(word.substring(0, cut))?.takeIf { it.second <= GOOD_SCORE }
             val second = search.bestMatch(word.substring(cut))?.takeIf { it.second <= GOOD_SCORE }
             if (first != null && second != null) return listOf(first.first, second.first)
@@ -88,6 +90,7 @@ class VoiceMatcher(
         const val MAX_PHRASE_WORDS = 4
         const val MIN_WORD_LENGTH = 3
         const val SUBSTRING_SCORE = 3
+        const val MIN_STRICT_PART_LENGTH = 4
         const val MIN_SUBSTRING_WORD_LENGTH = 6
         const val MIN_TYPO_WORD_LENGTH = 7
 

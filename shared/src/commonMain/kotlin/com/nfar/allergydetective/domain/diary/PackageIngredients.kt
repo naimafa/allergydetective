@@ -33,6 +33,7 @@ object PackageIngredients {
         RegexOption.IGNORE_CASE,
     )
 
+    private val milkPowder = Regex("""(mager|voll)?milchpulver""", RegexOption.IGNORE_CASE)
     private val hyphenBreak = Regex("""-\s*\n\s*""")
     private val whitespace = Regex("""\s+""")
     private val quantity = Regex("""\d+([.,]\d+)?\s*(%|g|mg|kg|ml|l)(?![\p{L}])""")
@@ -61,6 +62,8 @@ object PackageIngredients {
         return text
             // Percentages and quantities: "Weizenmehl (62 %)", "12,5%", "250 g".
             .replace(additiveClass, " ")
+            // Milk powder is milk for the catalog.
+            .replace(milkPowder, "Milch")
             // "Rohrohrzucker" is raw cane sugar, the catalog knows "Rohrzucker".
             .replace("rohrohr", "rohr ", ignoreCase = true)
             .replace(quantity, " ")
