@@ -234,9 +234,21 @@ fun LogMealScreen(
             onCreated = {
                 showCustomDialog = false
                 viewModel.onCustomIngredientCreated(it)
+                viewModel.onNewFromPackageHandled()
             },
-            onDismiss = { showCustomDialog = false },
+            onDismiss = {
+                showCustomDialog = false
+                viewModel.onNewFromPackageHandled()
+            },
         )
+    }
+    // Names from a package that the user ticked as new ingredients: the form opens for each, one after the other.
+    val nextNewFromPackage = state.newFromPackage.firstOrNull()
+    LaunchedEffect(nextNewFromPackage) {
+        if (nextNewFromPackage != null) {
+            customViewModel.start(nextNewFromPackage)
+            showCustomDialog = true
+        }
     }
     val openCustomDialog: () -> Unit = {
         customViewModel.start(state.query)

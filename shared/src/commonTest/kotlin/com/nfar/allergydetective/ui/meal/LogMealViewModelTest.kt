@@ -440,9 +440,14 @@ class LogMealViewModelTest {
 
         val scan = vm.state.value.packageScan!!
         assertEquals(listOf(bread.id, milk.id), scan.found.map { it.id })
-        vm.onPackageConfirm(setOf(milk.id))
+        // The catalog of this test has no salt: it is offered as a new ingredient, not guessed.
+        assertEquals(listOf("Salz"), scan.unknown)
+        vm.onPackageConfirm(setOf(milk.id), listOf("Salz"))
         assertEquals(listOf(milk.id), vm.state.value.selected.map { it.ingredient.id })
         assertNull(vm.state.value.packageScan)
+        assertEquals(listOf("Salz"), vm.state.value.newFromPackage)
+        vm.onNewFromPackageHandled()
+        assertEquals(emptyList(), vm.state.value.newFromPackage)
     }
 
     @Test
