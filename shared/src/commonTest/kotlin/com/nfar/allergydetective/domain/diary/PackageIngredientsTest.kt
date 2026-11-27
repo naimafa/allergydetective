@@ -16,17 +16,14 @@ class PackageIngredientsTest {
     fun theListEndsAtItsFullStopEvenWhenTheTracesLineIsNotRecognised() {
         val text = "DE-ÖKO-001\nZutaten: Dinkelmehl¹ (eine Weizenart) 69 %, Rohrohr-\nzucker¹, Backpulver (Back-\ntriebmittel (Natriumcarbonate)), Meersalz, gemahlene Bourbon-Vanille¹.\n¹aus kontrolliert biologischem Anbau.\nKann Spuren von Milch, Ei, Soja.\nBackmischungen und Teige sind nicht zum Rohverzehr bestimmt."
 
-        assertEquals(
-            "Dinkelmehl, eine Weizenart, Rohrohrzucker, Backpulver, Backtriebmittel, Natriumcarbonate, Meersalz, gemahlene Bourbon-Vanille",
-            PackageIngredients.clean(text),
-        )
+        assertEquals("Dinkelmehl, rohrzucker, Backpulver, Meersalz, Bourbon-Vanille", PackageIngredients.clean(text))
     }
 
     @Test
     fun aMarketingTextWithTheWordIngredientsBeforeTheListIsSkipped() {
         val text = "durch wertvolle Zutaten. Für deinen bewussten\nLebensstil und puren Bio-Genuss.\nErfahre mehr über deine REWE Bio Produkte:\nwww.rewe.de/bio\nDE-ÖKO-001\nZutaten: Dinkelmehl¹ (eine Weizenart) 69 %, Maisstärke¹, Meersalz, gemahlene Bourbon-Vanille¹.\nKann Spuren von Milch enthalten."
 
-        assertEquals("Dinkelmehl, eine Weizenart, Maisstärke, Meersalz, gemahlene Bourbon-Vanille", PackageIngredients.clean(text))
+        assertEquals("Dinkelmehl, Maisstärke, Meersalz, Bourbon-Vanille", PackageIngredients.clean(text))
     }
 
     @Test

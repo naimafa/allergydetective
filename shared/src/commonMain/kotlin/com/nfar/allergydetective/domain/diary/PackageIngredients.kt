@@ -23,6 +23,14 @@ object PackageIngredients {
         "el", "tl", "bund", "prise", "stück", "stk", "tasse", "becher", "päckchen", "dose", "zehe", "zehen", "scheibe", "scheiben", "handvoll",
         "glutenfrei", "vegetarisch", "vegan", "laktosefrei", "min", "portionen", "portion", "bio",
         "tbsp", "tsp", "cup", "cups", "pinch", "bunch", "slice", "slices", "cloves", "clove",
+        // "gemahlene Bourbon-Vanille" is not "gemahlene Mandeln"; "eine Weizenart" says what the flour is, not another one.
+        "gemahlene", "gemahlener", "gemahlenes", "gemahlen", "eine", "weizenart", "aus", "kontrolliert", "biologischem", "anbau",
+    )
+
+    /** "Säuerungsmittel (Kaliumtartrate)": the class of an additive and its chemical name, nothing to eat. */
+    private val additiveClass = Regex(
+        """(säuerungsmittel|backtriebmittel|triebmittel|emulgator|konservierungsstoff|farbstoff|antioxidationsmittel|verdickungsmittel|geschmacksverstärker|stabilisator|festigungsmittel|überzugsmittel|trennmittel|feuchthaltemittel|acidity regulator|raising agents?|emulsifiers?|preservatives?|colou?rs?|antioxidants?|thickeners?|stabili[sz]ers?)\s*\((?:[^()]|\([^()]*\))*\)""",
+        RegexOption.IGNORE_CASE,
     )
 
     private val hyphenBreak = Regex("""-\s*\n\s*""")
@@ -49,6 +57,9 @@ object PackageIngredients {
         if (end != null) text = text.substring(0, end)
         return text
             // Percentages and quantities: "Weizenmehl (62 %)", "12,5%", "250 g".
+            .replace(additiveClass, " ")
+            // "Rohrohrzucker" is raw cane sugar, the catalog knows "Rohrzucker".
+            .replace("rohrohr", "rohr", ignoreCase = true)
             .replace(quantity, " ")
             .replace(number, " ")
             .replace(separators, ",")
