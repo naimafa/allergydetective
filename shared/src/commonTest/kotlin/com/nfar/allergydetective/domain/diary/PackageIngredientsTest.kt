@@ -42,12 +42,19 @@ class PackageIngredientsTest {
     fun aBlurredListKeepsItsPartsAsWritten() {
         val text = "ZUTATEN: WEIZENMEHL, Zucker, 12 % Rosinen,\nStärke, MAGERMILCHPULVER, Backtriebmittel\n(Glucono-delta-lacton, Natriumcarbonate),\nSalz, Aroma (enthält GERSTE).\nKann enthalten: SOJA"
 
-        assertEquals("WEIZENMEHL, Zucker, Rosinen, Stärke, MAGERMILCHPULVER, Salz, Aroma, GERSTE", PackageIngredients.clean(text))
+        assertEquals("WEIZENMEHL, Zucker, Rosinen, Stärke, MAGERMILCHPULVER, Salz, GERSTE", PackageIngredients.clean(text))
     }
 
     @Test
     fun anAdditiveClassCutOffByTheCameraIsDropped() {
         assertEquals("Zucker, Salz", PackageIngredients.clean("Zutaten: Zucker, Backtriebmit, Salz."))
+    }
+
+    @Test
+    fun garbledChemicalNamesAndAromaAreNotOfferedAsIngredients() {
+        val text = "Zutaten: Zucker, Backtriebrnite (Glucono-delta-lacton, Natrumcartnate), Salz, Aroma (enthalt GERSTE)."
+
+        assertEquals("Zucker, Salz, GERSTE", PackageIngredients.clean(text))
     }
 
     @Test

@@ -24,7 +24,7 @@ object PackageIngredients {
         "glutenfrei", "vegetarisch", "vegan", "laktosefrei", "min", "portionen", "portion", "bio",
         "tbsp", "tsp", "cup", "cups", "pinch", "bunch", "slice", "slices", "cloves", "clove",
         // "gemahlene Bourbon-Vanille" is not "gemahlene Mandeln"; "eine Weizenart" says what the flour is, not another one.
-        "gemahlene", "gemahlener", "gemahlenes", "gemahlen", "eine", "weizenart", "aus", "kontrolliert", "biologischem", "anbau", "enthält", "enthaelt", "enthalten",
+        "gemahlene", "gemahlener", "gemahlenes", "gemahlen", "eine", "weizenart", "aus", "kontrolliert", "biologischem", "anbau", "enthält", "enthaelt", "enthalt", "enthalten", "aroma", "aromen",
     )
 
     /** "Säuerungsmittel (Kaliumtartrate)": the class of an additive and its chemical name, nothing to eat. */
@@ -35,6 +35,11 @@ object PackageIngredients {
 
     private val additiveStem = Regex(
         """(?<!\p{L})(backtrieb|triebmittel|säuerungsm|sauerungsm|emulgator|konservierungsst|farbstoff|antioxidationsm|verdickungsm|geschmacksverst|stabilisator|festigungsm|überzugsm|trennmittel|feuchthaltem)\p{L}*""",
+        RegexOption.IGNORE_CASE,
+    )
+    /** Chemical names of additives, also as the camera garbles them ("Natrumcartnate"): nothing to eat, no new ingredient. */
+    private val chemical = Regex(
+        """(?<!\p{L})[\p{L}-]*(natr[iu]m|kalium|calcium|magnesium|carbon|carbnat|cartnat|tartrat|phosphat|citrat|sorbat|benzoat|lacton|glutamat|säure|saeure|sulfit|nitrit)[\p{L}-]*""",
         RegexOption.IGNORE_CASE,
     )
     private val hyphenBreak = Regex("""-\s*\n\s*""")
@@ -67,6 +72,7 @@ object PackageIngredients {
             .replace(additiveClass, " ")
             // The camera often cuts the end of a word at the edge: "Backtriebmit" is still the class of an additive.
             .replace(additiveStem, " ")
+            .replace(chemical, " ")
             .replace(quantity, " ")
             .replace(number, " ")
             .replace(separators, ",")
