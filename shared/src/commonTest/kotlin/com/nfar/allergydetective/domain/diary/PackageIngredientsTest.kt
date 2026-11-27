@@ -51,6 +51,13 @@ class PackageIngredientsTest {
     }
 
     @Test
+    fun theProducersAddressLineEndsTheListWhenNoTracesLineWasRead() {
+        val text = "ZUTATEN: Rosinen, MAGERMILCHPULVER, Salz, Aroma (enthalt GERSTE\nKER NAHRUNGSMITTEL KG 33547 BIELEFELD\nRINGMAUERGASSE 9/1 9500 VILLACH"
+
+        assertEquals("Rosinen, MAGERMILCHPULVER, Salz, Aroma, GERSTE", PackageIngredients.clean(text))
+    }
+
+    @Test
     fun bracketsInsideBracketsAreAllLeftOut() {
         assertEquals("Zucker, Backpulver, Salz", PackageIngredients.clean("Zutaten: Zucker, Backpulver (Backtriebmittel (Natriumcarbonate), Säuerungsmittel (Kaliumtartrate)), Salz."))
     }

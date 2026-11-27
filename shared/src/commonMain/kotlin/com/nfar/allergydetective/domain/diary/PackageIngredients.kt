@@ -29,6 +29,9 @@ object PackageIngredients {
 
     /** The innermost brackets: "Backtriebmittel (Natriumcarbonate)", "Aroma (enthält Gerste)". */
     private val innermostBrackets = Regex("""\([^()]*\)""")
+    /** Words of the producer's line: company forms and distribution. */
+    private val COMPANY = listOf("nahrungsmittel", "gmbh", " kg ", "vertrieb", "inverkehrbringer", "importiert", "www.", "hotline", "kundenservice")
+    private val postalCode = Regex("""(?<!\d)\d{5}(?!\d)""")
     private val hyphenBreak = Regex("""-\s*\n\s*""")
     private val whitespace = Regex("""\s+""")
     private val quantity = Regex("""\d+([.,]\d+)?\s*(%|g|mg|kg|ml|l)(?![\p{L}])""")
@@ -64,6 +67,10 @@ object PackageIngredients {
         // No "Zutaten:" and nothing that looks like a list (commas): the front of a package or a text, no guessing.
         if (start == null && text.count { it == ',' } < 2) return ""
         if (start != null) text = text.substring(start)
+        // The line of the producer's address ends the list as well, even when "Kann enthalten" was not read.
+        val addressAt = (COMPANY.mapNotNull { text.indexOf(it, ignoreCase = true).takeIf { at -> at > 0 } } +
+            listOfNotNull(postalCode.find(text)?.range?.first?.takeIf { it > 0 })).minOrNull()
+        if (addressAt != null) text = text.substring(0, text.lastIndexOf('\n', addressAt).coerceAtLeast(0))
         text = text.replace(whitespace, " ").trim()
         // An ingredient list ends with a full stop (not a decimal point): what follows is traces, storage, advice.
         val end = (ENDS.mapNotNull { marker -> text.indexOf(marker, ignoreCase = true).takeIf { it > 0 } } +
