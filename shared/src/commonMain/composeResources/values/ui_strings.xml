@@ -523,9 +523,9 @@
     <string name="meal_scan_title">Found on the package</string>
     <string name="meal_scan_none">Nothing could be read as an ingredient. Try again with the ingredient list in focus and good light.</string>
     <string name="meal_scan_unknown">Not in your list yet. Add as a new ingredient?</string>
-    <string name="meal_scan_unknown_hint">Ticked ones open the form "New ingredient" one after the other.</string>
+    <string name="meal_scan_unknown_hint">Ticked ones are created one after the other.</string>
     <string name="meal_scan_add">Add</string>
-    <string name="meal_scan_hint">The text is read from a photo and can contain mistakes or miss ingredients. Please check the list against the package. Tip: Google Lens often reads the text more accurately. Copy it there and use "Paste copied text" in the camera menu.</string>
+    <string name="meal_scan_hint">Read from a photo, may contain mistakes. Please check. Tip: Google Lens reads more accurately; copy the text and paste it here.</string>
     <string name="meal_scan_photo">Take a photo of the ingredient list</string>
     <string name="meal_scan_paste">Paste copied text</string>
     <string name="meal_scan_text_title">Ingredient list as text</string>

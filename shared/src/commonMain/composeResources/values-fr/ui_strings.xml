@@ -519,9 +519,9 @@
     <string name="meal_scan_title">Trouvé sur l’emballage</string>
     <string name="meal_scan_none">Aucun ingrédient n’a pu être lu. Réessaie avec la liste bien nette et une bonne lumière.</string>
     <string name="meal_scan_unknown">Pas encore dans ta liste. Ajouter comme nouvel ingrédient ?</string>
-    <string name="meal_scan_unknown_hint">Les éléments cochés ouvrent le formulaire « Nouvel ingrédient » l’un après l’autre.</string>
+    <string name="meal_scan_unknown_hint">Les éléments cochés sont créés l’un après l’autre.</string>
     <string name="meal_scan_add">Ajouter</string>
-    <string name="meal_scan_hint">Le texte est lu à partir d’une photo et peut contenir des erreurs ou oublier des ingrédients. Vérifie la liste avec l’emballage. Astuce : Google Lens lit souvent le texte plus précisément. Copie-le là-bas et choisis « Coller le texte copié » dans le menu de l’appareil photo.</string>
+    <string name="meal_scan_hint">Lu à partir d’une photo, peut contenir des erreurs. À vérifier. Astuce : Google Lens lit plus précisément ; copie le texte et colle-le ici.</string>
     <string name="meal_scan_photo">Prendre en photo la liste des ingrédients</string>
     <string name="meal_scan_paste">Coller le texte copié</string>
     <string name="meal_scan_text_title">Liste des ingrédients en texte</string>

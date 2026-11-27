@@ -523,9 +523,9 @@
     <string name="meal_scan_title">Auf der Verpackung gefunden</string>
     <string name="meal_scan_none">Es konnte keine Zutat gelesen werden. Versuche es noch einmal, mit der Zutatenliste scharf im Bild und gutem Licht.</string>
     <string name="meal_scan_unknown">Noch nicht in deiner Liste. Als neue Zutat anlegen?</string>
-    <string name="meal_scan_unknown_hint">Angekreuzte öffnen nacheinander das Formular „Neue Zutat".</string>
+    <string name="meal_scan_unknown_hint">Angekreuzte legst Du nacheinander an.</string>
     <string name="meal_scan_add">Hinzufügen</string>
-    <string name="meal_scan_hint">Der Text wird aus einem Foto gelesen und kann Fehler enthalten oder Zutaten übersehen. Bitte prüfe die Liste anhand der Packung. Tipp: Google Lens liest den Text oft genauer. Kopiere ihn dort und wähle im Kamera-Menü „Kopierten Text einfügen“.</string>
+    <string name="meal_scan_hint">Aus einem Foto gelesen, kann Fehler enthalten. Bitte prüfen. Tipp: Google Lens liest genauer, Text kopieren und hier einfügen.</string>
     <string name="meal_scan_photo">Foto der Zutatenliste aufnehmen</string>
     <string name="meal_scan_paste">Kopierten Text einfügen</string>
     <string name="meal_scan_text_title">Zutatenliste als Text</string>
