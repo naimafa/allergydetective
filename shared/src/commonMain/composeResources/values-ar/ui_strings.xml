@@ -531,10 +531,10 @@
     <string name="meal_scan">قراءة المكونات من العبوة</string>
     <string name="meal_scan_title">وُجد على العبوة</string>
     <string name="meal_scan_none">تعذّرت قراءة أي مكوّن. حاول مرة أخرى مع وضوح قائمة المكونات وإضاءة جيدة.</string>
-    <string name="meal_scan_unknown">غير موجود في قائمتك بعد. هل تريد إضافته كمكوّن جديد؟</string>
-    <string name="meal_scan_unknown_hint">العناصر المحددة تُنشأ واحدًا تلو الآخر.</string>
+    <string name="meal_scan_unknown">غير موجود في قائمتك بعد</string>
+    <string name="meal_scan_unknown_hint">حدّد للإنشاء</string>
     <string name="meal_scan_add">إضافة</string>
-    <string name="meal_scan_hint">قُرئ من صورة وقد يحتوي على أخطاء. يرجى التحقق. نصيحة: يقرأ Google Lens بدقة أكبر؛ انسخ النص والصقه هنا.</string>
+    <string name="meal_scan_hint">يرجى التحقق، قد توجد أخطاء. نصيحة: انسخ النص بـ Google Lens والصقه.</string>
     <string name="meal_scan_photo">التقاط صورة لقائمة المكونات</string>
     <string name="meal_scan_paste">لصق النص المنسوخ</string>
     <string name="meal_scan_text_title">قائمة المكونات كنص</string>

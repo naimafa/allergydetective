@@ -521,10 +521,10 @@
     <string name="meal_scan">Leer ingredientes del envase</string>
     <string name="meal_scan_title">Encontrado en el envase</string>
     <string name="meal_scan_none">No se pudo leer ningún ingrediente. Inténtalo de nuevo con la lista enfocada y buena luz.</string>
-    <string name="meal_scan_unknown">Aún no está en tu lista. ¿Añadir como ingrediente nuevo?</string>
-    <string name="meal_scan_unknown_hint">Los marcados se crean uno tras otro.</string>
+    <string name="meal_scan_unknown">Aún no está en tu lista</string>
+    <string name="meal_scan_unknown_hint">Marca para crear</string>
     <string name="meal_scan_add">Añadir</string>
-    <string name="meal_scan_hint">Leído de una foto, puede tener errores. Compruébalo. Consejo: Google Lens lee con más precisión; copia el texto y pégalo aquí.</string>
+    <string name="meal_scan_hint">Compruébalo, puede haber errores. Consejo: copia el texto con Google Lens y pégalo.</string>
     <string name="meal_scan_photo">Hacer una foto de la lista de ingredientes</string>
     <string name="meal_scan_paste">Pegar texto copiado</string>
     <string name="meal_scan_text_title">Lista de ingredientes como texto</string>

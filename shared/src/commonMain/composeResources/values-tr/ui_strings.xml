@@ -521,10 +521,10 @@
     <string name="meal_scan">Ambalajdan malzemeleri oku</string>
     <string name="meal_scan_title">Ambalajda bulundu</string>
     <string name="meal_scan_none">Hiçbir malzeme okunamadı. İçindekiler listesini net ve iyi ışıkta tekrar dene.</string>
-    <string name="meal_scan_unknown">Henüz listende yok. Yeni malzeme olarak eklensin mi?</string>
-    <string name="meal_scan_unknown_hint">İşaretlenenler sırayla oluşturulur.</string>
+    <string name="meal_scan_unknown">Henüz listende yok</string>
+    <string name="meal_scan_unknown_hint">Oluşturmak için işaretle</string>
     <string name="meal_scan_add">Ekle</string>
-    <string name="meal_scan_hint">Fotoğraftan okundu, hata içerebilir. Lütfen kontrol et. İpucu: Google Lens daha doğru okur; metni kopyala ve buraya yapıştır.</string>
+    <string name="meal_scan_hint">Lütfen kontrol et, hata olabilir. İpucu: metni Google Lens ile kopyala ve yapıştır.</string>
     <string name="meal_scan_photo">Malzeme listesinin fotoğrafını çek</string>
     <string name="meal_scan_paste">Kopyalanan metni yapıştır</string>
     <string name="meal_scan_text_title">Malzeme listesi metin olarak</string>
