@@ -64,6 +64,7 @@
 - [x] Weglass-Test vom 25.11.2026 abends (PRs #102–#106, offen): ein Lebensmittel weglassen, Start an einem der letzten 14 Tage, mittlere Stärke pro Tag „vorher / ohne“ als Tabelle; dazu zwei Fixes (weitere Zutat, Grund „kein Muster“ im Bericht). Offen: Handytest
 - [x] Weglass-Test am 26.11.2026 (PR #107, offen): ganze Gruppen, Verlauf mit den Tagen vorher, Zöliakie-Hinweis, andere Ernährungs-Veränderungen, Wiedereinführung (nicht bei Allergenen), Karte im Stil der Skizze; auf dem Handy geprüft
 - [x] Testnotizen vom 26.11.2026 abends (PRs #108–#114, offen): Legende als Farbfelder, Handy-Sprache und Fokus in App-Sprache, Arabisch gespiegelt, Gelenke & Muskeln (Migration 16 → 17), Kräuter-Gericht in Prise/Löffel, Spanisch und Türkisch, Stress/Schlaf im Weglass-Test, neue Symptom-Bereiche an der richtigen Stelle
+- [x] Testnotizen vom 27.11.2026 (PRs #115–#117, offen): gleiche Tageszahl in „Muster erkennen“ und „Dein Fortschritt“ (Abschnitt + Ziel aus dem Profil), „Wie gestern?“ mit Mahlzeiten von gestern und vorgestern, Zutaten per Foto der Verpackung lesen (ML Kit auf dem Handy, kein Barcode-Scan). Offen: Handytest der Kamera
 - [ ] 7+ Tage selbst nutzen, Notizen führen (SELFTEST.md, Kapitel 3)
 - [ ] Export + Notizen auswerten, Schwellenwerte in `AnalysisConfig` kalibrieren
 
