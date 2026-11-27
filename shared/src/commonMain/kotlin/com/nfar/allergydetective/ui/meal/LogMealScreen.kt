@@ -103,6 +103,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Mic
+import androidx.compose.material.icons.outlined.CameraAlt
+import allergydetective.shared.generated.resources.meal_scan
+import com.nfar.allergydetective.platform.rememberPackageScan
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.filled.Star
@@ -217,6 +220,7 @@ fun LogMealScreen(
     }
     if (state.existingMealId != null) {
         state.slot?.let { slot -> ExistingMealDialog(slot, viewModel) }
+        state.packageScan?.let { PackageScanDialog(it, viewModel) }
     }
     IngredientQuestions(state, viewModel)
     if (showCustomDialog) {
@@ -430,6 +434,8 @@ private fun WhatStep(
     // While searching only the results show; otherwise each shortcut group is one scrollable row.
     StepCard(number = 2, title = stringResource(Res.string.meal_step_what)) {
         val speech = rememberSpeechInput(Locale.current.toLanguageTag()) { text -> text?.let(viewModel::onVoiceResult) }
+        val scan = rememberPackageScan(viewModel::onPackageText)
+        val scanLabel = stringResource(Res.string.meal_scan)
         // User note 22.11.2026: a soft search pill with magnifier and microphone, as in the design picture.
         TextField(
             value = state.query,
@@ -439,9 +445,12 @@ private fun WhatStep(
             shape = CircleShape,
             colors = searchPillColors(),
             leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
-            trailingIcon = speech?.let { start ->
+            trailingIcon = if (speech == null && scan == null) null else {
                 {
-                    IconButton(onClick = start) { Icon(Icons.Outlined.Mic, contentDescription = voiceLabel, modifier = Modifier.size(20.dp)) }
+                    Row {
+                        scan?.let { start -> IconButton(onClick = start) { Icon(Icons.Outlined.CameraAlt, contentDescription = scanLabel, modifier = Modifier.size(20.dp)) } }
+                        speech?.let { start -> IconButton(onClick = start) { Icon(Icons.Outlined.Mic, contentDescription = voiceLabel, modifier = Modifier.size(20.dp)) } }
+                    }
                 }
             },
             modifier = Modifier.fillMaxWidth().focusRequester(searchFocus).onFocusChanged { onSearchFocus(it.isFocused) },

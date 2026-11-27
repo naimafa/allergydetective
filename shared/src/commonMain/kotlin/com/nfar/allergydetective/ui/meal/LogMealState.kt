@@ -44,6 +44,9 @@ sealed interface Place {
     data class InDish(val favoriteId: Long) : Place
 }
 
+/** What was found on a package: ingredients to confirm, and words that matched nothing. */
+data class PackageScan(val found: List<IngredientInfo>, val notRecognized: List<String>)
+
 /** "Tomate steckt schon in …": the ingredient is already in the chosen dishes; the user decides whether to add it too. */
 data class PendingAdd(val ingredient: IngredientInfo, val dishIds: List<Long>)
 
@@ -57,6 +60,8 @@ data class LogMealState(
     /** Dishes matching the search by name or ingredient. */
     val dishResults: List<FavoriteInfo> = emptyList(),
     val recent: List<IngredientInfo> = emptyList(),
+    /** Result of reading a package photo, shown for confirmation (user 27.11.2026). */
+    val packageScan: PackageScan? = null,
     val favorites: List<FavoriteInfo> = emptyList(),
     /** Ingredients picked on their own; the ingredients of dishes are in [dishes]. */
     val selected: List<SelectedIngredient> = emptyList(),

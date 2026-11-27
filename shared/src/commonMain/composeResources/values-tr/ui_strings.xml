@@ -518,6 +518,11 @@
     <string name="meal_step_what">Ne yedin?</string>
     <string name="meal_quick">Son seçilen malzemeler</string>
     <string name="meal_quick_hint">Son zamanlarda yediğin tek malzemeler</string>
+    <string name="meal_scan">Ambalajdan malzemeleri oku</string>
+    <string name="meal_scan_title">Ambalajda bulundu</string>
+    <string name="meal_scan_none">Hiçbir malzeme okunamadı. İçindekiler listesini net ve iyi ışıkta tekrar dene.</string>
+    <string name="meal_scan_unknown">Tanınmadı: %1$s</string>
+    <string name="meal_scan_add">Ekle</string>
     <string name="meal_favorites_hint">Kayıtlı yemekler – bir dokunuş tüm malzemelerini ekler</string>
     <string name="meal_slot_missing">Lütfen önce öğünü seç.</string>
     <string name="meal_save_slot">%1$s kaydet</string>

@@ -432,6 +432,19 @@ class LogMealViewModelTest {
         assertEquals(listOf(SelectedIngredient(bread, Portion.SMALL)), vm.state.value.selected)
     }
 
+    @Test
+    fun aPackagePhotoOffersTheFoundIngredientsForConfirmation() {
+        val vm = viewModel()
+
+        vm.onPackageText("Zutaten: Weißbrot (60 %), Kuhmilch, Salz. Kann Spuren von Nüssen enthalten.")
+
+        val scan = vm.state.value.packageScan!!
+        assertEquals(listOf(bread.id, milk.id), scan.found.map { it.id })
+        vm.onPackageConfirm(setOf(milk.id))
+        assertEquals(listOf(milk.id), vm.state.value.selected.map { it.ingredient.id })
+        assertNull(vm.state.value.packageScan)
+    }
+
     private val coffee = IngredientInfo(1101, "coffee", null, BEVERAGES_CATEGORY_ID)
     private val repository = FakeRepository(listOf(bread, milk, coffee, linseed))
 

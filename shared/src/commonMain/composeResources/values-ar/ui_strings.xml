@@ -528,6 +528,11 @@
     <string name="meal_step_what">ماذا أكلت؟</string>
     <string name="meal_quick">مكوّنات اخترتها مؤخرًا</string>
     <string name="meal_quick_hint">مكوّنات أكلتها مؤخرًا</string>
+    <string name="meal_scan">قراءة المكونات من العبوة</string>
+    <string name="meal_scan_title">وُجد على العبوة</string>
+    <string name="meal_scan_none">تعذّرت قراءة أي مكوّن. حاول مرة أخرى مع وضوح قائمة المكونات وإضاءة جيدة.</string>
+    <string name="meal_scan_unknown">غير معروف: %1$s</string>
+    <string name="meal_scan_add">إضافة</string>
     <string name="meal_favorites_hint">أطباق محفوظة – لمسة واحدة تضيف كل مكوّناتها</string>
     <string name="meal_slot_missing">اختر الوجبة أولًا من فضلك.</string>
     <string name="meal_save_slot">حفظ: %1$s</string>
