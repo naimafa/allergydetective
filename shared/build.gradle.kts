@@ -51,6 +51,8 @@ kotlin {
             implementation(libs.sqlite.framework)
             // Reads the ingredient list from a photo of a package (user 27.11.2026); the Latin model is bundled, works offline.
             implementation(libs.mlkit.text.recognition)
+            // Crop screen after the photo of a package (user 27.11.2026): only the ingredient list is read.
+            implementation(libs.image.cropper)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
