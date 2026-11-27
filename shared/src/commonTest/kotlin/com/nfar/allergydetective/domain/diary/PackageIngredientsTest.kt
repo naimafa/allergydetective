@@ -13,6 +13,16 @@ class PackageIngredientsTest {
     }
 
     @Test
+    fun theListEndsAtItsFullStopEvenWhenTheTracesLineIsNotRecognised() {
+        val text = "DE-ÖKO-001\nZutaten: Dinkelmehl¹ (eine Weizenart) 69 %, Rohrohr-\nzucker¹, Backpulver (Back-\ntriebmittel (Natriumcarbonate)), Meersalz, gemahlene Bourbon-Vanille¹.\n¹aus kontrolliert biologischem Anbau.\nKann Spuren von Milch, Ei, Soja.\nBackmischungen und Teige sind nicht zum Rohverzehr bestimmt."
+
+        assertEquals(
+            "Dinkelmehl, eine Weizenart, Rohrohrzucker, Backpulver, Backtriebmittel, Natriumcarbonate, Meersalz, gemahlene Bourbon-Vanille",
+            PackageIngredients.clean(text),
+        )
+    }
+
+    @Test
     fun aRecipeKeepsOnlyItsIngredientsNotTheTitleLabelsOrSteps() {
         val text = "Caprese-Salat|H- 2+ Portionen|Glutenfrei|Zutaten|• 200 g Tomaten|Vegetarisch|• 125 g Mozzarela|•1 Bund Basilikum|• 2 EL Olivenöl|Zubereitung|Tomaten und Mozzarella in Scheiben|schneiden.|O 10 Min.".split('|').joinToString("\n")
 

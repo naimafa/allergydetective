@@ -15,6 +15,7 @@ data class VoiceMatch(
 class VoiceMatcher(
     private val search: IngredientSearch,
     favorites: List<FavoriteInfo>,
+    private val strictTypos: Boolean = false,
 ) {
     // Filler words are removed on both sides, so "Müsli mit Milch" matches the spoken "Müsli mit Milch".
     private val favoritesByName = favorites.associateBy { words(it.name).joinToString(" ") }
@@ -62,7 +63,9 @@ class VoiceMatcher(
     private fun exactIngredient(phrase: String): Long? = search.bestMatch(phrase)?.takeIf { it.second == 0 }?.first
 
     private fun closeIngredient(word: String): Long? =
-        if (word.length < MIN_WORD_LENGTH) null else search.bestMatch(word)?.first
+        if (word.length < MIN_WORD_LENGTH) null else search.bestMatch(word)
+            // A package is full of words that are one typo away from an ingredient ("Teige" -> "Feige"): a typo only counts in longer words.
+            ?.takeIf { !strictTypos || it.second < TYPO_SCORE || word.length >= MIN_TYPO_WORD_LENGTH }?.first
 
     /** Tries "spinatpizza" as "spinat" + "pizza", both parts must match well. */
     private fun splitCompound(word: String): List<Long>? {
@@ -77,6 +80,8 @@ class VoiceMatcher(
     private companion object {
         const val MAX_PHRASE_WORDS = 4
         const val MIN_WORD_LENGTH = 3
+        const val TYPO_SCORE = 4
+        const val MIN_TYPO_WORD_LENGTH = 7
 
         /** Exact, prefix or word prefix; no substring or typo for compound parts. */
         const val GOOD_SCORE = 2

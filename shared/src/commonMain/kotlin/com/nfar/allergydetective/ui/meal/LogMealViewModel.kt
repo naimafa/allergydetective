@@ -435,7 +435,7 @@ class LogMealViewModel(
     fun onPackageText(text: String?) {
         if (text == null) return
         val current = _state.value
-        val match = VoiceMatcher(search, current.favorites).match(PackageIngredients.clean(text))
+        val match = VoiceMatcher(search, current.favorites, strictTypos = true).match(PackageIngredients.clean(text))
         val present = current.mealItems.map { it.ingredientId }.toSet()
         val found = match.ingredientIds.filter { it !in present }.mapNotNull(ingredientsById::get)
         _state.update { it.copy(packageScan = PackageScan(found, match.unmatched.filter { word -> word.length >= 3 }.distinct().take(MAX_UNRECOGNIZED))) }

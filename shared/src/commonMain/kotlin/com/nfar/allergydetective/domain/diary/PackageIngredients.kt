@@ -29,7 +29,8 @@ object PackageIngredients {
     private val whitespace = Regex("""\s+""")
     private val quantity = Regex("""\d+([.,]\d+)?\s*(%|g|mg|kg|ml|l)(?![\p{L}])""")
     private val number = Regex("""\d+([.,]\d+)?""")
-    private val separators = Regex("""[()\[\]{}:;.*/"•·+]""")
+    private val separators = Regex("""[()\[\]{}:;.*/"•·+¹²³]""")
+    private val sentenceEnd = Regex("""[\p{L})¹²³]\.(?=\s|$)""")
 
     fun clean(raw: String): String {
         // "Voll-\nmilch" is one word; any other line break is a space.
@@ -40,7 +41,9 @@ object PackageIngredients {
         }.minOrNull()
         if (start != null) text = text.substring(start)
         text = text.replace(whitespace, " ").trim()
-        val end = ENDS.mapNotNull { marker -> text.indexOf(marker, ignoreCase = true).takeIf { it > 0 } }.minOrNull()
+        // An ingredient list ends with a full stop (not a decimal point): what follows is traces, storage, advice.
+        val end = (ENDS.mapNotNull { marker -> text.indexOf(marker, ignoreCase = true).takeIf { it > 0 } } +
+            listOfNotNull(sentenceEnd.find(text)?.range?.first?.plus(1)?.takeIf { it > 1 })).minOrNull()
         if (end != null) text = text.substring(0, end)
         return text
             // Percentages and quantities: "Weizenmehl (62 %)", "12,5%", "250 g".
