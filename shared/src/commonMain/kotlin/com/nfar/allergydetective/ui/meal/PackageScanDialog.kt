@@ -3,6 +3,7 @@ package com.nfar.allergydetective.ui.meal
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
 import allergydetective.shared.generated.resources.meal_scan_add
+import allergydetective.shared.generated.resources.meal_scan_hint
 import allergydetective.shared.generated.resources.meal_scan_none
 import allergydetective.shared.generated.resources.meal_scan_title
 import allergydetective.shared.generated.resources.meal_scan_unknown
@@ -44,7 +45,15 @@ fun PackageScanDialog(scan: PackageScan, viewModel: LogMealViewModel) {
         onDismissRequest = viewModel::onPackageDismiss,
         title = { Text(stringResource(Res.string.meal_scan_title)) },
         text = {
-            Column(modifier = Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
+          // The hint stays in view: reading a photo is never perfect (user 27.11.2026), the user checks the list.
+          Column {
+            Text(
+                stringResource(Res.string.meal_scan_hint),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+            Column(modifier = Modifier.heightIn(max = 340.dp).verticalScroll(rememberScrollState())) {
                 if (nothing) Text(stringResource(Res.string.meal_scan_none))
                 scan.found.forEach { ingredient ->
                     TickRow(ingredientName(ingredient).substringBefore(" / "), ingredient.id in chosen) {
@@ -69,6 +78,7 @@ fun PackageScanDialog(scan: PackageScan, viewModel: LogMealViewModel) {
                     }
                 }
             }
+          }
         },
         confirmButton = {
             if (nothing) {
