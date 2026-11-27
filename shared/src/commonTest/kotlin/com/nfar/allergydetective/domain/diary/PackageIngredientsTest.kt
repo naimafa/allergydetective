@@ -16,7 +16,7 @@ class PackageIngredientsTest {
     fun theListEndsAtItsFullStopEvenWhenTheTracesLineIsNotRecognised() {
         val text = "DE-ÖKO-001\nZutaten: Dinkelmehl¹ (eine Weizenart) 69 %, Rohrohr-\nzucker¹, Backpulver (Back-\ntriebmittel (Natriumcarbonate)), Meersalz, gemahlene Bourbon-Vanille¹.\n¹aus kontrolliert biologischem Anbau.\nKann Spuren von Milch, Ei, Soja.\nBackmischungen und Teige sind nicht zum Rohverzehr bestimmt."
 
-        assertEquals("Dinkelmehl, zucker, Backpulver, Meersalz, Bourbon-Vanille", PackageIngredients.clean(text))
+        assertEquals("Dinkelmehl, Rohrohrzucker, Backpulver, Meersalz, Bourbon-Vanille", PackageIngredients.clean(text))
     }
 
     @Test
@@ -35,14 +35,14 @@ class PackageIngredientsTest {
             "Kann Spuren von Milch, Ei, Soja, Senf, Lupinen,", "Mandeln, Haselnüssen und Pistazien enthalten.", "Trocken lagern.",
         ).joinToString("\n")
 
-        assertEquals("Dinkelmehl, zucker, Maisstärke, Kartoffelstärke, Backpulver, Meersalz, Bourbon-Vanille", PackageIngredients.clean(text))
+        assertEquals("Dinkelmehl, Rohrohrzucker, Maisstärke, Kartoffelstärke, Backpulver, Meersalz, Bourbon-Vanille", PackageIngredients.clean(text))
     }
 
     @Test
-    fun aBlurredListKeepsItsPartsAndTurnsMilkPowderIntoMilk() {
+    fun aBlurredListKeepsItsPartsAsWritten() {
         val text = "ZUTATEN: WEIZENMEHL, Zucker, 12 % Rosinen,\nStärke, MAGERMILCHPULVER, Backtriebmittel\n(Glucono-delta-lacton, Natriumcarbonate),\nSalz, Aroma (enthält GERSTE).\nKann enthalten: SOJA"
 
-        assertEquals("WEIZENMEHL, Zucker, Rosinen, Stärke, Milch, Salz, Aroma, enthält GERSTE", PackageIngredients.clean(text))
+        assertEquals("WEIZENMEHL, Zucker, Rosinen, Stärke, MAGERMILCHPULVER, Salz, Aroma, GERSTE", PackageIngredients.clean(text))
     }
 
     @Test

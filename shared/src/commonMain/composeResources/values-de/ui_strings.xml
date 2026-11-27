@@ -522,7 +522,8 @@
     <string name="meal_scan">Zutaten von der Verpackung lesen</string>
     <string name="meal_scan_title">Auf der Verpackung gefunden</string>
     <string name="meal_scan_none">Es konnte keine Zutat gelesen werden. Versuche es noch einmal, mit der Zutatenliste scharf im Bild und gutem Licht.</string>
-    <string name="meal_scan_unknown">Nicht erkannt: %1$s</string>
+    <string name="meal_scan_unknown">Noch nicht in deiner Liste. Als neue Zutat anlegen?</string>
+    <string name="meal_scan_unknown_hint">Angekreuzte öffnen nacheinander das Formular „Neue Zutat".</string>
     <string name="meal_scan_add">Hinzufügen</string>
     <string name="meal_copy_title">Wie gestern?</string>
     <string name="meal_copy_hint">Eine Mahlzeit von gestern oder vorgestern übernehmen</string>

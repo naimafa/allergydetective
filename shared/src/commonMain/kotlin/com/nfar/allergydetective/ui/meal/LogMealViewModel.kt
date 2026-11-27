@@ -12,6 +12,7 @@ import com.nfar.allergydetective.domain.diary.IngredientSearch
 import com.nfar.allergydetective.domain.diary.LanguageProvider
 import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.diary.PackageIngredients
+import com.nfar.allergydetective.domain.diary.PackageWordMatcher
 import com.nfar.allergydetective.domain.diary.LoggedMeal
 import com.nfar.allergydetective.domain.diary.SearchEntry
 import com.nfar.allergydetective.domain.diary.VoiceMatcher
@@ -431,22 +432,31 @@ class LogMealViewModel(
         if (match.unmatched.isNotEmpty()) onQueryChange(match.unmatched.joinToString(" "))
     }
 
-    /** Text read from a package photo: the ingredient list is matched like spoken words, the user confirms what to add. */
+    /**
+     * Text read from a package photo (user 27.11.2026): only names as written count, no guessing. What the catalog
+     * does not know is offered as a new ingredient; the user confirms everything.
+     */
     fun onPackageText(text: String?) {
         if (text == null) return
         val current = _state.value
-        val match = VoiceMatcher(search, current.favorites, strictTypos = true).match(PackageIngredients.clean(text))
+        val match = PackageWordMatcher(ingredientNames).match(PackageIngredients.clean(text))
         val present = current.mealItems.map { it.ingredientId }.toSet()
         val found = match.ingredientIds.filter { it !in present }.mapNotNull(ingredientsById::get)
-        _state.update { it.copy(packageScan = PackageScan(found, match.unmatched.filter { word -> word.length >= 3 }.distinct().take(MAX_UNRECOGNIZED))) }
+        _state.update { it.copy(packageScan = PackageScan(found, match.unknown.take(MAX_UNRECOGNIZED))) }
     }
 
-    fun onPackageConfirm(ingredientIds: Set<Long>) {
+    /** Adds the ticked ingredients; the ticked unknown names are asked one after the other in the "new ingredient" form. */
+    fun onPackageConfirm(ingredientIds: Set<Long>, newNames: List<String> = emptyList()) {
         val scan = _state.value.packageScan ?: return
-        _state.update { it.copy(packageScan = null) }
+        _state.update { it.copy(packageScan = null, newFromPackage = newNames) }
         scan.found.filter { it.id in ingredientIds }.forEach { ingredient ->
             if (_state.value.mealItems.none { it.ingredientId == ingredient.id }) onToggleIngredient(ingredient)
         }
+    }
+
+    /** The "new ingredient" form for the first waiting name is done (created or skipped): the next one follows. */
+    fun onNewFromPackageHandled() {
+        _state.update { it.copy(newFromPackage = it.newFromPackage.drop(1)) }
     }
 
     fun onPackageDismiss() {

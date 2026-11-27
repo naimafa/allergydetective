@@ -44,8 +44,8 @@ sealed interface Place {
     data class InDish(val favoriteId: Long) : Place
 }
 
-/** What was found on a package: ingredients to confirm, and words that matched nothing. */
-data class PackageScan(val found: List<IngredientInfo>, val notRecognized: List<String>)
+/** What was found on a package: ingredients of the catalog, and names it does not know. */
+data class PackageScan(val found: List<IngredientInfo>, val unknown: List<String>)
 /** A logged meal of an earlier day that can be copied into the form. */
 data class EarlierMeal(val mealId: Long, val daysAgo: Int, val slot: MealSlot)
 
@@ -64,6 +64,8 @@ data class LogMealState(
     val recent: List<IngredientInfo> = emptyList(),
     /** Result of reading a package photo, shown for confirmation (user 27.11.2026). */
     val packageScan: PackageScan? = null,
+    /** Names from a package that the user wants as new ingredients, asked one after the other. */
+    val newFromPackage: List<String> = emptyList(),
     /** Meals of yesterday and the day before, to take over again ("Wie gestern?", user 27.11.2026). */
     val earlierMeals: List<EarlierMeal> = emptyList(),
     val favorites: List<FavoriteInfo> = emptyList(),

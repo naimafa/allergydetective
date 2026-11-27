@@ -6,6 +6,7 @@ import allergydetective.shared.generated.resources.meal_scan_add
 import allergydetective.shared.generated.resources.meal_scan_none
 import allergydetective.shared.generated.resources.meal_scan_title
 import allergydetective.shared.generated.resources.meal_scan_unknown
+import allergydetective.shared.generated.resources.meal_scan_unknown_hint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,58 +22,77 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * What the photo of a package gave (user 27.11.2026): the ingredients found, all ticked, to confirm before they go
- * into the meal; words that matched nothing are only listed, a photo of a list is never perfect.
+ * What the photo of a package gave (user 27.11.2026): the catalog ingredients found as written, all ticked, and the
+ * names the catalog does not know, not ticked: a tick makes them a new ingredient. Nothing is guessed.
  */
 @Composable
 fun PackageScanDialog(scan: PackageScan, viewModel: LogMealViewModel) {
     var chosen by remember(scan) { mutableStateOf(scan.found.map { it.id }.toSet()) }
+    var chosenNew by remember(scan) { mutableStateOf(emptySet<String>()) }
+    val nothing = scan.found.isEmpty() && scan.unknown.isEmpty()
     AlertDialog(
         onDismissRequest = viewModel::onPackageDismiss,
         title = { Text(stringResource(Res.string.meal_scan_title)) },
         text = {
-            Column(modifier = Modifier.heightIn(max = 380.dp).verticalScroll(rememberScrollState())) {
-                if (scan.found.isEmpty()) Text(stringResource(Res.string.meal_scan_none))
+            Column(modifier = Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
+                if (nothing) Text(stringResource(Res.string.meal_scan_none))
                 scan.found.forEach { ingredient ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).clickable {
-                            chosen = if (ingredient.id in chosen) chosen - ingredient.id else chosen + ingredient.id
-                        },
-                    ) {
-                        Checkbox(checked = ingredient.id in chosen, onCheckedChange = null)
-                        Text(ingredientName(ingredient), modifier = Modifier.padding(start = 12.dp))
+                    TickRow(ingredientName(ingredient), ingredient.id in chosen) {
+                        chosen = if (ingredient.id in chosen) chosen - ingredient.id else chosen + ingredient.id
                     }
                 }
-                if (scan.notRecognized.isNotEmpty()) {
+                if (scan.unknown.isNotEmpty()) {
                     Text(
-                        stringResource(Res.string.meal_scan_unknown, scan.notRecognized.joinToString(", ")),
+                        stringResource(Res.string.meal_scan_unknown),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(top = 12.dp),
+                    )
+                    Text(
+                        stringResource(Res.string.meal_scan_unknown_hint),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 8.dp),
                     )
+                    scan.unknown.forEach { name ->
+                        TickRow(name, name in chosenNew) {
+                            chosenNew = if (name in chosenNew) chosenNew - name else chosenNew + name
+                        }
+                    }
                 }
             }
         },
         confirmButton = {
-            if (scan.found.isNotEmpty()) {
-                Button(onClick = { viewModel.onPackageConfirm(chosen) }, enabled = chosen.isNotEmpty()) { Text(stringResource(Res.string.meal_scan_add)) }
-            } else {
+            if (nothing) {
                 TextButton(onClick = viewModel::onPackageDismiss) { Text(stringResource(Res.string.common_cancel)) }
+            } else {
+                Button(
+                    onClick = { viewModel.onPackageConfirm(chosen, scan.unknown.filter { it in chosenNew }) },
+                    enabled = chosen.isNotEmpty() || chosenNew.isNotEmpty(),
+                ) { Text(stringResource(Res.string.meal_scan_add)) }
             }
         },
         dismissButton = {
-            if (scan.found.isNotEmpty()) TextButton(onClick = viewModel::onPackageDismiss) { Text(stringResource(Res.string.common_cancel)) }
+            if (!nothing) TextButton(onClick = viewModel::onPackageDismiss) { Text(stringResource(Res.string.common_cancel)) }
         },
     )
+}
+
+@Composable
+private fun TickRow(label: String, checked: Boolean, onToggle: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).clickable(onClick = onToggle),
+    ) {
+        Checkbox(checked = checked, onCheckedChange = null)
+        Text(label, modifier = Modifier.padding(start = 12.dp))
+    }
 }
