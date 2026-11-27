@@ -528,6 +528,9 @@
     <string name="meal_scan_hint">Der Text wird aus einem Foto gelesen und kann Fehler enthalten oder Zutaten übersehen. Bitte prüfe die Liste anhand der Packung. Tipp: Google Lens liest den Text oft genauer. Kopiere ihn dort und wähle im Kamera-Menü „Kopierten Text einfügen“.</string>
     <string name="meal_scan_photo">Foto der Zutatenliste aufnehmen</string>
     <string name="meal_scan_paste">Kopierten Text einfügen</string>
+    <string name="meal_scan_text_title">Zutatenliste als Text</string>
+    <string name="meal_scan_text_label">Text hier einfügen</string>
+    <string name="meal_scan_text_read">Zutaten lesen</string>
     <string name="meal_copy_title">Wie gestern?</string>
     <string name="meal_copy_hint">Eine Mahlzeit von gestern oder vorgestern übernehmen</string>
     <string name="meal_copy_chip">%1$s · %2$s</string>

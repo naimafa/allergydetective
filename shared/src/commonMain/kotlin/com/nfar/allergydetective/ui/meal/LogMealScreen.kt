@@ -461,7 +461,19 @@ private fun WhatStep(
         val scan = rememberPackageScan(viewModel::onPackageText)
         val scanLabel = stringResource(Res.string.meal_scan)
         var scanMenu by remember { mutableStateOf(false) }
+        // null = the text window is closed; otherwise it opens with what is on the clipboard.
+        var pasteText by remember { mutableStateOf<String?>(null) }
         val clipboard = LocalClipboardManager.current
+        pasteText?.let { initial ->
+            PackageTextDialog(
+                initialText = initial,
+                onRead = {
+                    pasteText = null
+                    viewModel.onPackageText(it)
+                },
+                onDismiss = { pasteText = null },
+            )
+        }
         // User note 22.11.2026: a soft search pill with magnifier and microphone, as in the design picture.
         TextField(
             value = state.query,
@@ -492,7 +504,7 @@ private fun WhatStep(
                                 leadingIcon = { Icon(Icons.Outlined.ContentPaste, contentDescription = null) },
                                 onClick = {
                                     scanMenu = false
-                                    viewModel.onPackageText(clipboard.getText()?.text.orEmpty())
+                                    pasteText = clipboard.getText()?.text.orEmpty()
                                 },
                             )
                         }

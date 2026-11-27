@@ -537,6 +537,9 @@
     <string name="meal_scan_hint">تُقرأ النصوص من صورة وقد تحتوي على أخطاء أو تفوّت بعض المكوّنات. يرجى مراجعة القائمة مع العبوة. نصيحة: غالبًا ما يقرأ Google Lens النص بدقة أكبر. انسخه هناك واختر «لصق النص المنسوخ» من قائمة الكاميرا.</string>
     <string name="meal_scan_photo">التقاط صورة لقائمة المكونات</string>
     <string name="meal_scan_paste">لصق النص المنسوخ</string>
+    <string name="meal_scan_text_title">قائمة المكونات كنص</string>
+    <string name="meal_scan_text_label">الصق النص هنا</string>
+    <string name="meal_scan_text_read">قراءة المكونات</string>
     <string name="meal_copy_title">مثل أمس؟</string>
     <string name="meal_copy_hint">أعد تسجيل وجبة من أمس أو أول أمس</string>
     <string name="meal_copy_chip">%1$s · %2$s</string>

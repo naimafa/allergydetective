@@ -4,6 +4,10 @@ import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
 import allergydetective.shared.generated.resources.meal_scan_add
 import allergydetective.shared.generated.resources.meal_scan_hint
+import allergydetective.shared.generated.resources.meal_scan_text_label
+import allergydetective.shared.generated.resources.meal_scan_text_read
+import allergydetective.shared.generated.resources.meal_scan_text_title
+import androidx.compose.material3.OutlinedTextField
 import allergydetective.shared.generated.resources.meal_scan_none
 import allergydetective.shared.generated.resources.meal_scan_title
 import allergydetective.shared.generated.resources.meal_scan_unknown
@@ -93,6 +97,33 @@ fun PackageScanDialog(scan: PackageScan, viewModel: LogMealViewModel) {
         dismissButton = {
             if (!nothing) TextButton(onClick = viewModel::onPackageDismiss) { Text(stringResource(Res.string.common_cancel)) }
         },
+    )
+}
+
+/**
+ * The ingredient list as text (user 27.11.2026: text copied with Google Lens): a field with what is on the clipboard,
+ * to check or change before it is read. It works the same on every platform.
+ */
+@Composable
+fun PackageTextDialog(initialText: String, onRead: (String) -> Unit, onDismiss: () -> Unit) {
+    var text by remember { mutableStateOf(initialText) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.meal_scan_text_title)) },
+        text = {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text(stringResource(Res.string.meal_scan_text_label)) },
+                minLines = 5,
+                maxLines = 10,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        },
+        confirmButton = {
+            Button(onClick = { onRead(text) }, enabled = text.isNotBlank()) { Text(stringResource(Res.string.meal_scan_text_read)) }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.common_cancel)) } },
     )
 }
 
