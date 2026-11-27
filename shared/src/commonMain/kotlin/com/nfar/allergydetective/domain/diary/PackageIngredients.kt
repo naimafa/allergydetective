@@ -33,6 +33,10 @@ object PackageIngredients {
         RegexOption.IGNORE_CASE,
     )
 
+    private val additiveStem = Regex(
+        """(?<!\p{L})(backtrieb|triebmittel|säuerungsm|sauerungsm|emulgator|konservierungsst|farbstoff|antioxidationsm|verdickungsm|geschmacksverst|stabilisator|festigungsm|überzugsm|trennmittel|feuchthaltem)\p{L}*""",
+        RegexOption.IGNORE_CASE,
+    )
     private val hyphenBreak = Regex("""-\s*\n\s*""")
     private val whitespace = Regex("""\s+""")
     private val quantity = Regex("""\d+([.,]\d+)?\s*(%|g|mg|kg|ml|l)(?![\p{L}])""")
@@ -61,6 +65,8 @@ object PackageIngredients {
         return text
             // Percentages and quantities: "Weizenmehl (62 %)", "12,5%", "250 g".
             .replace(additiveClass, " ")
+            // The camera often cuts the end of a word at the edge: "Backtriebmit" is still the class of an additive.
+            .replace(additiveStem, " ")
             .replace(quantity, " ")
             .replace(number, " ")
             .replace(separators, ",")

@@ -46,6 +46,11 @@ class PackageIngredientsTest {
     }
 
     @Test
+    fun anAdditiveClassCutOffByTheCameraIsDropped() {
+        assertEquals("Zucker, Salz", PackageIngredients.clean("Zutaten: Zucker, Backtriebmit, Salz."))
+    }
+
+    @Test
     fun theFrontOfAPackageWithoutAListGivesNothing() {
         assertEquals("", PackageIngredients.clean("REWE Bio\nDinkel Kaiserschmarrn\nBackmischung mit Grieß\nFür deinen bewussten Lebensstil"))
     }
