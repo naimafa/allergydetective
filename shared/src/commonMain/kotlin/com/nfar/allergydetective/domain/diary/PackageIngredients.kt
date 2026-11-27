@@ -49,6 +49,8 @@ object PackageIngredients {
             Regex("""(?<!\p{L})""" + Regex.escape(marker) + tail, RegexOption.IGNORE_CASE).find(text)?.range?.last?.plus(1)
         }.minOrNull()
         val start = startAfter("""(?!\p{L})[ \t]*[:：]""") ?: startAfter("""[ \t]*(?=\n)""")
+        // No "Zutaten:" and nothing that looks like a list (commas): the front of a package or a text, no guessing.
+        if (start == null && text.count { it == ',' } < 2) return ""
         if (start != null) text = text.substring(start)
         text = text.replace(whitespace, " ").trim()
         // An ingredient list ends with a full stop (not a decimal point): what follows is traces, storage, advice.
