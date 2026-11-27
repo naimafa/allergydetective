@@ -10,6 +10,7 @@ import com.nfar.allergydetective.domain.analysis.model.Candidate
 import com.nfar.allergydetective.domain.analysis.model.EvidenceLevel
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.time.AppClock
+import com.nfar.allergydetective.domain.reminder.SettingsStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -47,6 +48,8 @@ data class ResultItem(
 data class ResultsState(
     val loading: Boolean = true,
     val confirmedDays: Int = 0,
+    /** Days needed for the first evaluation: the goal from the profile. */
+    val evaluationDays: Int = ResultsViewModel.FIRST_EVALUATION_DAYS,
     /** Candidates with at least a trace, strongest first. */
     val items: List<ResultItem> = emptyList(),
     val groups: List<List<CandidateLabel>> = emptyList(),
@@ -66,6 +69,7 @@ class ResultsViewModel(
     private val catalog: CandidateCatalog,
     private val clock: AppClock,
     private val computeContext: CoroutineContext,
+    private val settings: SettingsStore? = null,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ResultsState())
@@ -80,10 +84,13 @@ class ResultsViewModel(
         val input = repository.loadInput(now, clock.offsetMinAt(now))
         val result = withContext(computeContext) { engine.analyze(input) }
         val keys = catalog.keys()
+        // Same count as the home card: only the days of the current stretch, against the goal of the profile.
+        val goal = settings?.goal()
         fun label(candidate: Candidate) = labelOf(candidate, keys)
         return ResultsState(
             loading = false,
-            confirmedDays = input.diary.dayChecks.count { it.confirmed },
+            confirmedDays = input.diary.dayChecks.count { it.confirmed && (goal?.startDay == null || it.epochDay >= goal.startDay) },
+            evaluationDays = goal?.days ?: FIRST_EVALUATION_DAYS,
             items = result.ranking
                 .filter { it.level >= EvidenceLevel.TRACE }
                 .mapNotNull { r -> label(r.candidate)?.let { ResultItem(it, r.level, r.stats.exposureCount, r.stats.hitCount, r.stats.unexposedCount, r.stats.unexposedHitCount, r.lift, r.lagDays, r.fast) } },
@@ -95,7 +102,7 @@ class ResultsViewModel(
                 .map { it.ingredientId }
                 .distinct()
                 .mapNotNull { label(Candidate.Ingredient(it)) },
-            noPatternReason = noPatternReason(input.diary, FIRST_EVALUATION_DAYS),
+            noPatternReason = noPatternReason(input.diary, goal?.days ?: FIRST_EVALUATION_DAYS),
         )
     }
 

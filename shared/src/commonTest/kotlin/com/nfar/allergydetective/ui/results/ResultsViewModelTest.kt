@@ -17,6 +17,9 @@ import com.nfar.allergydetective.domain.analysis.model.AnalysisInput
 import com.nfar.allergydetective.domain.analysis.model.EvidenceLevel
 import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.time.AppClock
+import com.nfar.allergydetective.domain.reminder.GoalSettings
+import com.nfar.allergydetective.domain.reminder.ReminderSettings
+import com.nfar.allergydetective.domain.reminder.SettingsStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -50,12 +53,19 @@ class ResultsViewModelTest {
         }
     }.build(reference = TestCatalog.reference())
 
-    private fun viewModel(reference: AnalysisInput = input) = ResultsViewModel(
+    private fun store(goal: GoalSettings) = object : SettingsStore {
+        override fun reminder() = ReminderSettings()
+        override fun saveReminder(settings: ReminderSettings) = Unit
+        override fun goal() = goal
+    }
+
+    private fun viewModel(reference: AnalysisInput = input, settings: SettingsStore? = null) = ResultsViewModel(
         repository = AnalysisRepository { _, _ -> reference },
         engine = AnalysisEngine(),
         catalog = { keys },
         clock = AppClock(),
         computeContext = Dispatchers.Unconfined,
+        settings = settings,
     )
 
     @BeforeTest
@@ -76,6 +86,15 @@ class ResultsViewModelTest {
         assertEquals(14, lactose.otherExposures) // days without lactose (user 24.11.2026: days instead of meals)
         assertEquals(0, lactose.otherWithComplaints)
         assertEquals(21, state.confirmedDays)
+    }
+
+    @Test
+    fun onlyTheCurrentStretchCountsLikeOnTheHomeScreen() {
+        val last = input.diary.dayChecks.maxOf { it.epochDay }
+        val state = viewModel(settings = store(GoalSettings(days = 10, startDay = last - 2))).state.value
+
+        assertEquals(3, state.confirmedDays)
+        assertEquals(10, state.evaluationDays)
     }
 
     @Test
