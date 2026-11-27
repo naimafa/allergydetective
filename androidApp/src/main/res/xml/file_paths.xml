@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Only the export folder in the cache is shared (JSON export, Profile). -->
+<!-- Only the export folder (JSON export, Profile) and the scan folder (photo of a package, read on the phone) in the cache are shared. -->
 <paths>
     <cache-path name="export" path="export/" />
+    <cache-path name="scan" path="scan/" />
 </paths>

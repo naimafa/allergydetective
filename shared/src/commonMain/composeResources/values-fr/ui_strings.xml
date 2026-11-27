@@ -515,6 +515,11 @@
     <string name="meal_step_what">Qu’as-tu mangé ?</string>
     <string name="meal_quick">Ingrédients choisis récemment</string>
     <string name="meal_quick_hint">Ingrédients que tu as mangés récemment</string>
+    <string name="meal_scan">Lire les ingrédients sur l’emballage</string>
+    <string name="meal_scan_title">Trouvé sur l’emballage</string>
+    <string name="meal_scan_none">Aucun ingrédient n’a pu être lu. Réessaie avec la liste bien nette et une bonne lumière.</string>
+    <string name="meal_scan_unknown">Non reconnu : %1$s</string>
+    <string name="meal_scan_add">Ajouter</string>
     <string name="meal_copy_title">Comme hier ?</string>
     <string name="meal_copy_hint">Reprendre un repas de la veille ou de l’avant-veille</string>
     <string name="meal_copy_chip">%1$s · %2$s</string>

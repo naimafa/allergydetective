@@ -11,6 +11,7 @@ import com.nfar.allergydetective.domain.diary.IngredientInfo
 import com.nfar.allergydetective.domain.diary.IngredientSearch
 import com.nfar.allergydetective.domain.diary.LanguageProvider
 import com.nfar.allergydetective.domain.diary.MealRepository
+import com.nfar.allergydetective.domain.diary.PackageIngredients
 import com.nfar.allergydetective.domain.diary.LoggedMeal
 import com.nfar.allergydetective.domain.diary.SearchEntry
 import com.nfar.allergydetective.domain.diary.VoiceMatcher
@@ -430,6 +431,28 @@ class LogMealViewModel(
         if (match.unmatched.isNotEmpty()) onQueryChange(match.unmatched.joinToString(" "))
     }
 
+    /** Text read from a package photo: the ingredient list is matched like spoken words, the user confirms what to add. */
+    fun onPackageText(text: String?) {
+        if (text == null) return
+        val current = _state.value
+        val match = VoiceMatcher(search, current.favorites).match(PackageIngredients.clean(text))
+        val present = current.mealItems.map { it.ingredientId }.toSet()
+        val found = match.ingredientIds.filter { it !in present }.mapNotNull(ingredientsById::get)
+        _state.update { it.copy(packageScan = PackageScan(found, match.unmatched.filter { word -> word.length >= 3 }.distinct().take(MAX_UNRECOGNIZED))) }
+    }
+
+    fun onPackageConfirm(ingredientIds: Set<Long>) {
+        val scan = _state.value.packageScan ?: return
+        _state.update { it.copy(packageScan = null) }
+        scan.found.filter { it.id in ingredientIds }.forEach { ingredient ->
+            if (_state.value.mealItems.none { it.ingredientId == ingredient.id }) onToggleIngredient(ingredient)
+        }
+    }
+
+    fun onPackageDismiss() {
+        _state.update { it.copy(packageScan = null) }
+    }
+
     /**
      * Adds a dish with one portion for the whole dish (user 24.11.2026); a tap on a dish that is already chosen takes
      * it out again. The portion starts at the largest one the saved dish had for its main part.
@@ -623,6 +646,7 @@ class LogMealViewModel(
 
     companion object {
         private const val RECENT_LIMIT = 12
+        private const val MAX_UNRECOGNIZED = 12
         private const val EARLIER_DAYS = 2
 
         /** Seed categories nuts and seeds, oils and fats, spices and herbs, herbs (categories.json). */

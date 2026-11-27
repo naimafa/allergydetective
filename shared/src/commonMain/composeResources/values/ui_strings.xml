@@ -519,6 +519,11 @@
     <string name="meal_step_what">What did you eat?</string>
     <string name="meal_quick">Recently chosen ingredients</string>
     <string name="meal_quick_hint">Single ingredients you ate recently</string>
+    <string name="meal_scan">Read ingredients from a package</string>
+    <string name="meal_scan_title">Found on the package</string>
+    <string name="meal_scan_none">Nothing could be read as an ingredient. Try again with the ingredient list in focus and good light.</string>
+    <string name="meal_scan_unknown">Not recognised: %1$s</string>
+    <string name="meal_scan_add">Add</string>
     <string name="meal_copy_title">Same as before?</string>
     <string name="meal_copy_hint">Take over a meal from yesterday or the day before</string>
     <string name="meal_copy_chip">%1$s · %2$s</string>

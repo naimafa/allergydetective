@@ -519,6 +519,11 @@
     <string name="meal_step_what">Was hast du gegessen?</string>
     <string name="meal_quick">Zuletzt gewählte Zutaten</string>
     <string name="meal_quick_hint">Einzelne Zutaten, die du zuletzt gegessen hast</string>
+    <string name="meal_scan">Zutaten von der Verpackung lesen</string>
+    <string name="meal_scan_title">Auf der Verpackung gefunden</string>
+    <string name="meal_scan_none">Es konnte keine Zutat gelesen werden. Versuche es noch einmal, mit der Zutatenliste scharf im Bild und gutem Licht.</string>
+    <string name="meal_scan_unknown">Nicht erkannt: %1$s</string>
+    <string name="meal_scan_add">Hinzufügen</string>
     <string name="meal_copy_title">Wie gestern?</string>
     <string name="meal_copy_hint">Eine Mahlzeit von gestern oder vorgestern übernehmen</string>
     <string name="meal_copy_chip">%1$s · %2$s</string>

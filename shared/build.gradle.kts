@@ -49,6 +49,8 @@ kotlin {
             // Encrypted database on Android (feedback 20.11.): SQLCipher + the SupportSQLite connection of androidx.sqlite.
             implementation(libs.sqlcipher.android)
             implementation(libs.sqlite.framework)
+            // Reads the ingredient list from a photo of a package (user 27.11.2026); the Latin model is bundled, works offline.
+            implementation(libs.mlkit.text.recognition)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
