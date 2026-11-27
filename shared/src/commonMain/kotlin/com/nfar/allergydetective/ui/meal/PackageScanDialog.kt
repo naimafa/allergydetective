@@ -47,7 +47,7 @@ fun PackageScanDialog(scan: PackageScan, viewModel: LogMealViewModel) {
             Column(modifier = Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
                 if (nothing) Text(stringResource(Res.string.meal_scan_none))
                 scan.found.forEach { ingredient ->
-                    TickRow(ingredientName(ingredient), ingredient.id in chosen) {
+                    TickRow(ingredientName(ingredient).substringBefore(" / "), ingredient.id in chosen) {
                         chosen = if (ingredient.id in chosen) chosen - ingredient.id else chosen + ingredient.id
                     }
                 }

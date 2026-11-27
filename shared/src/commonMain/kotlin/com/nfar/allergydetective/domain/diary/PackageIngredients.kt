@@ -24,19 +24,14 @@ object PackageIngredients {
         "glutenfrei", "vegetarisch", "vegan", "laktosefrei", "min", "portionen", "portion", "bio",
         "tbsp", "tsp", "cup", "cups", "pinch", "bunch", "slice", "slices", "cloves", "clove",
         // "gemahlene Bourbon-Vanille" is not "gemahlene Mandeln"; "eine Weizenart" says what the flour is, not another one.
-        "gemahlene", "gemahlener", "gemahlenes", "gemahlen", "eine", "weizenart", "aus", "kontrolliert", "biologischem", "anbau", "enthält", "enthaelt", "enthalten",
+        "gemahlene", "gemahlener", "gemahlenes", "gemahlen", "eine", "weizenart", "aus", "kontrolliert", "biologischem", "anbau", "enthält", "enthaelt", "enthalt", "enthalten",
     )
 
-    /** "Säuerungsmittel (Kaliumtartrate)": the class of an additive and its chemical name, nothing to eat. */
-    private val additiveClass = Regex(
-        """(säuerungsmittel|backtriebmittel|triebmittel|emulgator|konservierungsstoff|farbstoff|antioxidationsmittel|verdickungsmittel|geschmacksverstärker|stabilisator|festigungsmittel|überzugsmittel|trennmittel|feuchthaltemittel|acidity regulator|raising agents?|emulsifiers?|preservatives?|colou?rs?|antioxidants?|thickeners?|stabili[sz]ers?)\s*\((?:[^()]|\([^()]*\))*\)""",
-        RegexOption.IGNORE_CASE,
-    )
-
-    private val additiveStem = Regex(
-        """(?<!\p{L})(backtrieb|triebmittel|säuerungsm|sauerungsm|emulgator|konservierungsst|farbstoff|antioxidationsm|verdickungsm|geschmacksverst|stabilisator|festigungsm|überzugsm|trennmittel|feuchthaltem)\p{L}*""",
-        RegexOption.IGNORE_CASE,
-    )
+    /** The innermost brackets: "Backtriebmittel (Natriumcarbonate)", "Aroma (enthält Gerste)". */
+    private val innermostBrackets = Regex("""\([^()]*\)""")
+    /** Words of the producer's line: company forms and distribution. */
+    private val COMPANY = listOf("nahrungsmittel", "gmbh", " kg ", "vertrieb", "inverkehrbringer", "importiert", "www.", "hotline", "kundenservice")
+    private val postalCode = Regex("""(?<!\d)\d{5}(?!\d)""")
     private val hyphenBreak = Regex("""-\s*\n\s*""")
     private val whitespace = Regex("""\s+""")
     private val quantity = Regex("""\d+([.,]\d+)?\s*(%|g|mg|kg|ml|l)(?![\p{L}])""")
@@ -44,6 +39,21 @@ object PackageIngredients {
     // The footnote mark "¹" is often read as an apostrophe.
     private val separators = Regex("""[()\[\]{}:;.*/"'’‘´`•·+¹²³]""")
     private val sentenceEnd = Regex("""[\p{L})¹²³]\.(?=\s|$)""")
+
+    /**
+     * "Backtriebmittel (Natriumcarbonate)" is the entry "Backtriebmittel"; "Aroma (enthält Gerste)" is "Aroma" (user
+     * 27.11.2026: the entries as the package lists them). A bracket without its partner, as the camera loses them,
+     * only separates.
+     */
+    private fun withoutBrackets(text: String): String {
+        var result = text
+        while (true) {
+            val next = result.replace(innermostBrackets, " ")
+            if (next == result) break
+            result = next
+        }
+        return result.replace('(', ',').replace(')', ' ')
+    }
 
     fun clean(raw: String): String {
         // "Voll-\nmilch" is one word; any other line break is a space.
@@ -57,16 +67,19 @@ object PackageIngredients {
         // No "Zutaten:" and nothing that looks like a list (commas): the front of a package or a text, no guessing.
         if (start == null && text.count { it == ',' } < 2) return ""
         if (start != null) text = text.substring(start)
+        // The line of the producer's address ends the list as well, even when "Kann enthalten" was not read.
+        val addressAt = (COMPANY.mapNotNull { text.indexOf(it, ignoreCase = true).takeIf { at -> at > 0 } } +
+            listOfNotNull(postalCode.find(text)?.range?.first?.takeIf { it > 0 })).minOrNull()
+        if (addressAt != null) text = text.substring(0, text.lastIndexOf('\n', addressAt).coerceAtLeast(0))
         text = text.replace(whitespace, " ").trim()
         // An ingredient list ends with a full stop (not a decimal point): what follows is traces, storage, advice.
         val end = (ENDS.mapNotNull { marker -> text.indexOf(marker, ignoreCase = true).takeIf { it > 0 } } +
             listOfNotNull(sentenceEnd.find(text)?.range?.first?.plus(1)?.takeIf { it > 1 })).minOrNull()
         if (end != null) text = text.substring(0, end)
         return text
-            // Percentages and quantities: "Weizenmehl (62 %)", "12,5%", "250 g".
-            .replace(additiveClass, " ")
-            // The camera often cuts the end of a word at the edge: "Backtriebmit" is still the class of an additive.
-            .replace(additiveStem, " ")
+            // What stands in brackets only says more about the entry in front of it, the entry is what the package lists.
+            .let(::withoutBrackets)
+            // Percentages and quantities: "12,5%", "250 g".
             .replace(quantity, " ")
             .replace(number, " ")
             .replace(separators, ",")
