@@ -524,7 +524,9 @@
     <string name="meal_scan_unknown">Aún no está en tu lista. ¿Añadir como ingrediente nuevo?</string>
     <string name="meal_scan_unknown_hint">Los marcados abren uno tras otro el formulario «Ingrediente nuevo».</string>
     <string name="meal_scan_add">Añadir</string>
-    <string name="meal_scan_hint">El texto se lee de una foto y puede contener errores o pasar por alto ingredientes. Comprueba la lista con el envase.</string>
+    <string name="meal_scan_hint">El texto se lee de una foto y puede contener errores o pasar por alto ingredientes. Comprueba la lista con el envase. Consejo: Google Lens suele leer el texto con más precisión. Cópialo allí y elige «Pegar texto copiado» en el menú de la cámara.</string>
+    <string name="meal_scan_photo">Hacer una foto de la lista de ingredientes</string>
+    <string name="meal_scan_paste">Pegar texto copiado</string>
     <string name="meal_copy_title">¿Como ayer?</string>
     <string name="meal_copy_hint">Repetir una comida de ayer o anteayer</string>
     <string name="meal_copy_chip">%1$s · %2$s</string>

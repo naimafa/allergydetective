@@ -525,7 +525,9 @@
     <string name="meal_scan_unknown">Not in your list yet. Add as a new ingredient?</string>
     <string name="meal_scan_unknown_hint">Ticked ones open the form "New ingredient" one after the other.</string>
     <string name="meal_scan_add">Add</string>
-    <string name="meal_scan_hint">The text is read from a photo and can contain mistakes or miss ingredients. Please check the list against the package.</string>
+    <string name="meal_scan_hint">The text is read from a photo and can contain mistakes or miss ingredients. Please check the list against the package. Tip: Google Lens often reads the text more accurately. Copy it there and use "Paste copied text" in the camera menu.</string>
+    <string name="meal_scan_photo">Take a photo of the ingredient list</string>
+    <string name="meal_scan_paste">Paste copied text</string>
     <string name="meal_copy_title">Same as before?</string>
     <string name="meal_copy_hint">Take over a meal from yesterday or the day before</string>
     <string name="meal_copy_chip">%1$s · %2$s</string>

@@ -524,7 +524,9 @@
     <string name="meal_scan_unknown">Henüz listende yok. Yeni malzeme olarak eklensin mi?</string>
     <string name="meal_scan_unknown_hint">İşaretlenenler sırayla «Yeni malzeme» formunu açar.</string>
     <string name="meal_scan_add">Ekle</string>
-    <string name="meal_scan_hint">Metin bir fotoğraftan okunur; hata içerebilir veya bazı malzemeleri kaçırabilir. Lütfen listeyi ambalajla karşılaştır.</string>
+    <string name="meal_scan_hint">Metin bir fotoğraftan okunur; hata içerebilir veya bazı malzemeleri kaçırabilir. Lütfen listeyi ambalajla karşılaştır. İpucu: Google Lens metni çoğu zaman daha doğru okur. Orada kopyala ve kamera menüsünden «Kopyalanan metni yapıştır» seçeneğini kullan.</string>
+    <string name="meal_scan_photo">Malzeme listesinin fotoğrafını çek</string>
+    <string name="meal_scan_paste">Kopyalanan metni yapıştır</string>
     <string name="meal_copy_title">Dünkü gibi mi?</string>
     <string name="meal_copy_hint">Dünden veya evvelki günden bir öğünü al</string>
     <string name="meal_copy_chip">%1$s · %2$s</string>

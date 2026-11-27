@@ -534,7 +534,9 @@
     <string name="meal_scan_unknown">غير موجود في قائمتك بعد. هل تريد إضافته كمكوّن جديد؟</string>
     <string name="meal_scan_unknown_hint">العناصر المحددة تفتح نموذج «مكوّن جديد» واحدًا تلو الآخر.</string>
     <string name="meal_scan_add">إضافة</string>
-    <string name="meal_scan_hint">تُقرأ النصوص من صورة وقد تحتوي على أخطاء أو تفوّت بعض المكوّنات. يرجى مراجعة القائمة مع العبوة.</string>
+    <string name="meal_scan_hint">تُقرأ النصوص من صورة وقد تحتوي على أخطاء أو تفوّت بعض المكوّنات. يرجى مراجعة القائمة مع العبوة. نصيحة: غالبًا ما يقرأ Google Lens النص بدقة أكبر. انسخه هناك واختر «لصق النص المنسوخ» من قائمة الكاميرا.</string>
+    <string name="meal_scan_photo">التقاط صورة لقائمة المكونات</string>
+    <string name="meal_scan_paste">لصق النص المنسوخ</string>
     <string name="meal_copy_title">مثل أمس؟</string>
     <string name="meal_copy_hint">أعد تسجيل وجبة من أمس أو أول أمس</string>
     <string name="meal_copy_chip">%1$s · %2$s</string>

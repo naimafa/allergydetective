@@ -110,6 +110,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.CameraAlt
 import allergydetective.shared.generated.resources.meal_scan
+import allergydetective.shared.generated.resources.meal_scan_paste
+import allergydetective.shared.generated.resources.meal_scan_photo
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.outlined.ContentPaste
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.ui.platform.LocalClipboardManager
 import com.nfar.allergydetective.platform.rememberPackageScan
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Add
@@ -453,6 +460,8 @@ private fun WhatStep(
         val speech = rememberSpeechInput(Locale.current.toLanguageTag()) { text -> text?.let(viewModel::onVoiceResult) }
         val scan = rememberPackageScan(viewModel::onPackageText)
         val scanLabel = stringResource(Res.string.meal_scan)
+        var scanMenu by remember { mutableStateOf(false) }
+        val clipboard = LocalClipboardManager.current
         // User note 22.11.2026: a soft search pill with magnifier and microphone, as in the design picture.
         TextField(
             value = state.query,
@@ -462,12 +471,33 @@ private fun WhatStep(
             shape = CircleShape,
             colors = searchPillColors(),
             leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
-            trailingIcon = if (speech == null && scan == null) null else {
-                {
-                    Row {
-                        scan?.let { start -> IconButton(onClick = start) { Icon(Icons.Outlined.CameraAlt, contentDescription = scanLabel, modifier = Modifier.size(20.dp)) } }
-                        speech?.let { start -> IconButton(onClick = start) { Icon(Icons.Outlined.Mic, contentDescription = voiceLabel, modifier = Modifier.size(20.dp)) } }
+            trailingIcon = {
+                Row {
+                    // User 27.11.2026: the ingredient list from a photo, or text copied elsewhere (e.g. with Google Lens).
+                    Box {
+                        IconButton(onClick = { scanMenu = true }) { Icon(Icons.Outlined.CameraAlt, contentDescription = scanLabel, modifier = Modifier.size(20.dp)) }
+                        DropdownMenu(expanded = scanMenu, onDismissRequest = { scanMenu = false }) {
+                            scan?.let { start ->
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(Res.string.meal_scan_photo)) },
+                                    leadingIcon = { Icon(Icons.Outlined.CameraAlt, contentDescription = null) },
+                                    onClick = {
+                                        scanMenu = false
+                                        start()
+                                    },
+                                )
+                            }
+                            DropdownMenuItem(
+                                text = { Text(stringResource(Res.string.meal_scan_paste)) },
+                                leadingIcon = { Icon(Icons.Outlined.ContentPaste, contentDescription = null) },
+                                onClick = {
+                                    scanMenu = false
+                                    viewModel.onPackageText(clipboard.getText()?.text.orEmpty())
+                                },
+                            )
+                        }
                     }
+                    speech?.let { start -> IconButton(onClick = start) { Icon(Icons.Outlined.Mic, contentDescription = voiceLabel, modifier = Modifier.size(20.dp)) } }
                 }
             },
             modifier = Modifier.fillMaxWidth().focusRequester(searchFocus).onFocusChanged { onSearchFocus(it.isFocused) },
