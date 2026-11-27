@@ -36,9 +36,11 @@ object PackageIngredients {
         // "Voll-\nmilch" is one word; any other line break is a space.
         var text = raw.replace(hyphenBreak, "")
         // "Zutaten:" on a package, or a "Zutaten" heading on a line of its own in a recipe.
-        val start = STARTS.mapNotNull { marker ->
-            Regex("""(?<!\p{L})""" + Regex.escape(marker) + """(?!\p{L})\s*[:：]?""", RegexOption.IGNORE_CASE).find(text)?.range?.last?.plus(1)
+        // A marketing text can say "...wertvolle Zutaten." earlier on: the colon, or a line of its own, makes it the heading.
+        fun startAfter(tail: String) = STARTS.mapNotNull { marker ->
+            Regex("""(?<!\p{L})""" + Regex.escape(marker) + tail, RegexOption.IGNORE_CASE).find(text)?.range?.last?.plus(1)
         }.minOrNull()
+        val start = startAfter("""(?!\p{L})[ \t]*[:：]""") ?: startAfter("""[ \t]*(?=\n)""")
         if (start != null) text = text.substring(start)
         text = text.replace(whitespace, " ").trim()
         // An ingredient list ends with a full stop (not a decimal point): what follows is traces, storage, advice.

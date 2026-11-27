@@ -23,6 +23,13 @@ class PackageIngredientsTest {
     }
 
     @Test
+    fun aMarketingTextWithTheWordIngredientsBeforeTheListIsSkipped() {
+        val text = "durch wertvolle Zutaten. Für deinen bewussten\nLebensstil und puren Bio-Genuss.\nErfahre mehr über deine REWE Bio Produkte:\nwww.rewe.de/bio\nDE-ÖKO-001\nZutaten: Dinkelmehl¹ (eine Weizenart) 69 %, Maisstärke¹, Meersalz, gemahlene Bourbon-Vanille¹.\nKann Spuren von Milch enthalten."
+
+        assertEquals("Dinkelmehl, eine Weizenart, Maisstärke, Meersalz, gemahlene Bourbon-Vanille", PackageIngredients.clean(text))
+    }
+
+    @Test
     fun aRecipeKeepsOnlyItsIngredientsNotTheTitleLabelsOrSteps() {
         val text = "Caprese-Salat|H- 2+ Portionen|Glutenfrei|Zutaten|• 200 g Tomaten|Vegetarisch|• 125 g Mozzarela|•1 Bund Basilikum|• 2 EL Olivenöl|Zubereitung|Tomaten und Mozzarella in Scheiben|schneiden.|O 10 Min.".split('|').joinToString("\n")
 
