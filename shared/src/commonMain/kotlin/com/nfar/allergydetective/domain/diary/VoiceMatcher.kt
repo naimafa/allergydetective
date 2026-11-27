@@ -65,7 +65,14 @@ class VoiceMatcher(
     private fun closeIngredient(word: String): Long? =
         if (word.length < MIN_WORD_LENGTH) null else search.bestMatch(word)
             // A package is full of words that are one typo away from an ingredient ("Teige" -> "Feige"): a typo only counts in longer words.
-            ?.takeIf { !strictTypos || it.second < TYPO_SCORE || word.length >= MIN_TYPO_WORD_LENGTH }?.first
+            ?.takeIf { !strictTypos || reliable(it.second, word) }?.first
+
+    /** A package has many short words: "aus" sits inside "Zuckeraustauschstoff" (Sorbit). Only prefixes count for them, a typo or a part only in longer words. */
+    private fun reliable(score: Int, word: String): Boolean = when {
+        score < SUBSTRING_SCORE -> true
+        score == SUBSTRING_SCORE -> word.length >= MIN_SUBSTRING_WORD_LENGTH
+        else -> word.length >= MIN_TYPO_WORD_LENGTH
+    }
 
     /** Tries "spinatpizza" as "spinat" + "pizza", both parts must match well. */
     private fun splitCompound(word: String): List<Long>? {
@@ -80,7 +87,8 @@ class VoiceMatcher(
     private companion object {
         const val MAX_PHRASE_WORDS = 4
         const val MIN_WORD_LENGTH = 3
-        const val TYPO_SCORE = 4
+        const val SUBSTRING_SCORE = 3
+        const val MIN_SUBSTRING_WORD_LENGTH = 6
         const val MIN_TYPO_WORD_LENGTH = 7
 
         /** Exact, prefix or word prefix; no substring or typo for compound parts. */

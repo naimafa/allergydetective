@@ -16,7 +16,7 @@ class PackageIngredientsTest {
     fun theListEndsAtItsFullStopEvenWhenTheTracesLineIsNotRecognised() {
         val text = "DE-ÖKO-001\nZutaten: Dinkelmehl¹ (eine Weizenart) 69 %, Rohrohr-\nzucker¹, Backpulver (Back-\ntriebmittel (Natriumcarbonate)), Meersalz, gemahlene Bourbon-Vanille¹.\n¹aus kontrolliert biologischem Anbau.\nKann Spuren von Milch, Ei, Soja.\nBackmischungen und Teige sind nicht zum Rohverzehr bestimmt."
 
-        assertEquals("Dinkelmehl, rohrzucker, Backpulver, Meersalz, Bourbon-Vanille", PackageIngredients.clean(text))
+        assertEquals("Dinkelmehl, zucker, Backpulver, Meersalz, Bourbon-Vanille", PackageIngredients.clean(text))
     }
 
     @Test
@@ -24,6 +24,18 @@ class PackageIngredientsTest {
         val text = "durch wertvolle Zutaten. Für deinen bewussten\nLebensstil und puren Bio-Genuss.\nErfahre mehr über deine REWE Bio Produkte:\nwww.rewe.de/bio\nDE-ÖKO-001\nZutaten: Dinkelmehl¹ (eine Weizenart) 69 %, Maisstärke¹, Meersalz, gemahlene Bourbon-Vanille¹.\nKann Spuren von Milch enthalten."
 
         assertEquals("Dinkelmehl, Maisstärke, Meersalz, Bourbon-Vanille", PackageIngredients.clean(text))
+    }
+
+    @Test
+    fun theWholePackageAsReadOnThePhoneGivesOnlyTheList() {
+        val text = listOf(
+            "Zubereitung bietet dir natürlichen Geschmack", "wertvolle Zutaten. Fùr deinen bewussten", "Lebensstil und poren Bio- Genuss.",
+            "DE-ÖKO-001", "Zutaten: Dinkelmehl (eine Weizenart) 69%, Rohrohr-", "zucker, Maisstärke, Kartoffelstärke, Backpulver (Back-",
+            "triebmittel (Natriumcarbonate), Säuerungsmittel (Kalium-", "tartrate), Meersalz, gemahlene Bourbon-Vanille", "'aus kontrolliert biologischem Anbau.",
+            "Kann Spuren von Milch, Ei, Soja, Senf, Lupinen,", "Mandeln, Haselnüssen und Pistazien enthalten.", "Trocken lagern.",
+        ).joinToString("\n")
+
+        assertEquals("Dinkelmehl, zucker, Maisstärke, Kartoffelstärke, Backpulver, Meersalz, Bourbon-Vanille", PackageIngredients.clean(text))
     }
 
     @Test

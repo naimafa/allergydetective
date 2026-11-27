@@ -24,7 +24,7 @@ object PackageIngredients {
         "glutenfrei", "vegetarisch", "vegan", "laktosefrei", "min", "portionen", "portion", "bio",
         "tbsp", "tsp", "cup", "cups", "pinch", "bunch", "slice", "slices", "cloves", "clove",
         // "gemahlene Bourbon-Vanille" is not "gemahlene Mandeln"; "eine Weizenart" says what the flour is, not another one.
-        "gemahlene", "gemahlener", "gemahlenes", "gemahlen", "eine", "weizenart", "aus", "kontrolliert", "biologischem", "anbau",
+        "gemahlene", "gemahlener", "gemahlenes", "gemahlen", "eine", "weizenart", "aus", "kontrolliert", "biologischem", "anbau", "rohr", "bourbon",
     )
 
     /** "Säuerungsmittel (Kaliumtartrate)": the class of an additive and its chemical name, nothing to eat. */
@@ -37,7 +37,8 @@ object PackageIngredients {
     private val whitespace = Regex("""\s+""")
     private val quantity = Regex("""\d+([.,]\d+)?\s*(%|g|mg|kg|ml|l)(?![\p{L}])""")
     private val number = Regex("""\d+([.,]\d+)?""")
-    private val separators = Regex("""[()\[\]{}:;.*/"•·+¹²³]""")
+    // The footnote mark "¹" is often read as an apostrophe.
+    private val separators = Regex("""[()\[\]{}:;.*/"'’‘´`•·+¹²³]""")
     private val sentenceEnd = Regex("""[\p{L})¹²³]\.(?=\s|$)""")
 
     fun clean(raw: String): String {
@@ -61,7 +62,7 @@ object PackageIngredients {
             // Percentages and quantities: "Weizenmehl (62 %)", "12,5%", "250 g".
             .replace(additiveClass, " ")
             // "Rohrohrzucker" is raw cane sugar, the catalog knows "Rohrzucker".
-            .replace("rohrohr", "rohr", ignoreCase = true)
+            .replace("rohrohr", "rohr ", ignoreCase = true)
             .replace(quantity, " ")
             .replace(number, " ")
             .replace(separators, ",")
