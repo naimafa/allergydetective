@@ -15,6 +15,7 @@ data class VoiceMatch(
 class VoiceMatcher(
     private val search: IngredientSearch,
     favorites: List<FavoriteInfo>,
+    private val strictTypos: Boolean = false,
 ) {
     // Filler words are removed on both sides, so "Müsli mit Milch" matches the spoken "Müsli mit Milch".
     private val favoritesByName = favorites.associateBy { words(it.name).joinToString(" ") }
@@ -62,11 +63,22 @@ class VoiceMatcher(
     private fun exactIngredient(phrase: String): Long? = search.bestMatch(phrase)?.takeIf { it.second == 0 }?.first
 
     private fun closeIngredient(word: String): Long? =
-        if (word.length < MIN_WORD_LENGTH) null else search.bestMatch(word)?.first
+        if (word.length < MIN_WORD_LENGTH) null else search.bestMatch(word)
+            // A package is full of words that are one typo away from an ingredient ("Teige" -> "Feige"): a typo only counts in longer words.
+            ?.takeIf { !strictTypos || reliable(it.second, word) }?.first
+
+    /** A package has many short words: "aus" sits inside "Zuckeraustauschstoff" (Sorbit). Only prefixes count for them, a typo or a part only in longer words. */
+    private fun reliable(score: Int, word: String): Boolean = when {
+        score < SUBSTRING_SCORE -> true
+        score == SUBSTRING_SCORE -> word.length >= MIN_SUBSTRING_WORD_LENGTH
+        else -> word.length >= MIN_TYPO_WORD_LENGTH
+    }
 
     /** Tries "spinatpizza" as "spinat" + "pizza", both parts must match well. */
     private fun splitCompound(word: String): List<Long>? {
-        for (cut in MIN_WORD_LENGTH..word.length - MIN_WORD_LENGTH) {
+        // "Gerste" is not "Ger" + "ste" (Hefe + Stevia): on a package both parts need a real length.
+        val minPart = if (strictTypos) MIN_STRICT_PART_LENGTH else MIN_WORD_LENGTH
+        for (cut in minPart..word.length - minPart) {
             val first = search.bestMatch(word.substring(0, cut))?.takeIf { it.second <= GOOD_SCORE }
             val second = search.bestMatch(word.substring(cut))?.takeIf { it.second <= GOOD_SCORE }
             if (first != null && second != null) return listOf(first.first, second.first)
@@ -77,6 +89,10 @@ class VoiceMatcher(
     private companion object {
         const val MAX_PHRASE_WORDS = 4
         const val MIN_WORD_LENGTH = 3
+        const val SUBSTRING_SCORE = 3
+        const val MIN_STRICT_PART_LENGTH = 4
+        const val MIN_SUBSTRING_WORD_LENGTH = 6
+        const val MIN_TYPO_WORD_LENGTH = 7
 
         /** Exact, prefix or word prefix; no substring or typo for compound parts. */
         const val GOOD_SCORE = 2
