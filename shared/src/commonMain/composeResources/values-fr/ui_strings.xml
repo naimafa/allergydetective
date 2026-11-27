@@ -515,6 +515,9 @@
     <string name="meal_step_what">Qu’as-tu mangé ?</string>
     <string name="meal_quick">Ingrédients choisis récemment</string>
     <string name="meal_quick_hint">Ingrédients que tu as mangés récemment</string>
+    <string name="meal_copy_title">Comme hier ?</string>
+    <string name="meal_copy_hint">Reprendre un repas de la veille ou de l’avant-veille</string>
+    <string name="meal_copy_chip">%1$s · %2$s</string>
     <string name="meal_favorites_hint">Plats enregistrés – un geste ajoute tous leurs ingrédients</string>
     <string name="meal_slot_missing">Choisis d’abord le repas, s’il te plaît.</string>
     <string name="meal_save_slot">Enregistrer : %1$s</string>

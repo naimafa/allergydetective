@@ -70,10 +70,11 @@ class LogMealViewModel(
         val allergies = repository.ingredientIdsWithKnownAllergy()
         val needsPreparation = repository.ingredientIdsNeedingPreparation()
         val recent = recentIngredients()
+        val earlier = earlierMeals()
         val favorites = repository.favorites()
         _state.update {
             it.copy(
-                loading = false, today = clock.today(), recent = recent, favorites = favorites, needsPreparation = needsPreparation,
+                loading = false, today = clock.today(), recent = recent, earlierMeals = earlier, favorites = favorites, needsPreparation = needsPreparation,
                 minorIngredientIds = ingredients.filter { ingredient -> ingredient.categoryId in MINOR_CATEGORY_IDS }.map { ingredient -> ingredient.id }.toSet(),
             ).withAllergies(allergies)
         }
@@ -149,6 +150,37 @@ class LogMealViewModel(
 
     private suspend fun displayName(ingredient: IngredientInfo): String =
         ingredient.key?.let { names.name(NamePrefix.INGREDIENT, it) } ?: ingredient.customName.orEmpty()
+
+    /** Yesterday's and the day before yesterday's meals, newest day first, in the order of the day. */
+    private suspend fun earlierMeals(): List<EarlierMeal> {
+        val today = clock.today()
+        return (1..EARLIER_DAYS).flatMap { daysAgo ->
+            val from = clock.startOfDayMillis(today - daysAgo)
+            val until = clock.startOfDayMillis(today - daysAgo + 1)
+            MealSlot.entries.mapNotNull { slot -> repository.mealIdOnDay(from, until, slot)?.let { EarlierMeal(it, daysAgo, slot) } }
+        }
+    }
+
+    /** Takes a logged meal over into the form: its dishes and single ingredients are added, nothing is replaced. */
+    fun onCopyEarlierMeal(earlier: EarlierMeal) {
+        viewModelScope.launch {
+            val meal = repository.meal(earlier.mealId) ?: return@launch
+            val singles = singlesOf(meal)
+            val dishes = dishesOf(meal)
+            _state.update { state ->
+                val addedDishes = dishes.filter { dish -> state.dishes.none { it.favoriteId == dish.favoriteId } }
+                state.copy(
+                    selected = state.selected + singles.filter { single -> state.selected.none { it.ingredient.id == single.ingredient.id } },
+                    dishes = state.dishes + addedDishes,
+                    favoriteId = state.favoriteId ?: addedDishes.firstNotNullOfOrNull { it.originFavoriteId },
+                    query = "",
+                    results = emptyList(),
+                    dishResults = emptyList(),
+                )
+            }
+            suggestDrink()
+        }
+    }
 
     private suspend fun recentIngredients(): List<IngredientInfo> =
         repository.recentIngredientIds(RECENT_LIMIT).mapNotNull { ingredientsById[it] }
@@ -591,6 +623,7 @@ class LogMealViewModel(
 
     companion object {
         private const val RECENT_LIMIT = 12
+        private const val EARLIER_DAYS = 2
 
         /** Seed categories nuts and seeds, oils and fats, spices and herbs, herbs (categories.json). */
         private val MINOR_CATEGORY_IDS = setOf<Long?>(9L, 13L, 14L, 15L)
