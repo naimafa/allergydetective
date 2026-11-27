@@ -41,6 +41,6 @@ class PackageIngredientsTest {
     @Test
     fun worksWithoutAMarkerAndInEnglish() {
         assertEquals("milk, sugar, cocoa", PackageIngredients.clean("Ingredients: milk, sugar (20%), cocoa. May contain nuts."))
-        assertEquals("Milch, Zucker", PackageIngredients.clean("Milch, Zucker"))
+        assertEquals("Milch, Zucker, Kakao", PackageIngredients.clean("Milch, Zucker, Kakao"))
     }
 }
