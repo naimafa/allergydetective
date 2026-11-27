@@ -64,6 +64,7 @@
   {"id": 214, "key": "buttermilk", "category": "dairy", "properties": ["milk_protein", "lactose"]},
   {"id": 215, "key": "soy_yogurt", "category": "dairy", "properties": ["soy"], "synonyms": {"de": ["Soja-Dessert"]}},
   {"id": 216, "key": "ghee", "category": "dairy", "properties": ["milk_protein", "high_fat"], "synonyms": {"de": ["Butterschmalz"]}},
+  {"id": 217, "key": "milk_powder", "category": "dairy", "properties": ["milk_protein", "lactose"], "synonyms": {"de": ["Trockenmilch"]}},
   {"id": 301, "key": "aged_hard_cheese", "category": "cheese", "properties": ["histamine", "milk_protein"], "synonyms": {"de": ["Parmesan", "Bergkäse", "alter Gouda", "Hartkäse"]}},
   {"id": 302, "key": "young_semi_hard_cheese", "category": "cheese", "properties": ["milk_protein"], "synonyms": {"de": ["Gouda", "Edamer", "Schnittkäse"]}},
   {"id": 303, "key": "soft_cheese", "category": "cheese", "properties": ["histamine", "milk_protein"], "synonyms": {"de": ["Camembert", "Brie"]}},

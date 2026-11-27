@@ -91,7 +91,7 @@
     <string name="ingredient_corn_polenta">Corn / polenta</string>
     <string name="ingredient_gluten_free_bread">Gluten-free bread</string>
     <string name="ingredient_spelt_wholemeal_bread">Wholemeal spelt bread</string>
-    <string name="ingredient_cow_milk">Cow’s milk</string>
+    <string name="ingredient_cow_milk">Cow’s milk / whole milk</string>
     <string name="ingredient_lactose_free_milk">Lactose-free milk</string>
     <string name="ingredient_yogurt">Yogurt</string>
     <string name="ingredient_quark">Quark</string>
@@ -189,7 +189,7 @@
     <string name="ingredient_milk_chocolate">Milk chocolate</string>
     <string name="ingredient_dark_chocolate_cocoa">Dark chocolate / cocoa</string>
     <string name="ingredient_sugar_free_sweets">Sugar-free chewing gum / sweets</string>
-    <string name="ingredient_sugar">Sugar</string>
+    <string name="ingredient_sugar">Sugar / cane sugar</string>
     <string name="ingredient_cooking_oil">Cooking oil (general)</string>
     <string name="ingredient_olive_oil">Olive oil</string>
     <string name="ingredient_sunflower_oil">Sunflower oil</string>
@@ -254,6 +254,7 @@
     <string name="ingredient_buttermilk">Buttermilk</string>
     <string name="ingredient_soy_yogurt">Soy yogurt</string>
     <string name="ingredient_ghee">Ghee / clarified butter</string>
+    <string name="ingredient_milk_powder">Milk powder / skimmed milk powder</string>
     <string name="ingredient_blue_cheese">Blue cheese</string>
     <string name="ingredient_processed_cheese">Processed cheese</string>
     <string name="ingredient_goat_cheese">Goat cheese</string>
@@ -311,7 +312,7 @@
     <string name="ingredient_stock_cube">Stock / bouillon cube</string>
     <string name="ingredient_remoulade_sauce">Remoulade / burger sauce</string>
     <string name="ingredient_instant_noodles">Instant noodles / packet soup</string>
-    <string name="ingredient_salt">Salt</string>
+    <string name="ingredient_salt">Salt / sea salt / table salt</string>
     <string name="ingredient_vanilla">Vanilla</string>
     <string name="ingredient_cloves">Cloves</string>
     <string name="ingredient_cardamom">Cardamom</string>
@@ -335,7 +336,7 @@
     <string name="ingredient_semolina">Semolina</string>
     <string name="ingredient_oat_flour">Oat flour</string>
     <string name="ingredient_rice_flour">Rice flour</string>
-    <string name="ingredient_starch">Cornflour / starch</string>
+    <string name="ingredient_starch">Cornflour / starch / corn starch / potato starch</string>
     <string name="ingredient_gluten_free_flour_mix">Gluten-free flour mix</string>
     <string name="ingredient_almond_flour">Almond flour</string>
     <string name="ingredient_chickpea_flour">Chickpea flour</string>

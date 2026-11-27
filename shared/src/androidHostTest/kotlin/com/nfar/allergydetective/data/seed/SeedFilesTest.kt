@@ -32,7 +32,7 @@ class SeedFilesTest {
     fun hasExpectedCounts() {
         assertEquals(17, entities.categories.size)
         assertEquals(26, entities.properties.size)
-        assertEquals(270, entities.ingredients.size)
+        assertEquals(271, entities.ingredients.size)
         assertEquals(27, entities.symptoms.size)
         assertEquals(4, entities.lifestyleFactors.size)
     }
@@ -118,6 +118,24 @@ class SeedFilesTest {
         }
     }
 
+
+    /** Milk powder (user 27.11.2026, package photos): migration 17 -> 18 for existing installs, JSON for new ones; both the same. */
+    @Test
+    fun milkPowderMigrationMatchesSeedFile() {
+        val propertyKeys = entities.properties.associate { it.id to it.key }
+        assertEquals(1, Migrations.MILK_POWDER_ROWS.size)
+        Migrations.MILK_POWDER_ROWS.forEach { row ->
+            val seed = entities.ingredients.single { it.id == row.id }
+            assertEquals(row.key, seed.key)
+            assertEquals(row.categoryId, seed.categoryId)
+            assertEquals(
+                row.properties.toSet(),
+                entities.ingredientProperties.filter { it.ingredientId == row.id }.map { propertyKeys.getValue(it.propertyId) }.toSet(),
+            )
+            assertEquals(row.synonymsDe, entities.ingredientSynonyms.filter { it.ingredientId == row.id }.map { it.synonym })
+            assertEquals(row.categoryId, row.id / 100)
+        }
+    }
 
     /** Sweeteners and figs (user 25.11.2026): migration 14 -> 15 for existing installs, JSON for new ones; both the same. */
     @Test

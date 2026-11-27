@@ -204,10 +204,25 @@ object Migrations {
         }
     }
 
+    /**
+     * User 27.11.2026: package photos. "Magermilchpulver" was missing (milk powder, with the triggers of milk). Salt, sugar,
+     * starch and cow's milk got their package names ("Meersalz", "Rohrzucker", "Maisstärke" ...) in their display names;
+     * that is text only. No schema change; same row as the seed JSON.
+     */
+    val MIGRATION_17_18 = object : Migration(17, 18) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            MILK_POWDER_ROWS.forEach { connection.insertSeedIngredient(it) }
+        }
+    }
+
+    internal val MILK_POWDER_ROWS = listOf(
+        SeedRow(217, "milk_powder", 2L, listOf("milk_protein", "lactose"), listOf("Trockenmilch")),
+    )
+
     /** The new symptoms of version 17; same ids and keys as symptoms.json. */
     val JOINT_SYMPTOMS_17 = listOf(5001L to "joint_pain", 5002L to "joint_swelling", 5003L to "muscle_pain")
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17)
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18)
 
     private const val HERBS_CATEGORY = 15L
     internal const val DRIED_HERBS = 1415L
