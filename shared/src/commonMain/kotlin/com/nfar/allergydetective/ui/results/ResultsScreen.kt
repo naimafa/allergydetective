@@ -136,10 +136,10 @@ private fun ResultsContent(state: ResultsState, modifier: Modifier, onSetFocus: 
     ) {
         // User 25.11.2026: the Weglass-Test on top; with foods eaten every day it is the only way to check them.
         item { ExperimentCard() }
-        if (state.confirmedDays < ResultsViewModel.FIRST_EVALUATION_DAYS) {
+        if (state.confirmedDays < state.evaluationDays) {
             item {
                 InfoCard(
-                    text = stringResource(Res.string.results_too_early, state.confirmedDays, ResultsViewModel.FIRST_EVALUATION_DAYS),
+                    text = stringResource(Res.string.results_too_early, state.confirmedDays, state.evaluationDays),
                     container = MaterialTheme.colorScheme.surfaceContainerHigh,
                 )
             }
@@ -224,7 +224,7 @@ private fun ResultsContent(state: ResultsState, modifier: Modifier, onSetFocus: 
 private fun WhyNoPatternCard(state: ResultsState) {
     var open by remember { mutableStateOf(false) }
     val text = when (state.noPatternReason) {
-        NoPatternReason.TOO_FEW_DAYS -> stringResource(Res.string.results_why_too_few_days, state.confirmedDays, ResultsViewModel.FIRST_EVALUATION_DAYS)
+        NoPatternReason.TOO_FEW_DAYS -> stringResource(Res.string.results_why_too_few_days, state.confirmedDays, state.evaluationDays)
         NoPatternReason.NO_COMPLAINTS -> stringResource(Res.string.results_why_no_complaints)
         NoPatternReason.FEW_COMPLAINT_DAYS -> stringResource(Res.string.results_why_few_complaint_days)
         NoPatternReason.NO_GOOD_DAYS -> stringResource(Res.string.results_why_no_good_days)
