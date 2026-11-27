@@ -35,26 +35,24 @@ class PackageIngredientsTest {
             "Kann Spuren von Milch, Ei, Soja, Senf, Lupinen,", "Mandeln, Haselnüssen und Pistazien enthalten.", "Trocken lagern.",
         ).joinToString("\n")
 
-        assertEquals("Dinkelmehl, Rohrohrzucker, Maisstärke, Kartoffelstärke, Backpulver, Meersalz, Bourbon-Vanille", PackageIngredients.clean(text))
+        // The camera lost a bracket: the additive classes stay as the entries the package lists.
+        assertEquals(
+            "Dinkelmehl, Rohrohrzucker, Maisstärke, Kartoffelstärke, Backpulver, Backtriebmittel, Säuerungsmittel, Meersalz, Bourbon-Vanille",
+            PackageIngredients.clean(text),
+        )
     }
 
     @Test
     fun aBlurredListKeepsItsPartsAsWritten() {
         val text = "ZUTATEN: WEIZENMEHL, Zucker, 12 % Rosinen,\nStärke, MAGERMILCHPULVER, Backtriebmittel\n(Glucono-delta-lacton, Natriumcarbonate),\nSalz, Aroma (enthält GERSTE).\nKann enthalten: SOJA"
 
-        assertEquals("WEIZENMEHL, Zucker, Rosinen, Stärke, MAGERMILCHPULVER, Salz, GERSTE", PackageIngredients.clean(text))
+        // What stands in brackets only says more about the entry in front: Backtriebmittel and Aroma are the entries.
+        assertEquals("WEIZENMEHL, Zucker, Rosinen, Stärke, MAGERMILCHPULVER, Backtriebmittel, Salz, Aroma", PackageIngredients.clean(text))
     }
 
     @Test
-    fun anAdditiveClassCutOffByTheCameraIsDropped() {
-        assertEquals("Zucker, Salz", PackageIngredients.clean("Zutaten: Zucker, Backtriebmit, Salz."))
-    }
-
-    @Test
-    fun garbledChemicalNamesAndAromaAreNotOfferedAsIngredients() {
-        val text = "Zutaten: Zucker, Backtriebrnite (Glucono-delta-lacton, Natrumcartnate), Salz, Aroma (enthalt GERSTE)."
-
-        assertEquals("Zucker, Salz, GERSTE", PackageIngredients.clean(text))
+    fun bracketsInsideBracketsAreAllLeftOut() {
+        assertEquals("Zucker, Backpulver, Salz", PackageIngredients.clean("Zutaten: Zucker, Backpulver (Backtriebmittel (Natriumcarbonate), Säuerungsmittel (Kaliumtartrate)), Salz."))
     }
 
     @Test

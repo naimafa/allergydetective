@@ -24,24 +24,11 @@ object PackageIngredients {
         "glutenfrei", "vegetarisch", "vegan", "laktosefrei", "min", "portionen", "portion", "bio",
         "tbsp", "tsp", "cup", "cups", "pinch", "bunch", "slice", "slices", "cloves", "clove",
         // "gemahlene Bourbon-Vanille" is not "gemahlene Mandeln"; "eine Weizenart" says what the flour is, not another one.
-        "gemahlene", "gemahlener", "gemahlenes", "gemahlen", "eine", "weizenart", "aus", "kontrolliert", "biologischem", "anbau", "enthält", "enthaelt", "enthalt", "enthalten", "aroma", "aromen",
+        "gemahlene", "gemahlener", "gemahlenes", "gemahlen", "eine", "weizenart", "aus", "kontrolliert", "biologischem", "anbau", "enthält", "enthaelt", "enthalt", "enthalten",
     )
 
-    /** "Säuerungsmittel (Kaliumtartrate)": the class of an additive and its chemical name, nothing to eat. */
-    private val additiveClass = Regex(
-        """(säuerungsmittel|backtriebmittel|triebmittel|emulgator|konservierungsstoff|farbstoff|antioxidationsmittel|verdickungsmittel|geschmacksverstärker|stabilisator|festigungsmittel|überzugsmittel|trennmittel|feuchthaltemittel|acidity regulator|raising agents?|emulsifiers?|preservatives?|colou?rs?|antioxidants?|thickeners?|stabili[sz]ers?)\s*\((?:[^()]|\([^()]*\))*\)""",
-        RegexOption.IGNORE_CASE,
-    )
-
-    private val additiveStem = Regex(
-        """(?<!\p{L})(backtrieb|triebmittel|säuerungsm|sauerungsm|emulgator|konservierungsst|farbstoff|antioxidationsm|verdickungsm|geschmacksverst|stabilisator|festigungsm|überzugsm|trennmittel|feuchthaltem)\p{L}*""",
-        RegexOption.IGNORE_CASE,
-    )
-    /** Chemical names of additives, also as the camera garbles them ("Natrumcartnate"): nothing to eat, no new ingredient. */
-    private val chemical = Regex(
-        """(?<!\p{L})[\p{L}-]*(natr[iu]m|kalium|calcium|magnesium|carbon|carbnat|cartnat|tartrat|phosphat|citrat|sorbat|benzoat|lacton|glutamat|säure|saeure|sulfit|nitrit)[\p{L}-]*""",
-        RegexOption.IGNORE_CASE,
-    )
+    /** The innermost brackets: "Backtriebmittel (Natriumcarbonate)", "Aroma (enthält Gerste)". */
+    private val innermostBrackets = Regex("""\([^()]*\)""")
     private val hyphenBreak = Regex("""-\s*\n\s*""")
     private val whitespace = Regex("""\s+""")
     private val quantity = Regex("""\d+([.,]\d+)?\s*(%|g|mg|kg|ml|l)(?![\p{L}])""")
@@ -49,6 +36,21 @@ object PackageIngredients {
     // The footnote mark "¹" is often read as an apostrophe.
     private val separators = Regex("""[()\[\]{}:;.*/"'’‘´`•·+¹²³]""")
     private val sentenceEnd = Regex("""[\p{L})¹²³]\.(?=\s|$)""")
+
+    /**
+     * "Backtriebmittel (Natriumcarbonate)" is the entry "Backtriebmittel"; "Aroma (enthält Gerste)" is "Aroma" (user
+     * 27.11.2026: the entries as the package lists them). A bracket without its partner, as the camera loses them,
+     * only separates.
+     */
+    private fun withoutBrackets(text: String): String {
+        var result = text
+        while (true) {
+            val next = result.replace(innermostBrackets, " ")
+            if (next == result) break
+            result = next
+        }
+        return result.replace('(', ',').replace(')', ' ')
+    }
 
     fun clean(raw: String): String {
         // "Voll-\nmilch" is one word; any other line break is a space.
@@ -68,11 +70,9 @@ object PackageIngredients {
             listOfNotNull(sentenceEnd.find(text)?.range?.first?.plus(1)?.takeIf { it > 1 })).minOrNull()
         if (end != null) text = text.substring(0, end)
         return text
-            // Percentages and quantities: "Weizenmehl (62 %)", "12,5%", "250 g".
-            .replace(additiveClass, " ")
-            // The camera often cuts the end of a word at the edge: "Backtriebmit" is still the class of an additive.
-            .replace(additiveStem, " ")
-            .replace(chemical, " ")
+            // What stands in brackets only says more about the entry in front of it, the entry is what the package lists.
+            .let(::withoutBrackets)
+            // Percentages and quantities: "12,5%", "250 g".
             .replace(quantity, " ")
             .replace(number, " ")
             .replace(separators, ",")
