@@ -533,6 +533,9 @@
     <string name="meal_scan_none">تعذّرت قراءة أي مكوّن. حاول مرة أخرى مع وضوح قائمة المكونات وإضاءة جيدة.</string>
     <string name="meal_scan_unknown">غير معروف: %1$s</string>
     <string name="meal_scan_add">إضافة</string>
+    <string name="meal_copy_title">مثل أمس؟</string>
+    <string name="meal_copy_hint">أعد تسجيل وجبة من أمس أو أول أمس</string>
+    <string name="meal_copy_chip">%1$s · %2$s</string>
     <string name="meal_favorites_hint">أطباق محفوظة – لمسة واحدة تضيف كل مكوّناتها</string>
     <string name="meal_slot_missing">اختر الوجبة أولًا من فضلك.</string>
     <string name="meal_save_slot">حفظ: %1$s</string>

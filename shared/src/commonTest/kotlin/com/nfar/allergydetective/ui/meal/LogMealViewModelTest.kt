@@ -445,6 +445,25 @@ class LogMealViewModelTest {
         assertNull(vm.state.value.packageScan)
     }
 
+    @Test
+    fun aMealOfYesterdayCanBeTakenOverAgain() {
+        val yesterday = now.toEpochMilliseconds() - 24 * 60 * 60 * 1000L
+        repository.saved += Triple(yesterday, 60, listOf(MealItem(bread.id, Portion.SMALL), MealItem(milk.id, Portion.LARGE)))
+        repository.mealFavoriteIds += null
+        repository.slots += MealSlot.BREAKFAST
+        repository.snapshots += null
+        val vm = viewModel()
+
+        val earlier = vm.state.value.earlierMeals.single()
+        assertEquals(1, earlier.daysAgo)
+        assertEquals(MealSlot.BREAKFAST, earlier.slot)
+
+        vm.onCopyEarlierMeal(earlier)
+        vm.onCopyEarlierMeal(earlier) // a second tap adds nothing twice
+
+        assertEquals(listOf(SelectedIngredient(bread, Portion.SMALL), SelectedIngredient(milk, Portion.LARGE)), vm.state.value.selected)
+    }
+
     private val coffee = IngredientInfo(1101, "coffee", null, BEVERAGES_CATEGORY_ID)
     private val repository = FakeRepository(listOf(bread, milk, coffee, linseed))
 

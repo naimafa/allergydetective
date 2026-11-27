@@ -524,6 +524,9 @@
     <string name="meal_scan_none">Nothing could be read as an ingredient. Try again with the ingredient list in focus and good light.</string>
     <string name="meal_scan_unknown">Not recognised: %1$s</string>
     <string name="meal_scan_add">Add</string>
+    <string name="meal_copy_title">Same as before?</string>
+    <string name="meal_copy_hint">Take over a meal from yesterday or the day before</string>
+    <string name="meal_copy_chip">%1$s · %2$s</string>
     <string name="meal_favorites_hint">Saved dishes – a tap adds all their ingredients</string>
     <string name="meal_slot_missing">Please choose the meal first.</string>
     <string name="meal_save_slot">Save %1$s</string>

@@ -133,6 +133,7 @@ val appModule = module {
             catalog = get(),
             clock = get(),
             computeContext = get(ComputeContext),
+            settings = get(),
         )
     }
     viewModel {

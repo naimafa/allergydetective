@@ -524,6 +524,9 @@
     <string name="meal_scan_none">Es konnte keine Zutat gelesen werden. Versuche es noch einmal, mit der Zutatenliste scharf im Bild und gutem Licht.</string>
     <string name="meal_scan_unknown">Nicht erkannt: %1$s</string>
     <string name="meal_scan_add">Hinzufügen</string>
+    <string name="meal_copy_title">Wie gestern?</string>
+    <string name="meal_copy_hint">Eine Mahlzeit von gestern oder vorgestern übernehmen</string>
+    <string name="meal_copy_chip">%1$s · %2$s</string>
     <string name="meal_favorites_hint">Gespeicherte Gerichte – ein Tipp fügt alle Zutaten hinzu</string>
     <string name="meal_slot_missing">Bitte wähle zuerst die Mahlzeit.</string>
     <string name="meal_save_slot">%1$s speichern</string>

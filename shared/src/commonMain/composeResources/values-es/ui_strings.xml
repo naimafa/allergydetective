@@ -523,6 +523,9 @@
     <string name="meal_scan_none">No se pudo leer ningún ingrediente. Inténtalo de nuevo con la lista enfocada y buena luz.</string>
     <string name="meal_scan_unknown">No reconocido: %1$s</string>
     <string name="meal_scan_add">Añadir</string>
+    <string name="meal_copy_title">¿Como ayer?</string>
+    <string name="meal_copy_hint">Repetir una comida de ayer o anteayer</string>
+    <string name="meal_copy_chip">%1$s · %2$s</string>
     <string name="meal_favorites_hint">Platos guardados: un toque añade todos sus ingredientes</string>
     <string name="meal_slot_missing">Elige primero la comida.</string>
     <string name="meal_save_slot">Guardar %1$s</string>

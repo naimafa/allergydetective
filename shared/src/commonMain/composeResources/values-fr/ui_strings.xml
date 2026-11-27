@@ -520,6 +520,9 @@
     <string name="meal_scan_none">Aucun ingrédient n’a pu être lu. Réessaie avec la liste bien nette et une bonne lumière.</string>
     <string name="meal_scan_unknown">Non reconnu : %1$s</string>
     <string name="meal_scan_add">Ajouter</string>
+    <string name="meal_copy_title">Comme hier ?</string>
+    <string name="meal_copy_hint">Reprendre un repas de la veille ou de l’avant-veille</string>
+    <string name="meal_copy_chip">%1$s · %2$s</string>
     <string name="meal_favorites_hint">Plats enregistrés – un geste ajoute tous leurs ingrédients</string>
     <string name="meal_slot_missing">Choisis d’abord le repas, s’il te plaît.</string>
     <string name="meal_save_slot">Enregistrer : %1$s</string>

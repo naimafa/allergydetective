@@ -23,6 +23,11 @@ import allergydetective.shared.generated.resources.meal_portion_help_spice
 import allergydetective.shared.generated.resources.meal_portion_large
 import allergydetective.shared.generated.resources.meal_portion_medium
 import allergydetective.shared.generated.resources.meal_portion_small
+import allergydetective.shared.generated.resources.meal_copy_chip
+import allergydetective.shared.generated.resources.meal_copy_hint
+import allergydetective.shared.generated.resources.meal_copy_title
+import allergydetective.shared.generated.resources.day_two_days_ago
+import allergydetective.shared.generated.resources.day_yesterday
 import allergydetective.shared.generated.resources.meal_quick
 import allergydetective.shared.generated.resources.meal_quick_hint
 import allergydetective.shared.generated.resources.meal_remove
@@ -517,6 +522,24 @@ private fun WhatStep(
                         label = { Text(favorite.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp)) },
                         // Design picture 22.11.2026: a star after the name marks a saved dish.
                         trailingIcon = { Icon(Icons.Filled.Star, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                    )
+                }
+            }
+        }
+        // User 27.11.2026: "gleiches Essen wie gestern oder vorgestern übernehmen".
+        if (shortcuts && state.earlierMeals.isNotEmpty()) {
+            ChipGroupTitle(stringResource(Res.string.meal_copy_title), stringResource(Res.string.meal_copy_hint))
+            ChipRowWithMore {
+                items(state.earlierMeals, key = { it.mealId }) { earlier ->
+                    AppFilterChip(
+                        selected = false,
+                        showCheck = false,
+                        onClick = { viewModel.onCopyEarlierMeal(earlier) },
+                        label = {
+                            val day = stringResource(if (earlier.daysAgo == 1) Res.string.day_yesterday else Res.string.day_two_days_ago)
+                            Text(stringResource(Res.string.meal_copy_chip, day, mealSlotLabel(earlier.slot)), maxLines = 1)
+                        },
+                        trailingIcon = { Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp)) },
                     )
                 }
             }
