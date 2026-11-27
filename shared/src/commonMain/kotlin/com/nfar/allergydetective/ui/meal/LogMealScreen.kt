@@ -225,8 +225,8 @@ fun LogMealScreen(
     }
     if (state.existingMealId != null) {
         state.slot?.let { slot -> ExistingMealDialog(slot, viewModel) }
-        state.packageScan?.let { PackageScanDialog(it, viewModel) }
     }
+    state.packageScan?.let { PackageScanDialog(it, viewModel) }
     IngredientQuestions(state, viewModel)
     if (showCustomDialog) {
         CustomIngredientDialog(

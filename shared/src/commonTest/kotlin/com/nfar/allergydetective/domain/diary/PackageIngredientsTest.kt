@@ -13,6 +13,13 @@ class PackageIngredientsTest {
     }
 
     @Test
+    fun aRecipeKeepsOnlyItsIngredientsNotTheTitleLabelsOrSteps() {
+        val text = "Caprese-Salat|H- 2+ Portionen|Glutenfrei|Zutaten|• 200 g Tomaten|Vegetarisch|• 125 g Mozzarela|•1 Bund Basilikum|• 2 EL Olivenöl|Zubereitung|Tomaten und Mozzarella in Scheiben|schneiden.|O 10 Min.".split('|').joinToString("\n")
+
+        assertEquals("Tomaten, Mozzarela, Basilikum, Olivenöl", PackageIngredients.clean(text))
+    }
+
+    @Test
     fun worksWithoutAMarkerAndInEnglish() {
         assertEquals("milk, sugar, cocoa", PackageIngredients.clean("Ingredients: milk, sugar (20%), cocoa. May contain nuts."))
         assertEquals("Milch, Zucker", PackageIngredients.clean("Milch, Zucker"))
