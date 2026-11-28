@@ -531,11 +531,11 @@
     <string name="meal_scan_unknown_hint">Oluşturmak için işaretle</string>
     <string name="meal_scan_add">Ekle</string>
     <string name="meal_scan_hint">Lütfen kontrol et, hata olabilir. İpucu: metni Google Lens ile kopyala ve yapıştır.</string>
-    <string name="meal_scan_photo">Malzeme listesinin fotoğrafını çek</string>
-    <string name="meal_scan_gallery">Galeriden fotoğraf seç</string>
+    <string name="meal_scan_photo">Fotoğraf çek</string>
+    <string name="meal_scan_gallery">Galeriden seç</string>
     <string name="meal_scan_as_dish">Yemek olarak kaydet</string>
-    <string name="favorites_from_scan">Fotoğraftan veya metinden malzemeler</string>
-    <string name="meal_scan_paste">Kopyalanan metni yapıştır</string>
+    <string name="favorites_from_scan">Fotoğraf veya metinden</string>
+    <string name="meal_scan_paste">Metin yapıştır</string>
     <string name="meal_scan_text_title">Malzeme listesi metin olarak</string>
     <string name="meal_scan_text_label">Metni buraya yapıştır</string>
     <string name="meal_scan_text_read">Malzemeleri oku</string>

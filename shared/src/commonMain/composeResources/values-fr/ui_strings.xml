@@ -528,11 +528,11 @@
     <string name="meal_scan_unknown_hint">Cocher pour créer</string>
     <string name="meal_scan_add">Ajouter</string>
     <string name="meal_scan_hint">À vérifier, erreurs possibles. Astuce : copie le texte avec Google Lens et colle-le.</string>
-    <string name="meal_scan_photo">Prendre en photo la liste des ingrédients</string>
-    <string name="meal_scan_gallery">Choisir une photo dans la galerie</string>
+    <string name="meal_scan_photo">Prendre une photo</string>
+    <string name="meal_scan_gallery">Depuis la galerie</string>
     <string name="meal_scan_as_dish">Enregistrer comme plat</string>
-    <string name="favorites_from_scan">Ingrédients d’une photo ou d’un texte</string>
-    <string name="meal_scan_paste">Coller le texte copié</string>
+    <string name="favorites_from_scan">Depuis photo ou texte</string>
+    <string name="meal_scan_paste">Coller le texte</string>
     <string name="meal_scan_text_title">Liste des ingrédients en texte</string>
     <string name="meal_scan_text_label">Colle le texte ici</string>
     <string name="meal_scan_text_read">Lire les ingrédients</string>

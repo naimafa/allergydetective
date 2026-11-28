@@ -532,11 +532,11 @@
     <string name="meal_scan_unknown_hint">Ankreuzen zum Anlegen</string>
     <string name="meal_scan_add">Hinzufügen</string>
     <string name="meal_scan_hint">Bitte prüfen, Fehler möglich. Tipp: Text mit Google Lens kopieren und einfügen.</string>
-    <string name="meal_scan_photo">Foto der Zutatenliste aufnehmen</string>
-    <string name="meal_scan_gallery">Foto aus der Galerie wählen</string>
+    <string name="meal_scan_photo">Foto aufnehmen</string>
+    <string name="meal_scan_gallery">Aus Galerie</string>
     <string name="meal_scan_as_dish">Als Gericht speichern</string>
-    <string name="favorites_from_scan">Zutaten aus Foto oder Text</string>
-    <string name="meal_scan_paste">Kopierten Text einfügen</string>
+    <string name="favorites_from_scan">Aus Foto oder Text</string>
+    <string name="meal_scan_paste">Text einfügen</string>
     <string name="meal_scan_text_title">Zutatenliste als Text</string>
     <string name="meal_scan_text_label">Text hier einfügen</string>
     <string name="meal_scan_text_read">Zutaten lesen</string>

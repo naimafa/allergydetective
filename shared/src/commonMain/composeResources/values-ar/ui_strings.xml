@@ -541,11 +541,11 @@
     <string name="meal_scan_unknown_hint">حدّد للإنشاء</string>
     <string name="meal_scan_add">إضافة</string>
     <string name="meal_scan_hint">يرجى التحقق، قد توجد أخطاء. نصيحة: انسخ النص بـ Google Lens والصقه.</string>
-    <string name="meal_scan_photo">التقاط صورة لقائمة المكونات</string>
-    <string name="meal_scan_gallery">اختيار صورة من المعرض</string>
+    <string name="meal_scan_photo">التقاط صورة</string>
+    <string name="meal_scan_gallery">من المعرض</string>
     <string name="meal_scan_as_dish">حفظ كطبق</string>
-    <string name="favorites_from_scan">مكوّنات من صورة أو نص</string>
-    <string name="meal_scan_paste">لصق النص المنسوخ</string>
+    <string name="favorites_from_scan">من صورة أو نص</string>
+    <string name="meal_scan_paste">لصق النص</string>
     <string name="meal_scan_text_title">قائمة المكونات كنص</string>
     <string name="meal_scan_text_label">الصق النص هنا</string>
     <string name="meal_scan_text_read">قراءة المكونات</string>

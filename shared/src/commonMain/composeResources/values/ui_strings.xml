@@ -532,11 +532,11 @@
     <string name="meal_scan_unknown_hint">Tick to create</string>
     <string name="meal_scan_add">Add</string>
     <string name="meal_scan_hint">Please check, mistakes possible. Tip: copy the text with Google Lens and paste it.</string>
-    <string name="meal_scan_photo">Take a photo of the ingredient list</string>
-    <string name="meal_scan_gallery">Choose a photo from the gallery</string>
+    <string name="meal_scan_photo">Take photo</string>
+    <string name="meal_scan_gallery">From gallery</string>
     <string name="meal_scan_as_dish">Save as a dish</string>
-    <string name="favorites_from_scan">Ingredients from a photo or text</string>
-    <string name="meal_scan_paste">Paste copied text</string>
+    <string name="favorites_from_scan">From photo or text</string>
+    <string name="meal_scan_paste">Paste text</string>
     <string name="meal_scan_text_title">Ingredient list as text</string>
     <string name="meal_scan_text_label">Paste the text here</string>
     <string name="meal_scan_text_read">Read ingredients</string>
