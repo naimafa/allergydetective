@@ -88,6 +88,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -114,6 +116,7 @@ import allergydetective.shared.generated.resources.meal_scan_paste
 import allergydetective.shared.generated.resources.meal_scan_gallery
 import allergydetective.shared.generated.resources.meal_scan_photo
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.ContentPaste
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material3.DropdownMenu
@@ -568,6 +571,44 @@ private fun WhatStep(
                 Text(stringResource(Res.string.custom_create_named, state.query.trim()))
             }
         }
+        // User 27.11.2026: "gleiches Essen wie gestern oder vorgestern übernehmen".
+        if (shortcuts && state.earlierMeals.isNotEmpty()) {
+            // User 28.11.2026: "ich sehe es noch nicht prominent genug" - looked like the groups below. Now a strip of its
+            // own in the colour of the meal tile, with a bold title and an icon.
+            val home = AppColors.extra.home
+            val copyTitle = stringResource(Res.string.meal_copy_title)
+            val copyHint = stringResource(Res.string.meal_copy_hint)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Brush.linearGradient(listOf(home.mealTile.start, home.mealTile.end)), MaterialTheme.shapes.large)
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.semantics { contentDescription = "$copyTitle. $copyHint" },
+                ) {
+                    Icon(Icons.Outlined.ContentCopy, contentDescription = null, tint = home.accent, modifier = Modifier.size(20.dp))
+                    Text(copyTitle, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold), color = home.ink)
+                }
+                ChipRowWithMore(fadeColor = home.mealTile.end) {
+                    items(state.earlierMeals, key = { it.mealId }) { earlier ->
+                        AppFilterChip(
+                            selected = false,
+                            showCheck = false,
+                            onClick = { viewModel.onCopyEarlierMeal(earlier) },
+                            label = {
+                                val day = stringResource(if (earlier.daysAgo == 1) Res.string.day_yesterday else Res.string.day_two_days_ago)
+                                Text(stringResource(Res.string.meal_copy_chip, day, mealSlotLabel(earlier.slot)), maxLines = 1)
+                            },
+                            trailingIcon = { Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                        )
+                    }
+                }
+            }
+        }
         if (shortcuts && state.favorites.isNotEmpty()) {
             ChipGroupTitle(stringResource(Res.string.meal_favorites), stringResource(Res.string.meal_favorites_hint))
             // User note 21.11.2026: coming from the favourites tab, the chosen dish could sit far right, out of view.
@@ -587,24 +628,6 @@ private fun WhatStep(
                         label = { Text(favorite.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp)) },
                         // Design picture 22.11.2026: a star after the name marks a saved dish.
                         trailingIcon = { Icon(Icons.Filled.Star, contentDescription = null, modifier = Modifier.size(20.dp)) },
-                    )
-                }
-            }
-        }
-        // User 27.11.2026: "gleiches Essen wie gestern oder vorgestern übernehmen".
-        if (shortcuts && state.earlierMeals.isNotEmpty()) {
-            ChipGroupTitle(stringResource(Res.string.meal_copy_title), stringResource(Res.string.meal_copy_hint))
-            ChipRowWithMore {
-                items(state.earlierMeals, key = { it.mealId }) { earlier ->
-                    AppFilterChip(
-                        selected = false,
-                        showCheck = false,
-                        onClick = { viewModel.onCopyEarlierMeal(earlier) },
-                        label = {
-                            val day = stringResource(if (earlier.daysAgo == 1) Res.string.day_yesterday else Res.string.day_two_days_ago)
-                            Text(stringResource(Res.string.meal_copy_chip, day, mealSlotLabel(earlier.slot)), maxLines = 1)
-                        },
-                        trailingIcon = { Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp)) },
                     )
                 }
             }
