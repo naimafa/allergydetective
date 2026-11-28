@@ -660,7 +660,7 @@ class LogMealViewModel(
         private const val EARLIER_DAYS = 2
 
         /** Seed categories nuts and seeds, oils and fats, spices and herbs, herbs (categories.json). */
-        private val MINOR_CATEGORY_IDS = setOf<Long?>(9L, 13L, 14L, 15L)
+        internal val MINOR_CATEGORY_IDS = setOf<Long?>(9L, 13L, 14L, 15L)
 
         /** Time of a meal added for an earlier day until a meal is chosen. */
         private const val PAST_DAY_HOUR = 12

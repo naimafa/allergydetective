@@ -16,6 +16,10 @@ import allergydetective.shared.generated.resources.favorites_editor_title
 import allergydetective.shared.generated.resources.favorites_empty
 import allergydetective.shared.generated.resources.favorites_ingredients
 import allergydetective.shared.generated.resources.favorites_name
+import allergydetective.shared.generated.resources.favorites_earlier_all
+import allergydetective.shared.generated.resources.favorites_earlier_future
+import allergydetective.shared.generated.resources.favorites_earlier_text
+import allergydetective.shared.generated.resources.favorites_earlier_title
 import allergydetective.shared.generated.resources.favorites_replace
 import allergydetective.shared.generated.resources.favorites_same_name
 import allergydetective.shared.generated.resources.history_delete
@@ -330,6 +334,17 @@ private fun DishEditorDialog(
         },
         dismissButton = { TextButton(onClick = onDone) { Text(stringResource(Res.string.common_cancel)) } },
     )
+    // User 28.11.2026: a changed dish is in earlier meals - ask whether they change too. "Only from now on" is the
+    // main button; the other changes the logged meals. Dismissing goes back to the form.
+    state.askEarlierMeals?.let { count ->
+        AlertDialog(
+            onDismissRequest = viewModel::onEarlierMealsDismiss,
+            title = { Text(stringResource(Res.string.favorites_earlier_title)) },
+            text = { Text(stringResource(Res.string.favorites_earlier_text, count)) },
+            confirmButton = { Button(onClick = { viewModel.onEarlierMealsChoice(false) }) { Text(stringResource(Res.string.favorites_earlier_future)) } },
+            dismissButton = { TextButton(onClick = { viewModel.onEarlierMealsChoice(true) }) { Text(stringResource(Res.string.favorites_earlier_all)) } },
+        )
+    }
     if (showCustom) {
         CustomIngredientDialog(
             viewModel = customViewModel,

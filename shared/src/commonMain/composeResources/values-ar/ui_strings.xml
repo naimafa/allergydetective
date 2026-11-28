@@ -394,6 +394,10 @@
     <string name="favorites_ingredients">المكوّنات</string>
     <string name="favorites_same_name">يوجد طبق باسم «%1$s» بالفعل. الحفظ سيستبدله، أو اختر اسمًا آخر.</string>
     <string name="favorites_replace">استبدال</string>
+    <string name="favorites_earlier_title">هل تُغيَّر الوجبات السابقة أيضًا؟</string>
+    <string name="favorites_earlier_text">هذا الطبق موجود في وجبات سابقة (%1$d). تُضاف المكوّنات الجديدة هناك وتُحذف المحذوفة. تبقى تعديلاتك على وجبة واحدة.</string>
+    <string name="favorites_earlier_future">من الآن فصاعدًا فقط</string>
+    <string name="favorites_earlier_all">غيّر السابقة أيضًا</string>
     <string name="favorites_edit">تعديل</string>
     <string name="favorites_edit_title">تعديل الطبق</string>
     <string name="onboarding_welcome">أهلًا بك! تسجّل ما تأكله وكيف تشعر وكيف كان يومك. يبحث التطبيق عن أنماط في تسجيلاتك.</string>

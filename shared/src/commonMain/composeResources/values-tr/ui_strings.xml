@@ -384,6 +384,10 @@
     <string name="favorites_ingredients">Malzemeler</string>
     <string name="favorites_same_name">“%1$s” adlı bir yemek zaten var. Kaydedersen yerini alır ya da başka bir ad gir.</string>
     <string name="favorites_replace">Değiştir</string>
+    <string name="favorites_earlier_title">Önceki öğünler de değişsin mi?</string>
+    <string name="favorites_earlier_text">Bu yemek önceki öğünlerde var (%1$d). Eklenen malzemeler oraya eklenir, çıkarılanlar silinir. Tek bir öğünde yaptığın değişiklikler kalır.</string>
+    <string name="favorites_earlier_future">Sadece bundan sonra</string>
+    <string name="favorites_earlier_all">Öncekiler de değişsin</string>
     <string name="favorites_edit">Düzenle</string>
     <string name="favorites_edit_title">Yemeği düzenle</string>
     <string name="onboarding_welcome">Hoş geldin! Ne yediğini, nasıl hissettiğini ve günün nasıl geçtiğini kaydedersin. Uygulama kayıtlarında örüntüler arar.</string>

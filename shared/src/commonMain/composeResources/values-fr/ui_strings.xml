@@ -381,6 +381,10 @@
     <string name="favorites_ingredients">Ingrédients</string>
     <string name="favorites_same_name">Un plat « %1$s » existe déjà. Enregistrer le remplace, ou choisis un autre nom.</string>
     <string name="favorites_replace">Remplacer</string>
+    <string name="favorites_earlier_title">Modifier aussi les repas précédents ?</string>
+    <string name="favorites_earlier_text">Ce plat figure dans des repas précédents (%1$d). Les nouveaux ingrédients y sont ajoutés, ceux retirés supprimés. Tes changements dans un repas restent.</string>
+    <string name="favorites_earlier_future">Seulement à partir de maintenant</string>
+    <string name="favorites_earlier_all">Modifier aussi les précédents</string>
     <string name="favorites_edit">Modifier</string>
     <string name="favorites_edit_title">Modifier le plat</string>
     <string name="onboarding_welcome">Bienvenue ! Tu notes ce que tu manges, comment tu te sens et comment s’est passée ta journée. L’appli cherche des tendances dans tes notes.</string>

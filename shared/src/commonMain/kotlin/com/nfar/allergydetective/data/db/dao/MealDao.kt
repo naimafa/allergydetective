@@ -13,6 +13,8 @@ import com.nfar.allergydetective.data.db.entity.MealItemOccurrenceEntity
 import com.nfar.allergydetective.data.db.entity.MealDishEntity
 import com.nfar.allergydetective.data.db.entity.MealIngredientEntity
 import com.nfar.allergydetective.data.db.model.MealKind
+import com.nfar.allergydetective.data.db.model.PortionSize
+import com.nfar.allergydetective.data.db.model.PreparationKind
 
 @Dao
 interface MealDao {
@@ -212,6 +214,42 @@ interface MealDao {
         replaceSnapshot(mealId, dishes, singles)
     }
 
+    // --- Changing a dish also in earlier meals (user 28.11.2026) ---
+
+    /** Meals that were logged with this dish (snapshot rows), newest first. */
+    @Query("SELECT DISTINCT d.mealId FROM meal_dishes d JOIN meals m ON m.id = d.mealId WHERE d.favoriteId = :favoriteId ORDER BY m.eatenAt DESC")
+    suspend fun mealIdsWithDish(favoriteId: Long): List<Long>
+
+    /**
+     * Brings a change of a dish into the meals logged with it: [added] ingredients join the dish (with the dish's portion
+     * of that meal, one step smaller for [minorIds] next to a main part), [removed] ones leave it. What the user took out
+     * or changed in a single meal stays. The merged list for the analysis is rebuilt from all occurrences.
+     */
+    @Transaction
+    suspend fun applyDishChange(favoriteId: Long, added: List<Pair<Long, PreparationKind?>>, removed: Set<Long>, minorIds: Set<Long>) {
+        for (mealId in mealIdsWithDish(favoriteId)) {
+            val dishIds = mealDishes(mealId).filter { it.favoriteId == favoriteId }.associateBy { it.id }
+            val rows = occurrences(mealId).filterNot { it.mealDishId in dishIds && it.ingredientId in removed }.toMutableList()
+            for (dish in dishIds.values) {
+                val inDish = rows.filter { it.mealDishId == dish.id }.map { it.ingredientId }.toSet()
+                val newOnes = added.filter { (id, _) -> id !in inDish }
+                val hasMainPart = (inDish + newOnes.map { it.first }).any { it !in minorIds }
+                newOnes.forEach { (id, preparation) ->
+                    val portion = if (hasMainPart && id in minorIds) dish.portion.smaller() else dish.portion
+                    rows += MealItemOccurrenceEntity(mealId = mealId, mealDishId = dish.id, ingredientId = id, portion = portion, preparation = preparation)
+                }
+            }
+            deleteOccurrences(mealId)
+            insertOccurrences(rows.map { it.copy(id = 0) })
+            deleteMealIngredients(mealId)
+            insertMealIngredients(
+                rows.groupBy { it.ingredientId }.map { (id, same) ->
+                    MealIngredientEntity(mealId = mealId, ingredientId = id, portion = same.maxOf { it.portion }, preparation = same.firstNotNullOfOrNull { it.preparation })
+                },
+            )
+        }
+    }
+
     /** Items first, so this does not depend on the foreign key cascade being enabled. */
     @Transaction
     suspend fun deleteMeal(mealId: Long) {
@@ -221,3 +259,6 @@ interface MealDao {
         deleteMealRow(mealId)
     }
 }
+
+/** One step smaller, small stays small (like Portion.smaller in the meal form). */
+private fun PortionSize.smaller(): PortionSize = if (this == PortionSize.LARGE) PortionSize.MEDIUM else PortionSize.SMALL

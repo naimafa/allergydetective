@@ -385,6 +385,10 @@
     <string name="favorites_ingredients">Zutaten</string>
     <string name="favorites_same_name">Ein Gericht „%1$s“ gibt es schon. Beim Speichern wird es ersetzt, oder gib einen anderen Namen ein.</string>
     <string name="favorites_replace">Ersetzen</string>
+    <string name="favorites_earlier_title">Auch frühere Mahlzeiten ändern?</string>
+    <string name="favorites_earlier_text">Dieses Gericht steckt in früheren Mahlzeiten (%1$d). Neue Zutaten werden dort ergänzt, entfernte gelöscht. Eigene Änderungen an einzelnen Mahlzeiten bleiben.</string>
+    <string name="favorites_earlier_future">Nur künftig</string>
+    <string name="favorites_earlier_all">Frühere auch ändern</string>
     <string name="favorites_edit">Bearbeiten</string>
     <string name="favorites_edit_title">Gericht bearbeiten</string>
     <string name="onboarding_welcome">Willkommen! Du trägst ein, was du isst, wie es dir geht und wie dein Tag war. Die App sucht Muster in deinen Einträgen.</string>
