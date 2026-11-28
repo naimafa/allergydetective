@@ -88,6 +88,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -560,19 +562,39 @@ private fun WhatStep(
         }
         // User 27.11.2026: "gleiches Essen wie gestern oder vorgestern übernehmen".
         if (shortcuts && state.earlierMeals.isNotEmpty()) {
-            ChipGroupTitle(stringResource(Res.string.meal_copy_title), stringResource(Res.string.meal_copy_hint))
-            ChipRowWithMore {
-                items(state.earlierMeals, key = { it.mealId }) { earlier ->
-                    AppFilterChip(
-                        selected = false,
-                        showCheck = false,
-                        onClick = { viewModel.onCopyEarlierMeal(earlier) },
-                        label = {
-                            val day = stringResource(if (earlier.daysAgo == 1) Res.string.day_yesterday else Res.string.day_two_days_ago)
-                            Text(stringResource(Res.string.meal_copy_chip, day, mealSlotLabel(earlier.slot)), maxLines = 1)
-                        },
-                        trailingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null, modifier = Modifier.size(20.dp)) },
-                    )
+            // User 28.11.2026: "ich sehe es noch nicht prominent genug" - looked like the groups below. Now a strip of its
+            // own in the colour of the meal tile, with a bold title and an icon.
+            val home = AppColors.extra.home
+            val copyTitle = stringResource(Res.string.meal_copy_title)
+            val copyHint = stringResource(Res.string.meal_copy_hint)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Brush.linearGradient(listOf(home.mealTile.start, home.mealTile.end)), MaterialTheme.shapes.large)
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.semantics { contentDescription = "$copyTitle. $copyHint" },
+                ) {
+                    Icon(Icons.Outlined.ContentCopy, contentDescription = null, tint = home.accent, modifier = Modifier.size(20.dp))
+                    Text(copyTitle, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold), color = home.ink)
+                }
+                ChipRowWithMore(fadeColor = home.mealTile.end) {
+                    items(state.earlierMeals, key = { it.mealId }) { earlier ->
+                        AppFilterChip(
+                            selected = false,
+                            showCheck = false,
+                            onClick = { viewModel.onCopyEarlierMeal(earlier) },
+                            label = {
+                                val day = stringResource(if (earlier.daysAgo == 1) Res.string.day_yesterday else Res.string.day_two_days_ago)
+                                Text(stringResource(Res.string.meal_copy_chip, day, mealSlotLabel(earlier.slot)), maxLines = 1)
+                            },
+                            trailingIcon = { Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                        )
+                    }
                 }
             }
         }
