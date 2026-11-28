@@ -131,6 +131,8 @@ fun AppNavHost(
     val navController = rememberNavController()
     val back: () -> Unit = { navController.popBackStack() }
     // User 25.11.2026: after saving, always the dashboard (a fresh home entry starts on the home tab).
+    // User 28.11.2026: when the form was opened from the history (editing or adding for an earlier day), saving goes back
+    // to the history; the tab is kept by the home entry (rememberSaveable), so only the other cases use goHome.
     val goHome: () -> Unit = { navController.navigate(HomeRoute()) { popUpTo<HomeRoute> { inclusive = true } } }
     // Tapping the evening reminder opens the day check directly (UX 4).
     LaunchedEffect(openDayCheck) {
@@ -207,9 +209,9 @@ fun AppNavHost(
             )
         }
 composable<IntroRoute> {            OnboardingScreen(                replay = true,                onFinished = { openDishes ->                    if (openDishes) {                        navController.navigate(HomeRoute(openFavorites = true)) { popUpTo<HomeRoute> { inclusive = true } }                    } else {                        navController.popBackStack()                    }                },            )        }
-        composable<LogMealRoute> { entry -> entry.toRoute<LogMealRoute>().let { route -> LogMealScreen(onBack = back, onFinished = goHome, editMealId = route.editMealId, favoriteId = route.favoriteId, daysAgo = route.daysAgo) } }
+        composable<LogMealRoute> { entry -> entry.toRoute<LogMealRoute>().let { route -> LogMealScreen(onBack = back, onFinished = if (route.editMealId != null || route.daysAgo != null) back else goHome, editMealId = route.editMealId, favoriteId = route.favoriteId, daysAgo = route.daysAgo) } }
         composable<LogSymptomRoute> { entry ->
-            entry.toRoute<LogSymptomRoute>().let { route -> LogSymptomScreen(onBack = back, onFinished = goHome, editEntryId = route.editEntryId, daysAgo = route.daysAgo) }
+            entry.toRoute<LogSymptomRoute>().let { route -> LogSymptomScreen(onBack = back, onFinished = if (route.editEntryId != null || route.daysAgo != null) back else goHome, editEntryId = route.editEntryId, daysAgo = route.daysAgo) }
         }
         composable<DayCheckRoute> { entry ->
             DayCheckScreen(
