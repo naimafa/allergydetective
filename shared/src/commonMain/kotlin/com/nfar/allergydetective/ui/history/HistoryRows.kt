@@ -63,6 +63,7 @@ import com.nfar.allergydetective.domain.time.MealSlot
 import com.nfar.allergydetective.ui.common.NamePrefix
 import com.nfar.allergydetective.ui.common.displayName
 import com.nfar.allergydetective.ui.common.formatClock
+import com.nfar.allergydetective.ui.meal.ingredientFullName
 import com.nfar.allergydetective.ui.meal.ingredientName
 import com.nfar.allergydetective.ui.meal.mealSlotLabel
 import com.nfar.allergydetective.ui.sick.IllnessRelationChoice
@@ -273,3 +274,10 @@ private fun portionLabel(portion: Portion): String = stringResource(
         Portion.LARGE -> Res.string.meal_portion_large
     },
 )
+
+/** The text a history search looks in (user 28.11.2026): dish, all ingredient names with their examples, complaint and note. */
+@Composable
+fun entrySearchText(entry: HistoryEntry): String = when (entry) {
+    is HistoryEntry.MealEntry -> (listOfNotNull(entry.dishName) + entry.items.map { ingredientFullName(it.first) }).joinToString(" ")
+    is HistoryEntry.SymptomEntry -> listOfNotNull(displayName(NamePrefix.SYMPTOM, entry.symptomKey), entry.note).joinToString(" ")
+}

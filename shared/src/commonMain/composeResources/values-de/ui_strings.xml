@@ -322,6 +322,8 @@
     <string name="tab_favorites">Favoriten</string>
     <string name="tab_profile">Profil</string>
     <string name="history_empty">Keine Einträge in den letzten 14 Tagen.</string>
+    <string name="history_search_hint">Gericht, Zutat oder Beschwerde suchen…</string>
+    <string name="history_search_empty">Nichts gefunden.</string>
     <string name="history_day_confirmed">Erledigt</string>
     <string name="history_day_open">Offen</string>
     <string name="history_intensity">Stärke %1$d/5</string>

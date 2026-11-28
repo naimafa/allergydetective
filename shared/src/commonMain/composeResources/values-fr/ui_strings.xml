@@ -318,6 +318,8 @@
     <string name="tab_favorites">Favoris</string>
     <string name="tab_profile">Profil</string>
     <string name="history_empty">Aucune note ces 14 derniers jours.</string>
+    <string name="history_search_hint">Chercher un plat, un ingrédient, un trouble…</string>
+    <string name="history_search_empty">Rien trouvé.</string>
     <string name="history_day_confirmed">Terminé</string>
     <string name="history_day_open">Ouvert</string>
     <string name="history_intensity">intensité %1$d/5</string>

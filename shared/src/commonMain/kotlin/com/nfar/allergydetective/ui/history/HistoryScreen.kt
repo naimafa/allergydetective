@@ -8,6 +8,13 @@ import allergydetective.shared.generated.resources.history_delete
 import allergydetective.shared.generated.resources.history_delete_question
 import allergydetective.shared.generated.resources.history_delete_sick_question
 import allergydetective.shared.generated.resources.history_empty
+import allergydetective.shared.generated.resources.history_search_empty
+import allergydetective.shared.generated.resources.history_search_hint
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.TextField
+import androidx.compose.ui.text.style.TextOverflow
+import com.nfar.allergydetective.ui.common.searchPillColors
 import allergydetective.shared.generated.resources.history_sick_add
 import allergydetective.shared.generated.resources.history_sick_badge
 import allergydetective.shared.generated.resources.weekdays_short
@@ -111,7 +118,9 @@ fun HistoryScreen(
     }
 
     val sickDays = state.days.map { it.epochDay }.filter { day -> sickState.periods.any { it.contains(day, sickState.today) } }.toSet()
-    val visibleDays = state.visibleDays(sickDays)
+    // Search texts need the translated names, so they are made here (14 days, a few dozen entries).
+    val searchTexts = buildMap { if (state.searching) state.days.forEach { day -> day.entries.forEach { put(it.key(), entrySearchText(it)) } } }
+    val visibleDays = state.visibleDays(sickDays) { searchTexts[it.key()].orEmpty() }
     fun isSick(day: HistoryDay) = day.epochDay in sickDays || day.check?.factorIds.orEmpty().any { state.factorKeys[it] == SICK_FACTOR_KEY }
     val listState = rememberLazyListState()
     LazyColumn(
@@ -121,6 +130,20 @@ fun HistoryScreen(
     ) {
         item {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.padding(top = 16.dp)) {
+                // User 28.11.2026: search for dishes, ingredients and complaints; the pill of the meal search.
+                TextField(
+                    value = state.query,
+                    onValueChange = viewModel::onQueryChange,
+                    placeholder = { Text(stringResource(Res.string.history_search_hint), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    singleLine = true,
+                    shape = CircleShape,
+                    colors = searchPillColors(),
+                    leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                    trailingIcon = if (state.query.isEmpty()) null else {
+                        { IconButton(onClick = { viewModel.onQueryChange("") }) { Icon(Icons.Outlined.Close, contentDescription = stringResource(Res.string.common_cancel), modifier = Modifier.size(20.dp)) } }
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                )
                 HistoryFilterRow(state.filter, viewModel::onFilterChange)
                 // Design picture 22.11.2026: a full-width outlined pill with a calendar icon.
                 OutlinedButton(
@@ -134,7 +157,7 @@ fun HistoryScreen(
             }
         }
         if (!state.loading && visibleDays.isEmpty()) {
-            item { Text(stringResource(Res.string.history_empty)) }
+            item { Text(stringResource(if (state.searching) Res.string.history_search_empty else Res.string.history_empty)) }
         }
         // Phone test 19.11.: the band of a period of illness appears once, on its newest listed day.
         val bandDays = sickState.periods.mapNotNull { period ->

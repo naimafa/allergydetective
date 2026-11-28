@@ -322,6 +322,8 @@
     <string name="tab_favorites">Favourites</string>
     <string name="tab_profile">Profile</string>
     <string name="history_empty">No entries in the last 14 days.</string>
+    <string name="history_search_hint">Search dishes, ingredients, complaints…</string>
+    <string name="history_search_empty">Nothing found.</string>
     <string name="history_day_confirmed">Done</string>
     <string name="history_day_open">Open</string>
     <string name="history_intensity">strength %1$d/5</string>

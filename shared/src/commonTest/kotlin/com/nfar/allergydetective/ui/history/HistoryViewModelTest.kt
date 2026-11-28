@@ -178,4 +178,42 @@ class HistoryViewModelTest {
         assertEquals(listOf(1L), deletedMeals)
         assertEquals(listOf(3L), vm.state.value.days[0].entries.map { it.id })
     }
+
+    // User 28.11.2026: search in the history.
+    private val searchTexts = mapOf(1L to "Milch Vollmilch", 2L to "Blähungen nach dem Essen", 3L to "", 4L to "Linsensuppe Linsen Tomaten")
+    private fun found(query: String): List<Long> {
+        val vm = viewModel().also { it.onQueryChange(query) }
+        return vm.state.value.visibleDays { searchTexts[it.id].orEmpty() }.flatMap { day -> day.entries.map { it.id } }
+    }
+
+    @Test
+    fun aBlankSearchShowsEverythingAsBefore() {
+        val vm = viewModel().also { it.onQueryChange("  ") }
+
+        assertEquals(vm.state.value.visibleDays(), vm.state.value.visibleDays { "" })
+        assertEquals(listOf(today, today - 1, today - 3), vm.state.value.visibleDays().map { it.epochDay })
+    }
+
+    @Test
+    fun searchKeepsOnlyMatchingEntriesAndDropsDaysWithoutMatch() {
+        assertEquals(listOf(4L), found("linsen"))
+        assertEquals(listOf(2L), found("BLÄH"))
+        assertEquals(emptyList(), found("fisch"))
+        val vm = viewModel().also { it.onQueryChange("linsen") }
+        assertEquals(listOf(today - 3), vm.state.value.visibleDays { searchTexts[it.id].orEmpty() }.map { it.epochDay })
+    }
+
+    @Test
+    fun everyWordOfTheSearchMustMatch() {
+        assertEquals(listOf(4L), found("linsen tomate"))
+        assertEquals(emptyList(), found("linsen milch"))
+    }
+
+    @Test
+    fun searchHidesTheDayChecks() {
+        val vm = viewModel().also { it.onQueryChange("milch") }
+
+        assertEquals(false, vm.state.value.showsDayChecks)
+        assertEquals(true, viewModel().state.value.showsDayChecks)
+    }
 }

@@ -321,6 +321,8 @@
     <string name="tab_favorites">Favoritos</string>
     <string name="tab_profile">Perfil</string>
     <string name="history_empty">No hay entradas en los últimos 14 días.</string>
+    <string name="history_search_hint">Buscar plato, ingrediente o molestia…</string>
+    <string name="history_search_empty">No se encontró nada.</string>
     <string name="history_day_confirmed">Hecho</string>
     <string name="history_day_open">Abierto</string>
     <string name="history_intensity">intensidad %1$d/5</string>
