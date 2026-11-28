@@ -526,6 +526,7 @@
     <string name="meal_scan_add">Ekle</string>
     <string name="meal_scan_hint">Lütfen kontrol et, hata olabilir. İpucu: metni Google Lens ile kopyala ve yapıştır.</string>
     <string name="meal_scan_photo">Malzeme listesinin fotoğrafını çek</string>
+    <string name="meal_scan_gallery">Galeriden fotoğraf seç</string>
     <string name="meal_scan_paste">Kopyalanan metni yapıştır</string>
     <string name="meal_scan_text_title">Malzeme listesi metin olarak</string>
     <string name="meal_scan_text_label">Metni buraya yapıştır</string>

@@ -111,9 +111,11 @@ import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.CameraAlt
 import allergydetective.shared.generated.resources.meal_scan
 import allergydetective.shared.generated.resources.meal_scan_paste
+import allergydetective.shared.generated.resources.meal_scan_gallery
 import allergydetective.shared.generated.resources.meal_scan_photo
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.outlined.ContentPaste
+import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -489,13 +491,22 @@ private fun WhatStep(
                     Box {
                         IconButton(onClick = { scanMenu = true }) { Icon(Icons.Outlined.CameraAlt, contentDescription = scanLabel, modifier = Modifier.size(20.dp)) }
                         DropdownMenu(expanded = scanMenu, onDismissRequest = { scanMenu = false }) {
-                            scan?.let { start ->
+                            scan?.let { starters ->
                                 DropdownMenuItem(
                                     text = { Text(stringResource(Res.string.meal_scan_photo)) },
                                     leadingIcon = { Icon(Icons.Outlined.CameraAlt, contentDescription = null) },
                                     onClick = {
                                         scanMenu = false
-                                        start()
+                                        starters.takePhoto()
+                                    },
+                                )
+                                // User 28.11.2026: a picture from the gallery in the same menu.
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(Res.string.meal_scan_gallery)) },
+                                    leadingIcon = { Icon(Icons.Outlined.PhotoLibrary, contentDescription = null) },
+                                    onClick = {
+                                        scanMenu = false
+                                        starters.pickFromGallery()
                                     },
                                 )
                             }
