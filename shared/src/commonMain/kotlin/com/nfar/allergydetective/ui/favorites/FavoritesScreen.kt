@@ -1,5 +1,19 @@
 package com.nfar.allergydetective.ui.favorites
 
+import com.nfar.allergydetective.ui.meal.PackageTextDialog
+import com.nfar.allergydetective.ui.meal.PackageScanDialog
+import com.nfar.allergydetective.platform.rememberPackageScan
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material.icons.outlined.ContentPaste
+import androidx.compose.material.icons.outlined.PhotoLibrary
+import androidx.compose.material.icons.outlined.CameraAlt
+import allergydetective.shared.generated.resources.meal_scan_paste
+import allergydetective.shared.generated.resources.meal_scan_gallery
+import allergydetective.shared.generated.resources.meal_scan_photo
+import allergydetective.shared.generated.resources.favorites_from_scan
 import allergydetective.shared.generated.resources.favorites_drag
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.outlined.DragIndicator
@@ -267,13 +281,18 @@ private fun DishCard(
 }
 
 @Composable
-private fun DishEditorDialog(
+internal fun DishEditorDialog(
     viewModel: DishEditorViewModel,
     onDone: () -> Unit,
     customViewModel: CustomIngredientViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var showCustom by remember { mutableStateOf(false) }
+    // User 28.11.2026: ingredients from a photo, the gallery or text (typed or copied, e.g. with Google Lens).
+    val scan = rememberPackageScan(viewModel::onPackageText)
+    var scanMenu by remember { mutableStateOf(false) }
+    var pasteText by remember { mutableStateOf<String?>(null) }
+    val clipboard = LocalClipboardManager.current
     LaunchedEffect(state.saved) { if (state.saved) onDone() }
     AlertDialog(
         onDismissRequest = onDone,
@@ -296,6 +315,41 @@ private fun DishEditorDialog(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                     )
+                }
+                Box {
+                    OutlinedButton(onClick = { scanMenu = true }, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Outlined.CameraAlt, contentDescription = null, modifier = Modifier.size(20.dp))
+                        Text(stringResource(Res.string.favorites_from_scan), modifier = Modifier.padding(start = 8.dp))
+                    }
+                    DropdownMenu(expanded = scanMenu, onDismissRequest = { scanMenu = false }) {
+                        scan?.let { starters ->
+                            DropdownMenuItem(
+                                text = { Text(stringResource(Res.string.meal_scan_photo)) },
+                                leadingIcon = { Icon(Icons.Outlined.CameraAlt, contentDescription = null) },
+                                onClick = {
+                                    scanMenu = false
+                                    starters.takePhoto()
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(Res.string.meal_scan_gallery)) },
+                                leadingIcon = { Icon(Icons.Outlined.PhotoLibrary, contentDescription = null) },
+                                onClick = {
+                                    scanMenu = false
+                                    starters.pickFromGallery()
+                                },
+                            )
+                        }
+                        // Also for typing a list: the window opens with what is on the clipboard and can be changed.
+                        DropdownMenuItem(
+                            text = { Text(stringResource(Res.string.meal_scan_paste)) },
+                            leadingIcon = { Icon(Icons.Outlined.ContentPaste, contentDescription = null) },
+                            onClick = {
+                                scanMenu = false
+                                pasteText = clipboard.getText()?.text.orEmpty()
+                            },
+                        )
+                    }
                 }
                 Text(stringResource(Res.string.favorites_ingredients), style = MaterialTheme.typography.titleSmall)
                 IngredientPicker(
@@ -334,6 +388,24 @@ private fun DishEditorDialog(
         },
         dismissButton = { TextButton(onClick = onDone) { Text(stringResource(Res.string.common_cancel)) } },
     )
+    pasteText?.let { initial ->
+        PackageTextDialog(
+            initialText = initial,
+            onRead = {
+                pasteText = null
+                viewModel.onPackageText(it)
+            },
+            onDismiss = { pasteText = null },
+        )
+    }
+    state.packageScan?.let { found ->
+        PackageScanDialog(
+            scan = found,
+            onDismiss = viewModel::onPackageDismiss,
+            onAdd = { ids, _ -> viewModel.onPackageConfirm(ids) },
+            allowNew = false,
+        )
+    }
     // User 28.11.2026: a changed dish is in earlier meals - ask whether they change too. "Only from now on" is the
     // main button; the other changes the logged meals. Dismissing goes back to the form.
     state.askEarlierMeals?.let { count ->

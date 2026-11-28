@@ -1,4 +1,6 @@
 package com.nfar.allergydetective.ui.meal
+import com.nfar.allergydetective.ui.favorites.DishEditorDialog
+import com.nfar.allergydetective.ui.favorites.DishEditorViewModel
 import androidx.compose.ui.text.font.FontWeight
 
 import allergydetective.shared.generated.resources.meal_save_as_favorite_hint
@@ -239,6 +241,12 @@ fun LogMealScreen(
         state.slot?.let { slot -> ExistingMealDialog(slot, viewModel) }
     }
     state.packageScan?.let { PackageScanDialog(it, viewModel) }
+    // User 28.11.2026: the ingredients read from a photo or text as a dish; saving adds the new dish to this meal.
+    state.dishDraft?.let { draft ->
+        val dishEditor: DishEditorViewModel = koinViewModel()
+        LaunchedEffect(draft) { dishEditor.start(prefillIngredientIds = draft) }
+        DishEditorDialog(viewModel = dishEditor, onDone = { viewModel.onDishDraftDone(dishEditor.state.value.savedId) })
+    }
     IngredientQuestions(state, viewModel)
     if (showCustomDialog) {
         CustomIngredientDialog(

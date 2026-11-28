@@ -13,6 +13,10 @@ import com.nfar.allergydetective.domain.diary.normalizeForSearch
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
 import com.nfar.allergydetective.ui.meal.IngredientCatalog
 import com.nfar.allergydetective.ui.meal.LogMealViewModel
+import com.nfar.allergydetective.ui.meal.PackageScan
+import com.nfar.allergydetective.domain.diary.PackageIngredients
+import com.nfar.allergydetective.domain.diary.PackageWordMatcher
+import com.nfar.allergydetective.ui.common.NamePrefix
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,6 +44,10 @@ data class DishEditorState(
     val saving: Boolean = false,
     /** Number of logged meals with this dish while the user is asked whether they change too; null = no question. */
     val askEarlierMeals: Int? = null,
+    /** Ingredients read from a photo or text, shown for confirmation (user 28.11.2026). */
+    val packageScan: PackageScan? = null,
+    /** Id of the dish that was just saved (new or edited), for the meal form that opened the editor. */
+    val savedId: Long? = null,
     /** Set after saving, the dialog closes then. */
     val saved: Boolean = false,
 ) {
@@ -67,8 +75,13 @@ class DishEditorViewModel(
         viewModelScope.launch { reload() }
     }
 
+    private var ingredientNames: Map<Long, String> = emptyMap()
+
     private suspend fun reload() {
         catalog = IngredientCatalog.load(meals, names, language)
+        ingredientNames = catalog.byId.mapValues { (_, ingredient) ->
+            ingredient.key?.let { names.name(NamePrefix.INGREDIENT, it) } ?: ingredient.customName.orEmpty()
+        }
         favorites = meals.favorites()
         val needs = meals.ingredientIdsNeedingPreparation()
         _state.update { it.copy(needsPreparation = needs) }
@@ -78,10 +91,14 @@ class DishEditorViewModel(
      * Opens the form: empty for a new dish, or filled with [dish] to edit it (self-test 18.11.:
      * a forgotten ingredient). Reloads the catalog for new custom ingredients.
      */
-    fun start(dish: FavoriteInfo? = null) {
+    fun start(dish: FavoriteInfo? = null, prefillIngredientIds: List<Long> = emptyList()) {
         _state.value = DishEditorState(needsPreparation = _state.value.needsPreparation)
         viewModelScope.launch {
             reload()
+            // A new dish from ingredients read elsewhere (user 28.11.2026): the name is still to be typed.
+            if (dish == null && prefillIngredientIds.isNotEmpty()) {
+                _state.update { it.copy(ingredients = prefillIngredientIds.distinct().mapNotNull { id -> catalog.byId[id] }) }
+            }
             if (dish == null) return@launch
             _state.update {
                 it.copy(
@@ -141,6 +158,29 @@ class DishEditorViewModel(
     fun onGlutenFreeChange(ingredientId: Long, glutenFree: Boolean) = _state.update {
         it.copy(preparations = if (glutenFree) it.preparations + (ingredientId to Preparation.GLUTEN_FREE) else it.preparations - ingredientId)
     }
+
+    /**
+     * Text read from a photo or typed / pasted (user 28.11.2026): the catalog ingredients found as written are offered for
+     * confirmation. Names the catalog does not know are left out here; they can be created with the search below.
+     */
+    fun onPackageText(text: String?) {
+        if (text == null) return
+        val match = PackageWordMatcher(ingredientNames).match(PackageIngredients.clean(text))
+        val present = _state.value.ingredients.map { it.id }.toSet()
+        val found = match.ingredientIds.filter { it !in present }.mapNotNull(catalog.byId::get)
+        _state.update { it.copy(packageScan = PackageScan(found, emptyList())) }
+    }
+
+    /** Adds the ticked ingredients to the dish. */
+    fun onPackageConfirm(ingredientIds: Set<Long>) {
+        val scan = _state.value.packageScan ?: return
+        _state.update { state ->
+            val new = scan.found.filter { it.id in ingredientIds && it !in state.ingredients }
+            state.copy(packageScan = null, ingredients = state.ingredients + new)
+        }
+    }
+
+    fun onPackageDismiss() = _state.update { it.copy(packageScan = null) }
 
     /** A custom ingredient was created from the search text: make it findable and add it. */
     fun onIngredientCreated(ingredient: IngredientInfo) {
@@ -203,12 +243,16 @@ class DishEditorViewModel(
         val editingId = current.editingId
         // The change is worked out before the saved dish is replaced.
         val change = if (editingId != null && applyToEarlier) dishChange(current, editingId) else null
-        if (editingId != null) meals.updateFavorite(editingId, current.name.trim(), items)
-        else meals.saveFavorite(current.name.trim(), items)
+        val savedId = if (editingId != null) {
+            meals.updateFavorite(editingId, current.name.trim(), items)
+            editingId
+        } else {
+            meals.saveFavorite(current.name.trim(), items)
+        }
         if (editingId != null && change != null) {
             val minor = catalog.byId.values.filter { it.categoryId in LogMealViewModel.MINOR_CATEGORY_IDS }.map { it.id }.toSet()
             meals.applyDishChange(editingId, change.added, change.removed, minor)
         }
-        _state.update { it.copy(saving = false, saved = true) }
+        _state.update { it.copy(saving = false, saved = true, savedId = savedId) }
     }
 }

@@ -464,6 +464,25 @@ class LogMealViewModel(
     }
 
     /**
+     * The ticked ingredients become a dish (user 28.11.2026): the dish form opens with them, so name, raw / cooked and
+     * the check for a dish of the same name work as everywhere. Names the catalog does not know are not part of it.
+     */
+    fun onPackageAsDish(ingredientIds: Set<Long>) {
+        val scan = _state.value.packageScan ?: return
+        val ids = scan.found.filter { it.id in ingredientIds }.map { it.id }
+        _state.update { it.copy(packageScan = null, dishDraft = ids.ifEmpty { null }) }
+    }
+
+    /** The dish form of [onPackageAsDish] is closed; [savedFavoriteId] is the new dish (null = not saved), which joins the meal. */
+    fun onDishDraftDone(savedFavoriteId: Long?) {
+        viewModelScope.launch {
+            val favorites = repository.favorites()
+            _state.update { it.copy(dishDraft = null, favorites = favorites) }
+            favorites.firstOrNull { it.id == savedFavoriteId }?.let(::onFavoriteClick)
+        }
+    }
+
+    /**
      * Adds a dish with one portion for the whole dish (user 24.11.2026); a tap on a dish that is already chosen takes
      * it out again. The portion starts at the largest one the saved dish had for its main part.
      */

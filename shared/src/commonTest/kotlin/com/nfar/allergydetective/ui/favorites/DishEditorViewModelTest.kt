@@ -254,4 +254,34 @@ class DishEditorViewModelTest {
         assertEquals(null, unused.state.value.askEarlierMeals)
         assertEquals(7L, meals.updated.single().first)
     }
+
+    // User 28.11.2026: a dish from a photo or text.
+    @Test
+    fun textWithIngredientsIsOfferedAndTheTickedOnesJoinTheDish() {
+        val vm = viewModel()
+        vm.start()
+
+        vm.onPackageText("Zutaten: Linsen, Tomate, Salz")
+
+        assertEquals(listOf(lentils.id, tomato.id), vm.state.value.packageScan!!.found.map { it.id })
+        vm.onPackageConfirm(setOf(tomato.id))
+        assertEquals(listOf(tomato), vm.state.value.ingredients)
+        assertEquals(null, vm.state.value.packageScan)
+    }
+
+    @Test
+    fun aNewDishCanStartWithIngredientsReadElsewhereAndReportsItsId() {
+        val vm = viewModel()
+
+        vm.start(prefillIngredientIds = listOf(lentils.id, tomato.id, lentils.id))
+        assertEquals(listOf(lentils, tomato), vm.state.value.ingredients)
+        assertEquals("", vm.state.value.name)
+        assertFalse(vm.state.value.canSave)
+
+        vm.onNameChange("Linsentopf")
+        vm.onSave()
+
+        assertEquals(1L, vm.state.value.savedId)
+        assertEquals("Linsentopf", meals.favorites.single().first)
+    }
 }
