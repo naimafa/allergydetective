@@ -79,4 +79,10 @@ class PackageIngredientsTest {
         assertEquals("milk, sugar, cocoa", PackageIngredients.clean("Ingredients: milk, sugar (20%), cocoa. May contain nuts."))
         assertEquals("Milch, Zucker, Kakao", PackageIngredients.clean("Milch, Zucker, Kakao"))
     }
+
+    @Test
+    fun aDigitBetweenLettersStaysAsAMisreadLetterButOtherNumbersGo() {
+        // User 28.11.2026: "Kuhmi1ch" is a misread "l" and is left for the matcher to suggest; a footnote digit and E-numbers go as before.
+        assertEquals("Kuhmi1ch, Zucker, Säuerungsmittel E, Weizen", PackageIngredients.clean("Zutaten: Kuhmi1ch, Zucker1, Säuerungsmittel E330, Weizen 12 %."))
+    }
 }

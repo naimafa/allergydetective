@@ -34,4 +34,32 @@ class PackageWordMatcherTest {
         // "Ei" is too short to be offered.
         assertEquals(listOf("Magermilchpulver", "Meersalz"), match.unknown)
     }
+
+    // User 28.11.2026: a misread letter is only suggested, never taken.
+    @Test
+    fun aMisreadLetterIsSuggestedAndNotTaken() {
+        val match = matcher.match("Dinkelmeh1, Zucker, B1attsalat, Vani11e")
+
+        assertEquals(listOf(4L), match.ingredientIds)
+        assertEquals(
+            listOf(PackageSuggestion("Dinkelmeh1", 1L), PackageSuggestion("B1attsalat", 3L), PackageSuggestion("Vani11e", 5L)),
+            match.suggestions,
+        )
+    }
+
+    @Test
+    fun aSingleWrongLetterIsSuggestedButShortOrFarWordsAreNot() {
+        val match = matcher.match("Dinkelmehll, Zuker, Sa1z, Dinkelkuchen")
+
+        // "Dinkelmehll" is one letter off; "Zuker" and "Sa1z" are too short; "Dinkelkuchen" is far from any name.
+        assertEquals(listOf(PackageSuggestion("Dinkelmehll", 1L)), match.suggestions)
+        assertEquals(emptyList(), match.ingredientIds)
+    }
+
+    @Test
+    fun twoEquallyCloseIngredientsGiveNoSuggestion() {
+        val twins = PackageWordMatcher(mapOf(1L to "Haselnuss", 2L to "Hasalnuss"))
+
+        assertEquals(emptyList(), twins.match("Hasolnuss").suggestions)
+    }
 }

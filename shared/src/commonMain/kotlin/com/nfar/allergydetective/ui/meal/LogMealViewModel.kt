@@ -436,20 +436,22 @@ class LogMealViewModel(
      * Text read from a package photo (user 27.11.2026): only names as written count, no guessing. What the catalog
      * does not know is offered as a new ingredient; the user confirms everything.
      */
-    fun onPackageText(text: String?) {
+    fun onPackageText(text: String?, blurry: Boolean = false) {
         if (text == null) return
         val current = _state.value
         val match = PackageWordMatcher(ingredientNames).match(PackageIngredients.clean(text))
         val present = current.mealItems.map { it.ingredientId }.toSet()
         val found = match.ingredientIds.filter { it !in present }.mapNotNull(ingredientsById::get)
-        _state.update { it.copy(packageScan = PackageScan(found, match.unknown.take(MAX_UNRECOGNIZED))) }
+        // User 28.11.2026: an entry that is one misread letter away from an ingredient is suggested, never ticked.
+        val suggested = match.suggestions.filter { it.ingredientId !in present }.mapNotNull { s -> ingredientsById[s.ingredientId]?.let { s.written to it } }
+        _state.update { it.copy(packageScan = PackageScan(found, match.unknown.take(MAX_UNRECOGNIZED), suggested, blurry)) }
     }
 
     /** Adds the ticked ingredients; the ticked unknown names are asked one after the other in the "new ingredient" form. */
     fun onPackageConfirm(ingredientIds: Set<Long>, newNames: List<String> = emptyList()) {
         val scan = _state.value.packageScan ?: return
         _state.update { it.copy(packageScan = null, newFromPackage = newNames) }
-        scan.found.filter { it.id in ingredientIds }.forEach { ingredient ->
+        (scan.found + scan.suggested.map { it.second }).filter { it.id in ingredientIds }.forEach { ingredient ->
             if (_state.value.mealItems.none { it.ingredientId == ingredient.id }) onToggleIngredient(ingredient)
         }
     }
@@ -469,7 +471,7 @@ class LogMealViewModel(
      */
     fun onPackageAsDish(ingredientIds: Set<Long>) {
         val scan = _state.value.packageScan ?: return
-        val ids = scan.found.filter { it.id in ingredientIds }.map { it.id }
+        val ids = (scan.found + scan.suggested.map { it.second }).filter { it.id in ingredientIds }.map { it.id }
         _state.update { it.copy(packageScan = null, dishDraft = ids.ifEmpty { null }) }
     }
 

@@ -45,7 +45,14 @@ sealed interface Place {
 }
 
 /** What was found on a package: ingredients of the catalog, and names it does not know. */
-data class PackageScan(val found: List<IngredientInfo>, val unknown: List<String>)
+data class PackageScan(
+    val found: List<IngredientInfo>,
+    val unknown: List<String>,
+    /** Entries read almost like a catalog ingredient (a misread letter): "Weizenmeh1" -> Weizenmehl; offered, not ticked. */
+    val suggested: List<Pair<String, IngredientInfo>> = emptyList(),
+    /** The photo was too blurry for a reliable reading (user 28.11.2026). */
+    val blurry: Boolean = false,
+)
 /** A logged meal of an earlier day that can be copied into the form. */
 data class EarlierMeal(val mealId: Long, val daysAgo: Int, val slot: MealSlot)
 

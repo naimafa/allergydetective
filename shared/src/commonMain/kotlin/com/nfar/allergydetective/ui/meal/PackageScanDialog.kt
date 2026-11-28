@@ -3,6 +3,9 @@ package com.nfar.allergydetective.ui.meal
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
 import allergydetective.shared.generated.resources.meal_scan_add
+import allergydetective.shared.generated.resources.meal_scan_blurry
+import allergydetective.shared.generated.resources.meal_scan_suggest
+import allergydetective.shared.generated.resources.meal_scan_suggest_hint
 import allergydetective.shared.generated.resources.meal_scan_as_dish
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.OutlinedButton
@@ -68,8 +71,10 @@ fun PackageScanDialog(
 ) {
     var chosen by remember(scan) { mutableStateOf(scan.found.map { it.id }.toSet()) }
     var chosenNew by remember(scan) { mutableStateOf(emptySet<String>()) }
-    val unknown = if (allowNew) scan.unknown else emptyList()
-    val nothing = scan.found.isEmpty() && unknown.isEmpty()
+    // An entry with a suggestion ("Weizenmeh1" -> Weizenmehl) is not offered as a new ingredient as well.
+    val suggestedWritten = scan.suggested.map { it.first }.toSet()
+    val unknown = (if (allowNew) scan.unknown else emptyList()).filter { it !in suggestedWritten }
+    val nothing = scan.found.isEmpty() && unknown.isEmpty() && scan.suggested.isEmpty()
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.meal_scan_title)) },
@@ -83,10 +88,37 @@ fun PackageScanDialog(
                 modifier = Modifier.padding(bottom = 8.dp),
             )
             Column(modifier = Modifier.heightIn(max = 340.dp).verticalScroll(rememberScrollState())) {
+                // User 28.11.2026: a blurry photo is warned about, and Google Lens is named when little or nothing was read.
+                if (scan.blurry) {
+                    Text(
+                        stringResource(Res.string.meal_scan_blurry),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(bottom = 8.dp),
+                    )
+                }
                 if (nothing) Text(stringResource(Res.string.meal_scan_none))
                 scan.found.forEach { ingredient ->
                     TickRow(ingredientName(ingredient).substringBefore(" / "), ingredient.id in chosen) {
                         chosen = if (ingredient.id in chosen) chosen - ingredient.id else chosen + ingredient.id
+                    }
+                }
+                if (scan.suggested.isNotEmpty()) {
+                    // Read almost like a catalog name: not ticked, the user decides (user 28.11.2026).
+                    Text(
+                        stringResource(Res.string.meal_scan_suggest),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(top = 12.dp),
+                    )
+                    Text(
+                        stringResource(Res.string.meal_scan_suggest_hint),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    scan.suggested.forEach { (written, ingredient) ->
+                        TickRow("$written → " + ingredientName(ingredient).substringBefore(" / "), ingredient.id in chosen) {
+                            chosen = if (ingredient.id in chosen) chosen - ingredient.id else chosen + ingredient.id
+                        }
                     }
                 }
                 if (unknown.isNotEmpty()) {

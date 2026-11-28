@@ -35,7 +35,8 @@ object PackageIngredients {
     private val hyphenBreak = Regex("""-\s*\n\s*""")
     private val whitespace = Regex("""\s+""")
     private val quantity = Regex("""\d+([.,]\d+)?\s*(%|g|mg|kg|ml|l)(?![\p{L}])""")
-    private val number = Regex("""\d+([.,]\d+)?""")
+    // Numbers go, but a digit between two letters stays ("Weizenmeh1ig": a misread "l"); the matcher may suggest the word.
+    private val number = Regex("""(?<![\p{L}\d])\d+([.,]\d+)?|\d+([.,]\d+)?(?![\p{L}\d])""")
     // The footnote mark "¹" is often read as an apostrophe.
     private val separators = Regex("""[()\[\]{}:;.*/"'’‘´`•·+¹²³]""")
     private val sentenceEnd = Regex("""[\p{L})¹²³]\.(?=\s|$)""")

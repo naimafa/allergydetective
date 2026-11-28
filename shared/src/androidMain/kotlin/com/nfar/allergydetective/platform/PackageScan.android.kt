@@ -26,8 +26,9 @@ import java.io.File
  * the result was lost then), so nothing may be kept in remembered state between the launch and the result.
  */
 @Composable
-actual fun rememberPackageScan(onResult: (text: String?) -> Unit): PackageScanStarters? {
+actual fun rememberPackageScan(report: (text: String?, blurry: Boolean) -> Unit): PackageScanStarters? {
     val context = LocalContext.current
+    fun onResult(text: String?, blurry: Boolean = false) = report(text, blurry)
     fun photoFile() = File(File(context.cacheDir, "scan").apply { mkdirs() }, "package.jpg")
     fun photoUri() = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", photoFile())
 
@@ -39,13 +40,15 @@ actual fun rememberPackageScan(onResult: (text: String?) -> Unit): PackageScanSt
             photoFile().delete()
             cropped?.delete()
         }
+        // User 28.11.2026: a blurry picture is reported with the text, the form warns.
+        val blurry = isBlurry(context, uri)
         runCatching { InputImage.fromFilePath(context, uri) }
             .onSuccess { image ->
                 recognizer.process(image)
                     .addOnSuccessListener {
                         Log.i("PackageScan", "read ${it.text.length} characters: ${it.text.lines().joinToString("|")}")
                         // Empty text (not null) tells the form that the photo was taken but nothing could be read.
-                        onResult(it.text)
+                        onResult(it.text, blurry)
                     }
                     .addOnFailureListener {
                         Log.w("PackageScan", "text recognition failed", it)
@@ -130,4 +133,52 @@ actual fun rememberPackageScan(onResult: (text: String?) -> Unit): PackageScanSt
             }
         },
     )
+}
+
+/** Below this the picture is too soft for a reliable reading. Logged with every picture, to tune it on real photos. */
+private const val BLUR_LIMIT = 40.0
+private const val SHARPNESS_SIDE = 1000
+
+/**
+ * Sharpness of the picture as the variance of its Laplacian (grey values, picture scaled to about 1000 px): sharp text
+ * has many strong edges, a blurry one hardly any. Null result (not readable) counts as not blurry.
+ */
+private fun isBlurry(context: android.content.Context, uri: Uri): Boolean {
+    val variance = runCatching { laplacianVariance(context, uri) }.getOrNull() ?: return false
+    Log.i("PackageScan", "sharpness=$variance (limit $BLUR_LIMIT)")
+    return variance < BLUR_LIMIT
+}
+
+private fun laplacianVariance(context: android.content.Context, uri: Uri): Double? {
+    val resolver = context.contentResolver
+    val bounds = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    resolver.openInputStream(uri)?.use { android.graphics.BitmapFactory.decodeStream(it, null, bounds) }
+    val longSide = maxOf(bounds.outWidth, bounds.outHeight)
+    if (longSide <= 0) return null
+    val options = android.graphics.BitmapFactory.Options().apply { inSampleSize = (longSide / SHARPNESS_SIDE).coerceAtLeast(1) }
+    val bitmap = resolver.openInputStream(uri)?.use { android.graphics.BitmapFactory.decodeStream(it, null, options) } ?: return null
+    val w = bitmap.width
+    val h = bitmap.height
+    if (w < 3 || h < 3) return null
+    val pixels = IntArray(w * h)
+    bitmap.getPixels(pixels, 0, w, 0, 0, w, h)
+    bitmap.recycle()
+    val grey = DoubleArray(w * h) { i ->
+        val p = pixels[i]
+        0.299 * ((p shr 16) and 0xFF) + 0.587 * ((p shr 8) and 0xFF) + 0.114 * (p and 0xFF)
+    }
+    var sum = 0.0
+    var sumSquares = 0.0
+    var count = 0
+    for (y in 1 until h - 1) {
+        for (x in 1 until w - 1) {
+            val i = y * w + x
+            val laplacian = grey[i - 1] + grey[i + 1] + grey[i - w] + grey[i + w] - 4 * grey[i]
+            sum += laplacian
+            sumSquares += laplacian * laplacian
+            count++
+        }
+    }
+    val mean = sum / count
+    return sumSquares / count - mean * mean
 }
