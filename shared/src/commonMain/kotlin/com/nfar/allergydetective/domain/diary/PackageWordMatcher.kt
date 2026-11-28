@@ -62,7 +62,7 @@ class PackageWordMatcher(names: Map<Long, String>) {
     }
 
     /**
-     * An entry that is almost an ingredient name once the usual misreadings are undone (a digit for a letter, "rn" for
+     * An entry that is almost an ingredient name once the usual misreadings are undone (a digit for a letter, a lost umlaut dot, "rn" for
      * "m") and with at most one letter wrong: a suggestion only, the user decides. Not for short words and not when two
      * ingredients are equally close.
      */
@@ -73,8 +73,9 @@ class PackageWordMatcher(names: Map<Long, String>) {
         var bestDistance = 2
         var tie = false
         for ((name, id) in byName) {
-            if (kotlin.math.abs(name.length - written.length) > 1) continue
-            val distance = editDistance(written, unconfuse(name), limit = 1)
+            val folded = unconfuse(name)
+            if (kotlin.math.abs(folded.length - written.length) > 1) continue
+            val distance = editDistance(written, folded, limit = 1)
             if (distance > 1) continue
             if (distance < bestDistance) {
                 best = id
@@ -89,7 +90,8 @@ class PackageWordMatcher(names: Map<Long, String>) {
 
     /** Letters that a camera confuses with digits and letter pairs, put on one side: "weizenmeh1" -> "weizenmehl". */
     private fun unconfuse(text: String): String =
-        text.replace("rn", "m").replace("vv", "w")
+        // Umlauts folded (a lost dot gives "Strke" for "Stärke"; normalizeForSearch wrote "ae" for "ä").
+        text.replace("ae", "a").replace("oe", "o").replace("ue", "u").replace("rn", "m").replace("vv", "w")
             .map { char -> when (char) { '0' -> 'o'; '1' -> 'l'; '5' -> 's'; '8' -> 'b'; '6' -> 'g'; else -> char } }
             .joinToString("")
 
@@ -116,6 +118,6 @@ class PackageWordMatcher(names: Map<Long, String>) {
     private companion object {
         const val MAX_PHRASE_WORDS = 4
         const val MIN_NEW_NAME_LENGTH = 3
-        const val MIN_SUGGEST_LENGTH = 6
+        const val MIN_SUGGEST_LENGTH = 5
     }
 }

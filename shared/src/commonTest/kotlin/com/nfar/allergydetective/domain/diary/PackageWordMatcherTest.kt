@@ -51,8 +51,8 @@ class PackageWordMatcherTest {
     fun aSingleWrongLetterIsSuggestedButShortOrFarWordsAreNot() {
         val match = matcher.match("Dinkelmehll, Zuker, Sa1z, Dinkelkuchen")
 
-        // "Dinkelmehll" is one letter off; "Zuker" and "Sa1z" are too short; "Dinkelkuchen" is far from any name.
-        assertEquals(listOf(PackageSuggestion("Dinkelmehll", 1L)), match.suggestions)
+        // "Dinkelmehll" and "Zuker" are one letter off; "Sa1z" is too short; "Dinkelkuchen" is far from any name.
+        assertEquals(listOf(PackageSuggestion("Dinkelmehll", 1L), PackageSuggestion("Zuker", 4L)), match.suggestions)
         assertEquals(emptyList(), match.ingredientIds)
     }
 
@@ -61,5 +61,13 @@ class PackageWordMatcherTest {
         val twins = PackageWordMatcher(mapOf(1L to "Haselnuss", 2L to "Hasalnuss"))
 
         assertEquals(emptyList(), twins.match("Hasolnuss").suggestions)
+    }
+
+    @Test
+    fun aLostUmlautDotIsSuggested() {
+        // Phone test 28.11.2026: "Stärke" was read as "Strke".
+        val withStarch = PackageWordMatcher(mapOf(1L to "Stärke", 2L to "Zucker"))
+
+        assertEquals(listOf(PackageSuggestion("Strke", 1L)), withStarch.match("Strke, Zucker").suggestions)
     }
 }
