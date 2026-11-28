@@ -391,7 +391,7 @@
     <string name="welcome_text">Ton introduction à l’app : découvre toutes ses fonctions.</string>
     <string name="profile_show_intro">Revoir l’introduction</string>
     <string name="onboarding_how_title">Comment ça marche</string>
-    <string name="onboarding_how_meal">Note ce que tu manges : petit-déjeuner, déjeuner, dîner ou en-cas. Par recherche, favori ou à la voix.</string>
+    <string name="onboarding_how_meal">Note ce que tu manges : petit-déjeuner, déjeuner, dîner ou en-cas. Par recherche, favori ou à la voix. Possible aussi : une photo de la liste d’ingrédients ou du texte copié avec Google Lens.</string>
     <string name="onboarding_how_symptom">Quand tu as des troubles, note-les avec leur intensité et le moment de la journée.</string>
     <string name="onboarding_how_check">Le soir, tu termines la journée : comment te sentais-tu, comment as-tu dormi ? Les jours sans troubles comptent aussi.</string>
     <string name="onboarding_patience_title">Un peu de patience paie</string>

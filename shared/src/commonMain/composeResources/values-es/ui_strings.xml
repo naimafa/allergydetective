@@ -394,7 +394,7 @@
     <string name="welcome_text">Tu introducción a la app: conoce todas sus funciones.</string>
     <string name="profile_show_intro">Repetir la introducción</string>
     <string name="onboarding_how_title">Cómo funciona</string>
-    <string name="onboarding_how_meal">Registra lo que comes: desayuno, comida, cena o tentempié. Con la búsqueda, un favorito o la voz.</string>
+    <string name="onboarding_how_meal">Registra lo que comes: desayuno, comida, cena o tentempié. Con la búsqueda, un favorito o la voz. También vale una foto de la lista de ingredientes o texto copiado con Google Lens.</string>
     <string name="onboarding_how_symptom">Cuando tengas molestias, regístralas con su intensidad y la hora del día.</string>
     <string name="onboarding_how_check">Por la noche cierras el día: ¿cómo te sentiste, cómo dormiste? Los días sin molestias también cuentan.</string>
     <string name="onboarding_patience_title">Un poco de paciencia vale la pena</string>

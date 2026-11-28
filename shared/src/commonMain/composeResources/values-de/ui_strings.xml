@@ -395,7 +395,7 @@
     <string name="welcome_text">Deine Einführung in die App: Lerne alle Funktionen kennen.</string>
     <string name="profile_show_intro">Einführung wiederholen</string>
     <string name="onboarding_how_title">So funktioniert es</string>
-    <string name="onboarding_how_meal">Trag ein, was du isst: Frühstück, Mittag, Abend oder einen Snack. Per Suche, Favorit oder Sprache.</string>
+    <string name="onboarding_how_meal">Trag ein, was du isst: Frühstück, Mittag, Abend oder einen Snack. Per Suche, Favorit oder Sprache. Auch möglich: ein Foto der Zutatenliste oder mit Google Lens kopierter Text.</string>
     <string name="onboarding_how_symptom">Hast du Beschwerden, trag sie ein, mit Stärke und Tageszeit.</string>
     <string name="onboarding_how_check">Abends schließt du den Tag ab: Wie ging es dir, wie hast du geschlafen? Auch Tage ohne Beschwerden sind wichtig.</string>
     <string name="onboarding_patience_title">Etwas Geduld lohnt sich</string>
