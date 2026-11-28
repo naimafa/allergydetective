@@ -394,7 +394,7 @@
     <string name="welcome_text">Uygulamaya girişin: tüm işlevlerini tanı.</string>
     <string name="profile_show_intro">Tanıtımı tekrarla</string>
     <string name="onboarding_how_title">Nasıl çalışır</string>
-    <string name="onboarding_how_meal">Ne yediğini kaydet: kahvaltı, öğle yemeği, akşam yemeği ya da ara öğün. Arama, favori ya da sesle.</string>
+    <string name="onboarding_how_meal">Ne yediğini kaydet: kahvaltı, öğle yemeği, akşam yemeği ya da ara öğün. Arama, favori ya da sesle. Ayrıca: içindekiler listesinin fotoğrafı veya Google Lens ile kopyalanan metin.</string>
     <string name="onboarding_how_symptom">Şikâyetin olduğunda onu şiddeti ve günün saatiyle kaydet.</string>
     <string name="onboarding_how_check">Akşam günü kapatırsın: nasıl hissettin, nasıl uyudun? Şikâyetsiz günler de önemli.</string>
     <string name="onboarding_patience_title">Biraz sabır karşılığını verir</string>

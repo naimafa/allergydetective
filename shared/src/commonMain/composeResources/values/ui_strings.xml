@@ -395,7 +395,7 @@
     <string name="welcome_text">Your introduction to the app: get to know all its functions.</string>
     <string name="profile_show_intro">Repeat the introduction</string>
     <string name="onboarding_how_title">How it works</string>
-    <string name="onboarding_how_meal">Log what you eat: breakfast, lunch, dinner or a snack. By search, favourite or voice.</string>
+    <string name="onboarding_how_meal">Log what you eat: breakfast, lunch, dinner or a snack. By search, favourite or voice. Also possible: a photo of an ingredient list, or text copied with Google Lens.</string>
     <string name="onboarding_how_symptom">When you have complaints, log them with strength and time of day.</string>
     <string name="onboarding_how_check">In the evening you close the day: how did you feel, how did you sleep? Days without complaints matter too.</string>
     <string name="onboarding_patience_title">A little patience pays off</string>

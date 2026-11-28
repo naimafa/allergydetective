@@ -404,7 +404,7 @@
     <string name="welcome_text">مقدّمتك إلى التطبيق: تعرّف على جميع وظائفه.</string>
     <string name="profile_show_intro">إعادة المقدّمة</string>
     <string name="onboarding_how_title">كيف يعمل</string>
-    <string name="onboarding_how_meal">سجّل ما تأكله: فطور أو غداء أو عشاء أو وجبة خفيفة. بالبحث أو من المفضلة أو بالصوت.</string>
+    <string name="onboarding_how_meal">سجّل ما تأكله: فطور أو غداء أو عشاء أو وجبة خفيفة. بالبحث أو من المفضلة أو بالصوت. ويمكن أيضًا تصوير قائمة المكوّنات أو لصق نص منسوخ بـ Google Lens.</string>
     <string name="onboarding_how_symptom">عندما تشعر بأعراض، سجّلها مع شدتها ووقتها من اليوم.</string>
     <string name="onboarding_how_check">في المساء تختم اليوم: كيف كان شعورك، وكيف نمت؟ الأيام بلا أعراض مهمة أيضًا.</string>
     <string name="onboarding_patience_title">قليل من الصبر يؤتي ثماره</string>
