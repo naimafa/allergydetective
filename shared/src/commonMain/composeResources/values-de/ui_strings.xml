@@ -527,6 +527,7 @@
     <string name="meal_scan_add">Hinzufügen</string>
     <string name="meal_scan_hint">Bitte prüfen, Fehler möglich. Tipp: Text mit Google Lens kopieren und einfügen.</string>
     <string name="meal_scan_photo">Foto der Zutatenliste aufnehmen</string>
+    <string name="meal_scan_gallery">Foto aus der Galerie wählen</string>
     <string name="meal_scan_paste">Kopierten Text einfügen</string>
     <string name="meal_scan_text_title">Zutatenliste als Text</string>
     <string name="meal_scan_text_label">Text hier einfügen</string>

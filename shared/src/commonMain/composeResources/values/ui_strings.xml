@@ -527,6 +527,7 @@
     <string name="meal_scan_add">Add</string>
     <string name="meal_scan_hint">Please check, mistakes possible. Tip: copy the text with Google Lens and paste it.</string>
     <string name="meal_scan_photo">Take a photo of the ingredient list</string>
+    <string name="meal_scan_gallery">Choose a photo from the gallery</string>
     <string name="meal_scan_paste">Paste copied text</string>
     <string name="meal_scan_text_title">Ingredient list as text</string>
     <string name="meal_scan_text_label">Paste the text here</string>

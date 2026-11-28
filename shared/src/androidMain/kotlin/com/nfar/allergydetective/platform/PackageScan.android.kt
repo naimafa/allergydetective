@@ -3,6 +3,7 @@ package com.nfar.allergydetective.platform
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -25,7 +26,7 @@ import java.io.File
  * the result was lost then), so nothing may be kept in remembered state between the launch and the result.
  */
 @Composable
-actual fun rememberPackageScan(onResult: (text: String?) -> Unit): (() -> Unit)? {
+actual fun rememberPackageScan(onResult: (text: String?) -> Unit): PackageScanStarters? {
     val context = LocalContext.current
     fun photoFile() = File(File(context.cacheDir, "scan").apply { mkdirs() }, "package.jpg")
     fun photoUri() = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", photoFile())
@@ -70,14 +71,7 @@ actual fun rememberPackageScan(onResult: (text: String?) -> Unit): (() -> Unit)?
         }
     }
 
-    val camera = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { taken ->
-        val file = photoFile()
-        Log.i("PackageScan", "camera result: taken=$taken, size=${file.length()}")
-        if (!taken) {
-            file.delete()
-            onResult(null)
-            return@rememberLauncherForActivityResult
-        }
+    fun crop() {
         cropper.launch(
             CropImageContractOptions(
                 uri = photoUri(),
@@ -90,10 +84,50 @@ actual fun rememberPackageScan(onResult: (text: String?) -> Unit): (() -> Unit)?
             ),
         )
     }
-    return {
-        runCatching { camera.launch(photoUri()) }.onFailure {
-            Log.w("PackageScan", "camera could not be started", it)
+
+    val camera = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { taken ->
+        val file = photoFile()
+        Log.i("PackageScan", "camera result: taken=$taken, size=${file.length()}")
+        if (!taken) {
+            file.delete()
             onResult(null)
+            return@rememberLauncherForActivityResult
+        }
+        crop()
+    }
+
+    // User 28.11.2026: a picture already in the gallery. The system photo picker needs no permission; the picture is
+    // copied to the same cache file as a camera photo, so crop, reading and clean-up work the same way.
+    val gallery = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { picked ->
+        if (picked == null) {
+            onResult(null)
+            return@rememberLauncherForActivityResult
+        }
+        val copied = runCatching {
+            context.contentResolver.openInputStream(picked)?.use { input ->
+                photoFile().outputStream().use { input.copyTo(it) }
+            } != null
+        }.getOrDefault(false)
+        if (copied) {
+            crop()
+        } else {
+            Log.w("PackageScan", "picture could not be copied")
+            photoFile().delete()
+            onResult("")
         }
     }
+    return PackageScanStarters(
+        takePhoto = {
+            runCatching { camera.launch(photoUri()) }.onFailure {
+                Log.w("PackageScan", "camera could not be started", it)
+                onResult(null)
+            }
+        },
+        pickFromGallery = {
+            runCatching { gallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }.onFailure {
+                Log.w("PackageScan", "gallery could not be started", it)
+                onResult(null)
+            }
+        },
+    )
 }
