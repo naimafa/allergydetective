@@ -113,6 +113,7 @@ import allergydetective.shared.generated.resources.meal_scan
 import allergydetective.shared.generated.resources.meal_scan_paste
 import allergydetective.shared.generated.resources.meal_scan_photo
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.ContentPaste
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -557,6 +558,24 @@ private fun WhatStep(
                 Text(stringResource(Res.string.custom_create_named, state.query.trim()))
             }
         }
+        // User 27.11.2026: "gleiches Essen wie gestern oder vorgestern übernehmen".
+        if (shortcuts && state.earlierMeals.isNotEmpty()) {
+            ChipGroupTitle(stringResource(Res.string.meal_copy_title), stringResource(Res.string.meal_copy_hint))
+            ChipRowWithMore {
+                items(state.earlierMeals, key = { it.mealId }) { earlier ->
+                    AppFilterChip(
+                        selected = false,
+                        showCheck = false,
+                        onClick = { viewModel.onCopyEarlierMeal(earlier) },
+                        label = {
+                            val day = stringResource(if (earlier.daysAgo == 1) Res.string.day_yesterday else Res.string.day_two_days_ago)
+                            Text(stringResource(Res.string.meal_copy_chip, day, mealSlotLabel(earlier.slot)), maxLines = 1)
+                        },
+                        trailingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                    )
+                }
+            }
+        }
         if (shortcuts && state.favorites.isNotEmpty()) {
             ChipGroupTitle(stringResource(Res.string.meal_favorites), stringResource(Res.string.meal_favorites_hint))
             // User note 21.11.2026: coming from the favourites tab, the chosen dish could sit far right, out of view.
@@ -576,24 +595,6 @@ private fun WhatStep(
                         label = { Text(favorite.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp)) },
                         // Design picture 22.11.2026: a star after the name marks a saved dish.
                         trailingIcon = { Icon(Icons.Filled.Star, contentDescription = null, modifier = Modifier.size(20.dp)) },
-                    )
-                }
-            }
-        }
-        // User 27.11.2026: "gleiches Essen wie gestern oder vorgestern übernehmen".
-        if (shortcuts && state.earlierMeals.isNotEmpty()) {
-            ChipGroupTitle(stringResource(Res.string.meal_copy_title), stringResource(Res.string.meal_copy_hint))
-            ChipRowWithMore {
-                items(state.earlierMeals, key = { it.mealId }) { earlier ->
-                    AppFilterChip(
-                        selected = false,
-                        showCheck = false,
-                        onClick = { viewModel.onCopyEarlierMeal(earlier) },
-                        label = {
-                            val day = stringResource(if (earlier.daysAgo == 1) Res.string.day_yesterday else Res.string.day_two_days_ago)
-                            Text(stringResource(Res.string.meal_copy_chip, day, mealSlotLabel(earlier.slot)), maxLines = 1)
-                        },
-                        trailingIcon = { Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp)) },
                     )
                 }
             }
