@@ -71,7 +71,9 @@ object PackageIngredients {
         // The line of the producer's address ends the list as well, even when "Kann enthalten" was not read.
         val addressAt = (COMPANY.mapNotNull { text.indexOf(it, ignoreCase = true).takeIf { at -> at > 0 } } +
             listOfNotNull(postalCode.find(text)?.range?.first?.takeIf { it > 0 })).minOrNull()
-        if (addressAt != null) text = text.substring(0, text.lastIndexOf('\n', addressAt).coerceAtLeast(0))
+        // Only after a heading was found: without one, lines before the list (a "Copyright 92025" read as a postal code)
+        // must not cut it off (phone test 28.11.2026).
+        if (addressAt != null && start != null) text = text.substring(0, text.lastIndexOf('\n', addressAt).coerceAtLeast(0))
         text = text.replace(whitespace, " ").trim()
         // An ingredient list ends with a full stop (not a decimal point): what follows is traces, storage, advice.
         val end = (ENDS.mapNotNull { marker -> text.indexOf(marker, ignoreCase = true).takeIf { it > 0 } } +
@@ -86,7 +88,8 @@ object PackageIngredients {
             .replace(separators, ",")
             .split(',')
             .map { segment -> segment.split(' ').filter { it.isNotBlank() && it.lowercase() !in NOISE_WORDS }.joinToString(" ") }
-            .filter { it.length >= 2 }
+            // Contact lines of a package ("service@firma.at", "www.…") are no ingredients.
+            .filter { it.length >= 2 && '@' !in it && !it.contains("www", ignoreCase = true) }
             .joinToString(", ")
     }
 }

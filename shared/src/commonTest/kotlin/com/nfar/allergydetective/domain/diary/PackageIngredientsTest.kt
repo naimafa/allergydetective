@@ -85,4 +85,13 @@ class PackageIngredientsTest {
         // User 28.11.2026: "Kuhmi1ch" is a misread "l" and is left for the matcher to suggest; a footnote digit and E-numbers go as before.
         assertEquals("Kuhmi1ch, Zucker, Säuerungsmittel E, Weizen", PackageIngredients.clean("Zutaten: Kuhmi1ch, Zucker1, Säuerungsmittel E330, Weizen 12 %."))
     }
+
+    @Test
+    fun withoutAHeadingLinesBeforeTheListDoNotCutItOffAndContactLinesAreNoIngredients() {
+        // Phone test 28.11.2026: "Copyright 92025" and a service address came first, the list after them.
+        val raw = "und Infos\nservice@setker.at\nCopyright 92025\nWeizenmehl, Zucker, Magermilchpulver, Salz"
+
+        // The junk in front stays in the first entry; the matcher finds "Weizenmehl" inside it.
+        assertEquals("at Copyright Weizenmehl, Zucker, Magermilchpulver, Salz", PackageIngredients.clean(raw))
+    }
 }
