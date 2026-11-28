@@ -64,6 +64,16 @@ interface MealRepository {
         saveFavorite(name, items)
     }
 
+    /** Meals that were logged with this dish, newest first (user 28.11.2026: "change earlier meals too?"). */
+    suspend fun mealIdsWithDish(favoriteId: Long): List<Long> = emptyList()
+
+    /**
+     * Brings the change of a dish into the meals logged with it: [added] ingredients join the dish in those meals,
+     * [removedIngredientIds] leave it. What was changed in a single meal stays. [minorIngredientIds] (herbs, spices …)
+     * count one portion step smaller next to a main part, like when logging.
+     */
+    suspend fun applyDishChange(favoriteId: Long, added: List<MealItem>, removedIngredientIds: Set<Long>, minorIngredientIds: Set<Long>) {}
+
     /** Undo of [saveMeal], removes the meal and its items. */
     suspend fun deleteMeal(mealId: Long)
 

@@ -385,6 +385,10 @@
     <string name="favorites_ingredients">Ingredients</string>
     <string name="favorites_same_name">A dish “%1$s” already exists. Saving replaces it, or enter another name.</string>
     <string name="favorites_replace">Replace</string>
+    <string name="favorites_earlier_title">Change earlier meals too?</string>
+    <string name="favorites_earlier_text">This dish is in earlier meals (%1$d). Added ingredients are added there, removed ones are taken out. Changes you made to a single meal stay.</string>
+    <string name="favorites_earlier_future">Only from now on</string>
+    <string name="favorites_earlier_all">Change earlier meals too</string>
     <string name="favorites_edit">Edit</string>
     <string name="favorites_edit_title">Edit dish</string>
     <string name="onboarding_welcome">Welcome! You log what you eat, how you feel and how your day was. The app looks for patterns in your entries.</string>

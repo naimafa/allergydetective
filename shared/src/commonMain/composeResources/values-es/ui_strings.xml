@@ -384,6 +384,10 @@
     <string name="favorites_ingredients">Ingredientes</string>
     <string name="favorites_same_name">Ya existe un plato «%1$s». Al guardar se reemplaza, o escribe otro nombre.</string>
     <string name="favorites_replace">Reemplazar</string>
+    <string name="favorites_earlier_title">¿Cambiar también las comidas anteriores?</string>
+    <string name="favorites_earlier_text">Este plato está en comidas anteriores (%1$d). Los ingredientes nuevos se añaden allí y los quitados se eliminan. Los cambios que hiciste en una comida se mantienen.</string>
+    <string name="favorites_earlier_future">Solo a partir de ahora</string>
+    <string name="favorites_earlier_all">Cambiar también las anteriores</string>
     <string name="favorites_edit">Editar</string>
     <string name="favorites_edit_title">Editar plato</string>
     <string name="onboarding_welcome">¡Bienvenido! Registras lo que comes, cómo te sientes y cómo fue tu día. La app busca patrones en tus entradas.</string>

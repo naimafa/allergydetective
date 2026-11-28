@@ -47,6 +47,12 @@ class DishEditorViewModelTest {
         override suspend fun updateFavorite(favoriteId: Long, name: String, items: List<MealItem>) {
             updated += Triple(favoriteId, name, items)
         }
+        val loggedMealIds = mutableListOf<Long>()
+        val applied = mutableListOf<Triple<Long, List<MealItem>, Set<Long>>>()
+        override suspend fun mealIdsWithDish(favoriteId: Long) = loggedMealIds.toList()
+        override suspend fun applyDishChange(favoriteId: Long, added: List<MealItem>, removedIngredientIds: Set<Long>, minorIngredientIds: Set<Long>) {
+            applied += Triple(favoriteId, added, removedIngredientIds)
+        }
         override suspend fun deleteFavorite(favoriteId: Long) {
             deleted += favoriteId
         }
@@ -166,5 +172,86 @@ class DishEditorViewModelTest {
             meals.updated.single(),
         )
         assertTrue(meals.favorites.isEmpty())
+    }
+
+    // User 28.11.2026: a changed dish is in earlier meals - the user decides whether they change too.
+    private val soup = FavoriteInfo(7, "Linsensuppe", listOf(MealItem(1001, Portion.LARGE), MealItem(702, Portion.MEDIUM, Preparation.COOKED)))
+
+    private fun editingSoupInEarlierMeals(): DishEditorViewModel {
+        meals.existing += soup
+        meals.loggedMealIds += listOf(5L, 6L)
+        return viewModel().also { it.start(soup) }
+    }
+
+    @Test
+    fun anAddedIngredientAsksAboutEarlierMealsBeforeSaving() {
+        val vm = editingSoupInEarlierMeals()
+
+        vm.onAdd(tomato)
+        vm.onSave()
+
+        assertEquals(2, vm.state.value.askEarlierMeals)
+        assertTrue(meals.updated.isEmpty())
+        assertFalse(vm.state.value.saved)
+    }
+
+    @Test
+    fun onlyFromNowSavesTheDishAndLeavesEarlierMealsAlone() {
+        val vm = editingSoupInEarlierMeals()
+        vm.onAdd(tomato)
+        vm.onSave()
+
+        vm.onEarlierMealsChoice(false)
+
+        assertEquals(7L, meals.updated.single().first)
+        assertTrue(meals.applied.isEmpty())
+        assertEquals(null, vm.state.value.askEarlierMeals)
+        assertTrue(vm.state.value.saved)
+    }
+
+    @Test
+    fun changingEarlierMealsToo_passesTheAddedAndRemovedIngredients() {
+        val vm = editingSoupInEarlierMeals()
+        vm.onAdd(tomato)
+        vm.onRemove(carrot)
+        vm.onSave()
+
+        vm.onEarlierMealsChoice(true)
+
+        assertEquals(7L, meals.updated.single().first)
+        assertEquals(Triple(7L, listOf(MealItem(701, Portion.MEDIUM)), setOf(702L)), meals.applied.single())
+        assertTrue(vm.state.value.saved)
+    }
+
+    @Test
+    fun dismissingTheQuestionGoesBackToTheFormWithoutSaving() {
+        val vm = editingSoupInEarlierMeals()
+        vm.onAdd(tomato)
+        vm.onSave()
+
+        vm.onEarlierMealsDismiss()
+
+        assertEquals(null, vm.state.value.askEarlierMeals)
+        assertFalse(vm.state.value.saving)
+        assertFalse(vm.state.value.saved)
+        assertTrue(meals.updated.isEmpty())
+        assertEquals(listOf(lentils, carrot, tomato), vm.state.value.ingredients)
+    }
+
+    @Test
+    fun noQuestionWhenOnlyTheNameChangesOrNoMealUsesTheDish() {
+        val renamed = editingSoupInEarlierMeals()
+        renamed.onNameChange("Linsentopf")
+        renamed.onSave()
+        assertEquals(null, renamed.state.value.askEarlierMeals)
+        assertTrue(renamed.state.value.saved)
+
+        meals.updated.clear()
+        meals.loggedMealIds.clear()
+        val unused = viewModel().also { it.start(soup) }
+        unused.onAdd(tomato)
+        unused.onSave()
+        assertEquals(null, unused.state.value.askEarlierMeals)
+        assertEquals(7L, meals.updated.single().first)
     }
 }

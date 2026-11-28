@@ -12,6 +12,7 @@ import com.nfar.allergydetective.domain.diary.MealRepository
 import com.nfar.allergydetective.domain.diary.normalizeForSearch
 import com.nfar.allergydetective.ui.common.DisplayNameResolver
 import com.nfar.allergydetective.ui.meal.IngredientCatalog
+import com.nfar.allergydetective.ui.meal.LogMealViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,6 +38,8 @@ data class DishEditorState(
     /** A dish with the same name exists; saving replaces it after confirmation. */
     val sameNameDish: FavoriteInfo? = null,
     val saving: Boolean = false,
+    /** Number of logged meals with this dish while the user is asked whether they change too; null = no question. */
+    val askEarlierMeals: Int? = null,
     /** Set after saving, the dialog closes then. */
     val saved: Boolean = false,
 ) {
@@ -147,18 +150,65 @@ class DishEditorViewModel(
         }
     }
 
-    /** Saves the dish; a dish with the same name is replaced (the user confirmed in the dialog). */
+    /**
+     * Saves the dish; a dish with the same name is replaced (the user confirmed in the dialog). When ingredients of a dish
+     * that was logged before were added or removed, the user is asked first whether the earlier meals change too
+     * (user 28.11.2026); the answer comes in [onEarlierMealsChoice].
+     */
     fun onSave() {
         val current = _state.value
         if (!current.canSave) return
         _state.update { it.copy(saving = true) }
         viewModelScope.launch {
-            current.sameNameDish?.let { meals.deleteFavorite(it.id) }
-            val items = current.ingredients.map { MealItem(it.id, current.portions[it.id] ?: Portion.MEDIUM, current.preparations[it.id]) }
             val editingId = current.editingId
-            if (editingId != null) meals.updateFavorite(editingId, current.name.trim(), items)
-            else meals.saveFavorite(current.name.trim(), items)
-            _state.update { it.copy(saving = false, saved = true) }
+            if (editingId != null && dishChange(current, editingId) != null) {
+                val count = meals.mealIdsWithDish(editingId).size
+                if (count > 0) {
+                    _state.update { it.copy(saving = false, askEarlierMeals = count) }
+                    return@launch
+                }
+            }
+            persist(current, applyToEarlier = false)
         }
+    }
+
+    /** The answer of the question: [applyToEarlier] false = only meals from now on, true = the logged ones change too. */
+    fun onEarlierMealsChoice(applyToEarlier: Boolean) {
+        val current = _state.value
+        _state.update { it.copy(askEarlierMeals = null, saving = true) }
+        viewModelScope.launch { persist(current, applyToEarlier) }
+    }
+
+    /** Back to the form without saving. */
+    fun onEarlierMealsDismiss() = _state.update { it.copy(askEarlierMeals = null) }
+
+    private class DishChange(val added: List<MealItem>, val removed: Set<Long>)
+
+    /** What differs from the saved dish: ingredients added and removed; null when none (name or portions only). */
+    private suspend fun dishChange(current: DishEditorState, editingId: Long): DishChange? {
+        val old = meals.favorites().firstOrNull { it.id == editingId }?.items.orEmpty()
+        val oldIds = old.map { it.ingredientId }.toSet()
+        val items = newItems(current)
+        val added = items.filter { it.ingredientId !in oldIds }
+        val removed = oldIds - items.map { it.ingredientId }.toSet()
+        return if (added.isEmpty() && removed.isEmpty()) null else DishChange(added, removed)
+    }
+
+    private fun newItems(current: DishEditorState) =
+        current.ingredients.map { MealItem(it.id, current.portions[it.id] ?: Portion.MEDIUM, current.preparations[it.id]) }
+
+    private suspend fun persist(current: DishEditorState, applyToEarlier: Boolean) {
+        current.sameNameDish?.let { meals.deleteFavorite(it.id) }
+        val items = newItems(current)
+        val editingId = current.editingId
+        // The change is worked out before the saved dish is replaced.
+        val change = if (editingId != null && applyToEarlier) dishChange(current, editingId) else null
+        if (editingId != null) meals.updateFavorite(editingId, current.name.trim(), items)
+        else meals.saveFavorite(current.name.trim(), items)
+        if (editingId != null && change != null) {
+            val minor = catalog.byId.values.filter { it.categoryId in LogMealViewModel.MINOR_CATEGORY_IDS }.map { it.id }.toSet()
+            meals.applyDishChange(editingId, change.added, change.removed, minor)
+        }
+        _state.update { it.copy(saving = false, saved = true) }
     }
 }
