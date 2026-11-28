@@ -451,6 +451,21 @@ class LogMealViewModelTest {
     }
 
     @Test
+    fun aMisreadIngredientIsSuggestedNotTickedAndTakenOnlyWhenTheUserTicksIt() {
+        val vm = viewModel()
+
+        vm.onPackageText("Zutaten: Weißbrot, Kuhmi1ch, Salz.", blurry = true)
+
+        val scan = vm.state.value.packageScan!!
+        assertEquals(listOf(bread.id), scan.found.map { it.id })
+        assertEquals(listOf("Kuhmi1ch" to milk), scan.suggested)
+        assertTrue(scan.blurry)
+        // Only the suggestion is ticked by the user: it is taken like an ingredient read as written.
+        vm.onPackageConfirm(setOf(milk.id))
+        assertEquals(listOf(milk.id), vm.state.value.selected.map { it.ingredient.id })
+    }
+
+    @Test
     fun theTickedPackageIngredientsCanBecomeADishThatJoinsTheMeal() {
         val vm = viewModel()
         vm.onPackageText("Zutaten: Weißbrot, Kuhmilch, Salz.")

@@ -523,7 +523,7 @@
     <string name="meal_quick_hint">Ingrédients que tu as mangés récemment</string>
     <string name="meal_scan">Lire les ingrédients sur l’emballage</string>
     <string name="meal_scan_title">Trouvé sur l’emballage</string>
-    <string name="meal_scan_none">Aucun ingrédient n’a pu être lu. Réessaie avec la liste bien nette et une bonne lumière.</string>
+    <string name="meal_scan_none">Aucun ingrédient n’a pu être lu. Réessaie avec la liste nette et une bonne lumière, ou copie le texte avec Google Lens et colle-le.</string>
     <string name="meal_scan_unknown">Pas encore dans ta liste</string>
     <string name="meal_scan_unknown_hint">Cocher pour créer</string>
     <string name="meal_scan_add">Ajouter</string>
@@ -531,6 +531,9 @@
     <string name="meal_scan_photo">Prendre une photo</string>
     <string name="meal_scan_gallery">Depuis la galerie</string>
     <string name="meal_scan_as_dish">Enregistrer comme plat</string>
+    <string name="meal_scan_blurry">La photo est floue, les ingrédients peuvent être mal lus. Mieux vaut la refaire ou copier le texte avec Google Lens.</string>
+    <string name="meal_scan_suggest">Voulais-tu dire</string>
+    <string name="meal_scan_suggest_hint">Difficile à lire, coche pour reprendre</string>
     <string name="favorites_from_scan">Depuis photo ou texte</string>
     <string name="meal_scan_paste">Coller le texte</string>
     <string name="meal_scan_text_title">Liste des ingrédients en texte</string>

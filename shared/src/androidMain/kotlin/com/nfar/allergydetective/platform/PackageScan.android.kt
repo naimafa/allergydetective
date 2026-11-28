@@ -26,8 +26,9 @@ import java.io.File
  * the result was lost then), so nothing may be kept in remembered state between the launch and the result.
  */
 @Composable
-actual fun rememberPackageScan(onResult: (text: String?) -> Unit): PackageScanStarters? {
+actual fun rememberPackageScan(report: (text: String?, blurry: Boolean) -> Unit): PackageScanStarters? {
     val context = LocalContext.current
+    fun onResult(text: String?, blurry: Boolean = false) = report(text, blurry)
     fun photoFile() = File(File(context.cacheDir, "scan").apply { mkdirs() }, "package.jpg")
     fun photoUri() = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", photoFile())
 
@@ -45,7 +46,10 @@ actual fun rememberPackageScan(onResult: (text: String?) -> Unit): PackageScanSt
                     .addOnSuccessListener {
                         Log.i("PackageScan", "read ${it.text.length} characters: ${it.text.lines().joinToString("|")}")
                         // Empty text (not null) tells the form that the photo was taken but nothing could be read.
-                        onResult(it.text)
+                        // User 28.11.2026: unsure reading (blurry or unclear photo) is reported with the text, the form warns.
+                        val confidence = meanConfidence(it)
+                        Log.i("PackageScan", "confidence=$confidence (limit $CONFIDENCE_LIMIT)")
+                        onResult(it.text, confidence < CONFIDENCE_LIMIT)
                     }
                     .addOnFailureListener {
                         Log.w("PackageScan", "text recognition failed", it)
@@ -130,4 +134,13 @@ actual fun rememberPackageScan(onResult: (text: String?) -> Unit): PackageScanSt
             }
         },
     )
+}
+
+/** Mean confidence of the words ML Kit read; below this the picture is too blurry or unclear to trust (phone test 28.11.2026: sharp photo 0.81, blurry one 0.39). */
+private const val CONFIDENCE_LIMIT = 0.6f
+
+/** How sure ML Kit is about the words it read, 0..1; 1 when nothing was read (the form says so on its own). */
+private fun meanConfidence(text: com.google.mlkit.vision.text.Text): Float {
+    val values = text.textBlocks.flatMap { block -> block.lines.flatMap { line -> line.elements.map { it.confidence } } }
+    return if (values.isEmpty()) 1f else values.average().toFloat()
 }

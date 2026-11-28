@@ -527,7 +527,7 @@
     <string name="meal_quick_hint">Single ingredients you ate recently</string>
     <string name="meal_scan">Read ingredients from a package</string>
     <string name="meal_scan_title">Found on the package</string>
-    <string name="meal_scan_none">Nothing could be read as an ingredient. Try again with the ingredient list in focus and good light.</string>
+    <string name="meal_scan_none">No ingredient could be read. Try again with the list sharp in the picture and good light, or copy the text with Google Lens and paste it.</string>
     <string name="meal_scan_unknown">Not in your list yet</string>
     <string name="meal_scan_unknown_hint">Tick to create</string>
     <string name="meal_scan_add">Add</string>
@@ -535,6 +535,9 @@
     <string name="meal_scan_photo">Take photo</string>
     <string name="meal_scan_gallery">From gallery</string>
     <string name="meal_scan_as_dish">Save as a dish</string>
+    <string name="meal_scan_blurry">The photo is blurry, ingredients may be read wrongly. Better take it again, or copy the text with Google Lens.</string>
+    <string name="meal_scan_suggest">Did you mean</string>
+    <string name="meal_scan_suggest_hint">Hard to read, tick to take over</string>
     <string name="favorites_from_scan">From photo or text</string>
     <string name="meal_scan_paste">Paste text</string>
     <string name="meal_scan_text_title">Ingredient list as text</string>

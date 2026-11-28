@@ -536,7 +536,7 @@
     <string name="meal_quick_hint">مكوّنات أكلتها مؤخرًا</string>
     <string name="meal_scan">قراءة المكونات من العبوة</string>
     <string name="meal_scan_title">وُجد على العبوة</string>
-    <string name="meal_scan_none">تعذّرت قراءة أي مكوّن. حاول مرة أخرى مع وضوح قائمة المكونات وإضاءة جيدة.</string>
+    <string name="meal_scan_none">تعذّرت قراءة أي مكوّن. حاول مجددًا مع قائمة واضحة وإضاءة جيدة، أو انسخ النص بـ Google Lens والصقه.</string>
     <string name="meal_scan_unknown">غير موجود في قائمتك بعد</string>
     <string name="meal_scan_unknown_hint">حدّد للإنشاء</string>
     <string name="meal_scan_add">إضافة</string>
@@ -544,6 +544,9 @@
     <string name="meal_scan_photo">التقاط صورة</string>
     <string name="meal_scan_gallery">من المعرض</string>
     <string name="meal_scan_as_dish">حفظ كطبق</string>
+    <string name="meal_scan_blurry">الصورة غير واضحة وقد تُقرأ المكوّنات خطأً. الأفضل إعادة التصوير أو نسخ النص بـ Google Lens.</string>
+    <string name="meal_scan_suggest">هل تقصد</string>
+    <string name="meal_scan_suggest_hint">يصعب قراءته، علّم للأخذ به</string>
     <string name="favorites_from_scan">من صورة أو نص</string>
     <string name="meal_scan_paste">لصق النص</string>
     <string name="meal_scan_text_title">قائمة المكونات كنص</string>

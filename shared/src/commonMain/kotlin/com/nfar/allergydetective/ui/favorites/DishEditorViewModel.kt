@@ -163,19 +163,20 @@ class DishEditorViewModel(
      * Text read from a photo or typed / pasted (user 28.11.2026): the catalog ingredients found as written are offered for
      * confirmation. Names the catalog does not know are left out here; they can be created with the search below.
      */
-    fun onPackageText(text: String?) {
+    fun onPackageText(text: String?, blurry: Boolean = false) {
         if (text == null) return
         val match = PackageWordMatcher(ingredientNames).match(PackageIngredients.clean(text))
         val present = _state.value.ingredients.map { it.id }.toSet()
         val found = match.ingredientIds.filter { it !in present }.mapNotNull(catalog.byId::get)
-        _state.update { it.copy(packageScan = PackageScan(found, emptyList())) }
+        val suggested = match.suggestions.filter { it.ingredientId !in present }.mapNotNull { s -> catalog.byId[s.ingredientId]?.let { s.written to it } }
+        _state.update { it.copy(packageScan = PackageScan(found, emptyList(), suggested, blurry)) }
     }
 
     /** Adds the ticked ingredients to the dish. */
     fun onPackageConfirm(ingredientIds: Set<Long>) {
         val scan = _state.value.packageScan ?: return
         _state.update { state ->
-            val new = scan.found.filter { it.id in ingredientIds && it !in state.ingredients }
+            val new = (scan.found + scan.suggested.map { it.second }).filter { it.id in ingredientIds && it !in state.ingredients }
             state.copy(packageScan = null, ingredients = state.ingredients + new)
         }
     }
