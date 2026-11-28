@@ -3,6 +3,9 @@ package com.nfar.allergydetective.ui.meal
 import allergydetective.shared.generated.resources.Res
 import allergydetective.shared.generated.resources.common_cancel
 import allergydetective.shared.generated.resources.meal_scan_add
+import allergydetective.shared.generated.resources.meal_scan_as_dish
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.OutlinedButton
 import allergydetective.shared.generated.resources.meal_scan_hint
 import allergydetective.shared.generated.resources.meal_scan_text_label
 import allergydetective.shared.generated.resources.meal_scan_text_read
@@ -42,11 +45,33 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun PackageScanDialog(scan: PackageScan, viewModel: LogMealViewModel) {
+    PackageScanDialog(
+        scan = scan,
+        onDismiss = viewModel::onPackageDismiss,
+        onAdd = viewModel::onPackageConfirm,
+        // User 28.11.2026: the ticked ingredients can also become a dish of their own.
+        onAsDish = viewModel::onPackageAsDish,
+    )
+}
+
+/**
+ * The same list for every place that reads ingredients: [onAdd] gets the ticked ingredients and the ticked new names,
+ * [onAsDish] (when given) the ticked ingredients to save as a dish. [allowNew] false leaves out the unknown names.
+ */
+@Composable
+fun PackageScanDialog(
+    scan: PackageScan,
+    onDismiss: () -> Unit,
+    onAdd: (Set<Long>, List<String>) -> Unit,
+    onAsDish: ((Set<Long>) -> Unit)? = null,
+    allowNew: Boolean = true,
+) {
     var chosen by remember(scan) { mutableStateOf(scan.found.map { it.id }.toSet()) }
     var chosenNew by remember(scan) { mutableStateOf(emptySet<String>()) }
-    val nothing = scan.found.isEmpty() && scan.unknown.isEmpty()
+    val unknown = if (allowNew) scan.unknown else emptyList()
+    val nothing = scan.found.isEmpty() && unknown.isEmpty()
     AlertDialog(
-        onDismissRequest = viewModel::onPackageDismiss,
+        onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.meal_scan_title)) },
         text = {
           // The hint stays in view: reading a photo is never perfect (user 27.11.2026), the user checks the list.
@@ -64,7 +89,7 @@ fun PackageScanDialog(scan: PackageScan, viewModel: LogMealViewModel) {
                         chosen = if (ingredient.id in chosen) chosen - ingredient.id else chosen + ingredient.id
                     }
                 }
-                if (scan.unknown.isNotEmpty()) {
+                if (unknown.isNotEmpty()) {
                     Text(
                         stringResource(Res.string.meal_scan_unknown),
                         style = MaterialTheme.typography.titleSmall,
@@ -75,7 +100,7 @@ fun PackageScanDialog(scan: PackageScan, viewModel: LogMealViewModel) {
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    scan.unknown.forEach { name ->
+                    unknown.forEach { name ->
                         TickRow(name, name in chosenNew) {
                             chosenNew = if (name in chosenNew) chosenNew - name else chosenNew + name
                         }
@@ -86,16 +111,23 @@ fun PackageScanDialog(scan: PackageScan, viewModel: LogMealViewModel) {
         },
         confirmButton = {
             if (nothing) {
-                TextButton(onClick = viewModel::onPackageDismiss) { Text(stringResource(Res.string.common_cancel)) }
+                TextButton(onClick = onDismiss) { Text(stringResource(Res.string.common_cancel)) }
             } else {
-                Button(
-                    onClick = { viewModel.onPackageConfirm(chosen, scan.unknown.filter { it in chosenNew }) },
-                    enabled = chosen.isNotEmpty() || chosenNew.isNotEmpty(),
-                ) { Text(stringResource(Res.string.meal_scan_add)) }
+                // Two ways to go on (user 28.11.2026): add the ingredients, or keep them as a dish. Stacked, so the
+                // texts fit at a large font.
+                Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Button(
+                        onClick = { onAdd(chosen, unknown.filter { it in chosenNew }) },
+                        enabled = chosen.isNotEmpty() || chosenNew.isNotEmpty(),
+                    ) { Text(stringResource(Res.string.meal_scan_add)) }
+                    if (onAsDish != null) {
+                        OutlinedButton(onClick = { onAsDish(chosen) }, enabled = chosen.isNotEmpty()) {
+                            Text(stringResource(Res.string.meal_scan_as_dish))
+                        }
+                    }
+                    TextButton(onClick = onDismiss) { Text(stringResource(Res.string.common_cancel)) }
+                }
             }
-        },
-        dismissButton = {
-            if (!nothing) TextButton(onClick = viewModel::onPackageDismiss) { Text(stringResource(Res.string.common_cancel)) }
         },
     )
 }

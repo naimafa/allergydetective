@@ -66,6 +66,8 @@ data class LogMealState(
     val packageScan: PackageScan? = null,
     /** Names from a package that the user wants as new ingredients, asked one after the other. */
     val newFromPackage: List<String> = emptyList(),
+    /** Ingredient ids read from a photo or text that become a dish (the dish form is open), user 28.11.2026; null = no form. */
+    val dishDraft: List<Long>? = null,
     /** Meals of yesterday and the day before, to take over again ("Wie gestern?", user 27.11.2026). */
     val earlierMeals: List<EarlierMeal> = emptyList(),
     val favorites: List<FavoriteInfo> = emptyList(),

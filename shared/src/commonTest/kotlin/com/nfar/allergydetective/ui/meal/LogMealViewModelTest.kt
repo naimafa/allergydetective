@@ -451,6 +451,40 @@ class LogMealViewModelTest {
     }
 
     @Test
+    fun theTickedPackageIngredientsCanBecomeADishThatJoinsTheMeal() {
+        val vm = viewModel()
+        vm.onPackageText("Zutaten: Weißbrot, Kuhmilch, Salz.")
+
+        vm.onPackageAsDish(setOf(milk.id))
+
+        // The dish form opens with the ticked ingredient; nothing is added to the meal yet.
+        assertEquals(listOf(milk.id), vm.state.value.dishDraft)
+        assertNull(vm.state.value.packageScan)
+        assertTrue(vm.state.value.selected.isEmpty())
+
+        // The form saved the dish: it is a favourite now and joins the meal as a dish.
+        val dishId = 77L
+        repository.favorites += FavoriteInfo(dishId, "Milchgericht", listOf(MealItem(milk.id, Portion.MEDIUM)))
+        vm.onDishDraftDone(dishId)
+
+        assertNull(vm.state.value.dishDraft)
+        assertEquals(listOf(dishId), vm.state.value.dishes.map { it.favoriteId })
+    }
+
+    @Test
+    fun closingTheDishFormWithoutSavingAddsNothing() {
+        val vm = viewModel()
+        vm.onPackageText("Weißbrot, Kuhmilch")
+        vm.onPackageAsDish(setOf(bread.id, milk.id))
+
+        vm.onDishDraftDone(null)
+
+        assertNull(vm.state.value.dishDraft)
+        assertTrue(vm.state.value.dishes.isEmpty())
+        assertTrue(vm.state.value.selected.isEmpty())
+    }
+
+    @Test
     fun aMealOfYesterdayCanBeTakenOverAgain() {
         val yesterday = now.toEpochMilliseconds() - 24 * 60 * 60 * 1000L
         repository.saved += Triple(yesterday, 60, listOf(MealItem(bread.id, Portion.SMALL), MealItem(milk.id, Portion.LARGE)))

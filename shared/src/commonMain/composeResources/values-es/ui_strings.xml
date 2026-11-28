@@ -533,6 +533,8 @@
     <string name="meal_scan_hint">Compruébalo, puede haber errores. Consejo: copia el texto con Google Lens y pégalo.</string>
     <string name="meal_scan_photo">Hacer una foto de la lista de ingredientes</string>
     <string name="meal_scan_gallery">Elegir una foto de la galería</string>
+    <string name="meal_scan_as_dish">Guardar como plato</string>
+    <string name="favorites_from_scan">Ingredientes de una foto o texto</string>
     <string name="meal_scan_paste">Pegar texto copiado</string>
     <string name="meal_scan_text_title">Lista de ingredientes como texto</string>
     <string name="meal_scan_text_label">Pega el texto aquí</string>
