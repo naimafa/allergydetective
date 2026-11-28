@@ -321,6 +321,8 @@
     <string name="tab_favorites">Favoriler</string>
     <string name="tab_profile">Profil</string>
     <string name="history_empty">Son 14 günde kayıt yok.</string>
+    <string name="history_search_hint">Yemek, malzeme veya şikâyet ara…</string>
+    <string name="history_search_empty">Hiçbir şey bulunamadı.</string>
     <string name="history_day_confirmed">Tamam</string>
     <string name="history_day_open">Açık</string>
     <string name="history_intensity">şiddet %1$d/5</string>

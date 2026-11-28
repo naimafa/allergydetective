@@ -37,6 +37,8 @@ data class HistoryState(
     /** Newest day first. Days without entries and without a check are left out. */
     val days: List<HistoryDay> = emptyList(),
     val filter: HistoryFilter = HistoryFilter.ALL,
+    /** User 28.11.2026: search in the history (dishes, ingredients, complaints, notes); blank = no search. */
+    val query: String = "",
     /** Lifestyle factor keys by id, to name the factors of a day check. */
     val factorKeys: Map<Long, String> = emptyMap(),
 ) {
@@ -45,7 +47,17 @@ data class HistoryState(
      * [sickDays]: "Days" also shows an ill day without a day check (phone test 19.11.: it was
      * missing there but shown under "All").
      */
-    fun visibleDays(sickDays: Set<Long> = emptySet()): List<HistoryDay> = when (filter) {
+    fun visibleDays(sickDays: Set<Long> = emptySet(), searchText: (HistoryEntry) -> String = { "" }): List<HistoryDay> {
+        val byFilter = filteredDays(sickDays)
+        if (!searching) return byFilter
+        // Searching shows only the entries that match; days without a match (and the day checks) are left out.
+        return byFilter.map { day -> day.copy(entries = day.entries.filter { matchesSearch(searchText(it), query) }) }
+            .filter { it.entries.isNotEmpty() }
+    }
+
+    val searching: Boolean get() = query.isNotBlank()
+
+    private fun filteredDays(sickDays: Set<Long>): List<HistoryDay> = when (filter) {
         HistoryFilter.ALL -> days
         HistoryFilter.DAYS -> days.filter { it.check != null || it.epochDay in sickDays }.map { it.copy(entries = emptyList()) }
         HistoryFilter.FOOD -> days.map { day -> day.copy(entries = day.entries.filterIsInstance<HistoryEntry.MealEntry>()) }
@@ -55,7 +67,14 @@ data class HistoryState(
     }
 
     /** The day check is shown for "all" and "days". */
-    val showsDayChecks: Boolean get() = filter == HistoryFilter.ALL || filter == HistoryFilter.DAYS
+    val showsDayChecks: Boolean get() = !searching && (filter == HistoryFilter.ALL || filter == HistoryFilter.DAYS)
+}
+
+/** Every word of [query] must occur in [text], upper and lower case ignored ("linsen tomate" finds "Linsensuppe · Tomaten"). */
+fun matchesSearch(text: String, query: String): Boolean {
+    val words = query.lowercase().split(Regex("\\s+")).filter { it.isNotEmpty() }
+    val haystack = text.lowercase()
+    return words.all { it in haystack }
 }
 
 /** History of the last [DAYS] days with editing and deletion of single entries. */
@@ -88,6 +107,10 @@ class HistoryViewModel(
 
     fun onFilterChange(filter: HistoryFilter) {
         _state.update { it.copy(filter = filter) }
+    }
+
+    fun onQueryChange(query: String) {
+        _state.update { it.copy(query = query) }
     }
 
     /**
@@ -128,3 +151,6 @@ class HistoryViewModel(
         const val DAYS = 14
     }
 }
+
+/** Identifies an entry across meals and complaints (their ids are separate counters). */
+fun HistoryEntry.key(): Pair<Boolean, Long> = (this is HistoryEntry.MealEntry) to id

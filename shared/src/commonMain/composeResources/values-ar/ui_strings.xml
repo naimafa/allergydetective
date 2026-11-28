@@ -328,6 +328,8 @@
     <string name="tab_favorites">المفضلة</string>
     <string name="tab_profile">الملف الشخصي</string>
     <string name="history_empty">لا توجد تسجيلات في آخر 14 يومًا.</string>
+    <string name="history_search_hint">ابحث عن طبق أو مكوّن أو عرض…</string>
+    <string name="history_search_empty">لم يُعثر على شيء.</string>
     <string name="history_day_confirmed">مكتمل</string>
     <string name="history_day_open">مفتوح</string>
     <string name="history_intensity">الشدة %1$d/5</string>
